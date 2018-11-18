@@ -13,7 +13,7 @@
     <Version>1.0.0-alpha-$(Configuration.ToLower())-1</Version>
     <PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
     <PackageTags>CaveSystems Extensions</PackageTags>
-    <PackageProjectUrl>https://www.cavesystems.de</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Dingsd4/cave-extensions</PackageProjectUrl>
     <PackageReleaseNotes>Aktueller Release Candidate 2018</PackageReleaseNotes>
     <Description>CaveSystems Extensions Bibliothek</Description>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cave.Extensions.xml</DocumentationFile>
@@ -64,10 +64,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
-    <PackageReference Include="Cave.Backports" Version="1.0.0-alpha-debug-1" />
+    <PackageReference Include="Cave.Backports" Version="1.0.0-alpha-release-1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <PackageReference Include="Cave.Backports" Version="1.0.0-alpha-debug-1" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
   </ItemGroup>
 </Project>
