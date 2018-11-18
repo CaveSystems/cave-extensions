@@ -10,7 +10,7 @@
     <PackageLicenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</PackageLicenseUrl>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Cave.Extensions.snk</AssemblyOriginatorKeyFile>
-    <Version>1.0.0-alpha-$(Configuration.ToLower())-2</Version>
+    <Version>1.0.0-alpha-$(Configuration.ToLower())-3</Version>
     <PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
     <PackageTags>CaveSystems Extensions</PackageTags>
     <PackageProjectUrl>https://github.com/Dingsd4/cave-extensions</PackageProjectUrl>
@@ -20,8 +20,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <FileVersion>2018.1118.2111.2947</FileVersion>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <FileVersion>2018.1118.2331.2727</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
