@@ -121,7 +121,7 @@ namespace Cave
         /// <returns>Returns true if the entry was added, false otherwise</returns>
         public static void TryAddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TKey> keys, Func<TKey, TValue> valueFunc)
         {
-            foreach(var key in keys)
+            foreach (var key in keys)
             {
                 TryAdd(dictionary, key, valueFunc);
             }

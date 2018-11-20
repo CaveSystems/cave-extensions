@@ -54,16 +54,26 @@ namespace Cave.Text
     /// </summary>
     public static class DateTimeParser
     {
-        readonly static string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
-        static DateTime? s_DefaultDateTime;
+        static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+        static DateTime? defaultDateTime;
 
         static bool ConvertDate(string year, string month, string day, out DateTime date)
         {
             date = new DateTime(0, DateTimeKind.Utc);
-            int y, m, d;
-            if (!int.TryParse(year, out y)) return false;
-            if (!int.TryParse(month, out m)) return false;
-            if (!int.TryParse(day, out d)) return false;
+            if (!int.TryParse(year, out int y))
+            {
+                return false;
+            }
+
+            if (!int.TryParse(month, out int m))
+            {
+                return false;
+            }
+
+            if (!int.TryParse(day, out int d))
+            {
+                return false;
+            }
 
             if (y >= 100)
             {
@@ -113,10 +123,16 @@ namespace Cave.Text
         {
             get
             {
-                if (s_DefaultDateTime.HasValue) return s_DefaultDateTime.Value;
+                if (defaultDateTime.HasValue)
+                {
+                    return defaultDateTime.Value;
+                }
                 return DateTime.UtcNow.Date;
             }
-            set { s_DefaultDateTime = value; }
+            set
+            {
+                defaultDateTime = value;
+            }
         }
 
         /// <summary>
@@ -149,9 +165,8 @@ namespace Cave.Text
         /// <returns>Returns the string bounds of the date and time</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime utcDateTime, out TimeSpan offset)
         {
-            DateTimeStringResult result = new DateTimeStringResult();
-            TimeSpan time;
-            result.Time = ParseTime(text, out time, out offset);
+            DateTimeStringResult result = default(DateTimeStringResult);
+            result.Time = ParseTime(text, out TimeSpan time, out offset);
             result.Date = ParseDate(text, out utcDateTime);
             utcDateTime += time;
             return result;
@@ -165,11 +180,9 @@ namespace Cave.Text
         /// <returns>Returns the string bounds of the date and time</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime dateTime)
         {
-            DateTimeStringResult result = new DateTimeStringResult();
-            TimeSpan time, offset;
-            DateTime date;
-            result.Time = ParseTime(text, out time, out offset);
-            result.Date = ParseDate(text, out date);
+            DateTimeStringResult result = default(DateTimeStringResult);
+            result.Time = ParseTime(text, out TimeSpan time, out TimeSpan offset);
+            result.Date = ParseDate(text, out DateTime date);
             dateTime = new DateTime(date.Ticks + time.Ticks + offset.Ticks, DateTimeKind.Local);
             return result;
         }
@@ -186,7 +199,10 @@ namespace Cave.Text
             Match match = Regex.Match(text, @"(?=^|\s*)" + TimeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))", RegexOptions.Compiled);
             TimeSpan offset = TimeSpan.Zero;
             timeZoneData = null;
-            if (!match.Success) return new SubStringResult();
+            if (!match.Success)
+            {
+                return default(SubStringResult);
+            }
 
             if (match.Groups["Offset"].Success)
             {
@@ -231,19 +247,31 @@ namespace Cave.Text
 
             Match match = Regex.Match(text, pattern, RegexOptions.Compiled);
 
-            if (!match.Success) return new SubStringResult();
+            if (!match.Success)
+            {
+                return default(SubStringResult);
+            }
 
             int h = int.Parse(match.Groups["hour"].Value);
-            if (h < 0 || h > 23) return new SubStringResult();
+            if (h < 0 || h > 23)
+            {
+                return default(SubStringResult);
+            }
 
             int m = int.Parse(match.Groups["minute"].Value);
-            if (m < 0 || m > 59) return new SubStringResult();
+            if (m < 0 || m > 59)
+            {
+                return default(SubStringResult);
+            }
 
             int s = 0;
             if (!string.IsNullOrEmpty(match.Groups["second"].Value))
             {
                 s = int.Parse(match.Groups["second"].Value);
-                if (s < 0 || s > 59) return new SubStringResult();
+                if (s < 0 || s > 59)
+                {
+                    return default(SubStringResult);
+                }
             }
 
             if (string.Compare(match.Groups["ampm"].Value, "PM", true) == 0 && h < 12)
@@ -302,10 +330,10 @@ namespace Cave.Text
             if (string.IsNullOrEmpty(text))
             {
                 date = Default;
-                return new SubStringResult();
+                return default(SubStringResult);
             }
 
-            //look for mm/dd/yy
+            // look for mm/dd/yy
             Match match = Regex.Match(text, @"(?<=^|[^\d])(?'day'\d{1,2})\s*(?'separator'[\\/\.])+\s*(?'month'\d{1,2})\s*\'separator'+\s*(?'year'\d{2}|\d{4})(?=$|[^\d])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (match.Success)
             {
@@ -325,7 +353,7 @@ namespace Cave.Text
                 }
             }
 
-            //look for [yy]yy-mm-dd
+            // look for [yy]yy-mm-dd
             match = Regex.Match(text, @"(?<=^|[^\d])(?'year'\d{2}|\d{4})\s*(?'separator'[\-])\s*(?'month'\d{1,2})\s*\'separator'+\s*(?'day'\d{1,2})(?=$|[^\d])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (match.Success)
             {
@@ -335,31 +363,31 @@ namespace Cave.Text
                 }
             }
 
-            //look for month dd yyyy
+            // look for month dd yyyy
             match = Regex.Match(text, @"(?:^|[^\d\w])(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*\s+(?'day'\d{1,2})(?:-?st|-?th|-?rd|-?nd)?\s*,?\s*(?'year'\d{4})(?=$|[^\d\w])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (!match.Success)
-            {  //look for dd month [yy]yy
+            { // look for dd month [yy]yy
                 match = Regex.Match(text, @"(?:^|[^\d\w:])(?'day'\d{1,2})(?:-?st\s+|-?th\s+|-?rd\s+|-?nd\s+|-|\s+)(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*(?:\s*,?\s*|-)'?(?'year'\d{2}|\d{4})(?=$|[^\d\w])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
             if (!match.Success)
-            {    //look for yyyy month dd
+            { // look for yyyy month dd
                 match = Regex.Match(text, @"(?:^|[^\d\w])(?'year'\d{4})\s+(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*\s+(?'day'\d{1,2})(?:-?st|-?th|-?rd|-?nd)?(?=$|[^\d\w])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
             if (!match.Success)
-            {    //look for month dd hh:mm:ss MDT|UTC yyyy
+            { // look for month dd hh:mm:ss MDT|UTC yyyy
                 match = Regex.Match(text, @"(?:^|[^\d\w])(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*\s+(?'day'\d{1,2})\s+\d{2}\:\d{2}\:\d{2}\s+(?:MDT|UTC)\s+(?'year'\d{4})(?=$|[^\d\w])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
             if (!match.Success)
-            {    //look for  month dd [yyyy]
+            { // look for  month dd [yyyy]
                 match = Regex.Match(text, @"(?:^|[^\d\w])(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*\s+(?'day'\d{1,2})(?:-?st|-?th|-?rd|-?nd)?(?:\s*,?\s*(?'year'\d{4}))?(?=$|[^\d\w])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
             if (!match.Success)
             {
                 date = Default;
-                return new SubStringResult();
+                return default(SubStringResult);
             }
 
-            //SubStringResult bounds = new SubStringResult(text, match.Index, match.Length);
+            // SubStringResult bounds = new SubStringResult(text, match.Index, match.Length);
             string month = null;
             switch (match.Groups["month"].Value.ToUpperInvariant())
             {
@@ -391,7 +419,7 @@ namespace Cave.Text
             {
                 return new SubStringResult(text, match.Index, match.Length);
             }
-            return new SubStringResult();
+            return default(SubStringResult);
         }
     }
 }

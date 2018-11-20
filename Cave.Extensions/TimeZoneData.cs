@@ -60,8 +60,7 @@ namespace Cave.Text
         /// <returns></returns>
         public static TimeZoneData Parse(string text)
         {
-            TimeZoneData result;
-            DateTimeParser.ParseTimeZone(text, out result);
+            DateTimeParser.ParseTimeZone(text, out TimeZoneData result);
             return result;
         }
 
@@ -81,7 +80,7 @@ namespace Cave.Text
                 }
             }
 #if NET35 || NET40 || NET45 || NET46 || NET47 || NETSTANDARD20
-			throw new TimeZoneNotFoundException();
+            throw new TimeZoneNotFoundException();
 #elif NET20 || NETSTANDARD13
             throw new ArgumentException("Timezone not found!");
 #else
@@ -90,27 +89,27 @@ namespace Cave.Text
         }
 
         /// <summary>
-        /// Obtains the current date time for this time zone
+        /// Gets the current date time for this time zone
         /// </summary>
-        public DateTime Now { get { return DateTime.UtcNow + Offset; } }
+        public DateTime Now => DateTime.UtcNow + Offset;
 
         /// <summary>
-        /// The description of the time zone
+        /// Gets the description of the time zone
         /// </summary>
         public string Description { get; }
 
         /// <summary>
-        /// The name of the time zone
+        /// Gets the name of the time zone
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// The time zones offset from UTC/GMT
+        /// Gets the time zones offset from UTC/GMT
         /// </summary>
         public TimeSpan Offset { get; }
 
         /// <summary>
-        /// Creates a new time zone data with the specified informations
+        /// Initializes a new instance of the <see cref="TimeZoneData"/> class.
         /// </summary>
         /// <param name="description"></param>
         /// <param name="name"></param>
@@ -150,7 +149,11 @@ namespace Cave.Text
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null)) return false;
+            if (ReferenceEquals(obj, null))
+            {
+                return false;
+            }
+
             return ToString() == obj.ToString();
         }
 

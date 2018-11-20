@@ -44,7 +44,6 @@
  */
 #endregion
 
-
 using System;
 
 namespace Cave.Text
@@ -62,8 +61,16 @@ namespace Cave.Text
         /// <returns></returns>
         public static bool operator ==(SubStringResult subStringResult1, SubStringResult subStringResult2)
         {
-            if (ReferenceEquals(subStringResult1, null)) return ReferenceEquals(subStringResult2, null);
-            if (ReferenceEquals(subStringResult2, null)) return false;
+            if (ReferenceEquals(subStringResult1, null))
+            {
+                return ReferenceEquals(subStringResult2, null);
+            }
+
+            if (ReferenceEquals(subStringResult2, null))
+            {
+                return false;
+            }
+
             return subStringResult1.Equals(subStringResult2);
         }
 
@@ -75,8 +82,16 @@ namespace Cave.Text
         /// <returns></returns>
         public static bool operator !=(SubStringResult subStringResult1, SubStringResult subStringResult2)
         {
-            if (ReferenceEquals(subStringResult1, null)) return !ReferenceEquals(subStringResult2, null);
-            if (ReferenceEquals(subStringResult2, null)) return true;
+            if (ReferenceEquals(subStringResult1, null))
+            {
+                return !ReferenceEquals(subStringResult2, null);
+            }
+
+            if (ReferenceEquals(subStringResult2, null))
+            {
+                return true;
+            }
+
             return !subStringResult1.Equals(subStringResult2);
         }
 
@@ -88,10 +103,22 @@ namespace Cave.Text
         /// <returns></returns>
         public static SubStringResult Find(string text, string value)
         {
-            if (text == null) throw new ArgumentNullException("text");
-            if (value == null) throw new ArgumentNullException("value");
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
             int index = text.IndexOf(value);
-            if (index < 0) return new SubStringResult();
+            if (index < 0)
+            {
+                return default(SubStringResult);
+            }
+
             return new SubStringResult(text, index, value.Length);
         }
 
@@ -104,8 +131,16 @@ namespace Cave.Text
         /// <returns></returns>
         public static SubStringResult Find(string text, string value, int startIndex)
         {
-            if (text == null) throw new ArgumentNullException("text");
-            if (value == null) throw new ArgumentNullException("value");
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
             int index = text.IndexOf(value, startIndex);
             return new SubStringResult(text, index, index < 0 ? 0 : value.Length);
         }
@@ -130,7 +165,11 @@ namespace Cave.Text
         /// <param name="count">Length of the substring</param>
         public SubStringResult(string text, int index, int count)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+
             Index = index;
             Length = count;
             EndIndex = Index + Length;
@@ -150,7 +189,7 @@ namespace Cave.Text
         /// <summary>
         /// Obtains whether the substring is valid or not
         /// </summary>
-        public bool Valid { get { return Length > 0; } }
+        public bool Valid => Length > 0;
 
         /// <summary>
         /// Substring Text
@@ -178,7 +217,11 @@ namespace Cave.Text
         /// <returns></returns>
         public override string ToString()
         {
-            if (Index < 0) return "Invalid";
+            if (Index < 0)
+            {
+                return "Invalid";
+            }
+
             return "[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'";
         }
 

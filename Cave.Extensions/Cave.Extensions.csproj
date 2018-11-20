@@ -13,7 +13,7 @@
     <Version>1.0.0-alpha-$(Configuration.ToLower())-3</Version>
     <PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
     <PackageTags>CaveSystems Extensions</PackageTags>
-    <PackageProjectUrl>https://github.com/Dingsd4/cave-extensions</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
     <PackageReleaseNotes>Aktueller Release Candidate 2018</PackageReleaseNotes>
     <Description>CaveSystems Extensions Bibliothek</Description>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cave.Extensions.xml</DocumentationFile>
@@ -61,6 +61,12 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
@@ -68,5 +74,11 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

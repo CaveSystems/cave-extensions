@@ -210,7 +210,7 @@ namespace Cave
         /// <returns></returns>
         public static string[] ToStrings(this Exception ex, bool debug = false)
         {
-            //ignore AggregateException
+            // ignore AggregateException
             if (ex is AggregateException)
             {
                 return ToStrings(ex.InnerException, debug);
@@ -351,7 +351,7 @@ namespace Cave
 
             if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
             {
-                double nano = (timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000));
+                double nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
                 return (nano > 9.99) ? nano.ToString("0.0") + "ns" : nano.ToString("0.00") + "ns";
             }
             if (timeSpan.Ticks < TimeSpan.TicksPerSecond)
@@ -476,7 +476,7 @@ namespace Cave
                 case 3:
                     result.Append(seconds.ToString("00"));
                     result.Append(".");
-                    result.Append((timeSpan.Milliseconds).ToString("000"));
+                    result.Append(timeSpan.Milliseconds.ToString("000"));
                     break;
                 default:
                     throw new NotSupportedException("Only 0-3 millisecond digits are supported!");
@@ -484,6 +484,7 @@ namespace Cave
             return result.ToString();
         }
 
+#pragma warning disable SA1300 // Element must begin with upper-case letter
         /// <summary>
         /// Provides common IEC units for binary values (byte)
         /// </summary>
@@ -538,7 +539,7 @@ namespace Cave
         /// <summary>
         /// si unit fractions
         /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+        [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
         public enum SI_Fractions : int
         {
             /// <summary>
@@ -585,7 +586,7 @@ namespace Cave
         /// <summary>
         /// Provides the international system of units default units
         /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+        [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
         public enum SI_Units : int
         {
             /// <summary>
@@ -628,6 +629,7 @@ namespace Cave
             /// </summary>
             Y,
         }
+#pragma warning restore SA1300 // Element must begin with upper-case letter
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
@@ -659,7 +661,7 @@ namespace Cave
                 result = result.Substring(0, 5);
             }
 
-            return result + ((unit == 0) ? "" : " " + unit.ToString());
+            return result + ((unit == 0) ? string.Empty : " " + unit.ToString());
         }
 
         /// <summary>
@@ -701,7 +703,7 @@ namespace Cave
         /// <returns>Returns a string with significant 4 digits and a unit string</returns>
         public static string FormatBinarySize(this float size)
         {
-            bool negative = (size < 0);
+            bool negative = size < 0;
             IEC_Units unit = 0;
             while (size >= 1024)
             {
@@ -714,7 +716,7 @@ namespace Cave
                 result = result.Substring(0, 5);
             }
 
-            return (negative ? "-" : "") + result + " " + unit.ToString();
+            return (negative ? "-" : string.Empty) + result + " " + unit.ToString();
         }
 
         /// <summary>
@@ -843,12 +845,14 @@ namespace Cave
         /// <returns></returns>
         public static DateTime ParseDateTime(string dateTime)
         {
-            { if (DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime result))
+            {
+                if (DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime result))
                 {
                     return result;
                 }
             }
-            { if (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime result))
+            {
+                if (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out DateTime result))
                 {
                     return result;
                 }
@@ -1050,7 +1054,7 @@ namespace Cave
             count = Math.Min(count, len);
             if (count == 0)
             {
-                return "";
+                return string.Empty;
             }
 
             return text.Substring(len - count);
@@ -1271,7 +1275,7 @@ namespace Cave
 
             StringBuilder stringBuilder = new StringBuilder(data.Length * 2);
             string format = upperCase ? "X2" : "x2";
-            for(int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 stringBuilder.Append(data[i].ToString(format));
             }
@@ -1299,7 +1303,10 @@ namespace Cave
                 }
                 return data;
             }
-            catch { throw new ArgumentException(string.Format("Invalid hex string {0}", hex)); }
+            catch
+            {
+                throw new ArgumentException(string.Format("Invalid hex string {0}", hex));
+            }
         }
 
         /// <summary>
@@ -1328,11 +1335,12 @@ namespace Cave
 
             string result = text.ToUpperInvariant();
             pattern = pattern.ToUpperInvariant();
-            //get the maximum change
+
+            // get the maximum change
             int maxChange = 0;
             if (pattern.Length < replacement.Length)
             {
-                maxChange = (text.Length / pattern.Length) * (replacement.Length - pattern.Length);
+                maxChange = text.Length / pattern.Length * (replacement.Length - pattern.Length);
             }
             char[] chars = new char[text.Length + maxChange];
 
@@ -1404,7 +1412,7 @@ namespace Cave
 
             if (string.IsNullOrEmpty(validChars))
             {
-                return "";
+                return string.Empty;
             }
 
             StringBuilder result = new StringBuilder(source.Length);
@@ -1482,7 +1490,7 @@ namespace Cave
         {
             if (string.IsNullOrEmpty(source))
             {
-                return "";
+                return string.Empty;
             }
 
             if (chars == null)
@@ -1492,7 +1500,7 @@ namespace Cave
 
             if (replacer == null)
             {
-                replacer = "";
+                replacer = string.Empty;
             }
 
             StringBuilder result = new StringBuilder(source.Length);
@@ -1517,7 +1525,7 @@ namespace Cave
         {
             if (string.IsNullOrEmpty(source))
             {
-                return "";
+                return string.Empty;
             }
 
             if (chars == null)
@@ -1527,7 +1535,7 @@ namespace Cave
 
             if (replacer == null)
             {
-                replacer = "";
+                replacer = string.Empty;
             }
 
             StringBuilder sb = new StringBuilder(source.Length);
@@ -1552,17 +1560,17 @@ namespace Cave
         {
             if ((validChars == null) || (validChars.Length == 0))
             {
-                return "";
+                return string.Empty;
             }
 
             if (string.IsNullOrEmpty(source))
             {
-                return "";
+                return string.Empty;
             }
 
             if (replacer == null)
             {
-                replacer = "";
+                replacer = string.Empty;
             }
 
             StringBuilder sb = new StringBuilder(source.Length);
@@ -1587,17 +1595,17 @@ namespace Cave
         {
             if (string.IsNullOrEmpty(validChars))
             {
-                return "";
+                return string.Empty;
             }
 
             if (string.IsNullOrEmpty(source))
             {
-                return "";
+                return string.Empty;
             }
 
             if (replacer == null)
             {
-                replacer = "";
+                replacer = string.Empty;
             }
 
             StringBuilder sb = new StringBuilder(source.Length);
@@ -1697,32 +1705,36 @@ namespace Cave
                 {
                     if (indexNull < indexNL)
                     {
-                        //0<NL|CR
+                        // 0<NL|CR
                         result.Add(text.Substring(start, indexNull - start));
                         start = indexNull + 1;
                         continue;
                     }
-                    //NL<0<CR
+
+                    // NL<0<CR
                     result.Add(text.Substring(start, indexNL - start));
                     start = indexNL + 1;
                     continue;
                 }
-                //CRLF ?
+
+                // CRLF ?
                 if (indexCR == indexNL - 1)
                 {
-                    //CRLF
+                    // CRLF
                     result.Add(text.Substring(start, indexCR - start));
                     start = indexCR + 2;
                     continue;
                 }
-                //CR<NL
+
+                // CR<NL
                 if (indexCR < indexNL)
                 {
                     result.Add(text.Substring(start, indexCR - start));
                     start = indexCR + 1;
                     continue;
                 }
-                //NL?
+
+                // NL?
                 if (indexNL < int.MaxValue)
                 {
                     result.Add(text.Substring(start, indexNL - start));
@@ -1767,19 +1779,19 @@ namespace Cave
                     array.Add(str);
                     continue;
                 }
-                string currentText = "";
+                string currentText = string.Empty;
                 string[] parts = str.Split(' ', '\t');
                 for (int i = 0; i < parts.Length; i++)
                 {
                     string textPart = parts[i];
                     if (currentText.Length + textPart.Length <= maxLength)
                     {
-                        //textpart fits into this line
+                        // textpart fits into this line
                         currentText += textPart;
                     }
                     else if (textPart.Length > maxLength)
                     {
-                        //textpart does not fit into this line and does not fit in an empty line
+                        // textpart does not fit into this line and does not fit in an empty line
                         int partLength = maxLength - currentText.Length;
                         currentText += textPart.Substring(0, partLength);
                         array.Add(currentText);
@@ -1792,7 +1804,7 @@ namespace Cave
                     }
                     else
                     {
-                        //textpart fits in a line if its alone
+                        // textpart fits in a line if its alone
                         array.Add(currentText);
                         currentText = textPart;
                     }
@@ -1806,7 +1818,7 @@ namespace Cave
                     if (currentText.Length >= maxLength)
                     {
                         array.Add(currentText);
-                        currentText = "";
+                        currentText = string.Empty;
                     }
                 }
                 if (!string.IsNullOrEmpty(currentText))
@@ -1828,12 +1840,14 @@ namespace Cave
             {
                 bool lastWasUpper = isUpper;
                 isUpper = char.IsUpper(text[current]);
-                //is upper do nothing
+
+                // is upper do nothing
                 if (isUpper)
                 {
                     continue;
                 }
-                //is not upper and last was upper, split before last
+
+                // is not upper and last was upper, split before last
                 if (lastWasUpper)
                 {
                     if (current > 1)
@@ -1964,7 +1978,7 @@ namespace Cave
         /// </summary>
         public static string ForceLength(this string text, int count)
         {
-            return ForceLength(text, count, "", " ");
+            return ForceLength(text, count, string.Empty, " ");
         }
 
         /// <summary>
@@ -2058,7 +2072,7 @@ namespace Cave
         {
             if (string.IsNullOrEmpty(text))
             {
-                return "";
+                return string.Empty;
             }
 
             StringBuilder sb = new StringBuilder();
@@ -2294,7 +2308,7 @@ namespace Cave
             }
 
             string[] parts = value.Split(' ');
-            bool error = (parts.Length != 2);
+            bool error = parts.Length != 2;
             error = error & double.TryParse(parts[0], out double size);
             if (!error)
             {
@@ -2351,7 +2365,7 @@ namespace Cave
             int i = value.IndexOf(character);
             if (i < 0)
             {
-                return "";
+                return string.Empty;
             }
 
             return value.Substring(i + 1);
@@ -2366,7 +2380,7 @@ namespace Cave
             int i = value.IndexOf(pattern);
             if (i < 0)
             {
-                return "";
+                return string.Empty;
             }
 
             return value.Substring(i + pattern.Length);
@@ -2411,12 +2425,12 @@ namespace Cave
             int i = value.LastIndexOf(character);
             if (i < 0)
             {
-                return "";
+                return string.Empty;
             }
 
             return value.Substring(i + 1);
         }
-        
+
         /// <summary>Returns the string after the specified pattern.</summary>
         /// <param name="value">The string value.</param>
         /// <param name="pattern">The pattern to search for.</param>
@@ -2426,7 +2440,7 @@ namespace Cave
             int i = value.LastIndexOf(pattern);
             if (i < 0)
             {
-                return "";
+                return string.Empty;
             }
 
             return value.Substring(i + pattern.Length);
@@ -2561,7 +2575,7 @@ namespace Cave
                 return false;
             }
 
-            return (text.StartsWith(start) && text.EndsWith(end));
+            return text.StartsWith(start) && text.EndsWith(end);
         }
-	}
+    }
 }

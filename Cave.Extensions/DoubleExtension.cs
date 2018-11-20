@@ -160,29 +160,31 @@ namespace Cave
         public static string FormatPrice(this double price, CultureInfo culture = null)
         {
 #if !NETSTANDARD13
-			if (culture == null)
+            if (culture == null)
             {
                 culture = Thread.CurrentThread.CurrentCulture;
             }
 #endif
-            //maximum 5 digits
-            long decimalValue = (long)Math.Round(price % 1 * 100000);
+
+            // maximum 5 digits
+            long decimalValue = (long)Math.Round((price % 1) * 100000);
             if (decimalValue % 100 != 0)
             {
-                //need all (5) digits
+                // need all (5) digits
                 return price.ToString("N5", culture);
             }
             if (decimalValue % 1000 != 0)
             {
-                //need 3 digits
+                // need 3 digits
                 return price.ToString("N3", culture);
             }
             if (decimalValue != 0)
             {
-                //need 2 digits
+                // need 2 digits
                 return price.ToString("N2", culture);
             }
-            //no digits at all
+
+            // no digits at all
             return price.ToString("N0", culture);
         }
     }

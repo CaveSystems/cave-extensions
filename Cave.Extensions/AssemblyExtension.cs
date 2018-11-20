@@ -44,7 +44,6 @@
  */
 #endregion
 
-using Cave.Text;
 using System;
 using System.IO;
 using System.Reflection;
@@ -57,9 +56,10 @@ namespace Cave
     public static class AssemblyExtension
     {
         /// <summary>
-		/// Obtains a local file path for the specified assembly.
-		/// </summary>
-		public static string GetAssemblyFilePath(this Assembly assembly)
+        /// Obtains a local file path for the specified assembly.
+        /// </summary>
+        /// <param name="assembly">Assembly instance</param>
+        public static string GetAssemblyFilePath(this Assembly assembly)
         {
             if (assembly == null)
             {
@@ -69,7 +69,8 @@ namespace Cave
 #if !NETSTANDARD13
             {
                 string path = assembly.Location;
-                //strip connection string
+
+                // strip connection string
                 if (ConnectionString.TryParse(path, out ConnectionString connectionString))
                 {
                     path = connectionString.Location;

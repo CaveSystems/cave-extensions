@@ -44,7 +44,6 @@
  */
 #endregion
 
-using Cave.IO;
 using System;
 using System.IO;
 using System.Text;
@@ -56,12 +55,16 @@ namespace Cave.IO
     /// </summary>
     public static class StreamExtensions
     {
-        static int s_BlockSize = 64 * 1024;
+        static int blockSize = 64 * 1024;
 
         /// <summary>
         /// Blocksize to be used on any stream operations. Defaults to 32kb.
         /// </summary>
-        public static int BlockSize { get { return s_BlockSize; } set { s_BlockSize = Math.Min(1024, value); } }
+        public static int BlockSize
+        {
+            get => blockSize;
+            set => blockSize = Math.Min(1024, value);
+        }
 
         /// <summary>Does a stream copy from source to destination.</summary>
         /// <param name="source">Source stream</param>
@@ -77,28 +80,43 @@ namespace Cave.IO
         /// </exception>
         public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (target == null) throw new ArgumentNullException("target");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (target == null)
+            {
+                throw new ArgumentNullException("target");
+            }
+
             long written = 0;
             if (length <= 0)
             {
                 if (source.CanSeek)
                 {
-                    length = source.Length - source.Position; 
+                    length = source.Length - source.Position;
                 }
             }
             if (length <= 0)
             {
                 length = long.MaxValue;
             }
-            byte[] buffer = new byte[s_BlockSize];
+            byte[] buffer = new byte[blockSize];
             while (written < length)
             {
                 int block = (int)Math.Min(buffer.Length, length - written);
-                if (block == 0) break;
+                if (block == 0)
+                {
+                    break;
+                }
 
                 int read = source.Read(buffer, 0, block);
-                if (read <= 0) break;
+                if (read <= 0)
+                {
+                    break;
+                }
+
                 target.Write(buffer, 0, read);
                 written += read;
 
@@ -106,7 +124,10 @@ namespace Cave.IO
                 {
                     ProgressEventArgs e = new ProgressEventArgs(userItem, written, read, length, true);
                     callback.Invoke(source, e);
-                    if (e.Break) break;
+                    if (e.Break)
+                    {
+                        break;
+                    }
                 }
             }
             return written;
@@ -121,8 +142,12 @@ namespace Cave.IO
         /// <exception cref="System.IO.EndOfStreamException"></exception>
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
-            //if (length == 0) throw new ArgumentOutOfRangeException(nameof(length));
-            if (length <= 0 && source.CanSeek) length = (source.Length - source.Position);
+            // if (length == 0) throw new ArgumentOutOfRangeException(nameof(length));
+            if (length <= 0 && source.CanSeek)
+            {
+                length = source.Length - source.Position;
+            }
+
             if (length > 0)
             {
                 byte[] buffer = new byte[length];
@@ -132,10 +157,18 @@ namespace Cave.IO
                     int read = source.Read(buffer, done, (int)length - done);
                     var e = new ProgressEventArgs(userItem, done, read, length, true);
                     callback?.Invoke(source, e);
-                    if (read == -1 || e.Break) break;
+                    if (read == -1 || e.Break)
+                    {
+                        break;
+                    }
+
                     done += read;
                 }
-                if (done != length) throw new EndOfStreamException();
+                if (done != length)
+                {
+                    throw new EndOfStreamException();
+                }
+
                 return buffer;
             }
             using (MemoryStream buffer = new MemoryStream())
@@ -165,12 +198,16 @@ namespace Cave.IO
         /// <exception cref="ArgumentNullException">source</exception>
         public static byte[] ReadBlock(this Stream source, int count, ProgressCallback callback, object userItem = null)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
             byte[] buf = new byte[count];
             int pos = 0;
             while (pos < count)
             {
-                int size = source.Read(buf, pos, Math.Min(count - pos, s_BlockSize));
+                int size = source.Read(buf, pos, Math.Min(count - pos, blockSize));
                 if (size != count)
                 {
                     Array.Resize(ref buf, size);
@@ -181,7 +218,10 @@ namespace Cave.IO
                 {
                     ProgressEventArgs e = new ProgressEventArgs(userItem, pos, size, count, true);
                     callback.Invoke(source, e);
-                    if (e.Break) break;
+                    if (e.Break)
+                    {
+                        break;
+                    }
                 }
             }
             return buf;
@@ -193,7 +233,11 @@ namespace Cave.IO
         /// <exception cref="ArgumentNullException">stream</exception>
         public static void WriteUtf8(this Stream stream, string text)
         {
-            if (stream == null) throw new ArgumentNullException("stream");
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
             byte[] data = Encoding.UTF8.GetBytes(text);
             stream.Write(data, 0, data.Length);
         }

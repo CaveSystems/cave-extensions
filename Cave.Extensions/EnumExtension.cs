@@ -62,14 +62,15 @@ namespace Cave
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TEnum[] GetFlags<TEnum>(this TEnum value) where TEnum : struct, IConvertible
+        public static TEnum[] GetFlags<TEnum>(this TEnum value)
+            where TEnum : struct, IConvertible
         {
             List<TEnum> flags = new List<TEnum>();
             long val = Convert.ToInt64(value);
             for (int i = 0; i < 63; i++)
             {
                 long check = 1L << i;
-                if (0 != (val & check))
+                if ((val & check) != 0)
                 {
                     if (TryParse(check.ToString(), out TEnum flag))
                     {
@@ -86,14 +87,15 @@ namespace Cave
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string GetString<TEnum>(this TEnum value) where TEnum : struct, IConvertible
+        public static string GetString<TEnum>(this TEnum value)
+            where TEnum : struct, IConvertible
         {
             StringBuilder sb = new StringBuilder();
             long val = Convert.ToInt64(value);
             for (int i = 0; i < 63; i++)
             {
                 long check = 1L << i;
-                if (0 != (val & check))
+                if ((val & check) != 0)
                 {
                     if (sb.Length != 0)
                     {
@@ -114,7 +116,8 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value to be returned if no valid value was found.</param>
         /// <returns></returns>
-        public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default(TEnum)) where TEnum : struct, IConvertible
+        public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default(TEnum))
+            where TEnum : struct, IConvertible
         {
             if (!value.TryParse(out TEnum result))
             {
@@ -125,13 +128,14 @@ namespace Cave
         }
 
 #if NET40 || NET45 || NET46 || NET47 || NETSTANDARD20 || NETCOREAPP20
-		/// <summary>Tries to parse the specified string.</summary>
-		/// <typeparam name="TEnum">The type of the enum.</typeparam>
-		/// <param name="value">The value.</param>
-		/// <param name="result">The result.</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentException"></exception>
-		public static bool TryParse<TEnum>(this string value, out TEnum result) where TEnum : struct, IConvertible
+        /// <summary>Tries to parse the specified string.</summary>
+        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="result">The result.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static bool TryParse<TEnum>(this string value, out TEnum result)
+            where TEnum : struct, IConvertible
         {
             return Enum.TryParse(value, true, out result);
         }
@@ -142,12 +146,13 @@ namespace Cave
         /// <param name="result">The result.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static bool TryParse<TEnum>(this string value, out TEnum result) where TEnum : struct, IConvertible
+        public static bool TryParse<TEnum>(this string value, out TEnum result)
+            where TEnum : struct, IConvertible
         {
             Type t = typeof(TEnum);
             if (value == null)
             {
-                result = new TEnum();
+                result = default(TEnum);
                 return false;
             }
             try
@@ -155,27 +160,24 @@ namespace Cave
                 result = (TEnum)Enum.Parse(t, value, true);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                result = new TEnum();
-#if (!NETCOREAPP13 && !NETSTANDARD13)
-                System.Diagnostics.Trace.TraceError("Error during Enum.TryParse() backport.\n{0}", ex);
-#endif
+                result = default(TEnum);
                 return false;
             }
         }
 
-		/// <summary>
-		/// Determines whether one or more bit fields are set at the enum.
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="flag"></param>
-		/// <returns></returns>
-		public static bool HasFlag(this Enum value, IConvertible flag)
-		{
-			ulong test = Convert.ToUInt64(flag);
-			return (test == (Convert.ToUInt64(value) & test));
-		}
+        /// <summary>
+        /// Determines whether one or more bit fields are set at the enum.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public static bool HasFlag(this Enum value, IConvertible flag)
+        {
+            ulong test = Convert.ToUInt64(flag);
+            return test == (Convert.ToUInt64(value) & test);
+        }
 #else
 #error No code defined for the current framework or NETXX version define missing!
 #endif

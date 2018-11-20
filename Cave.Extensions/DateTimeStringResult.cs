@@ -59,8 +59,16 @@ namespace Cave.Text
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(DateTimeStringResult value1, DateTimeStringResult value2)
         {
-            if (ReferenceEquals(null, value1)) return ReferenceEquals(null, value2);
-            if (ReferenceEquals(null, value2)) return false;
+            if (ReferenceEquals(null, value1))
+            {
+                return ReferenceEquals(null, value2);
+            }
+
+            if (ReferenceEquals(null, value2))
+            {
+                return false;
+            }
+
             return value1.Time == value2.Time && value1.Date == value2.Date;
         }
 
@@ -70,8 +78,16 @@ namespace Cave.Text
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(DateTimeStringResult value1, DateTimeStringResult value2)
         {
-            if (ReferenceEquals(null, value1)) return !ReferenceEquals(null, value2);
-            if (ReferenceEquals(null, value2)) return true;
+            if (ReferenceEquals(null, value1))
+            {
+                return !ReferenceEquals(null, value2);
+            }
+
+            if (ReferenceEquals(null, value2))
+            {
+                return true;
+            }
+
             return value1.Time != value2.Time || value1.Date != value2.Date;
         }
 
@@ -97,7 +113,11 @@ namespace Cave.Text
         /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is DateTimeStringResult) return base.Equals((DateTimeStringResult)obj);
+            if (obj is DateTimeStringResult)
+            {
+                return base.Equals((DateTimeStringResult)obj);
+            }
+
             return false;
         }
 

@@ -56,46 +56,54 @@ namespace Cave
         bool doBreak;
 
         /// <summary>
-        /// User item used at parent function
+        /// Gets user item used at parent function
         /// </summary>
         public object UserItem { get; }
 
         /// <summary>
-        /// Current Position
+        /// Gets current Position
         /// </summary>
         public long Position { get; }
 
         /// <summary>
-        /// Part done between last callback and current.
+        /// Gets part done between last callback and current.
         /// </summary>
         public int Part { get; }
 
         /// <summary>
-        /// Overall count
+        /// Gets overall count
         /// </summary>
         public long Count { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating that the current process should break.
+        /// Gets or sets a value indicating whether the current process should break.
         /// </summary>
         public bool Break
         {
             get => doBreak;
             set
             {
-                if (value && !CanBreak) throw new InvalidOperationException($"Break operation is not allowed!");
-                if (!value && doBreak) throw new InvalidOperationException($"Break flag has already been set!");
+                if (value && !CanBreak)
+                {
+                    throw new InvalidOperationException($"Break operation is not allowed!");
+                }
+
+                if (!value && doBreak)
+                {
+                    throw new InvalidOperationException($"Break flag has already been set!");
+                }
+
                 doBreak |= value;
             }
         }
 
         /// <summary>
-        /// Gets a value whether breaking the current operation is possible or not
+        /// Gets a value indicating whether breaking the current operation is possible or not
         /// </summary>
         public bool CanBreak { get; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ProgressEventArgs"/>
+        /// Initializes a new instance of the <see cref="ProgressEventArgs"/> class.
         /// </summary>
         /// <param name="userItem"></param>
         /// <param name="position"></param>
