@@ -686,7 +686,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Value to format</param>
         /// <returns></returns>
         public static string FormatBinarySize(this decimal value)
         {
@@ -696,7 +696,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Value to format</param>
         /// <returns></returns>
         public static string FormatBinarySize(this ulong value)
         {
@@ -706,7 +706,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Value to format</param>
         /// <returns></returns>
         public static string FormatBinarySize(this long value)
         {
@@ -716,7 +716,7 @@ namespace Cave
         /// <summary>
         /// Returns the objects.ToString() result or "&lt;null&gt;"
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Value to format</param>
         /// <param name="cultureInfo">The culture to use during formatting</param>
         /// <returns></returns>
         public static string ToString(object value, CultureInfo cultureInfo)
@@ -740,7 +740,7 @@ namespace Cave
         /// <summary>
         /// Returns the objects.ToString() result or "&lt;null&gt;"
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Value to format</param>
         /// <returns></returns>
         public static string ToString(object value)
         {
@@ -795,7 +795,7 @@ namespace Cave
         /// <summary>
         /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default)
         /// </summary>
-        /// <param name="dateTime"></param>
+        /// <param name="dateTime">String value to parse</param>
         /// <returns></returns>
         public static DateTime ParseDateTime(string dateTime)
         {
@@ -817,7 +817,7 @@ namespace Cave
         /// <summary>
         /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default)
         /// </summary>
-        /// <param name="dateTime"></param>
+        /// <param name="dateTime">String value to parse</param>
         /// <param name="result"></param>
         /// <returns></returns>
         public static bool TryParseDateTime(string dateTime, out DateTime result)
