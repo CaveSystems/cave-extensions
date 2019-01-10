@@ -44,7 +44,8 @@ namespace Cave
                 return false;
             }
 
-            dictionary.Add(key, valueFunc(key));
+            TValue value = valueFunc != null ? valueFunc(key) : default(TValue);
+            dictionary.Add(key, value);
             return true;
         }
 
