@@ -13,13 +13,14 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <param name="count">Number of elements to copy</param>
         /// <returns>Returns a new array instance</returns>
         public static T[] GetRange<T>(this T[] data, int index, int count)
         {
-            T[] result = new T[count];
+            var result = new T[count];
             Array.Copy(data, index, result, 0, count);
             return result;
         }
@@ -27,6 +28,7 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <returns>Returns a new array instance</returns>
@@ -37,13 +39,13 @@ namespace Cave
                 throw new ArgumentNullException("data");
             }
 
-            T[] result = new T[data.Length - index];
+            var result = new T[data.Length - index];
             Array.Copy(data, index, result, 0, result.Length);
             return result;
         }
 
         /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="items">The items to shuffle.</param>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
@@ -56,11 +58,11 @@ namespace Cave
                     seed = (int)DateTime.UtcNow.Ticks;
                 }
 
-                List<T> result = items.ToList();
-                int count = result.Count;
-                for (int i = 0; i < count; i++)
+                var result = items.ToList();
+                var count = result.Count;
+                for (var i = 0; i < count; i++)
                 {
-                    int n = Math.Abs((i ^ seed).GetHashCode()) % count;
+                    var n = Math.Abs((i ^ seed).GetHashCode()) % count;
                     T t = result[i];
                     result[i] = result[n];
                     result[n] = t;
@@ -72,6 +74,7 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <param name="count">Number of elements to copy</param>
@@ -83,8 +86,8 @@ namespace Cave
                 throw new ArgumentNullException("data");
             }
 
-            T[] result = new T[count];
-            for (int i = 0; i < count; i++)
+            var result = new T[count];
+            for (var i = 0; i < count; i++)
             {
                 result[i] = data[index++];
             }
@@ -95,6 +98,7 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <returns>Returns a new array instance</returns>
@@ -106,6 +110,7 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <param name="count">Number of elements to copy</param>
@@ -118,6 +123,7 @@ namespace Cave
         /// <summary>
         /// Retrieves a number of elements from the array as new array instance
         /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array</param>
         /// <param name="index">Element index</param>
         /// <returns>Returns a new array instance</returns>
@@ -127,34 +133,34 @@ namespace Cave
         }
 
         /// <summary>Concatenates elements</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
         /// <returns></returns>
         public static T[] Concat<T>(this T[] t1, params T[] t2)
         {
-            T[] result = new T[t1.Length + t2.Length];
+            var result = new T[t1.Length + t2.Length];
             Array.Copy(t1, 0, result, 0, t1.Length);
             Array.Copy(t2, 0, result, t1.Length, t2.Length);
             return result;
         }
 
         /// <summary>Concatenates elements</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
         /// <returns></returns>
         public static T[] Concat<T>(this T[] t1, params T[][] t2)
         {
-            int count = t1.Length;
-            for (int i = 0; i < t2.Length; i++)
+            var count = t1.Length;
+            for (var i = 0; i < t2.Length; i++)
             {
                 count += t2[i].Length;
             }
-            T[] result = new T[count];
+            var result = new T[count];
             Array.Copy(t1, 0, result, 0, t1.Length);
-            int start = t1.Length;
-            for (int i = 0; i < t2.Length; i++)
+            var start = t1.Length;
+            for (var i = 0; i < t2.Length; i++)
             {
                 Array.Copy(t2[i], 0, result, start, t2[i].Length);
                 start += t2[i].Length;
@@ -197,7 +203,7 @@ namespace Cave
                 encoding = Encoding.UTF8;
             }
 
-            byte[] bytes = encoding.GetBytes(pattern);
+            var bytes = encoding.GetBytes(pattern);
             return StartsWith(data, bytes);
         }
 
@@ -212,7 +218,7 @@ namespace Cave
                 return false;
             }
 
-            for (int i = 0; i < pattern.Length; i++)
+            for (var i = 0; i < pattern.Length; i++)
             {
                 if (pattern[i] != data[i])
                 {
@@ -229,8 +235,8 @@ namespace Cave
         /// <returns></returns>
         public static int IndexOf(this byte[] data, byte[] pattern)
         {
-            int matchIndex = 0;
-            for (int i = 0; i < data.Length; i++)
+            var matchIndex = 0;
+            for (var i = 0; i < data.Length; i++)
             {
                 if (data[i] == pattern[matchIndex++])
                 {
@@ -258,16 +264,16 @@ namespace Cave
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, byte[] replacer)
         {
-            int i = data.IndexOf(pattern);
+            var i = data.IndexOf(pattern);
             if (i < 0)
             {
                 return data;
             }
 
-            byte[] result = new byte[data.Length - pattern.Length + replacer.Length];
+            var result = new byte[data.Length - pattern.Length + replacer.Length];
             Buffer.BlockCopy(data, 0, result, 0, i);
             Buffer.BlockCopy(replacer, 0, result, i, replacer.Length);
-            int offs = i + pattern.Length + 1;
+            var offs = i + pattern.Length + 1;
             Buffer.BlockCopy(data, offs, result, i + replacer.Length, data.Length - offs);
             return result;
         }
@@ -280,25 +286,25 @@ namespace Cave
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, params byte[][] replacers)
         {
-            int i = data.IndexOf(pattern);
+            var i = data.IndexOf(pattern);
             if (i < 0)
             {
                 return data;
             }
 
-            int replacersLength = replacers.Select(r => r.Length).Sum();
-            byte[] result = new byte[data.Length - pattern.Length + replacersLength];
+            var replacersLength = replacers.Select(r => r.Length).Sum();
+            var result = new byte[data.Length - pattern.Length + replacersLength];
             Buffer.BlockCopy(data, 0, result, 0, i);
             {
-                int offs = i;
-                foreach (byte[] replacer in replacers)
+                var offs = i;
+                foreach (var replacer in replacers)
                 {
                     Buffer.BlockCopy(replacer, 0, result, offs, replacer.Length);
                     offs += replacer.Length;
                 }
             }
             {
-                int offs = i + pattern.Length + 1;
+                var offs = i + pattern.Length + 1;
                 Buffer.BlockCopy(data, offs, result, i + replacersLength, data.Length - offs);
             }
             return result;
@@ -307,7 +313,7 @@ namespace Cave
         /// <summary>
         /// Performs an <see cref="Array.IndexOf{T}(T[], T)"/> call and returns the result.
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the array.</typeparam>
+        /// <typeparam name="T">Item type.</typeparam>
         /// <param name="array">The one-dimensional, zero-based array to search.</param>
         /// <param name="value">The object to locate in array.</param>
         /// <returns>The zero-based index of the first occurrence of value in the entire array, if found; otherwise, –1.</returns>

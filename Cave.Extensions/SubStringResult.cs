@@ -67,7 +67,7 @@ namespace Cave
                 throw new ArgumentNullException("value");
             }
 
-            int index = text.IndexOf(value);
+            var index = text.IndexOf(value);
             if (index < 0)
             {
                 return default(SubStringResult);
@@ -95,7 +95,7 @@ namespace Cave
                 throw new ArgumentNullException("value");
             }
 
-            int index = text.IndexOf(value, startIndex);
+            var index = text.IndexOf(value, startIndex);
             return new SubStringResult(text, index, index < 0 ? 0 : value.Length);
         }
 
@@ -112,7 +112,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Creates new string bounds with the specified data
+        /// Initializes a new instance of the <see cref="SubStringResult"/> struct.
         /// </summary>
         /// <param name="text">The String contining the Substring</param>
         /// <param name="index">Start index of the substring</param>
@@ -141,7 +141,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains whether the substring is valid or not
+        /// Gets a value indicating whether the substring is valid or not
         /// </summary>
         public bool Valid => Length > 0;
 
@@ -197,7 +197,7 @@ namespace Cave
         {
             if (obj is SubStringResult)
             {
-                SubStringResult other = (SubStringResult)obj;
+                var other = (SubStringResult)obj;
                 return (other.Index == Index) && (other.Length == Length) && (other.Text == Text);
             }
             return false;

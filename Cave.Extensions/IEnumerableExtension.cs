@@ -63,7 +63,7 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static ulong BinaryAnd<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
-            ulong value = 0xffffffffffffffff;
+            var value = 0xffffffffffffffff;
             foreach (T item in items)
             {
                 value &= predicate(item);
@@ -81,7 +81,7 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryOr<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
-            int value = 0;
+            var value = 0;
             foreach (T item in items)
             {
                 value |= predicate(item);
@@ -96,7 +96,7 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static int BinaryAnd<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
-            int value = -1;
+            var value = -1;
             foreach (T item in items)
             {
                 value &= predicate(item);
@@ -129,7 +129,7 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static uint BinaryAnd<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
-            uint value = 0xffffffff;
+            var value = 0xffffffff;
             foreach (T item in items)
             {
                 value &= predicate(item);
@@ -147,7 +147,7 @@ namespace Cave
         public static long BinaryOr(this IEnumerable<long> items)
         {
             long value = 0;
-            foreach (long item in items)
+            foreach (var item in items)
             {
                 value |= item;
             }
@@ -160,7 +160,7 @@ namespace Cave
         public static long BinaryAnd(this IEnumerable<long> items)
         {
             long value = -1;
-            foreach (long item in items)
+            foreach (var item in items)
             {
                 value &= item;
             }
@@ -176,7 +176,7 @@ namespace Cave
         public static ulong BinaryOr(this IEnumerable<ulong> items)
         {
             ulong value = 0;
-            foreach (ulong item in items)
+            foreach (var item in items)
             {
                 value |= item;
             }
@@ -188,8 +188,8 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static ulong BinaryAnd(this IEnumerable<ulong> items)
         {
-            ulong value = 0xffffffffffffffff;
-            foreach (ulong item in items)
+            var value = 0xffffffffffffffff;
+            foreach (var item in items)
             {
                 value &= item;
             }
@@ -204,8 +204,8 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryOr(this IEnumerable<int> items)
         {
-            int value = 0;
-            foreach (int item in items)
+            var value = 0;
+            foreach (var item in items)
             {
                 value |= item;
             }
@@ -217,8 +217,8 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static int BinaryAnd(this IEnumerable<int> items)
         {
-            int value = -1;
-            foreach (int item in items)
+            var value = -1;
+            foreach (var item in items)
             {
                 value &= item;
             }
@@ -234,7 +234,7 @@ namespace Cave
         public static uint BinaryOr(this IEnumerable<uint> items)
         {
             uint value = 0;
-            foreach (uint item in items)
+            foreach (var item in items)
             {
                 value |= item;
             }
@@ -246,8 +246,8 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static uint BinaryAnd(this IEnumerable<uint> items)
         {
-            uint value = 0xffffffff;
-            foreach (uint item in items)
+            var value = 0xffffffff;
+            foreach (var item in items)
             {
                 value &= item;
             }

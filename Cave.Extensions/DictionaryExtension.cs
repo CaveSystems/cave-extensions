@@ -56,7 +56,6 @@ namespace Cave
         /// <typeparam name="TValue">Value type</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to</param>
         /// <param name="pairs">The key value pairs to add</param>
-        /// <returns>Returns true if the entry was added, false otherwise</returns>
         public static void TryAddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> pairs)
         {
             foreach (var pair in pairs)
@@ -73,7 +72,6 @@ namespace Cave
         /// <param name="dictionary">Dictionary instance to add key value pair to</param>
         /// <param name="keys">The keys to add</param>
         /// <param name="valueFunc">A function to retrieve the value for a specified key</param>
-        /// <returns>Returns true if the entry was added, false otherwise</returns>
         public static void TryAddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TKey> keys, Func<TKey, TValue> valueFunc)
         {
             foreach (var key in keys)

@@ -3,12 +3,15 @@
   "settings": {
     "documentationRules": {
       "documentPrivateFields": false,
-      "documentInternalElements": false
+      "documentInternalElements": false,
+      "documentPrivateElements": false
     },
     "indentation": {
       "useTabs": false
     },
-    "layoutRules": { "newlineAtEndOfFile": "require" },
+    "layoutRules": {
+      "newlineAtEndOfFile": "require"
+    },
     "maintainabilityRules": {
       "topLevelTypes": [ "class", "delegate", "enum", "interface", "struct" ]
     },
@@ -18,8 +21,8 @@
       "systemUsingDirectivesFirst": true,
       "usingDirectivesPlacement": "outsideNamespace"
     },
-    "namingRules": {},
-    "readabilityRules": { "allowBuiltInTypeAliases": false },
-    "spacingRules": {}
+    "namingRules": {
+      "allowCommonHungarianPrefixes": false
+    }
   }
 }

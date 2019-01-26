@@ -15,7 +15,7 @@ namespace Cave
         /// <param name="type">The type.</param>
         public static void SetType(Type type)
         {
-            IStopWatch watch = (IStopWatch)Activator.CreateInstance(type);
+            var watch = (IStopWatch)Activator.CreateInstance(type);
             watch.Start();
             SelectedType = type;
         }
@@ -26,7 +26,7 @@ namespace Cave
         /// <returns></returns>
         public static IStopWatch StartNew()
         {
-            IStopWatch watch = (IStopWatch)Activator.CreateInstance(SelectedType);
+            var watch = (IStopWatch)Activator.CreateInstance(SelectedType);
             watch.Start();
             return watch;
         }
@@ -49,7 +49,7 @@ namespace Cave
             }
 
             TimeSpan best = TimeSpan.MaxValue;
-            for (int i = 0; i < samples; i++)
+            for (var i = 0; i < samples; i++)
             {
                 TimeSpan start = watch.Elapsed;
                 TimeSpan next = watch.Elapsed;

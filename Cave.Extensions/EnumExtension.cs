@@ -18,11 +18,11 @@ namespace Cave
         public static TEnum[] GetFlags<TEnum>(this TEnum value)
             where TEnum : struct, IConvertible
         {
-            List<TEnum> flags = new List<TEnum>();
-            long val = Convert.ToInt64(value);
-            for (int i = 0; i < 63; i++)
+            var flags = new List<TEnum>();
+            var val = Convert.ToInt64(value);
+            for (var i = 0; i < 63; i++)
             {
-                long check = 1L << i;
+                var check = 1L << i;
                 if ((val & check) != 0)
                 {
                     if (TryParse(check.ToString(), out TEnum flag))
@@ -43,11 +43,11 @@ namespace Cave
         public static string GetString<TEnum>(this TEnum value)
             where TEnum : struct, IConvertible
         {
-            StringBuilder sb = new StringBuilder();
-            long val = Convert.ToInt64(value);
-            for (int i = 0; i < 63; i++)
+            var sb = new StringBuilder();
+            var val = Convert.ToInt64(value);
+            for (var i = 0; i < 63; i++)
             {
-                long check = 1L << i;
+                var check = 1L << i;
                 if ((val & check) != 0)
                 {
                     if (sb.Length != 0)
@@ -86,7 +86,6 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
@@ -98,7 +97,6 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
@@ -128,7 +126,7 @@ namespace Cave
         /// <returns></returns>
         public static bool HasFlag(this Enum value, IConvertible flag)
         {
-            ulong test = Convert.ToUInt64(flag);
+            var test = Convert.ToUInt64(flag);
             return test == (Convert.ToUInt64(value) & test);
         }
 #else
