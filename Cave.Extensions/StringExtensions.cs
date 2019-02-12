@@ -1946,7 +1946,7 @@ namespace Cave
                         case 'n': sb.Append('\n'); continue;
                         case 'f': sb.Append('\f'); continue;
                         case 'r': sb.Append('\r'); continue;
-                        case 'u': sb.Append((char)int.Parse(text.Substring(i, 4))); i += 4; continue;
+                        case 'u': sb.Append((char)Convert.ToInt32(text.Substring(i, 4), 16)); i += 4; continue;
                         default: throw new InvalidDataException("Invalid escape code.");
                     }
                 }
