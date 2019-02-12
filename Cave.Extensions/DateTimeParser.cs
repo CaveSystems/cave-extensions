@@ -8,23 +8,23 @@ namespace Cave
     /// </summary>
     public static class DateTimeParser
     {
-        static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+        static readonly string timeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
         static DateTime? defaultDateTime;
 
         static bool ConvertDate(string year, string month, string day, out DateTime date)
         {
             date = new DateTime(0, DateTimeKind.Utc);
-            if (!int.TryParse(year, out int y))
+            if (!int.TryParse(year, out var y))
             {
                 return false;
             }
 
-            if (!int.TryParse(month, out int m))
+            if (!int.TryParse(month, out var m))
             {
                 return false;
             }
 
-            if (!int.TryParse(day, out int d))
+            if (!int.TryParse(day, out var d))
             {
                 return false;
             }
@@ -71,7 +71,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets/sets the default date used when parsing incomplete datetimes
+        /// Gets or sets the default date used when parsing incomplete datetimes
         /// </summary>
         public static DateTime Default
         {
@@ -116,7 +116,7 @@ namespace Cave
         /// <returns>Returns the string bounds of the date and time</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime utcDateTime, out TimeSpan offset)
         {
-            DateTimeStringResult result = default(DateTimeStringResult);
+            var result = default(DateTimeStringResult);
             result.Time = ParseTime(text, out TimeSpan time, out offset);
             result.Date = ParseDate(text, out utcDateTime);
             utcDateTime += time;
@@ -131,7 +131,7 @@ namespace Cave
         /// <returns>Returns the string bounds of the date and time</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime dateTime)
         {
-            DateTimeStringResult result = default(DateTimeStringResult);
+            var result = default(DateTimeStringResult);
             result.Time = ParseTime(text, out TimeSpan time, out TimeSpan offset);
             result.Date = ParseDate(text, out DateTime date);
             dateTime = new DateTime(date.Ticks + time.Ticks + offset.Ticks, DateTimeKind.Local);
@@ -147,7 +147,7 @@ namespace Cave
         /// <returns></returns>
         public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
         {
-            Match match = Regex.Match(text, @"(?=^|\s*)" + TimeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))", RegexOptions.Compiled);
+            Match match = Regex.Match(text, @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))", RegexOptions.Compiled);
             TimeSpan offset = TimeSpan.Zero;
             timeZoneData = null;
             if (!match.Success)
@@ -157,7 +157,7 @@ namespace Cave
 
             if (match.Groups["Offset"].Success)
             {
-                int offsetValue = int.Parse(match.Groups["Offset"].Value);
+                var offsetValue = int.Parse(match.Groups["Offset"].Value);
                 offset += new TimeSpan(offsetValue / 100, offsetValue % 100, 0);
             }
 
@@ -192,9 +192,9 @@ namespace Cave
             time = TimeSpan.Zero;
             offset = TimeSpan.Zero;
 
-            string pattern = @"(?<hour>\d{1,2})\s*:\s*(?<minute>\d{2})\s*(?::(?<second>\d{1,2}){0,1}\s*(?:\.(?<microsecond>\d{1,7})){0,1}){0,1}\s*" +
+            var pattern = @"(?<hour>\d{1,2})\s*:\s*(?<minute>\d{2})\s*(?::(?<second>\d{1,2}){0,1}\s*(?:\.(?<microsecond>\d{1,7})){0,1}){0,1}\s*" +
                 @"(?:(?<OffsetSign>[\+\-])(?<OffsetHour>\d{2}):{0,1}(?<OffsetMinute>\d{2}){0,1}){0,1}\s*" +
-                @"(?<ampm>(?i:pm|am)){0,1}\s*" + TimeZoneRegEx + @"(?=$|[^\d\w])";
+                @"(?<ampm>(?i:pm|am)){0,1}\s*" + timeZoneRegEx + @"(?=$|[^\d\w])";
 
             Match match = Regex.Match(text, pattern, RegexOptions.Compiled);
 
@@ -203,19 +203,19 @@ namespace Cave
                 return default(SubStringResult);
             }
 
-            int h = int.Parse(match.Groups["hour"].Value);
+            var h = int.Parse(match.Groups["hour"].Value);
             if (h < 0 || h > 23)
             {
                 return default(SubStringResult);
             }
 
-            int m = int.Parse(match.Groups["minute"].Value);
+            var m = int.Parse(match.Groups["minute"].Value);
             if (m < 0 || m > 59)
             {
                 return default(SubStringResult);
             }
 
-            int s = 0;
+            var s = 0;
             if (!string.IsNullOrEmpty(match.Groups["second"].Value))
             {
                 s = int.Parse(match.Groups["second"].Value);
@@ -239,14 +239,14 @@ namespace Cave
             // Microsecond
             if (match.Groups["microsecond"].Success)
             {
-                int microsecond = int.Parse(match.Groups["microsecond"].Value.PadRight(7, '0'));
+                var microsecond = int.Parse(match.Groups["microsecond"].Value.PadRight(7, '0'));
                 time += new TimeSpan(microsecond);
             }
 
             if (match.Groups["OffsetHour"].Success)
             {
-                int offsetHour = int.Parse(match.Groups["OffsetHour"].Value);
-                int offsetMinute = 0;
+                var offsetHour = int.Parse(match.Groups["OffsetHour"].Value);
+                var offsetMinute = 0;
                 if (match.Groups["OffsetMinute"].Success)
                 {
                     offsetMinute = int.Parse(match.Groups["OffsetMinute"].Value);
@@ -261,7 +261,7 @@ namespace Cave
 
             if (match.Groups["TimeZone"].Success)
             {
-                TimeZoneData data = TimeZoneData.Get(match.Groups["TimeZone"].Value, TimeSpan.Zero);
+                var data = TimeZoneData.Get(match.Groups["TimeZone"].Value, TimeSpan.Zero);
                 offset = data.Offset;
                 return new SubStringResult(text, match.Index, match.Length);
             }

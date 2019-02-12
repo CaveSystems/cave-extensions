@@ -77,6 +77,7 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere]
         /// </summary>
+        /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString)
         {
             return Parse(connectionString, null, null, null, null, null, null, null);
@@ -85,6 +86,7 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[&amp;option=value]]]
         /// </summary>
+        /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString, string defaultProtocol, string defaultUserName, string defaultPassword, string defaultServer, ushort? defaultPort, string defaultPath, string defaultOptions)
         {
             if (connectionString == null)
@@ -92,16 +94,16 @@ namespace Cave
                 throw new ArgumentNullException("connectionString");
             }
 
-            ushort l_Port = (defaultPort != null) ? ((ushort)defaultPort) : (ushort)0;
-            string l_Protocol = defaultProtocol;
-            string l_Username = defaultUserName;
-            string l_Password = defaultPassword;
-            string l_Server = defaultServer;
-            string path = defaultPath;
-            string options = defaultOptions;
+            var l_Port = (defaultPort != null) ? ((ushort)defaultPort) : (ushort)0;
+            var l_Protocol = defaultProtocol;
+            var l_Username = defaultUserName;
+            var l_Password = defaultPassword;
+            var l_Server = defaultServer;
+            var path = defaultPath;
+            var options = defaultOptions;
 
             // get options
-            int optionsIndex = connectionString.LastIndexOf('?');
+            var optionsIndex = connectionString.LastIndexOf('?');
             if (optionsIndex > -1)
             {
                 options = connectionString.Substring(optionsIndex + 1);
@@ -109,7 +111,7 @@ namespace Cave
             }
 
             // get protocol
-            string[] parts = connectionString.Trim().Split(new string[] { "://" }, 2, StringSplitOptions.None);
+            var parts = connectionString.Trim().Split(new string[] { "://" }, 2, StringSplitOptions.None);
             if (parts.Length > 1)
             {
                 l_Protocol = parts[0];
@@ -122,7 +124,7 @@ namespace Cave
             l_Server = parts[parts.Length - 1];
 
             // get path (if any) and remove it from server string
-            int pathIndex = l_Server.IndexOfAny(new char[] { '/', '\\' });
+            var pathIndex = l_Server.IndexOfAny(new char[] { '/', '\\' });
             if ((pathIndex == 2) && (l_Protocol.ToUpperInvariant() == "FILE"))
             {
                 path = l_Server;
@@ -137,7 +139,7 @@ namespace Cave
             // get server and port
             if (l_Server != null)
             {
-                int l_PortIndex = l_Server.IndexOf(':');
+                var l_PortIndex = l_Server.IndexOf(':');
                 if ((l_PortIndex == 1) && (l_Server.Length == 2))
                 {
                     path = l_Server;
@@ -145,7 +147,7 @@ namespace Cave
                 }
                 else if (l_PortIndex > -1)
                 {
-                    string l_PortString = l_Server.Substring(l_PortIndex + 1);
+                    var l_PortString = l_Server.Substring(l_PortIndex + 1);
                     if (ushort.TryParse(l_PortString, out l_Port))
                     {
                         l_Server = l_Server.Substring(0, l_PortIndex);
@@ -156,8 +158,8 @@ namespace Cave
             // get user and password
             if (parts.Length > 1)
             {
-                string l_UsernamePassword = parts[0];
-                for (int i = 1; i < parts.Length - 1; i++)
+                var l_UsernamePassword = parts[0];
+                for (var i = 1; i < parts.Length - 1; i++)
                 {
                     l_UsernamePassword += "@" + parts[i];
                 }
@@ -180,6 +182,7 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere]
         /// </summary>
+        /// <returns>Returns true on success, false otherwise.</returns>
         public static bool TryParse(string connectionString, out ConnectionString result)
         {
             if (connectionString == null)
@@ -187,19 +190,19 @@ namespace Cave
                 throw new ArgumentNullException("connectionString");
             }
 
-            ushort l_Port = 0;
-            string l_Protocol = null;
-            string l_Username = null;
-            string l_Password = null;
-            string l_Server = null;
+            ushort port = 0;
+            string protocol = null;
+            string username = null;
+            string password = null;
+            string server = null;
             string path = null;
             string options = null;
 
             // get protocol
-            string[] parts = connectionString.Split(new string[] { "://" }, 2, StringSplitOptions.None);
+            var parts = connectionString.Split(new string[] { "://" }, 2, StringSplitOptions.None);
             if (parts.Length > 1)
             {
-                l_Protocol = parts[0];
+                protocol = parts[0];
             }
             else
             {
@@ -211,70 +214,70 @@ namespace Cave
             parts = parts[parts.Length - 1].Split(new char[] { '@' }, 2);
 
             // get server, port and path part
-            l_Server = parts[parts.Length - 1];
+            server = parts[parts.Length - 1];
 
             // get path (if any) and remove it from server string
-            int pathIndex = l_Server.IndexOf('/');
+            var pathIndex = server.IndexOf('/');
             if (pathIndex > -1)
             {
-                path = l_Server.Substring(pathIndex + 1);
-                l_Server = l_Server.Substring(0, pathIndex);
+                path = server.Substring(pathIndex + 1);
+                server = server.Substring(0, pathIndex);
             }
 
             // get server and port
-            int l_PortIndex = l_Server.IndexOf(':');
-            if ((l_PortIndex == 1) && (l_Server[l_PortIndex + 1] == '\\'))
+            var portIndex = server.IndexOf(':');
+            if ((portIndex == 1) && (server[portIndex + 1] == '\\'))
             {
-                path = l_Server;
-                l_Server = null;
+                path = server;
+                server = null;
             }
-            else if (l_PortIndex > -1)
+            else if (portIndex > -1)
             {
-                string l_PortString = l_Server.Substring(l_PortIndex + 1);
-                if (ushort.TryParse(l_PortString, out l_Port))
+                var portString = server.Substring(portIndex + 1);
+                if (ushort.TryParse(portString, out port))
                 {
-                    l_Server = l_Server.Substring(0, l_PortIndex);
+                    server = server.Substring(0, portIndex);
                 }
             }
 
             // get user and password
             if (parts.Length > 1)
             {
-                string l_UsernamePassword = parts[0];
-                for (int i = 1; i < parts.Length - 1; i++)
+                var usernamePassword = parts[0];
+                for (var i = 1; i < parts.Length - 1; i++)
                 {
-                    l_UsernamePassword += "@" + parts[i];
+                    usernamePassword += "@" + parts[i];
                 }
-                parts = l_UsernamePassword.Split(new char[] { ':' }, 2);
-                l_Username = parts[0];
+                parts = usernamePassword.Split(new char[] { ':' }, 2);
+                username = parts[0];
                 if (parts.Length > 1)
                 {
-                    l_Password = parts[1];
+                    password = parts[1];
                 }
             }
 
             // get options
             if (path != null)
             {
-                int index = path.IndexOf('?');
+                var index = path.IndexOf('?');
                 if (index > -1)
                 {
                     options = path.Substring(index + 1);
                     path = options.Substring(0, index);
                 }
             }
-            if ((l_Port < 0) || (l_Port > 65535))
+            if ((port < 0) || (port > 65535))
             {
-                l_Port = 0;
+                port = 0;
             }
 
-            result = new ConnectionString(l_Protocol, l_Username, l_Password, l_Server, l_Port, path, options);
+            result = new ConnectionString(protocol, username, password, server, port, path, options);
             return true;
         }
         #endregion
 
         /// <summary>
-        /// Provides a connection string with the specified data
+        /// Initializes a new instance of the <see cref="ConnectionString"/> struct.
         /// </summary>
         /// <param name="protocol">Protocol or null</param>
         /// <param name="userName">Username or null</param>
@@ -320,7 +323,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the protocol
+        /// Gets or sets the protocol
         /// </summary>
         public ConnectionType ConnectionType
         {
@@ -336,26 +339,26 @@ namespace Cave
             set => Protocol = value.ToString();
         }
 
-        /// <summary>Obtains the protocol</summary>
+        /// <summary>Gets or sets the protocol</summary>
         public string Protocol;
 
         /// <summary>
-        /// Obtains the username
+        /// Gets or sets the username
         /// </summary>
         public string UserName;
 
         /// <summary>
-        /// Obtains the password
+        /// Gets or sets the password
         /// </summary>
         public string Password;
 
         /// <summary>
-        /// Obtains the server address or name
+        /// Gets or sets the server address or name
         /// </summary>
         public string Server;
 
         /// <summary>
-        /// Obtains the port of the <see cref="ConnectionString"/>
+        /// Gets or sets the port of the <see cref="ConnectionString"/>
         /// </summary>
         /// <param name="defaultPort"></param>
         /// <returns></returns>
@@ -370,17 +373,17 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the port
+        /// Gets or sets the port
         /// </summary>
         public ushort Port;
 
         /// <summary>
-        /// Obtains the path
+        /// Gets or sets the path
         /// </summary>
         public string Location;
 
         /// <summary>
-        /// Obtains the options
+        /// Gets or sets the options
         /// </summary>
         public string Options;
 
@@ -436,9 +439,10 @@ namespace Cave
         /// <summary>
         /// Provides a connection string with (if known) or without the password
         /// </summary>
+        /// <returns>Returns a new string.</returns>
         public string ToString(ConnectionStringPart items)
         {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             // protocol
             if (((items & ConnectionStringPart.Protocol) != 0) && !string.IsNullOrEmpty(Protocol))
@@ -448,8 +452,8 @@ namespace Cave
             }
 
             // username and password
-            bool username = ((items & ConnectionStringPart.UserName) != 0) && !string.IsNullOrEmpty(UserName);
-            bool password = ((items & ConnectionStringPart.Password) != 0) && !string.IsNullOrEmpty(Password);
+            var username = ((items & ConnectionStringPart.UserName) != 0) && !string.IsNullOrEmpty(UserName);
+            var password = ((items & ConnectionStringPart.Password) != 0) && !string.IsNullOrEmpty(Password);
             if (username || password)
             {
                 if (UserName == null)
@@ -499,6 +503,7 @@ namespace Cave
         /// Obtains the connection string with credentials (username and password). If you want to strip some parts of the connection string
         /// use <see cref="ToString(ConnectionStringPart)"/>
         /// </summary>
+        /// <returns>Returns a new string.</returns>
         public override string ToString()
         {
             return ToString(ConnectionStringPart.All);
@@ -522,6 +527,7 @@ namespace Cave
         /// <summary>
         /// Obtains hash code for the connection string
         /// </summary>
+        /// <returns>Returns a new hash code.</returns>
         public override int GetHashCode()
         {
             return ToString(ConnectionStringPart.All).GetHashCode();
@@ -533,7 +539,7 @@ namespace Cave
         /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>
         /// </summary>
         /// <param name="other">The object to compare with</param>
-        /// <returns></returns>
+        /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ConnectionString other)
         {
             if (ReferenceEquals(null, other))

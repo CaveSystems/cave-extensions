@@ -16,25 +16,15 @@ namespace Cave
         /// <returns></returns>
         public static DateTimeStopWatch StartNew()
         {
-            DateTimeStopWatch result = new DateTimeStopWatch();
+            var result = new DateTimeStopWatch();
             result.Start();
             return result;
         }
 
         /// <summary>
-        /// The <see cref="DateTime"/> value at start of the <see cref="IStopWatch"/>
-        /// </summary>
-        DateTime m_StartDateTime;
-
-        /// <summary>
         /// Obtains the elapsed time if the timer is no longer running
         /// </summary>
-        TimeSpan m_Elapsed;
-
-        /// <summary>
-        /// Flag to check if the timer is running
-        /// </summary>
-        bool m_Running;
+        TimeSpan elapsed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeStopWatch"/> class.
@@ -51,7 +41,7 @@ namespace Cave
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            IStopWatch other = obj as IStopWatch;
+            var other = obj as IStopWatch;
             if (ReferenceEquals(other, null))
             {
                 return false;
@@ -76,18 +66,18 @@ namespace Cave
         /// </summary>
         public void Start()
         {
-            if (m_Elapsed != TimeSpan.Zero)
+            if (elapsed != TimeSpan.Zero)
             {
                 throw new InvalidOperationException(string.Format("Timer has to be reset first!"));
             }
 
-            if (m_Running)
+            if (IsRunning)
             {
                 throw new InvalidOperationException(string.Format("Timer already running!"));
             }
 
-            m_StartDateTime = DateTime.UtcNow;
-            m_Running = true;
+            StartDateTime = DateTime.UtcNow;
+            IsRunning = true;
         }
 
         /// <summary>
@@ -95,8 +85,8 @@ namespace Cave
         /// </summary>
         public void Reset()
         {
-            m_StartDateTime = DateTime.UtcNow;
-            m_Elapsed = TimeSpan.Zero;
+            StartDateTime = DateTime.UtcNow;
+            elapsed = TimeSpan.Zero;
         }
 
         /// <summary>
@@ -104,13 +94,13 @@ namespace Cave
         /// </summary>
         public void Stop()
         {
-            if (!m_Running)
+            if (!IsRunning)
             {
                 throw new InvalidOperationException(string.Format("Timer not running!"));
             }
 
-            m_Elapsed = DateTime.UtcNow - m_StartDateTime;
-            m_Running = false;
+            elapsed = DateTime.UtcNow - StartDateTime;
+            IsRunning = false;
         }
 
         /// <summary>Waits until the specified <see cref="Elapsed" /> time is reached.</summary>
@@ -148,12 +138,15 @@ namespace Cave
         {
             get
             {
-                if (m_Running)
-                { return DateTime.UtcNow - m_StartDateTime; }
+                if (IsRunning)
+                {
+                    return DateTime.UtcNow - StartDateTime;
+                }
                 else
-                { return m_Elapsed; }
+                {
+                    return elapsed;
+                }
             }
-
         }
 
         /// <summary>
@@ -169,7 +162,7 @@ namespace Cave
         /// <summary>
         /// Gets a value indicating whether the <see cref="IStopWatch"/> is running or not
         /// </summary>
-        public bool IsRunning => m_Running;
+        public bool IsRunning { get; private set; }
 
         /// <summary>
         /// Gets the resolution of the <see cref="IStopWatch"/> in seconds
@@ -184,7 +177,7 @@ namespace Cave
         /// <summary>
         /// Gets the <see cref="DateTime"/> (utc) value at start of the <see cref="IStopWatch"/>
         /// </summary>
-        public DateTime StartDateTime => m_StartDateTime;
+        public DateTime StartDateTime { get; private set; }
 
         /// <summary>
         /// Creates a copy of the <see cref="IStopWatch"/>
@@ -192,11 +185,11 @@ namespace Cave
         /// <returns>Returns a copy of the <see cref="IStopWatch"/></returns>
         public object Clone()
         {
-            DateTimeStopWatch result = new DateTimeStopWatch
+            var result = new DateTimeStopWatch
             {
-                m_StartDateTime = m_StartDateTime,
-                m_Elapsed = m_Elapsed,
-                m_Running = m_Running
+                StartDateTime = StartDateTime,
+                elapsed = elapsed,
+                IsRunning = IsRunning
             };
             return result;
         }

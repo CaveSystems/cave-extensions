@@ -9,19 +9,19 @@ namespace Cave
     [DebuggerDisplay("{Elapsed}")]
     public sealed class HighPerformanceStopWatch : IStopWatch
     {
-        Stopwatch m_Stopwatch;
-        TimeSpan m_Elapsed;
-
         /// <summary>
         /// Starts a new stopwatch
         /// </summary>
         /// <returns></returns>
         public static HighPerformanceStopWatch StartNew()
         {
-            HighPerformanceStopWatch result = new HighPerformanceStopWatch();
+            var result = new HighPerformanceStopWatch();
             result.Start();
             return result;
         }
+
+        Stopwatch stopwatch;
+        TimeSpan elapsed;
 
         /// <summary>Initializes a new instance of the <see cref="HighPerformanceStopWatch"/> class.</summary>
         public HighPerformanceStopWatch()
@@ -36,7 +36,7 @@ namespace Cave
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            IStopWatch other = obj as IStopWatch;
+            var other = obj as IStopWatch;
             if (ReferenceEquals(other, null))
             {
                 return false;
@@ -61,16 +61,16 @@ namespace Cave
         /// </summary>
         public void Start()
         {
-            if (m_Stopwatch != null)
+            if (stopwatch != null)
             {
                 throw new InvalidOperationException(string.Format("Timer already running!"));
             }
 #if !NETSTANDARD13
             System.Threading.Thread.BeginThreadAffinity();
 #endif
-            m_Stopwatch = new Stopwatch();
+            stopwatch = new Stopwatch();
             StartDateTime = DateTime.UtcNow;
-            m_Stopwatch.Start();
+            stopwatch.Start();
         }
 
         /// <summary>
@@ -78,12 +78,12 @@ namespace Cave
         /// </summary>
         public void Reset()
         {
-            if (m_Stopwatch != null)
+            if (stopwatch != null)
             {
-                m_Stopwatch.Reset();
-                m_Stopwatch.Start();
+                stopwatch.Reset();
+                stopwatch.Start();
             }
-            m_Elapsed = TimeSpan.Zero;
+            elapsed = TimeSpan.Zero;
         }
 
         /// <summary>
@@ -91,13 +91,13 @@ namespace Cave
         /// </summary>
         public void Stop()
         {
-            if (m_Stopwatch == null)
+            if (stopwatch == null)
             {
                 throw new InvalidOperationException(string.Format("Timer not running!"));
             }
 
-            m_Elapsed = m_Stopwatch.Elapsed;
-            m_Stopwatch = null;
+            elapsed = stopwatch.Elapsed;
+            stopwatch = null;
 #if !NETSTANDARD13
             System.Threading.Thread.EndThreadAffinity();
 #endif
@@ -134,7 +134,7 @@ namespace Cave
         /// <summary>
         /// Gets the elapsed time.
         /// </summary>
-        public TimeSpan Elapsed => m_Stopwatch == null ? m_Elapsed : m_Stopwatch.Elapsed;
+        public TimeSpan Elapsed => stopwatch == null ? elapsed : stopwatch.Elapsed;
 
         /// <summary>
         /// Gets the elapsed time in milli seconds.
@@ -147,7 +147,7 @@ namespace Cave
         /// <summary>
         /// Gets a value indicating whether the <see cref="IStopWatch"/> is running or not
         /// </summary>
-        public bool IsRunning => m_Stopwatch != null;
+        public bool IsRunning => stopwatch != null;
 
         /// <summary>
         /// Gets the resolution of the <see cref="IStopWatch"/> in seconds

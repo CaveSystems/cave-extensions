@@ -13,6 +13,7 @@ namespace Cave
         /// Obtains a local file path for the specified assembly.
         /// </summary>
         /// <param name="assembly">Assembly instance</param>
+        /// <returns>Returns the file path.</returns>
         public static string GetAssemblyFilePath(this Assembly assembly)
         {
             if (assembly == null)
@@ -36,7 +37,7 @@ namespace Cave
             }
 #endif
             {
-                string path = assembly.ManifestModule.FullyQualifiedName;
+                var path = assembly.ManifestModule.FullyQualifiedName;
                 if (ConnectionString.TryParse(path, out ConnectionString connectionString))
                 {
                     path = connectionString.Location;

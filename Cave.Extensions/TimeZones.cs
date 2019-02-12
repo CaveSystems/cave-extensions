@@ -466,6 +466,7 @@ namespace Cave
         /// <summary>
         /// Gets a list of all TimeZones
         /// </summary>
+        /// <returns>Returns an array of TimeZoneData instances.</returns>
         public static TimeZoneData[] GetList()
         {
             return new TimeZoneData[]
@@ -569,6 +570,7 @@ namespace Cave
         /// <summary>
         /// Gets a list of all TimeZones
         /// </summary>
+        /// <returns>Returns an array of time zone names.</returns>
         public static string[] GetNames()
         {
             return new string[]

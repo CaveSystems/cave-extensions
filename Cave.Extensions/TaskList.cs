@@ -15,17 +15,17 @@ namespace Cave
         /// </summary>
         public int MaximumConcurrentThreads = Environment.ProcessorCount * 2;
 
-        Dictionary<Task, object> m_Tasks = new Dictionary<Task, object>();
+        Dictionary<Task, object> tasks = new Dictionary<Task, object>();
 
         void Cleanup()
         {
-            foreach (Task task in m_Tasks.Keys.ToArray())
+            foreach (Task task in tasks.Keys.ToArray())
             {
                 if (task.IsCompleted)
                 {
-                    lock (m_Tasks)
+                    lock (tasks)
                     {
-                        m_Tasks.Remove(task);
+                        tasks.Remove(task);
                     }
                     if (task is IDisposable disposable)
                     {
@@ -39,7 +39,7 @@ namespace Cave
         /// <param name="task">The task.</param>
         public void Add(Task task)
         {
-            m_Tasks.TryAdd(task, null);
+            tasks.TryAdd(task, null);
         }
 
         /// <summary>Waits for all tasks to complete.</summary>
@@ -127,11 +127,11 @@ namespace Cave
         }
 
         /// <summary>Retrieves all tasks as array.</summary>
-        /// <returns></returns>
+        /// <returns>Returns an array of Tasks.</returns>
         public Task[] ToArray()
         {
             Cleanup();
-            return m_Tasks.Keys.ToArray();
+            return tasks.Keys.ToArray();
         }
 
         /// <summary>Gets the task count.</summary>
@@ -140,7 +140,7 @@ namespace Cave
         {
             get
             {
-                return m_Tasks.Count;
+                return tasks.Count;
             }
         }
     }

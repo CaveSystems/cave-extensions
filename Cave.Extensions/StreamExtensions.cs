@@ -12,7 +12,7 @@ namespace Cave
         static int blockSize = 64 * 1024;
 
         /// <summary>
-        /// Blocksize to be used on any stream operations. Defaults to 32kb.
+        /// Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.
         /// </summary>
         public static int BlockSize
         {
@@ -56,16 +56,16 @@ namespace Cave
             {
                 length = long.MaxValue;
             }
-            byte[] buffer = new byte[blockSize];
+            var buffer = new byte[blockSize];
             while (written < length)
             {
-                int block = (int)Math.Min(buffer.Length, length - written);
+                var block = (int)Math.Min(buffer.Length, length - written);
                 if (block == 0)
                 {
                     break;
                 }
 
-                int read = source.Read(buffer, 0, block);
+                var read = source.Read(buffer, 0, block);
                 if (read <= 0)
                 {
                     break;
@@ -76,7 +76,7 @@ namespace Cave
 
                 if (callback != null)
                 {
-                    ProgressEventArgs e = new ProgressEventArgs(userItem, written, read, length, true);
+                    var e = new ProgressEventArgs(userItem, written, read, length, true);
                     callback.Invoke(source, e);
                     if (e.Break)
                     {
@@ -93,7 +93,7 @@ namespace Cave
         /// <param name="callback">Callback to be called during copy or null</param>
         /// <param name="userItem">The user item.</param>
         /// <returns></returns>
-        /// <exception cref="System.IO.EndOfStreamException"></exception>
+        /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
             // if (length == 0) throw new ArgumentOutOfRangeException(nameof(length));
@@ -104,12 +104,12 @@ namespace Cave
 
             if (length > 0)
             {
-                byte[] buffer = new byte[length];
-                int done = 0;
+                var buffer = new byte[length];
+                var done = 0;
                 while (done < length)
                 {
-                    int read = source.Read(buffer, done, (int)length - done);
-                    ProgressEventArgs e = new ProgressEventArgs(userItem, done, read, length, true);
+                    var read = source.Read(buffer, done, (int)length - done);
+                    var e = new ProgressEventArgs(userItem, done, read, length, true);
                     callback?.Invoke(source, e);
                     if (read == -1 || e.Break)
                     {
@@ -125,7 +125,7 @@ namespace Cave
 
                 return buffer;
             }
-            using (MemoryStream buffer = new MemoryStream())
+            using (var buffer = new MemoryStream())
             {
                 CopyBlocksTo(source, buffer, -1, callback, userItem);
                 return buffer.ToArray();
@@ -157,11 +157,11 @@ namespace Cave
                 throw new ArgumentNullException("source");
             }
 
-            byte[] buf = new byte[count];
-            int pos = 0;
+            var buf = new byte[count];
+            var pos = 0;
             while (pos < count)
             {
-                int size = source.Read(buf, pos, Math.Min(count - pos, blockSize));
+                var size = source.Read(buf, pos, Math.Min(count - pos, blockSize));
                 if (size != count)
                 {
                     Array.Resize(ref buf, size);
@@ -170,7 +170,7 @@ namespace Cave
                 pos += size;
                 if (callback != null)
                 {
-                    ProgressEventArgs e = new ProgressEventArgs(userItem, pos, size, count, true);
+                    var e = new ProgressEventArgs(userItem, pos, size, count, true);
                     callback.Invoke(source, e);
                     if (e.Break)
                     {
@@ -192,7 +192,7 @@ namespace Cave
                 throw new ArgumentNullException("stream");
             }
 
-            byte[] data = Encoding.UTF8.GetBytes(text);
+            var data = Encoding.UTF8.GetBytes(text);
             stream.Write(data, 0, data.Length);
         }
     }

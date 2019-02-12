@@ -23,7 +23,7 @@ namespace Cave
                 throw new ArgumentNullException("text");
             }
 
-            for (int i = 0; i < text.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
                 int value = text[i];
                 if ((value < 17) || (value > 127))
@@ -55,8 +55,8 @@ namespace Cave
                 throw new ArgumentNullException("text");
             }
 
-            char[] result = text.ToCharArray(start, count);
-            for (int i = 0; i < result.Length; i++)
+            var result = text.ToCharArray(start, count);
+            for (var i = 0; i < result.Length; i++)
             {
                 int value = result[i];
                 if (termination && value == 0)
@@ -110,9 +110,9 @@ namespace Cave
                     count = termination ? text.Length + 1 : text.Length;
                 }
 
-                byte[] result = new byte[count];
-                int c = 0;
-                for (int i = start; c < count; i++, c++)
+                var result = new byte[count];
+                var c = 0;
+                for (var i = start; c < count; i++, c++)
                 {
                     uint value = text[i];
                     if (termination && value == 0)
@@ -178,9 +178,9 @@ namespace Cave
 
             unchecked
             {
-                int c = 0;
-                char[] result = new char[count];
-                for (int i = start; c < count; i++, c++)
+                var c = 0;
+                var result = new char[count];
+                for (var i = start; c < count; i++, c++)
                 {
                     uint value = bytes[i];
                     if (termination && value == 0)
@@ -236,9 +236,9 @@ namespace Cave
 
             unchecked
             {
-                int c = 0;
-                char[] result = new char[count];
-                for (int i = start; c < count; i++, c++)
+                var c = 0;
+                var result = new char[count];
+                for (var i = start; c < count; i++, c++)
                 {
                     uint value = bytes[i];
                     if (termination && value == 0)
@@ -285,7 +285,7 @@ namespace Cave
             {
                 throw new ArgumentOutOfRangeException(string.Format("Start mark invalid!"), "StartMark");
             }
-            int l_End = Array.IndexOf(data, endMark, start + 1);
+            var l_End = Array.IndexOf(data, endMark, start + 1);
             if (l_End <= start)
             {
                 throw new ArgumentOutOfRangeException(string.Format("End index invalid!"), "End");
@@ -338,8 +338,8 @@ namespace Cave
                 throw new ArgumentNullException("text");
             }
 
-            List<char> result = new List<char>();
-            foreach (char c in text)
+            var result = new List<char>();
+            foreach (var c in text)
             {
                 if (c == escapeCharacter)
                 {
@@ -397,7 +397,7 @@ namespace Cave
         /// <param name="escapeCharacter">The escape character.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">text</exception>
-        /// <exception cref="InvalidDataException"></exception>
+        /// <exception cref="InvalidDataException">Invalid escape characters.</exception>
         public static string Unescape(string text, char escapeCharacter = '\\')
         {
             if (text == null)
@@ -405,10 +405,10 @@ namespace Cave
                 throw new ArgumentNullException("text");
             }
 
-            List<char> result = new List<char>();
-            for (int i = 0; i < text.Length; i++)
+            var result = new List<char>();
+            for (var i = 0; i < text.Length; i++)
             {
-                char c = text[i];
+                var c = text[i];
                 if (c == escapeCharacter)
                 {
                     c = text[++i];
