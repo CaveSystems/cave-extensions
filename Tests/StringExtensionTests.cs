@@ -17,7 +17,9 @@ namespace Tests
                 sb.Append(Encoding.Unicode.GetString(BitConverter.GetBytes((ushort)i)));
             }
             var text = sb.ToString();
-            Assert.AreEqual(text, text.Escape().Unescape());
+            var escaped = StringExtensions.Escape(text);
+            var unescaped = StringExtensions.Unescape(escaped);
+            Assert.AreEqual(text, unescaped);
         }
     }
 }
