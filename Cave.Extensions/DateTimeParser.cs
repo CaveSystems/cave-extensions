@@ -152,7 +152,7 @@ namespace Cave
             timeZoneData = null;
             if (!match.Success)
             {
-                return default(SubStringResult);
+                return default;
             }
 
             if (match.Groups["Offset"].Success)
@@ -200,19 +200,19 @@ namespace Cave
 
             if (!match.Success)
             {
-                return default(SubStringResult);
+                return default;
             }
 
             var h = int.Parse(match.Groups["hour"].Value);
             if (h < 0 || h > 23)
             {
-                return default(SubStringResult);
+                return default;
             }
 
             var m = int.Parse(match.Groups["minute"].Value);
             if (m < 0 || m > 59)
             {
-                return default(SubStringResult);
+                return default;
             }
 
             var s = 0;
@@ -221,7 +221,7 @@ namespace Cave
                 s = int.Parse(match.Groups["second"].Value);
                 if (s < 0 || s > 59)
                 {
-                    return default(SubStringResult);
+                    return default;
                 }
             }
 
@@ -281,7 +281,7 @@ namespace Cave
             if (string.IsNullOrEmpty(text))
             {
                 date = Default;
-                return default(SubStringResult);
+                return default;
             }
 
             // look for mm/dd/yy
@@ -335,7 +335,7 @@ namespace Cave
             if (!match.Success)
             {
                 date = Default;
-                return default(SubStringResult);
+                return default;
             }
 
             // SubStringResult bounds = new SubStringResult(text, match.Index, match.Length);
@@ -370,7 +370,7 @@ namespace Cave
             {
                 return new SubStringResult(text, match.Index, match.Length);
             }
-            return default(SubStringResult);
+            return default;
         }
     }
 }

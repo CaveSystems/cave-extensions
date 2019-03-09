@@ -8,6 +8,7 @@
     <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
+    <LangVersion>latest</LangVersion>
     <!--project-->
     <RootNamespace>Cave.Extensions</RootNamespace>
     <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
@@ -44,6 +45,7 @@
   <PropertyGroup>
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
     <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net47'">
     <Reference Include="System" />
