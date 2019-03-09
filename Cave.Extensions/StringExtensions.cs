@@ -11,42 +11,42 @@ using System.Text;
 namespace Cave
 {
     /// <summary>
-    /// Provides string functions
+    /// Provides string functions.
     /// </summary>
     public static class StringExtensions
     {
         /// <summary>
-        /// Provides the default date time string used when formatting date time variables for interop
+        /// Provides the default date time string used when formatting date time variables for interop.
         /// </summary>
         public const string InterOpDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK ";
 
         /// <summary>
-        /// Provides the default date time string used when formatting date time variables for display
+        /// Provides the default date time string used when formatting date time variables for display.
         /// </summary>
         public const string DisplayDateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff";
 
         /// <summary>
-        /// Provides the default date time string used when formatting date time variables for display
+        /// Provides the default date time string used when formatting date time variables for display.
         /// </summary>
         public const string DisplayDateTimeWithTimeZoneFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff K";
 
         /// <summary>
-        /// Provides the default date string used when formatting date time variables for interop
+        /// Provides the default date string used when formatting date time variables for interop.
         /// </summary>
         public const string ShortDateFormat = "yyyy'-'MM'-'dd";
 
         /// <summary>
-        /// Provides the default time string used when formatting date time variables for interop
+        /// Provides the default time string used when formatting date time variables for interop.
         /// </summary>
         public const string ShortTimeFormat = "HH':'mm':'ss'.'fff";
 
         /// <summary>
-        /// Provides the default date time string used when formatting date time variables for file names
+        /// Provides the default date time string used when formatting date time variables for file names.
         /// </summary>
         public const string FileNameDateTimeFormat = "yyyy'-'MM'-'dd' 'HHmmss";
 
         /// <summary>
-        /// Joins a collection to a string with newlines for all systems
+        /// Joins a collection to a string with newlines for all systems.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string JoinNewLine(this string[] texts)
@@ -55,7 +55,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Joins a collection to a string with newlines for all systems
+        /// Joins a collection to a string with newlines for all systems.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string JoinNewLine(this IEnumerable array)
@@ -64,7 +64,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Joins a collection to a string
+        /// Joins a collection to a string.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo = null)
@@ -98,7 +98,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Joins a collection to a string
+        /// Joins a collection to a string.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo = null)
@@ -150,10 +150,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Converts a exception to a simple text message
+        /// Converts a exception to a simple text message.
         /// </summary>
-        /// <param name="ex">The <see cref="Exception"/></param>
-        /// <param name="debug">Include debug information (stacktrace, data)</param>
+        /// <param name="ex">The <see cref="Exception"/>.</param>
+        /// <param name="debug">Include debug information (stacktrace, data).</param>
         /// <returns></returns>
         public static string ToText(this Exception ex, bool debug = false)
         {
@@ -161,10 +161,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Converts a exception to a string array
+        /// Converts a exception to a string array.
         /// </summary>
-        /// <param name="ex">The <see cref="Exception"/></param>
-        /// <param name="debug">Include debug information (stacktrace, data)</param>
+        /// <param name="ex">The <see cref="Exception"/>.</param>
+        /// <param name="debug">Include debug information (stacktrace, data).</param>
         /// <returns></returns>
         public static string[] ToStrings(this Exception ex, bool debug = false)
         {
@@ -398,7 +398,7 @@ namespace Cave
         /// <param name="timeSpan">The time span.</param>
         /// <param name="millisecondDigits">The number of millisecond digits.</param>
         /// <returns></returns>
-        /// <exception cref="NotSupportedException">Only 0-3 millisecond digits are supported!</exception>
+        /// <exception cref="NotSupportedException">Only 0-3 millisecond digits are supported!.</exception>
         public static string FormatTimeSpan(this TimeSpan timeSpan, int millisecondDigits)
         {
             var result = new StringBuilder();
@@ -444,7 +444,7 @@ namespace Cave
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatSize(this float size)
         {
             if (size < 0)
@@ -479,7 +479,7 @@ namespace Cave
         /// Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)
         /// </summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatSize(this ulong size)
         {
             return FormatSize((float)size);
@@ -487,7 +487,7 @@ namespace Cave
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatSize(this long size)
         {
             return FormatSize((float)size);
@@ -495,7 +495,7 @@ namespace Cave
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatSize(this decimal size)
         {
             return FormatSize((float)size);
@@ -503,7 +503,7 @@ namespace Cave
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatSize(this double size)
         {
             return FormatSize((float)size);
@@ -511,7 +511,7 @@ namespace Cave
 
         /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
         /// <param name="size">The size.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string</returns>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
         public static string FormatBinarySize(this float size)
         {
             var negative = size < 0;
@@ -543,7 +543,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value">Value to format</param>
+        /// <param name="value">Value to format.</param>
         /// <returns></returns>
         public static string FormatBinarySize(this decimal value)
         {
@@ -553,7 +553,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value">Value to format</param>
+        /// <param name="value">Value to format.</param>
         /// <returns></returns>
         public static string FormatBinarySize(this ulong value)
         {
@@ -563,7 +563,7 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value">Value to format</param>
+        /// <param name="value">Value to format.</param>
         /// <returns></returns>
         public static string FormatBinarySize(this long value)
         {
@@ -571,10 +571,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Returns the objects.ToString() result or "&lt;null&gt;"
+        /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
-        /// <param name="value">Value to format</param>
-        /// <param name="cultureInfo">The culture to use during formatting</param>
+        /// <param name="value">Value to format.</param>
+        /// <param name="cultureInfo">The culture to use during formatting.</param>
         /// <returns></returns>
         public static string ToString(object value, CultureInfo cultureInfo)
         {
@@ -595,9 +595,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Returns the objects.ToString() result or "&lt;null&gt;"
+        /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
-        /// <param name="value">Value to format</param>
+        /// <param name="value">Value to format.</param>
         /// <returns></returns>
         public static string ToString(object value)
         {
@@ -627,7 +627,7 @@ namespace Cave
         /// Returns an array of strings using the element objects ToString() method.
         /// </summary>
         /// <param name="enumerable"></param>
-        /// <param name="cultureInfo">The culture to use during formatting</param>
+        /// <param name="cultureInfo">The culture to use during formatting.</param>
         /// <returns></returns>
         public static string[] ToStringArray(this IEnumerable enumerable, CultureInfo cultureInfo)
         {
@@ -650,9 +650,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default)
+        /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default).
         /// </summary>
-        /// <param name="dateTime">String value to parse</param>
+        /// <param name="dateTime">String value to parse.</param>
         /// <returns></returns>
         public static DateTime ParseDateTime(string dateTime)
         {
@@ -672,9 +672,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default)
+        /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default).
         /// </summary>
-        /// <param name="dateTime">String value to parse</param>
+        /// <param name="dateTime">String value to parse.</param>
         /// <param name="result"></param>
         /// <returns></returns>
         public static bool TryParseDateTime(string dateTime, out DateTime result)
@@ -693,7 +693,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a Point.ToString() result
+        /// Parses a Point.ToString() result.
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -722,7 +722,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a Size.ToString() result
+        /// Parses a Size.ToString() result.
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
@@ -751,7 +751,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a Rectangle.ToString() result
+        /// Parses a Rectangle.ToString() result.
         /// </summary>
         /// <param name="rect"></param>
         /// <returns></returns>
@@ -792,7 +792,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a PointF.ToString() result
+        /// Parses a PointF.ToString() result.
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -811,7 +811,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a SizeF.ToString() result
+        /// Parses a SizeF.ToString() result.
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
@@ -830,7 +830,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a RectangleF.ToString() result
+        /// Parses a RectangleF.ToString() result.
         /// </summary>
         /// <param name="rect"></param>
         /// <returns></returns>
@@ -871,20 +871,20 @@ namespace Cave
             return text.Substring(len - count);
         }
 
-        /// <summary>Obtains a part of a string</summary>
-        /// <param name="data">Data to parse</param>
-        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark)</param>
-        /// <param name="startMark">StartMark to check/search for</param>
-        /// <param name="endMark">EndMark to search for</param>
+        /// <summary>Obtains a part of a string.</summary>
+        /// <param name="data">Data to parse.</param>
+        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
+        /// <param name="startMark">StartMark to check/search for.</param>
+        /// <param name="endMark">EndMark to search for.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception if string cannot be found].</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">data</exception>
+        /// <exception cref="System.ArgumentNullException">data.</exception>
         /// <exception cref="ArgumentException">
         /// StartMark not found!
         /// or
-        /// EndMark not found!
+        /// EndMark not found!.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!.</exception>
         public static string GetString(this string data, int start, char startMark, char endMark, bool throwException = true)
         {
             if (data == null)
@@ -928,11 +928,11 @@ namespace Cave
             return data.Substring(start + 1, end - start - 1);
         }
 
-        /// <summary>Obtains a part of a string</summary>
-        /// <param name="data">Data to parse</param>
-        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark)</param>
-        /// <param name="startMark">StartMark to check/search for</param>
-        /// <param name="endMark">EndMark to search for</param>
+        /// <summary>Obtains a part of a string.</summary>
+        /// <param name="data">Data to parse.</param>
+        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
+        /// <param name="startMark">StartMark to check/search for.</param>
+        /// <param name="endMark">EndMark to search for.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception if string cannot be found].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
@@ -940,14 +940,14 @@ namespace Cave
         /// or
         /// startMark
         /// or
-        /// endMark
+        /// endMark.
         /// </exception>
         /// <exception cref="ArgumentException">
         /// StartMark not found!
         /// or
-        /// EndMark not found!
+        /// EndMark not found!.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!.</exception>
         public static string GetString(this string data, int start, string startMark, string endMark, bool throwException = true)
         {
             if (data == null)
@@ -1005,7 +1005,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this double value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1014,7 +1014,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this float value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1023,7 +1023,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this int value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1032,7 +1032,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this uint value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1041,7 +1041,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this long value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1050,7 +1050,7 @@ namespace Cave
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value</returns>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
         public static string ToHexString(this ulong value, bool upperCase = false)
         {
             return ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
@@ -1060,7 +1060,7 @@ namespace Cave
         /// <param name="data">The data.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">data</exception>
+        /// <exception cref="ArgumentNullException">data.</exception>
         public static string ToHexString(this byte[] data, bool upperCase = false)
         {
             return ToHexString(data, BitConverter.IsLittleEndian, upperCase);
@@ -1071,7 +1071,7 @@ namespace Cave
         /// <param name="isLittleEndian">Defines whether the specified data has little endian byte order or not.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">data</exception>
+        /// <exception cref="ArgumentNullException">data.</exception>
         public static string ToHexString(this byte[] data, bool isLittleEndian, bool upperCase = false)
         {
             if (data == null)
@@ -1094,7 +1094,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Converts a hex string to a byte array
+        /// Converts a hex string to a byte array.
         /// </summary>
         /// <param name="hex"></param>
         /// <returns></returns>
@@ -1121,7 +1121,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// A fast pattern replacement function for large strings
+        /// A fast pattern replacement function for large strings.
         /// </summary>
         /// <param name="text"></param>
         /// <param name="pattern"></param>
@@ -1187,7 +1187,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains whether the specified string contains invalid chars or not
+        /// Obtains whether the specified string contains invalid chars or not.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static bool HasInvalidChars(this string source, string validChars)
@@ -1213,7 +1213,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves only validated chars from a string
+        /// Retrieves only validated chars from a string.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string GetValidChars(this string source, string validChars)
@@ -1333,7 +1333,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves only validated chars from a string and replaces all other occurances
+        /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string ReplaceChars(this string source, string chars, string replacer)
@@ -1369,7 +1369,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves only validated chars from a string and replaces all other occurances
+        /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
         /// <returns>Returns only valid characters.</returns>
         public static string ReplaceInvalidChars(this string source, char[] validChars, string replacer)
@@ -1405,7 +1405,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves only validated chars from a string and replaces all other occurances
+        /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
         /// <returns>Returns a string containing only valid characters.</returns>
         public static string ReplaceInvalidChars(this string source, string validChars, string replacer)
@@ -1441,7 +1441,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Splits a string at the specified separators and allows to keep the separators in the list
+        /// Splits a string at the specified separators and allows to keep the separators in the list.
         /// </summary>
         /// <param name="text"></param>
         /// <param name="separators"></param>
@@ -1476,7 +1476,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0)
+        /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0).
         /// </summary>
         /// <returns>Returns a new array of strings.</returns>
         public static string[] SplitNewLine(this string text, StringSplitOptions textSplitOptions)
@@ -1574,7 +1574,7 @@ namespace Cave
 
         /// <summary>
         /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0).
-        /// Empty entries will be kept. (This equals <see cref="SplitNewLine(string, StringSplitOptions)"/> with <see cref="StringSplitOptions.None"/>)
+        /// Empty entries will be kept. (This equals <see cref="SplitNewLine(string, StringSplitOptions)"/> with <see cref="StringSplitOptions.None"/>).
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -1722,7 +1722,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Replaces newline markings
+        /// Replaces newline markings.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public static string ReplaceNewLine(this string text, string newLine)
@@ -1732,7 +1732,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Removes any newline markings
+        /// Removes any newline markings.
         /// </summary>
         /// <returns>Returns a string without any newline characters.</returns>
         public static string RemoveNewLine(this string text)
@@ -1783,7 +1783,7 @@ namespace Cave
         /// <summary>Forces the maximum length.</summary>
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length.</param>
-        /// <param name="endReplacer">The end replacer. (String appended to the end when cutting the text. Sample: "..")</param>
+        /// <param name="endReplacer">The end replacer. (String appended to the end when cutting the text. Sample: "..").</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceMaxLength(this string text, int maxLength, string endReplacer)
         {
@@ -1795,7 +1795,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Enforces a specific string length (appends spaces and cuts to length)
+        /// Enforces a specific string length (appends spaces and cuts to length).
         /// </summary>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceLength(this string text, int count)
@@ -1804,7 +1804,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Enforces a specific string length
+        /// Enforces a specific string length.
         /// </summary>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceLength(this string text, int count, string prefix, string suffix)
@@ -1821,7 +1821,7 @@ namespace Cave
                 }
                 if (suffix != null)
                 {
-                    text = text + suffix;
+                    text += suffix;
                 }
             }
             if (text.Length > count)
@@ -1833,7 +1833,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Tries to detect the used newline chars in the specified string
+        /// Tries to detect the used newline chars in the specified string.
         /// </summary>
         /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
         public static string DetectNewLine(this string text)
@@ -1956,12 +1956,12 @@ namespace Cave
         }
 
         /// <summary>
-        /// Unboxes a string (removes strings from start end end)
+        /// Unboxes a string (removes strings from start end end).
         /// </summary>
-        /// <param name="text">The string to be unboxed</param>
-        /// <param name="start">Start of box</param>
-        /// <param name="end">End of box</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error</param>
+        /// <param name="text">The string to be unboxed.</param>
+        /// <param name="start">Start of box.</param>
+        /// <param name="end">End of box.</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
         public static string Unbox(this string text, string start, string end, bool throwEx = true)
         {
@@ -1993,13 +1993,13 @@ namespace Cave
             return text;
         }
 
-        /// <summary>Unboxes a string</summary>
-        /// <param name="text">The string to be unboxed</param>
+        /// <summary>Unboxes a string.</summary>
+        /// <param name="text">The string to be unboxed.</param>
         /// <param name="border">The border.</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
-        /// <exception cref="ArgumentNullException">text</exception>
-        /// <exception cref="FormatException">Could not unbox string!</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
+        /// <exception cref="FormatException">Could not unbox string!.</exception>
         public static string Unbox(this string text, string border, bool throwEx = true)
         {
             if (border == null)
@@ -2025,13 +2025,13 @@ namespace Cave
             return text;
         }
 
-        /// <summary>Unboxes a string</summary>
-        /// <param name="text">The string to be unboxed</param>
+        /// <summary>Unboxes a string.</summary>
+        /// <param name="text">The string to be unboxed.</param>
         /// <param name="border">The border.</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
-        /// <exception cref="ArgumentNullException">text</exception>
-        /// <exception cref="FormatException">Could not unbox {0} string {0}!</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
+        /// <exception cref="FormatException">Could not unbox {0} string {0}!.</exception>
         public static string Unbox(this string text, char border, bool throwEx = true)
         {
             if (text == null)
@@ -2052,10 +2052,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Unboxes a string (removes enclosing "" and '')
+        /// Unboxes a string (removes enclosing "" and '').
         /// </summary>
-        /// <param name="text">The string to be unboxed</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error</param>
+        /// <param name="text">The string to be unboxed.</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
         public static string UnboxText(this string text, bool throwEx = true)
         {
@@ -2085,10 +2085,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Unboxes a string (removes enclosing [], {} and ())
+        /// Unboxes a string (removes enclosing [], {} and ()).
         /// </summary>
-        /// <param name="text">The string to be unboxed</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error</param>
+        /// <param name="text">The string to be unboxed.</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
         public static string UnboxBrackets(this string text, bool throwEx = true)
         {
@@ -2124,8 +2124,8 @@ namespace Cave
 
         /// <summary>Parses a binary size string created by <see cref="FormatSize(double)"/> or <see cref="FormatBinarySize(double)"/>.</summary>
         /// <param name="value">The value string.</param>
-        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long)"/></returns>
-        /// <exception cref="ArgumentNullException">value</exception>
+        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long)"/>.</returns>
+        /// <exception cref="ArgumentNullException">value.</exception>
         /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
         public static double ParseBinarySize(string value)
         {
@@ -2136,7 +2136,7 @@ namespace Cave
 
             var parts = value.Split(' ');
             var error = parts.Length != 2;
-            error = error & double.TryParse(parts[0], out var size);
+            error &= double.TryParse(parts[0], out var size);
             if (!error)
             {
                 if (parts[1] == "B")
@@ -2162,9 +2162,9 @@ namespace Cave
             throw new ArgumentException(string.Format("Invalid format in binary size. Expected '<value> <unit>'. Example '15 MB'. Got '{0}'.", value));
         }
 
-        /// <summary>Randomizes the character casing</summary>
+        /// <summary>Randomizes the character casing.</summary>
         /// <param name="value">The string.</param>
-        /// <returns>Returns a new string with random case</returns>
+        /// <returns>Returns a new string with random case.</returns>
         public static string RandomCase(this string value)
         {
             var rnd = new Random(Environment.TickCount);
@@ -2376,9 +2376,9 @@ namespace Cave
         /// <summary>
         /// Checks whether a specified text is enclosed by some markers.
         /// </summary>
-        /// <param name="text">The text to check</param>
-        /// <param name="start">The start marker</param>
-        /// <param name="end">The end marker</param>
+        /// <param name="text">The text to check.</param>
+        /// <param name="start">The start marker.</param>
+        /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
         public static bool IsBoxed(this string text, char start, char end)
         {
@@ -2393,9 +2393,9 @@ namespace Cave
         /// <summary>
         /// Checks whether a specified text is enclosed by some markers.
         /// </summary>
-        /// <param name="text">The text to check</param>
-        /// <param name="start">The start marker</param>
-        /// <param name="end">The end marker</param>
+        /// <param name="text">The text to check.</param>
+        /// <param name="start">The start marker.</param>
+        /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
         public static bool IsBoxed(this string text, string start, string end)
         {

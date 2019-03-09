@@ -3,14 +3,14 @@ using System;
 namespace Cave
 {
     /// <summary>
-    /// Provides time zone data
+    /// Provides time zone data.
     /// </summary>
     public sealed class TimeZoneData
     {
         /// <summary>
-        /// Parses a TimeZoneData from a string with a time zone name and optional [+/- Offset]
+        /// Parses a TimeZoneData from a string with a time zone name and optional [+/- Offset].
         /// </summary>
-        /// <param name="text">Zone[+/-Offset]</param>
+        /// <param name="text">Zone[+/-Offset].</param>
         /// <returns></returns>
         public static TimeZoneData Parse(string text)
         {
@@ -19,7 +19,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Searches for a timezone by its name
+        /// Searches for a timezone by its name.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="offset"></param>
@@ -43,22 +43,22 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets the current date time for this time zone
+        /// Gets the current date time for this time zone.
         /// </summary>
         public DateTime Now => DateTime.UtcNow + Offset;
 
         /// <summary>
-        /// Gets the description of the time zone
+        /// Gets the description of the time zone.
         /// </summary>
         public string Description { get; }
 
         /// <summary>
-        /// Gets the name of the time zone
+        /// Gets the name of the time zone.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Gets the time zones offset from UTC/GMT
+        /// Gets the time zones offset from UTC/GMT.
         /// </summary>
         public TimeSpan Offset { get; }
 
@@ -76,7 +76,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the timezone as UTC+Offset string
+        /// Obtains the timezone as UTC+Offset string.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -97,7 +97,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Checks for equality with another object
+        /// Checks for equality with another object.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -112,7 +112,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the hashcode of this instance based on the offset from utc
+        /// Obtains the hashcode of this instance based on the offset from utc.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()

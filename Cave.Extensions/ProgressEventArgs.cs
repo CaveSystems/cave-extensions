@@ -10,12 +10,12 @@ namespace Cave
         bool doBreak;
 
         /// <summary>
-        /// Gets user item used at parent function
+        /// Gets user item used at parent function.
         /// </summary>
         public object UserItem { get; }
 
         /// <summary>
-        /// Gets current Position
+        /// Gets current Position.
         /// </summary>
         public long Position { get; }
 
@@ -25,7 +25,7 @@ namespace Cave
         public int Part { get; }
 
         /// <summary>
-        /// Gets overall count
+        /// Gets overall count.
         /// </summary>
         public long Count { get; }
 
@@ -52,7 +52,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets a value indicating whether breaking the current operation is possible or not
+        /// Gets a value indicating whether breaking the current operation is possible or not.
         /// </summary>
         public bool CanBreak { get; }
 

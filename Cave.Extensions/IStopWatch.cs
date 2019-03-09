@@ -3,22 +3,22 @@ using System;
 namespace Cave
 {
     /// <summary>
-    /// Provides an interface for simple time measurement
+    /// Provides an interface for simple time measurement.
     /// </summary>
     public interface IStopWatch
     {
         /// <summary>
-        /// Starts the StopWatch (to restart a StopWatch use <see cref="Reset"/> first!)
+        /// Starts the StopWatch (to restart a StopWatch use <see cref="Reset"/> first!).
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Resets the StopWatch (can be used even if the StopWatch is running)
+        /// Resets the StopWatch (can be used even if the StopWatch is running).
         /// </summary>
         void Reset();
 
         /// <summary>
-        /// Stops the StopWatch
+        /// Stops the StopWatch.
         /// </summary>
         void Stop();
 
@@ -27,37 +27,37 @@ namespace Cave
         void Wait(TimeSpan elapsed);
 
         /// <summary>
-        /// Gets the elapsed time
+        /// Gets the elapsed time.
         /// </summary>
         TimeSpan Elapsed { get; }
 
         /// <summary>
-        /// Gets the elapsed time in milli seconds
+        /// Gets the elapsed time in milli seconds.
         /// </summary>
         long ElapsedMilliSeconds { get; }
 
         /// <summary>
-        /// Gets the elapsed time in seconds
+        /// Gets the elapsed time in seconds.
         /// </summary>
         double ElapsedSeconds { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the StopWatch is running or not
+        /// Gets a value indicating whether the StopWatch is running or not.
         /// </summary>
         bool IsRunning { get; }
 
         /// <summary>
-        /// Gets the resolution of the <see cref="IStopWatch"/>
+        /// Gets the resolution of the <see cref="IStopWatch"/>.
         /// </summary>
         TimeSpan Resolution { get; }
 
         /// <summary>
-        /// Gets the frequency of the <see cref="IStopWatch"/> in HZ
+        /// Gets the frequency of the <see cref="IStopWatch"/> in HZ.
         /// </summary>
         long Frequency { get; }
 
         /// <summary>
-        /// Gets the <see cref="DateTime"/> (utc) value at start of the <see cref="IStopWatch"/>
+        /// Gets the <see cref="DateTime"/> (utc) value at start of the <see cref="IStopWatch"/>.
         /// </summary>
         DateTime StartDateTime { get; }
     }

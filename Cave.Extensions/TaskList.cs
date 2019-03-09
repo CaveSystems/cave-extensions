@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 namespace Cave
 {
     /// <summary>
-    /// Provides a task list for organizing waits
+    /// Provides a task list for organizing waits.
     /// </summary>
     public class TaskList
     {
         /// <summary>
-        /// The maximum concurrent threads
+        /// The maximum concurrent threads.
         /// </summary>
         public int MaximumConcurrentThreads = Environment.ProcessorCount * 2;
 

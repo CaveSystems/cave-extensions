@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace Cave
 {
     /// <summary>
-    /// Provides a parser for DateTime strings
+    /// Provides a parser for DateTime strings.
     /// </summary>
     public static class DateTimeParser
     {
@@ -60,10 +60,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Amount of seconds since 1970-01-01 00:00:00 (may return negative values for earlier dates)
+        /// Amount of seconds since 1970-01-01 00:00:00 (may return negative values for earlier dates).
         /// </summary>
-        /// <param name="dateTime">The DateTime</param>
-        /// <returns>seconds</returns>
+        /// <param name="dateTime">The DateTime.</param>
+        /// <returns>seconds.</returns>
         public static long GetSecondsSinceUnixEpoch(DateTime dateTime)
         {
             TimeSpan time = dateTime - new DateTime(1970, 1, 1);
@@ -71,7 +71,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets or sets the default date used when parsing incomplete datetimes
+        /// Gets or sets the default date used when parsing incomplete datetimes.
         /// </summary>
         public static DateTime Default
         {
@@ -89,9 +89,9 @@ namespace Cave
         /// <summary>
         /// Tries to find date and time within the passed string and return it as DateTime structure.
         /// </summary>
-        /// <param name="text">string that contains date and/or time</param>
-        /// <param name="dateTime">parsed DateTime value</param>
-        /// <returns>Returns true if a date or time was found, false otherwise</returns>
+        /// <param name="text">string that contains date and/or time.</param>
+        /// <param name="dateTime">parsed DateTime value.</param>
+        /// <returns>Returns true if a date or time was found, false otherwise.</returns>
         public static bool TryParseDateTime(string text, out DateTime dateTime)
         {
             DateTimeStringResult result = ParseDateTime(text, out dateTime);
@@ -99,10 +99,10 @@ namespace Cave
         }
 
         /// <summary>Tries to find date and time within the passed string and return it as DateTime structure.</summary>
-        /// <param name="text">string that contains date and/or time</param>
+        /// <param name="text">string that contains date and/or time.</param>
         /// <param name="utcDateTime">The UTC date time.</param>
         /// <param name="offset">The offset.</param>
-        /// <returns>Returns true if a date or time was found, false otherwise</returns>
+        /// <returns>Returns true if a date or time was found, false otherwise.</returns>
         public static bool TryParseDateTime(string text, out DateTime utcDateTime, out TimeSpan offset)
         {
             DateTimeStringResult result = ParseDateTime(text, out utcDateTime, out offset);
@@ -110,10 +110,10 @@ namespace Cave
         }
 
         /// <summary>Tries to find date and time within the passed string and return it as DateTime structure.</summary>
-        /// <param name="text">string that contains date and/or time</param>
+        /// <param name="text">string that contains date and/or time.</param>
         /// <param name="utcDateTime">The UTC date time.</param>
         /// <param name="offset">The offset.</param>
-        /// <returns>Returns the string bounds of the date and time</returns>
+        /// <returns>Returns the string bounds of the date and time.</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime utcDateTime, out TimeSpan offset)
         {
             var result = default(DateTimeStringResult);
@@ -126,9 +126,9 @@ namespace Cave
         /// <summary>
         /// Tries to find date and time within the passed string and return it as DateTime structure.
         /// </summary>
-        /// <param name="text">string that contains date and/or time</param>
-        /// <param name="dateTime">parsed DateTime value</param>
-        /// <returns>Returns the string bounds of the date and time</returns>
+        /// <param name="text">string that contains date and/or time.</param>
+        /// <param name="dateTime">parsed DateTime value.</param>
+        /// <returns>Returns the string bounds of the date and time.</returns>
         public static DateTimeStringResult ParseDateTime(string text, out DateTime dateTime)
         {
             var result = default(DateTimeStringResult);
@@ -143,7 +143,7 @@ namespace Cave
         /// To obtain the full offset you have to use TimeZoneData.Offset + Offset.
         /// </summary>
         /// <param name="text">The string to parse.</param>
-        /// <param name="timeZoneData">The detected timezone</param>
+        /// <param name="timeZoneData">The detected timezone.</param>
         /// <returns></returns>
         public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
         {
@@ -183,10 +183,10 @@ namespace Cave
         /// Tries to find time within the passed string.
         /// Detects [h]h:mm[:ss[.f[f[f[f[f[f]]]]]]][offset] [PM/AM] [UTC/GMT] using a a single regex.
         /// </summary>
-        /// <param name="text">String that containing the time</param>
-        /// <param name="time">Parsed time</param>
+        /// <param name="text">String that containing the time.</param>
+        /// <param name="time">Parsed time.</param>
         /// <param name="offset">The offset.</param>
-        /// <returns>Returns the string bounds of the time</returns>
+        /// <returns>Returns the string bounds of the time.</returns>
         public static SubStringResult ParseTime(string text, out TimeSpan time, out TimeSpan offset)
         {
             time = TimeSpan.Zero;
@@ -273,9 +273,9 @@ namespace Cave
         /// It recognizes only date while ignoring time, so time in the returned DateTimeString is always 0:0:0.
         /// If year of the date was not found then it accepts the current year.
         /// </summary>
-        /// <param name="text">string that contains date</param>
-        /// <param name="date">parsed date output</param>
-        /// <returns>Returns the string bounds of the date</returns>
+        /// <param name="text">string that contains date.</param>
+        /// <param name="date">parsed date output.</param>
+        /// <returns>Returns the string bounds of the date.</returns>
         public static SubStringResult ParseDate(string text, out DateTime date)
         {
             if (string.IsNullOrEmpty(text))

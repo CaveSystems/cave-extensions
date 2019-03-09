@@ -5,16 +5,16 @@ using System.Threading;
 namespace Cave
 {
     /// <summary>
-    /// Provides extensions for double to decimal conversion
+    /// Provides extensions for double to decimal conversion.
     /// </summary>
     public static class DoubleExtension
     {
         /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals
+        /// Removes rouding errors on doubles and converts them to decimals.
         /// </summary>
-        /// <param name="value">The double value</param>
-        /// <param name="digits">The number of digits needed</param>
-        /// <returns>Returns decimal rounded to the leas significant decimal place</returns>
+        /// <param name="value">The double value.</param>
+        /// <param name="digits">The number of digits needed.</param>
+        /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
         public static decimal ToDecimal(this double value, int digits)
         {
             if (double.IsNaN(value))
@@ -45,11 +45,11 @@ namespace Cave
         }
 
         /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals
+        /// Removes rouding errors on doubles and converts them to decimals.
         /// </summary>
-        /// <param name="value">The double value</param>
-        /// <param name="digits">The number of digits needed</param>
-        /// <returns>Returns decimal rounded to the leas significant decimal place</returns>
+        /// <param name="value">The double value.</param>
+        /// <param name="digits">The number of digits needed.</param>
+        /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
         public static decimal ToDecimalOrDefault(this double value, int digits)
         {
             if (double.IsNaN(value))
@@ -96,12 +96,12 @@ namespace Cave
         }
 
         /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals
+        /// Removes rouding errors on doubles and converts them to decimals.
         /// </summary>
-        /// <param name="value">The double value</param>
-        /// <param name="multiplier">The multiplier to shift the double to a whole number</param>
-        /// <param name="divisor">The divisor to build the decimal from the whole number</param>
-        /// <returns>Returns decimal rounded to the leas significant decimal place</returns>
+        /// <param name="value">The double value.</param>
+        /// <param name="multiplier">The multiplier to shift the double to a whole number.</param>
+        /// <param name="divisor">The divisor to build the decimal from the whole number.</param>
+        /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
         public static decimal ToDecimal(this double value, decimal multiplier, long divisor)
         {
             return ((decimal)Math.Round(value * divisor)) * multiplier;

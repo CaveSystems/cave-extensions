@@ -5,7 +5,7 @@ using System.Text;
 namespace Cave
 {
     /// <summary>
-    /// Backport of enum extensions
+    /// Backport of enum extensions.
     /// </summary>
     public static class EnumExtension
     {
@@ -35,7 +35,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets a string for all single flags set. ("flag1, flag4, ..")
+        /// Gets a string for all single flags set. ("flag1, flag4, ..").
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
         /// <param name="value"></param>

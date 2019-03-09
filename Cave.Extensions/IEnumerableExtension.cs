@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Cave
 {
-    /// <summary>Some additional linq extensions</summary>
+    /// <summary>Some additional linq extensions.</summary>
     public static class IEnumerableExtension
     {
         #region long, predicate

@@ -1,6 +1,6 @@
 namespace Cave
 {
-    /// <summary>Obtains all supported connection types</summary>
+    /// <summary>Obtains all supported connection types.</summary>
     public enum ConnectionType
     {
         /// <summary>Unknown or undefined protocol</summary>

@@ -5,14 +5,14 @@ using System.Reflection;
 namespace Cave
 {
     /// <summary>
-    /// Provides extensions for <see cref="Assembly"/> instances
+    /// Provides extensions for <see cref="Assembly"/> instances.
     /// </summary>
     public static class AssemblyExtension
     {
         /// <summary>
         /// Obtains a local file path for the specified assembly.
         /// </summary>
-        /// <param name="assembly">Assembly instance</param>
+        /// <param name="assembly">Assembly instance.</param>
         /// <returns>Returns the file path.</returns>
         public static string GetAssemblyFilePath(this Assembly assembly)
         {

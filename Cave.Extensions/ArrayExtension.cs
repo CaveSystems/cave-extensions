@@ -6,18 +6,18 @@ using System.Text;
 namespace Cave
 {
     /// <summary>
-    /// Provides extensions to byte[], array and IEnumerable instances
+    /// Provides extensions to byte[], array and IEnumerable instances.
     /// </summary>
     public static class ArrayExtension
     {
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <param name="count">Number of elements to copy</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static T[] GetRange<T>(this T[] data, int index, int count)
         {
             var result = new T[count];
@@ -26,12 +26,12 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static T[] GetRange<T>(this T[] data, int index)
         {
             if (data == null)
@@ -72,13 +72,13 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <param name="count">Number of elements to copy</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static T[] GetRange<T>(this IList<T> data, int index, int count)
         {
             if (data == null)
@@ -96,43 +96,43 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static T[] GetRange<T>(this IList<T> data, int index)
         {
             return GetRange(data, index, data.Count - index);
         }
 
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <param name="count">Number of elements to copy</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index, int count)
         {
             return data.Where((v, i) => i >= index && i < index + count);
         }
 
         /// <summary>
-        /// Retrieves a number of elements from the array as new array instance
+        /// Retrieves a number of elements from the array as new array instance.
         /// </summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array</param>
-        /// <param name="index">Element index</param>
-        /// <returns>Returns a new array instance</returns>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
         public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index)
         {
             return data.Where((v, i) => i >= index);
         }
 
-        /// <summary>Concatenates elements</summary>
+        /// <summary>Concatenates elements.</summary>
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
@@ -145,7 +145,7 @@ namespace Cave
             return result;
         }
 
-        /// <summary>Concatenates elements</summary>
+        /// <summary>Concatenates elements.</summary>
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
@@ -168,7 +168,7 @@ namespace Cave
             return result;
         }
 
-        /// <summary>Checks whether a range of bytes matches the comparand</summary>
+        /// <summary>Checks whether a range of bytes matches the comparand.</summary>
         /// <param name="bytes">The bytes.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="count">The count.</param>
@@ -191,7 +191,7 @@ namespace Cave
             return true;
         }
 
-        /// <summary>Checks whether data starts with the specified pattern or not</summary>
+        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
         /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8"/>).</param>
@@ -207,7 +207,7 @@ namespace Cave
             return StartsWith(data, bytes);
         }
 
-        /// <summary>Checks whether data starts with the specified pattern or not</summary>
+        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
         /// <returns></returns>

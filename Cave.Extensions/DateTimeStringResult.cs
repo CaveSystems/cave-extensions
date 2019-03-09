@@ -46,12 +46,12 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets/sets Time SubStringResult
+        /// Gets/sets Time SubStringResult.
         /// </summary>
         public SubStringResult Time;
 
         /// <summary>
-        /// Gets/sets Date SubStringResult
+        /// Gets/sets Date SubStringResult.
         /// </summary>
         public SubStringResult Date;
 

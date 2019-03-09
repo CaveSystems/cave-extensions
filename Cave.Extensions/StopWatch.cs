@@ -3,7 +3,7 @@ using System;
 namespace Cave
 {
     /// <summary>
-    /// Provides access to a selected IStopWatch implementation for the current platform
+    /// Provides access to a selected IStopWatch implementation for the current platform.
     /// </summary>
     public static class StopWatch
     {
@@ -35,7 +35,7 @@ namespace Cave
         /// <param name="watch">The IStopWatch to check.</param>
         /// <param name="samples">The samples.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">watch</exception>
+        /// <exception cref="ArgumentNullException">watch.</exception>
         public static TimeSpan CheckResolution(IStopWatch watch, int samples = 50)
         {
             if (watch == null)

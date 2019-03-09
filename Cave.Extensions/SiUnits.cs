@@ -5,7 +5,7 @@
 namespace Cave
 {
     /// <summary>
-    /// Provides the international system of units default units
+    /// Provides the international system of units default units.
     /// </summary>
     [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
     public enum SiUnits : int

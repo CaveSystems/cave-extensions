@@ -5,7 +5,7 @@ using System.Text;
 namespace Cave
 {
     /// <summary>
-    /// Provides extensions to <see cref="Stream"/> implementations
+    /// Provides extensions to <see cref="Stream"/> implementations.
     /// </summary>
     public static class StreamExtensions
     {
@@ -21,16 +21,16 @@ namespace Cave
         }
 
         /// <summary>Does a stream copy from source to destination.</summary>
-        /// <param name="source">Source stream</param>
-        /// <param name="target">Target stream</param>
-        /// <param name="length">Number of bytes to copy</param>
-        /// <param name="callback">Callback to be called during copy or null</param>
+        /// <param name="source">Source stream.</param>
+        /// <param name="target">Target stream.</param>
+        /// <param name="length">Number of bytes to copy.</param>
+        /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// source
         /// or
-        /// target
+        /// target.
         /// </exception>
         public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
@@ -87,10 +87,10 @@ namespace Cave
             return written;
         }
 
-        /// <summary>Reads all bytes from the specified stream</summary>
-        /// <param name="source">Source stream</param>
+        /// <summary>Reads all bytes from the specified stream.</summary>
+        /// <param name="source">Source stream.</param>
         /// <param name="length">The number of bytes to read or -1 to read the whole stream.</param>
-        /// <param name="callback">Callback to be called during copy or null</param>
+        /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
         /// <returns></returns>
         /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
@@ -133,23 +133,23 @@ namespace Cave
         }
 
         /// <summary>
-        /// Reads all bytes from the specified stream
+        /// Reads all bytes from the specified stream.
         /// </summary>
-        /// <param name="source">Source stream</param>
-        /// <param name="count">The number of bytes to read</param>
+        /// <param name="source">Source stream.</param>
+        /// <param name="count">The number of bytes to read.</param>
         /// <returns></returns>
         public static byte[] ReadBlock(this Stream source, int count)
         {
             return ReadBlock(source, count, null);
         }
 
-        /// <summary>Reads a block from the specified stream (nonblocking)</summary>
-        /// <param name="source">Source stream</param>
-        /// <param name="count">The number of bytes to read</param>
-        /// <param name="callback">Callback to be called during copy or null</param>
+        /// <summary>Reads a block from the specified stream (nonblocking).</summary>
+        /// <param name="source">Source stream.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">source</exception>
+        /// <exception cref="ArgumentNullException">source.</exception>
         public static byte[] ReadBlock(this Stream source, int count, ProgressCallback callback, object userItem = null)
         {
             if (source == null)
@@ -184,7 +184,7 @@ namespace Cave
         /// <summary>Writes an UTF8 string to the stream.</summary>
         /// <param name="stream">The stream.</param>
         /// <param name="text">The text.</param>
-        /// <exception cref="ArgumentNullException">stream</exception>
+        /// <exception cref="ArgumentNullException">stream.</exception>
         public static void WriteUtf8(this Stream stream, string text)
         {
             if (stream == null)

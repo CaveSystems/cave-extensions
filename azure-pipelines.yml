@@ -47,7 +47,7 @@ steps:
       else
       {
         $ver = [Version]$var
-        if ($incRev)
+        if ($incRev -eq true)
         {
           $ver = [Version]"$($ver.Major).$($ver.Minor).$($ver.Build+1)"
         }

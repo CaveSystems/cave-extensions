@@ -7,46 +7,30 @@ namespace Cave
     /// <summary>
     /// Provides a connection string parser.
     /// The following string will be parsed:
-    /// [protocol://][user[:password]@]server[:port][/path/to/somewhere]
+    /// [protocol://][user[:password]@]server[:port][/path/to/somewhere].
     /// </summary>
     public struct ConnectionString : IEquatable<ConnectionString>
     {
         #region static operators
 
         /// <summary>
-        /// Checks two ConnectionString instances for inequality
+        /// Checks two ConnectionString instances for inequality.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool operator ==(ConnectionString a, ConnectionString b)
-        {
-            if (ReferenceEquals(a, null))
-            {
-                return ReferenceEquals(b, null);
-            }
-
-            return a.Equals(b);
-        }
+        public static bool operator ==(ConnectionString a, ConnectionString b) => a.Equals(b);
 
         /// <summary>
-        /// Checks two ConnectionString instances for equality
+        /// Checks two ConnectionString instances for equality.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool operator !=(ConnectionString a, ConnectionString b)
-        {
-            if (ReferenceEquals(a, null))
-            {
-                return !ReferenceEquals(b, null);
-            }
-
-            return !a.Equals(b);
-        }
+        public static bool operator !=(ConnectionString a, ConnectionString b) => !a.Equals(b);
 
         /// <summary>
-        /// converts a string to a connection string using <see cref="Parse(string)"/>
+        /// converts a string to a connection string using <see cref="Parse(string)"/>.
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
@@ -54,14 +38,14 @@ namespace Cave
         {
             if (connectionString == null)
             {
-                return default(ConnectionString);
+                return default;
             }
 
             return Parse(connectionString);
         }
 
         /// <summary>
-        /// converts a connection string to a string including credentials
+        /// converts a connection string to a string including credentials.
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
@@ -75,7 +59,7 @@ namespace Cave
         #region static parsers
 
         /// <summary>
-        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere]
+        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].
         /// </summary>
         /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString)
@@ -84,7 +68,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[&amp;option=value]]]
+        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[&amp;option=value]]].
         /// </summary>
         /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString, string defaultProtocol, string defaultUserName, string defaultPassword, string defaultServer, ushort? defaultPort, string defaultPath, string defaultOptions)
@@ -94,11 +78,11 @@ namespace Cave
                 throw new ArgumentNullException("connectionString");
             }
 
-            var l_Port = (defaultPort != null) ? ((ushort)defaultPort) : (ushort)0;
-            var l_Protocol = defaultProtocol;
-            var l_Username = defaultUserName;
-            var l_Password = defaultPassword;
-            var l_Server = defaultServer;
+            var port = (defaultPort != null) ? ((ushort)defaultPort) : (ushort)0;
+            var protocol = defaultProtocol;
+            var username = defaultUserName;
+            var password = defaultPassword;
+            var server = defaultServer;
             var path = defaultPath;
             var options = defaultOptions;
 
@@ -114,43 +98,46 @@ namespace Cave
             var parts = connectionString.Trim().Split(new string[] { "://" }, 2, StringSplitOptions.None);
             if (parts.Length > 1)
             {
-                l_Protocol = parts[0];
+                protocol = parts[0];
             }
 
             // get username & password, server & port & path parts
             parts = parts[parts.Length - 1].Split(new char[] { '@' }, 2);
 
             // get server, port and path part
-            l_Server = parts[parts.Length - 1];
+            if (parts[parts.Length - 1].Trim().Length > 0)
+            {
+                server = parts[parts.Length - 1].Trim();
+            }
 
             // get path (if any) and remove it from server string
-            var pathIndex = l_Server.IndexOfAny(new char[] { '/', '\\' });
-            if ((pathIndex == 2) && (l_Protocol.ToUpperInvariant() == "FILE"))
+            var pathIndex = server.IndexOfAny(new char[] { '/', '\\' });
+            if ((pathIndex == 2) && (protocol.ToUpperInvariant() == "FILE"))
             {
-                path = l_Server;
-                l_Server = null;
+                path = server;
+                server = null;
             }
             else if (pathIndex > -1)
             {
-                path = l_Server.Substring(pathIndex + 1);
-                l_Server = l_Server.Substring(0, pathIndex);
+                path = server.Substring(pathIndex + 1);
+                server = server.Substring(0, pathIndex);
             }
 
             // get server and port
-            if (l_Server != null)
+            if (server != null)
             {
-                var l_PortIndex = l_Server.IndexOf(':');
-                if ((l_PortIndex == 1) && (l_Server.Length == 2))
+                var portIndex = server.IndexOf(':');
+                if ((portIndex == 1) && (server.Length == 2))
                 {
-                    path = l_Server;
-                    l_Server = null;
+                    path = server;
+                    server = null;
                 }
-                else if (l_PortIndex > -1)
+                else if (portIndex > -1)
                 {
-                    var l_PortString = l_Server.Substring(l_PortIndex + 1);
-                    if (ushort.TryParse(l_PortString, out l_Port))
+                    var portString = server.Substring(portIndex + 1);
+                    if (ushort.TryParse(portString, out port))
                     {
-                        l_Server = l_Server.Substring(0, l_PortIndex);
+                        server = server.Substring(0, portIndex);
                     }
                 }
             }
@@ -158,29 +145,29 @@ namespace Cave
             // get user and password
             if (parts.Length > 1)
             {
-                var l_UsernamePassword = parts[0];
+                var usernamePassword = parts[0];
                 for (var i = 1; i < parts.Length - 1; i++)
                 {
-                    l_UsernamePassword += "@" + parts[i];
+                    usernamePassword += "@" + parts[i];
                 }
-                parts = l_UsernamePassword.Split(new char[] { ':' }, 2);
-                l_Username = parts[0];
+                parts = usernamePassword.Split(new char[] { ':' }, 2);
+                username = parts[0];
                 if (parts.Length > 1)
                 {
-                    l_Password = parts[1];
+                    password = parts[1];
                 }
             }
 
-            if ((l_Port < 0) || (l_Port > 65535))
+            if ((port < 0) || (port > 65535))
             {
-                l_Port = 0;
+                port = 0;
             }
 
-            return new ConnectionString(l_Protocol, l_Username, l_Password, l_Server, l_Port, path, options);
+            return new ConnectionString(protocol, username, password, server, port, path, options);
         }
 
         /// <summary>
-        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere]
+        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].
         /// </summary>
         /// <returns>Returns true on success, false otherwise.</returns>
         public static bool TryParse(string connectionString, out ConnectionString result)
@@ -191,10 +178,10 @@ namespace Cave
             }
 
             ushort port = 0;
-            string protocol = null;
+            string protocol;
             string username = null;
             string password = null;
-            string server = null;
+            string server = string.Empty;
             string path = null;
             string options = null;
 
@@ -206,7 +193,7 @@ namespace Cave
             }
             else
             {
-                result = null;
+                result = default;
                 return false;
             }
 
@@ -214,7 +201,10 @@ namespace Cave
             parts = parts[parts.Length - 1].Split(new char[] { '@' }, 2);
 
             // get server, port and path part
-            server = parts[parts.Length - 1];
+            if (parts[parts.Length - 1].Trim().Length > 0)
+            {
+                server = parts[parts.Length - 1].Trim();
+            }
 
             // get path (if any) and remove it from server string
             var pathIndex = server.IndexOf('/');
@@ -279,13 +269,13 @@ namespace Cave
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionString"/> struct.
         /// </summary>
-        /// <param name="protocol">Protocol or null</param>
-        /// <param name="userName">Username or null</param>
-        /// <param name="password">Password</param>
-        /// <param name="server">Server or null</param>
-        /// <param name="port">Port or null</param>
-        /// <param name="location">Path or null</param>
-        /// <param name="options">list of options separated by an '&amp;' sign</param>
+        /// <param name="protocol">Protocol or null.</param>
+        /// <param name="userName">Username or null.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="server">Server or null.</param>
+        /// <param name="port">Port or null.</param>
+        /// <param name="location">Path or null.</param>
+        /// <param name="options">list of options separated by an '&amp;' sign.</param>
         public ConnectionString(string protocol, string userName, string password, string server, ushort port = 0, string location = null, string options = null)
         {
             if (string.IsNullOrEmpty(protocol))
@@ -323,7 +313,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets or sets the protocol
+        /// Gets or sets the protocol.
         /// </summary>
         public ConnectionType ConnectionType
         {
@@ -339,26 +329,26 @@ namespace Cave
             set => Protocol = value.ToString();
         }
 
-        /// <summary>Gets or sets the protocol</summary>
+        /// <summary>Gets or sets the protocol.</summary>
         public string Protocol;
 
         /// <summary>
-        /// Gets or sets the username
+        /// Gets or sets the username.
         /// </summary>
         public string UserName;
 
         /// <summary>
-        /// Gets or sets the password
+        /// Gets or sets the password.
         /// </summary>
         public string Password;
 
         /// <summary>
-        /// Gets or sets the server address or name
+        /// Gets or sets the server address or name.
         /// </summary>
         public string Server;
 
         /// <summary>
-        /// Gets or sets the port of the <see cref="ConnectionString"/>
+        /// Gets or sets the port of the <see cref="ConnectionString"/>.
         /// </summary>
         /// <param name="defaultPort"></param>
         /// <returns></returns>
@@ -373,22 +363,22 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets or sets the port
+        /// Gets or sets the port.
         /// </summary>
         public ushort Port;
 
         /// <summary>
-        /// Gets or sets the path
+        /// Gets or sets the path.
         /// </summary>
         public string Location;
 
         /// <summary>
-        /// Gets or sets the options
+        /// Gets or sets the options.
         /// </summary>
         public string Options;
 
         /// <summary>
-        /// Changes the path and returns a new ConnectionString
+        /// Changes the path and returns a new ConnectionString.
         /// </summary>
         /// <param name="relativePath"></param>
         /// <returns></returns>
@@ -407,7 +397,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains <see cref="NetworkCredential"/>s
+        /// Obtains <see cref="NetworkCredential"/>s.
         /// </summary>
         /// <returns></returns>
         public NetworkCredential GetCredentials()
@@ -417,7 +407,7 @@ namespace Cave
 
         /// <summary>
         /// Obtains an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
-        /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!
+        /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!.
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
@@ -428,7 +418,7 @@ namespace Cave
 
         /// <summary>
         /// Obtains an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
-        /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!
+        /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!.
         /// </summary>
         /// <returns></returns>
         public Uri ToUri()
@@ -437,7 +427,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Provides a connection string with (if known) or without the password
+        /// Provides a connection string with (if known) or without the password.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public string ToString(ConnectionStringPart items)
@@ -501,7 +491,7 @@ namespace Cave
 
         /// <summary>
         /// Obtains the connection string with credentials (username and password). If you want to strip some parts of the connection string
-        /// use <see cref="ToString(ConnectionStringPart)"/>
+        /// use <see cref="ToString(ConnectionStringPart)"/>.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public override string ToString()
@@ -510,7 +500,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>
+        /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -525,7 +515,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains hash code for the connection string
+        /// Obtains hash code for the connection string.
         /// </summary>
         /// <returns>Returns a new hash code.</returns>
         public override int GetHashCode()
@@ -536,17 +526,12 @@ namespace Cave
         #region IEquatable<ConnectionString> Member
 
         /// <summary>
-        /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>
+        /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>.
         /// </summary>
-        /// <param name="other">The object to compare with</param>
+        /// <param name="other">The object to compare with.</param>
         /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ConnectionString other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
             return
                 (other.Password == Password) &&
                 (other.Location == Location) &&

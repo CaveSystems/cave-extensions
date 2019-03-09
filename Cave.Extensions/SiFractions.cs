@@ -5,7 +5,7 @@
 namespace Cave
 {
     /// <summary>
-    /// si unit fractions
+    /// si unit fractions.
     /// </summary>
     [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
     public enum SiFractions : int

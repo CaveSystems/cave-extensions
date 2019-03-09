@@ -3,7 +3,7 @@
 namespace Cave
 {
     /// <summary>
-    /// Date Time extensions
+    /// Date Time extensions.
     /// </summary>
     public static class DateTimeExtension
     {

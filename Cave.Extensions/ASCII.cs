@@ -5,14 +5,14 @@ using System.IO;
 namespace Cave
 {
     /// <summary>
-    /// Provides access to 7Bit ASCII chars / bytes
+    /// Provides access to 7Bit ASCII chars / bytes.
     /// </summary>
     public static class ASCII
     {
         #region Static implementation
 
         /// <summary>
-        /// Obtains whether the string contains non 7Bit ASCII chars (!=17..127)
+        /// Obtains whether the string contains non 7Bit ASCII chars (!=17..127).
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -34,15 +34,15 @@ namespace Cave
             return true;
         }
 
-        /// <summary>Cleans a string from all non ascii and control characters by replacing invalid chars</summary>
-        /// <param name="text">The string to clean</param>
-        /// <param name="start">The start index</param>
-        /// <param name="count">the length</param>
+        /// <summary>Cleans a string from all non ascii and control characters by replacing invalid chars.</summary>
+        /// <param name="text">The string to clean.</param>
+        /// <param name="start">The start index.</param>
+        /// <param name="count">the length.</param>
         /// <param name="minimumCharacter">The minimum character value to keep (defaults to 32 = space).</param>
         /// <param name="replacer">The replacer.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">text</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
         public static string Clean(string text, int start = 0, int count = -1, char minimumCharacter = ' ', char replacer = ' ', bool termination = false)
         {
             if (count < 0)
@@ -72,12 +72,12 @@ namespace Cave
             return new string(result);
         }
 
-        /// <summary>Obtains the bytes for a specified 7Bit ASCII string</summary>
+        /// <summary>Obtains the bytes for a specified 7Bit ASCII string.</summary>
         /// <param name="text">The text.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">text</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static byte[] GetBytes(string text, bool termination = false)
         {
             if (text == null)
@@ -88,14 +88,14 @@ namespace Cave
             return GetBytes(text, 0, -1, termination);
         }
 
-        /// <summary>Obtains the bytes for a specified 7Bit ASCII string</summary>
-        /// <param name="text">String to encode</param>
-        /// <param name="start">Startindex at the string to encode</param>
-        /// <param name="count">Length in characters to encode</param>
+        /// <summary>Obtains the bytes for a specified 7Bit ASCII string.</summary>
+        /// <param name="text">String to encode.</param>
+        /// <param name="start">Startindex at the string to encode.</param>
+        /// <param name="count">Length in characters to encode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">text</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static byte[] GetBytes(string text, int start, int count, bool termination = false)
         {
             if (text == null)
@@ -131,11 +131,11 @@ namespace Cave
             }
         }
 
-        /// <summary>Obtains the string for the specified 7Bit ASCII bytes</summary>
-        /// <param name="bytes">Bytes to decode</param>
+        /// <summary>Obtains the string for the specified 7Bit ASCII bytes.</summary>
+        /// <param name="bytes">Bytes to decode.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">bytes</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">bytes.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static string GetString(byte[] bytes)
         {
             if (bytes == null)
@@ -146,11 +146,11 @@ namespace Cave
             return GetString(bytes, 0, bytes.Length);
         }
 
-        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes</summary>
-        /// <param name="bytes">Bytes to decode</param>
+        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes.</summary>
+        /// <param name="bytes">Bytes to decode.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">bytes</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">bytes.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static char[] GetChars(byte[] bytes)
         {
             if (bytes == null)
@@ -161,14 +161,14 @@ namespace Cave
             return GetChars(bytes, 0, bytes.Length);
         }
 
-        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes</summary>
-        /// <param name="bytes">Bytes to decode</param>
-        /// <param name="start">Startindex at the array to decode</param>
-        /// <param name="count">Length in bytes to decode</param>
+        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes.</summary>
+        /// <param name="bytes">Bytes to decode.</param>
+        /// <param name="start">Startindex at the array to decode.</param>
+        /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">bytes</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">bytes.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static char[] GetChars(byte[] bytes, int start, int count, bool termination = false)
         {
             if (bytes == null)
@@ -199,14 +199,14 @@ namespace Cave
             }
         }
 
-        /// <summary>Obtains the string for the specified 7Bit ASCII bytes</summary>
-        /// <param name="bytes">Bytes to decode</param>
-        /// <param name="start">Startindex at the array to decode</param>
-        /// <param name="count">Length in bytes to decode</param>
+        /// <summary>Obtains the string for the specified 7Bit ASCII bytes.</summary>
+        /// <param name="bytes">Bytes to decode.</param>
+        /// <param name="start">Startindex at the array to decode.</param>
+        /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">bytes</exception>
-        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!</exception>
+        /// <exception cref="ArgumentNullException">bytes.</exception>
+        /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static string GetString(byte[] bytes, int start, int count, bool termination = false)
         {
             return new string(GetChars(bytes, start, count, termination));
@@ -216,12 +216,12 @@ namespace Cave
         /// Obtains the string for the specified 7Bit ASCII bytes (0..127).
         /// Any invalid character is replaced by char 255.
         /// </summary>
-        /// <param name="bytes">Bytes to decode</param>
-        /// <param name="start">Startindex at the array to decode</param>
-        /// <param name="count">Length in bytes to decode</param>
+        /// <param name="bytes">Bytes to decode.</param>
+        /// <param name="start">Startindex at the array to decode.</param>
+        /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">bytes</exception>
+        /// <exception cref="ArgumentNullException">bytes.</exception>
         public static string GetCleanString(byte[] bytes, int start = 0, int count = -1, bool termination = false)
         {
             if (count < 0)
@@ -258,12 +258,12 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains a part of a string
+        /// Obtains a part of a string.
         /// </summary>
-        /// <param name="data">Data to parse</param>
-        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark)</param>
-        /// <param name="startMark">StartMark to check/search for</param>
-        /// <param name="endMark">EndMark to search for</param>
+        /// <param name="data">Data to parse.</param>
+        /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
+        /// <param name="startMark">StartMark to check/search for.</param>
+        /// <param name="endMark">EndMark to search for.</param>
         /// <returns></returns>
         public static string GetString(byte[] data, int start, byte startMark, byte endMark)
         {
@@ -298,7 +298,7 @@ namespace Cave
         /// <returns></returns>
         public static char GetHexChar(int value)
         {
-            value = value & 0xF;
+            value &= 0xF;
             if (value < 10)
             {
                 return (char)(value + '0');
@@ -312,7 +312,7 @@ namespace Cave
         /// <param name="c">The character.</param>
         /// <param name="escapeCharacter">The escape character.</param>
         /// <returns></returns>
-        /// <exception cref="InvalidOperationException">Cannot escape character {0}!</exception>
+        /// <exception cref="InvalidOperationException">Cannot escape character {0}!.</exception>
         public static char[] EscapeHex(char c, char escapeCharacter = '\\')
         {
             if (c < 256)
@@ -326,11 +326,11 @@ namespace Cave
             throw new InvalidOperationException("Cannot escape character {0}!");
         }
 
-        /// <summary>Escapes all invalid characters (newline, tab, ... and everything above us ascii 127)</summary>
+        /// <summary>Escapes all invalid characters (newline, tab, ... and everything above us ascii 127).</summary>
         /// <param name="text">The text.</param>
         /// <param name="escapeCharacter">The escape character to use.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">text</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
         public static string Escape(string text, char escapeCharacter = '\\')
         {
             if (text == null)
@@ -392,11 +392,11 @@ namespace Cave
             return new string(result.ToArray());
         }
 
-        /// <summary>Reverts a previous <see cref="Escape(string, char)" /></summary>
+        /// <summary>Reverts a previous <see cref="Escape(string, char)" />.</summary>
         /// <param name="text">The text.</param>
         /// <param name="escapeCharacter">The escape character.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">text</exception>
+        /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="InvalidDataException">Invalid escape characters.</exception>
         public static string Unescape(string text, char escapeCharacter = '\\')
         {
@@ -440,67 +440,67 @@ namespace Cave
         #region Bytes subclass
 
         /// <summary>
-        /// Provides access to ASCII.Bytes
+        /// Provides access to ASCII.Bytes.
         /// </summary>
         public static class Bytes
         {
             /// <summary>
-            /// Gets space [ ]
+            /// Gets space [ ].
             /// </summary>
             public const byte Space = 0x20;
 
             /// <summary>
-            /// Gets space and tab [ \t]
+            /// Gets space and tab [ \t].
             /// </summary>
             public static byte[] Spaces => new byte[] { 0x20, 0x09 };
 
             /// <summary>
-            /// Gets lower case letters [a-z]
+            /// Gets lower case letters [a-z].
             /// </summary>
             public static byte[] LowercaseLetters => new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a };
 
             /// <summary>
-            /// Gets upper case letters [A-Z]
+            /// Gets upper case letters [A-Z].
             /// </summary>
             public static byte[] UppercaseLetters => new byte[] { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a };
 
             /// <summary>
-            /// Gets all letters [A-Z], [a-z]
+            /// Gets all letters [A-Z], [a-z].
             /// </summary>
             public static byte[] Letters => new byte[]
             {
                 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75,
                 0x76, 0x77, 0x78, 0x79, 0x7a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-                0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a
+                0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a,
             };
 
             /// <summary>
-            /// Gets digits [0-9]
+            /// Gets digits [0-9].
             /// </summary>
             public static byte[] Digits => new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
 
             /// <summary>
-            /// Gets non zero digits [1-9]
+            /// Gets non zero digits [1-9].
             /// </summary>
             public static byte[] NonZeroDigits => new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
 
             /// <summary>
-            /// Gets punctuation marks
+            /// Gets punctuation marks.
             /// </summary>
             public static byte[] PunctuationMarks => new byte[] { 0x21, 0x2e, 0x2c, 0x3a, 0x3b, 0x3d, 0x3f };
 
             /// <summary>
-            /// Gets arithmetic operators
+            /// Gets arithmetic operators.
             /// </summary>
             public static byte[] ArithmeticOperators => new byte[] { 0x2b, 0x2d, 0x2a, 0x2f, 0x5e };
 
             /// <summary>
-            /// Gets brackets
+            /// Gets brackets.
             /// </summary>
             public static byte[] Brackets => new byte[] { 0x28, 0x29, 0x5b, 0x5d, 0x7b, 0x7d };
 
             /// <summary>
-            /// Gets printable ascii chars
+            /// Gets printable ascii chars.
             /// </summary>
             public static byte[] Printable => new byte[]
             {
@@ -508,26 +508,26 @@ namespace Cave
                 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
                 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61,
                 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-                0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e
+                0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e,
             };
 
             /// <summary>
-            /// Gets the utf8 bom
+            /// Gets the utf8 bom.
             /// </summary>
             public static byte[] UTF8BOM => new byte[] { 0xef, 0xbb, 0xbf };
 
             /// <summary>
-            /// Carriage return = 0x13
+            /// Carriage return = 0x13.
             /// </summary>
             public const byte CR = 0x0d;
 
             /// <summary>
-            /// Line feed = 0x10
+            /// Line feed = 0x10.
             /// </summary>
             public const byte LF = 0x0a;
 
             /// <summary>
-            /// Gets carriage return &amp; line feed
+            /// Gets carriage return &amp; line feed.
             /// </summary>
             public static byte[] CRLF => new byte[] { CR, LF };
 
@@ -540,7 +540,7 @@ namespace Cave
                 0x39, 0x3D, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
                 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5F, 0x61, 0x62,
                 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72,
-                0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A
+                0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,
             };
         }
         #endregion
@@ -548,93 +548,93 @@ namespace Cave
         #region Strings subclass
 
         /// <summary>
-        /// Provides access to ASCII.Strings
+        /// Provides access to ASCII.Strings.
         /// </summary>
         public static class Strings
         {
             /// <summary>
-            /// space [ ]
+            /// space [ ].
             /// </summary>
             public const string Space = " ";
 
             /// <summary>
-            /// space and tab [ \t]
+            /// space and tab [ \t].
             /// </summary>
             public const string Spaces = " \t";
 
             /// <summary>
-            /// lowercase letters [a-z]
+            /// lowercase letters [a-z].
             /// </summary>
             public const string LowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
 
             /// <summary>
-            /// upper case letters [A-Z]
+            /// upper case letters [A-Z].
             /// </summary>
             public const string UppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             /// <summary>
-            /// all letters [A-Z], [a-z]
+            /// all letters [A-Z], [a-z].
             /// </summary>
             public const string Letters = UppercaseLetters + LowercaseLetters;
 
             /// <summary>
-            /// all digits [0-9]
+            /// all digits [0-9].
             /// </summary>
             [Obsolete("Use Digits instead!")]
             public const string Numbers = "0123456789";
 
             /// <summary>
-            /// digits [0-9]
+            /// digits [0-9].
             /// </summary>
             public const string Digits = "0123456789";
 
             /// <summary>
-            /// non zero digits [1-9]
+            /// non zero digits [1-9].
             /// </summary>
             public const string NonZeroDigits = "123456789";
 
             /// <summary>
-            /// punctuation marks [!.,:;?"]
+            /// punctuation marks [!.,:;?"].
             /// </summary>
             public const string PunctuationMarks = "!.,:;?";
 
             /// <summary>
-            /// arithmetic operators [+-*/=^]
+            /// arithmetic operators [+-*/=^].
             /// </summary>
             public const string ArithmeticOperators = "+-*/=^";
 
             /// <summary>
-            /// brackets [()[]{}]
+            /// brackets [()[]{}].
             /// </summary>
             public const string Brackets = "()[]{}";
 
             /// <summary>
-            /// printable 7Bit ASCII chars
+            /// printable 7Bit ASCII chars.
             /// </summary>
             public const string Printable = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
             /// <summary>
-            /// utf8 bom
+            /// utf8 bom.
             /// </summary>
             public const string UTF8BOM = "\xef\xbb\xbf";
 
             /// <summary>
-            /// Carriage return = 0x13
+            /// Carriage return = 0x13.
             /// </summary>
             public const string CR = "\r";
 
             /// <summary>
-            /// Line feed = 0x10
+            /// Line feed = 0x10.
             /// </summary>
             public const string LF = "\n";
 
             /// <summary>
-            /// Carriage return <![CDATA[&]]> line feed
+            /// Carriage return <![CDATA[&]]> line feed.
             /// </summary>
             public const string CRLF = "\r\n";
 
             /// <summary>
-            /// Default newline marking
+            /// Default newline marking.
             /// </summary>
             public const string NewLine = CRLF;
 
@@ -644,7 +644,7 @@ namespace Cave
             public const string SafeName = Letters + Digits + " #()+-.=@_";
 
             /// <summary>
-            /// Characters for safe url names RFC 3986
+            /// Characters for safe url names RFC 3986.
             /// </summary>
             public const string SafeUrlOptions = Letters + Digits + "-._~";
         }
