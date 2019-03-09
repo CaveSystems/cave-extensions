@@ -3,7 +3,7 @@ using System;
 namespace Cave
 {
     /// <summary>
-    /// Provides access to the best IStopWatch implementation for the current platform
+    /// Provides access to a selected IStopWatch implementation for the current platform
     /// </summary>
     public static class StopWatch
     {
