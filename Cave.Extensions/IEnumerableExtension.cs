@@ -9,7 +9,7 @@ namespace Cave
         #region long, predicate
 
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
@@ -24,7 +24,7 @@ namespace Cave
         }
 
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
@@ -42,7 +42,7 @@ namespace Cave
         #region ulong, predicate
 
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
@@ -57,7 +57,7 @@ namespace Cave
         }
 
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
@@ -75,7 +75,7 @@ namespace Cave
         #region int, predicate
 
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
@@ -90,7 +90,7 @@ namespace Cave
         }
 
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
@@ -108,7 +108,7 @@ namespace Cave
         #region uint, predicate
 
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
@@ -123,7 +123,7 @@ namespace Cave
         }
 
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>

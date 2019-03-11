@@ -48,6 +48,7 @@ namespace Cave
         /// <summary>
         /// Joins a collection to a string with newlines for all systems.
         /// </summary>
+        /// <param name="texts">The string collection.</param>
         /// <returns>Returns a new string.</returns>
         public static string JoinNewLine(this string[] texts)
         {
@@ -57,6 +58,7 @@ namespace Cave
         /// <summary>
         /// Joins a collection to a string with newlines for all systems.
         /// </summary>
+        /// <param name="array">The string array.</param>
         /// <returns>Returns a new string.</returns>
         public static string JoinNewLine(this IEnumerable array)
         {
@@ -66,6 +68,9 @@ namespace Cave
         /// <summary>
         /// Joins a collection to a string.
         /// </summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The seperator.</param>
+        /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
         public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo = null)
         {
@@ -100,6 +105,9 @@ namespace Cave
         /// <summary>
         /// Joins a collection to a string.
         /// </summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The seperator.</param>
+        /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
         public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo = null)
         {
@@ -128,7 +136,7 @@ namespace Cave
 
         /// <summary>Joins the camel case.</summary>
         /// <param name="parts">The parts.</param>
-        /// <returns></returns>
+        /// <returns>The joned string.</returns>
         public static string JoinCamelCase(this string[] parts)
         {
             var result = new StringBuilder();
@@ -154,7 +162,7 @@ namespace Cave
         /// </summary>
         /// <param name="ex">The <see cref="Exception"/>.</param>
         /// <param name="debug">Include debug information (stacktrace, data).</param>
-        /// <returns></returns>
+        /// <returns>The text.</returns>
         public static string ToText(this Exception ex, bool debug = false)
         {
             return string.Join(Environment.NewLine, ToStrings(ex, debug));
@@ -165,7 +173,7 @@ namespace Cave
         /// </summary>
         /// <param name="ex">The <see cref="Exception"/>.</param>
         /// <param name="debug">Include debug information (stacktrace, data).</param>
-        /// <returns></returns>
+        /// <returns>The string array.</returns>
         public static string[] ToStrings(this Exception ex, bool debug = false)
         {
             // ignore AggregateException
@@ -271,9 +279,9 @@ namespace Cave
         /// <summary>
         /// Provides a fail save version of string.Format not supporting extended format options (simply replacing {index} with the arguments.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        /// <param name="text">The format string.</param>
+        /// <param name="args">The parameters.</param>
+        /// <returns>The formatted string.</returns>
         public static string Format(this string text, params object[] args)
         {
             if (args == null)
@@ -397,14 +405,14 @@ namespace Cave
         /// <summary>Formats the specified timespan to [HH:]MM:SS.F.</summary>
         /// <param name="timeSpan">The time span.</param>
         /// <param name="millisecondDigits">The number of millisecond digits.</param>
-        /// <returns></returns>
+        /// <returns>The formatted string.</returns>
         /// <exception cref="NotSupportedException">Only 0-3 millisecond digits are supported!.</exception>
         public static string FormatTimeSpan(this TimeSpan timeSpan, int millisecondDigits)
         {
             var result = new StringBuilder();
             if (timeSpan.Hours > 0)
             {
-                result.Append(Math.Truncate(timeSpan.TotalHours));
+                result.Append((timeSpan.Ticks / TimeSpan.TicksPerHour).ToString("00"));
                 result.Append(":");
             }
             result.Append(timeSpan.Minutes.ToString("00"));
@@ -533,8 +541,8 @@ namespace Cave
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">Value to format.</param>
+        /// <returns>The formatted string.</returns>
         public static string FormatBinarySize(this double value)
         {
             return FormatBinarySize((float)value);
@@ -544,7 +552,7 @@ namespace Cave
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <returns></returns>
+        /// <returns>The formatted string.</returns>
         public static string FormatBinarySize(this decimal value)
         {
             return FormatBinarySize((float)value);
@@ -554,7 +562,7 @@ namespace Cave
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <returns></returns>
+        /// <returns>The formatted string.</returns>
         public static string FormatBinarySize(this ulong value)
         {
             return FormatBinarySize((float)value);
@@ -564,7 +572,7 @@ namespace Cave
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <returns></returns>
+        /// <returns>The formatted string.</returns>
         public static string FormatBinarySize(this long value)
         {
             return FormatBinarySize((float)value);
@@ -575,7 +583,7 @@ namespace Cave
         /// </summary>
         /// <param name="value">Value to format.</param>
         /// <param name="cultureInfo">The culture to use during formatting.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         public static string ToString(object value, CultureInfo cultureInfo)
         {
             if (value == null)
@@ -598,7 +606,7 @@ namespace Cave
         /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         public static string ToString(object value)
         {
             if (value == null)
@@ -616,8 +624,8 @@ namespace Cave
         /// <summary>
         /// Returns an array of strings using the element objects ToString() method with invariant culture.
         /// </summary>
-        /// <param name="enumerable"></param>
-        /// <returns></returns>
+        /// <param name="enumerable">The array ob objects.</param>
+        /// <returns>The string array.</returns>
         public static string[] ToStringArray(this IEnumerable enumerable)
         {
             return ToStringArray(enumerable, CultureInfo.InvariantCulture);
@@ -626,9 +634,9 @@ namespace Cave
         /// <summary>
         /// Returns an array of strings using the element objects ToString() method.
         /// </summary>
-        /// <param name="enumerable"></param>
+        /// <param name="enumerable">The array ob objects.</param>
         /// <param name="cultureInfo">The culture to use during formatting.</param>
-        /// <returns></returns>
+        /// <returns>The string array.</returns>
         public static string[] ToStringArray(this IEnumerable enumerable, CultureInfo cultureInfo)
         {
             if (enumerable == null)
@@ -653,7 +661,7 @@ namespace Cave
         /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default).
         /// </summary>
         /// <param name="dateTime">String value to parse.</param>
-        /// <returns></returns>
+        /// <returns>The parsed datetime.</returns>
         public static DateTime ParseDateTime(string dateTime)
         {
             {
@@ -675,8 +683,8 @@ namespace Cave
         /// Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default).
         /// </summary>
         /// <param name="dateTime">String value to parse.</param>
-        /// <param name="result"></param>
-        /// <returns></returns>
+        /// <param name="result">The parsed datetime.</param>
+        /// <returns>True if the value could be parsed.</returns>
         public static bool TryParseDateTime(string dateTime, out DateTime result)
         {
             if (DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result))
@@ -695,8 +703,8 @@ namespace Cave
         /// <summary>
         /// Parses a Point.ToString() result.
         /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
+        /// <param name="point">String value to parse.</param>
+        /// <returns>The parsed point.</returns>
         public static Point ParsePoint(string point)
         {
             var data = Unbox(point.Trim(), "{", "}", true);
@@ -724,8 +732,8 @@ namespace Cave
         /// <summary>
         /// Parses a Size.ToString() result.
         /// </summary>
-        /// <param name="size"></param>
-        /// <returns></returns>
+        /// <param name="size">String value to parse.</param>
+        /// <returns>The parsed size.</returns>
         public static Size ParseSize(string size)
         {
             var data = Unbox(size.Trim(), "{", "}", true);
@@ -753,8 +761,8 @@ namespace Cave
         /// <summary>
         /// Parses a Rectangle.ToString() result.
         /// </summary>
-        /// <param name="rect"></param>
-        /// <returns></returns>
+        /// <param name="rect">String value to parse.</param>
+        /// <returns>The parsed rectangle.</returns>
         public static Rectangle ParseRectangle(string rect)
         {
             var data = Unbox(rect, "{", "}", true);
@@ -794,8 +802,8 @@ namespace Cave
         /// <summary>
         /// Parses a PointF.ToString() result.
         /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
+        /// <param name="point">String value to parse.</param>
+        /// <returns>The parsed float point.</returns>
         public static PointF ParsePointF(string point)
         {
             var data = Unbox(point, "{", "}", true);
@@ -813,8 +821,8 @@ namespace Cave
         /// <summary>
         /// Parses a SizeF.ToString() result.
         /// </summary>
-        /// <param name="size"></param>
-        /// <returns></returns>
+        /// <param name="size">String value to parse.</param>
+        /// <returns>The parsed float size.</returns>
         public static SizeF ParseSizeF(string size)
         {
             var data = Unbox(size, "{", "}", true);
@@ -832,8 +840,8 @@ namespace Cave
         /// <summary>
         /// Parses a RectangleF.ToString() result.
         /// </summary>
-        /// <param name="rect"></param>
-        /// <returns></returns>
+        /// <param name="rect">String value to parse.</param>
+        /// <returns>The parsed float rectangle.</returns>
         public static RectangleF ParseRectangleF(string rect)
         {
             var data = Unbox(rect, "{", "}", true);
@@ -853,7 +861,7 @@ namespace Cave
         /// <summary>Gets a substring from the end of the specified string.</summary>
         /// <param name="text">The string.</param>
         /// <param name="count">The number of characters at the end to be retrieved.</param>
-        /// <returns></returns>
+        /// <returns>The substring.</returns>
         public static string SubstringEnd(this string text, int count)
         {
             if (text == null)
@@ -871,13 +879,13 @@ namespace Cave
             return text.Substring(len - count);
         }
 
-        /// <summary>Obtains a part of a string.</summary>
+        /// <summary>Gets a part of a string.</summary>
         /// <param name="data">Data to parse.</param>
         /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
         /// <param name="startMark">StartMark to check/search for.</param>
         /// <param name="endMark">EndMark to search for.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception if string cannot be found].</param>
-        /// <returns></returns>
+        /// <returns>The substring.</returns>
         /// <exception cref="System.ArgumentNullException">data.</exception>
         /// <exception cref="ArgumentException">
         /// StartMark not found!
@@ -928,13 +936,13 @@ namespace Cave
             return data.Substring(start + 1, end - start - 1);
         }
 
-        /// <summary>Obtains a part of a string.</summary>
+        /// <summary>Gets a part of a string.</summary>
         /// <param name="data">Data to parse.</param>
         /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
         /// <param name="startMark">StartMark to check/search for.</param>
         /// <param name="endMark">EndMark to search for.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception if string cannot be found].</param>
-        /// <returns></returns>
+        /// <returns>The substring.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// data
         /// or
@@ -1059,7 +1067,7 @@ namespace Cave
         /// <summary>Converts a byte array to a hexadecimal string.</summary>
         /// <param name="data">The data.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns></returns>
+        /// <returns>The converted string.</returns>
         /// <exception cref="ArgumentNullException">data.</exception>
         public static string ToHexString(this byte[] data, bool upperCase = false)
         {
@@ -1070,7 +1078,7 @@ namespace Cave
         /// <param name="data">The data.</param>
         /// <param name="isLittleEndian">Defines whether the specified data has little endian byte order or not.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns></returns>
+        /// <returns>The converted string.</returns>
         /// <exception cref="ArgumentNullException">data.</exception>
         public static string ToHexString(this byte[] data, bool isLittleEndian, bool upperCase = false)
         {
@@ -1096,8 +1104,8 @@ namespace Cave
         /// <summary>
         /// Converts a hex string to a byte array.
         /// </summary>
-        /// <param name="hex"></param>
-        /// <returns></returns>
+        /// <param name="hex">The string with hex values.</param>
+        /// <returns>The byte array.</returns>
         public static byte[] ParseHexString(string hex)
         {
             if (hex == null)
@@ -1123,10 +1131,10 @@ namespace Cave
         /// <summary>
         /// A fast pattern replacement function for large strings.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="pattern"></param>
-        /// <param name="replacement"></param>
-        /// <returns></returns>
+        /// <param name="text">The text.</param>
+        /// <param name="pattern">The pattern to find.</param>
+        /// <param name="replacement">The replacement.</param>
+        /// <returns>The replaced text.</returns>
         public static string ReplaceCaseInsensitiveInvariant(this string text, string pattern, string replacement)
         {
             if (text == null)
@@ -1187,22 +1195,24 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains whether the specified string contains invalid chars or not.
+        /// Gets whether the specified string contains invalid chars or not.
         /// </summary>
-        /// <returns>Returns a new string.</returns>
-        public static bool HasInvalidChars(this string source, string validChars)
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns true if the text contains invalid chars.</returns>
+        public static bool HasInvalidChars(this string text, string validChars)
         {
-            if (source == null)
+            if (text == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException("text missing");
             }
 
             if (string.IsNullOrEmpty(validChars))
             {
-                return !string.IsNullOrEmpty(source);
+                return !string.IsNullOrEmpty(text);
             }
 
-            foreach (var c in source)
+            foreach (var c in text)
             {
                 if (validChars.IndexOf(c) < 0)
                 {
@@ -1215,12 +1225,14 @@ namespace Cave
         /// <summary>
         /// Retrieves only validated chars from a string.
         /// </summary>
-        /// <returns>Returns a new string.</returns>
-        public static string GetValidChars(this string source, string validChars)
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns a new string with valid chars.</returns>
+        public static string GetValidChars(this string text, string validChars)
         {
-            if (source == null)
+            if (text == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException("text");
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1228,8 +1240,8 @@ namespace Cave
                 return string.Empty;
             }
 
-            var result = new StringBuilder(source.Length);
-            foreach (var c in source)
+            var result = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
                 if (validChars.IndexOf(c) > -1)
                 {
@@ -1240,16 +1252,16 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the index of the first invalid char or -1 if all chars are valid.
+        /// Gets the index of the first invalid char or -1 if all chars are valid.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="validChars"></param>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns the index or -1.</returns>
-        public static int IndexOfInvalidChar(this string source, string validChars)
+        public static int IndexOfInvalidChar(this string text, string validChars)
         {
-            if (source == null)
+            if (text == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException("text");
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1257,9 +1269,9 @@ namespace Cave
                 return 0;
             }
 
-            for (var i = 0; i < source.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
-                if (validChars.IndexOf(source[i]) < 0)
+                if (validChars.IndexOf(text[i]) < 0)
                 {
                     return i;
                 }
@@ -1268,17 +1280,17 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the index of the first invalid char or -1 if all chars are valid.
+        /// Gets the index of the first invalid char or -1 if all chars are valid.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="validChars"></param>
-        /// <param name="start"></param>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <param name="start">The start index.</param>
         /// <returns>Returns the index or -1.</returns>
-        public static int IndexOfInvalidChar(this string source, string validChars, int start)
+        public static int IndexOfInvalidChar(this string text, string validChars, int start)
         {
-            if (source == null)
+            if (text == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException("text");
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1286,9 +1298,9 @@ namespace Cave
                 return 0;
             }
 
-            for (var i = start; i < source.Length; i++)
+            for (var i = start; i < text.Length; i++)
             {
-                if (validChars.IndexOf(source[i]) < 0)
+                if (validChars.IndexOf(text[i]) < 0)
                 {
                     return i;
                 }
@@ -1299,17 +1311,20 @@ namespace Cave
         /// <summary>
         /// Retrieves all specified chars with a string.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="chars">The array of chars to retrieve.</param>
+        /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a new string.</returns>
-        public static string ReplaceChars(this string source, char[] chars, string replacer)
+        public static string ReplaceChars(this string text, char[] chars, string replacer)
         {
-            if (string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(text))
             {
                 return string.Empty;
             }
 
             if (chars == null)
             {
-                return source;
+                return text;
             }
 
             if (replacer == null)
@@ -1317,8 +1332,8 @@ namespace Cave
                 replacer = string.Empty;
             }
 
-            var result = new StringBuilder(source.Length);
-            foreach (var c in source)
+            var result = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
                 if (Array.IndexOf(chars, c) > -1)
                 {
@@ -1335,17 +1350,20 @@ namespace Cave
         /// <summary>
         /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="chars">The array of chars to retrieve.</param>
+        /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a new string.</returns>
-        public static string ReplaceChars(this string source, string chars, string replacer)
+        public static string ReplaceChars(this string text, string chars, string replacer)
         {
-            if (string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(text))
             {
                 return string.Empty;
             }
 
             if (chars == null)
             {
-                return source;
+                return text;
             }
 
             if (replacer == null)
@@ -1353,8 +1371,8 @@ namespace Cave
                 replacer = string.Empty;
             }
 
-            var sb = new StringBuilder(source.Length);
-            foreach (var c in source)
+            var sb = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
                 if (chars.IndexOf(c) > -1)
                 {
@@ -1371,15 +1389,18 @@ namespace Cave
         /// <summary>
         /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The array of chars to retrieve.</param>
+        /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns only valid characters.</returns>
-        public static string ReplaceInvalidChars(this string source, char[] validChars, string replacer)
+        public static string ReplaceInvalidChars(this string text, char[] validChars, string replacer)
         {
             if ((validChars == null) || (validChars.Length == 0))
             {
                 return string.Empty;
             }
 
-            if (string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(text))
             {
                 return string.Empty;
             }
@@ -1389,8 +1410,8 @@ namespace Cave
                 replacer = string.Empty;
             }
 
-            var sb = new StringBuilder(source.Length);
-            foreach (var c in source)
+            var sb = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
                 if (Array.IndexOf(validChars, c) > -1)
                 {
@@ -1407,15 +1428,18 @@ namespace Cave
         /// <summary>
         /// Retrieves only validated chars from a string and replaces all other occurances.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The array of chars to retrieve.</param>
+        /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a string containing only valid characters.</returns>
-        public static string ReplaceInvalidChars(this string source, string validChars, string replacer)
+        public static string ReplaceInvalidChars(this string text, string validChars, string replacer)
         {
             if (string.IsNullOrEmpty(validChars))
             {
                 return string.Empty;
             }
 
-            if (string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(text))
             {
                 return string.Empty;
             }
@@ -1425,8 +1449,8 @@ namespace Cave
                 replacer = string.Empty;
             }
 
-            var sb = new StringBuilder(source.Length);
-            foreach (var c in source)
+            var sb = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
                 if (validChars.IndexOf(c) > -1)
                 {
@@ -1443,9 +1467,9 @@ namespace Cave
         /// <summary>
         /// Splits a string at the specified separators and allows to keep the separators in the list.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="separators"></param>
-        /// <returns></returns>
+        /// <param name="text">The text.</param>
+        /// <param name="separators">The arrays of chars used to seperate the text.</param>
+        /// <returns>The array of seperated strings.</returns>
         public static string[] SplitKeepSeparators(this string text, params char[] separators)
         {
             if (string.IsNullOrEmpty(text))
@@ -1478,6 +1502,8 @@ namespace Cave
         /// <summary>
         /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0).
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="textSplitOptions">The options.</param>
         /// <returns>Returns a new array of strings.</returns>
         public static string[] SplitNewLine(this string text, StringSplitOptions textSplitOptions)
         {
@@ -1576,8 +1602,8 @@ namespace Cave
         /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0).
         /// Empty entries will be kept. (This equals <see cref="SplitNewLine(string, StringSplitOptions)"/> with <see cref="StringSplitOptions.None"/>).
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">The text.</param>
+        /// <returns>The string array.</returns>
         public static string[] SplitNewLine(this string text)
         {
             return SplitNewLine(text, StringSplitOptions.None);
@@ -1587,6 +1613,8 @@ namespace Cave
         /// Splits a string at newline markings and after a specified length.
         /// Trys to split only at space and newline, but will split anywhere else if its not possible.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length of the new strings.</param>
         /// <returns>Returns a new array of strings.</returns>
         public static string[] SplitNewLineAndLength(this string text, int maxLength)
         {
@@ -1650,7 +1678,7 @@ namespace Cave
 
         /// <summary>Splits a string at character casing.</summary>
         /// <param name="text">The text.</param>
-        /// <returns></returns>
+        /// <returns>The string array.</returns>
         public static string[] SplitCamelCase(this string text)
         {
             var splits = new List<int>();
@@ -1681,7 +1709,7 @@ namespace Cave
         /// <summary>Splits a string at the specified indices.</summary>
         /// <param name="text">The text.</param>
         /// <param name="indices">The indices.</param>
-        /// <returns></returns>
+        /// <returns>The string array.</returns>
         public static string[] SplitAt(this string text, IEnumerable<int> indices)
         {
             var items = new List<string>();
@@ -1702,7 +1730,7 @@ namespace Cave
         /// <summary>Splits a string at the specified indices.</summary>
         /// <param name="text">The text.</param>
         /// <param name="indices">The indices.</param>
-        /// <returns></returns>
+        /// <returns>The string array.</returns>
         public static string[] SplitAt(this string text, params int[] indices)
         {
             return SplitAt(text, (IEnumerable<int>)indices);
@@ -1713,7 +1741,7 @@ namespace Cave
         /// <param name="separator">The separator.</param>
         /// <param name="index">The index of the part to replace.</param>
         /// <param name="newValue">The new value.</param>
-        /// <returns></returns>
+        /// <returns>The replaced string.</returns>
         public static string ReplacePart(this string text, char separator, int index, string newValue)
         {
             var parts = text.Split(separator);
@@ -1724,6 +1752,8 @@ namespace Cave
         /// <summary>
         /// Replaces newline markings.
         /// </summary>
+        /// <param name="text">the text.</param>
+        /// <param name="newLine">The new newline markings.</param>
         /// <returns>Returns a new string.</returns>
         public static string ReplaceNewLine(this string text, string newLine)
         {
@@ -1734,6 +1764,7 @@ namespace Cave
         /// <summary>
         /// Removes any newline markings.
         /// </summary>
+        /// <param name="text">The text.</param>
         /// <returns>Returns a string without any newline characters.</returns>
         public static string RemoveNewLine(this string text)
         {
@@ -1797,24 +1828,30 @@ namespace Cave
         /// <summary>
         /// Enforces a specific string length (appends spaces and cuts to length).
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceLength(this string text, int count)
+        public static string ForceLength(this string text, int maxLength)
         {
-            return ForceLength(text, count, string.Empty, " ");
+            return ForceLength(text, maxLength, string.Empty, " ");
         }
 
         /// <summary>
         /// Enforces a specific string length.
         /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <param name="prefix">The prefix to add.</param>
+        /// <param name="suffix">The suffix to add.</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceLength(this string text, int count, string prefix, string suffix)
+        public static string ForceLength(this string text, int maxLength, string prefix, string suffix)
         {
-            while (text.Length < count)
+            while (text.Length < maxLength)
             {
                 if (prefix != null)
                 {
                     text = prefix + text;
-                    if (text.Length == count)
+                    if (text.Length == maxLength)
                     {
                         break;
                     }
@@ -1824,9 +1861,9 @@ namespace Cave
                     text += suffix;
                 }
             }
-            if (text.Length > count)
+            if (text.Length > maxLength)
             {
-                text = text.Substring(0, count);
+                text = text.Substring(0, maxLength);
             }
 
             return text;
@@ -1835,6 +1872,7 @@ namespace Cave
         /// <summary>
         /// Tries to detect the used newline chars in the specified string.
         /// </summary>
+        /// <param name="text">The text.</param>
         /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
         public static string DetectNewLine(this string text)
         {

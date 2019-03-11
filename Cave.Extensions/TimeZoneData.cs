@@ -11,7 +11,7 @@ namespace Cave
         /// Parses a TimeZoneData from a string with a time zone name and optional [+/- Offset].
         /// </summary>
         /// <param name="text">Zone[+/-Offset].</param>
-        /// <returns></returns>
+        /// <returns>The parsed timezone data.</returns>
         public static TimeZoneData Parse(string text)
         {
             DateTimeParser.ParseTimeZone(text, out TimeZoneData result);
@@ -21,9 +21,9 @@ namespace Cave
         /// <summary>
         /// Searches for a timezone by its name.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
+        /// <param name="name">The name.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>The timezone.</returns>
         public static TimeZoneData Get(string name, TimeSpan offset)
         {
             foreach (TimeZoneData data in TimeZones.GetList())
@@ -65,9 +65,9 @@ namespace Cave
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeZoneData"/> class.
         /// </summary>
-        /// <param name="description"></param>
-        /// <param name="name"></param>
-        /// <param name="offset"></param>
+        /// <param name="description">The description.</param>
+        /// <param name="name">the name.</param>
+        /// <param name="offset">the offset.</param>
         public TimeZoneData(string description, string name, TimeSpan offset)
         {
             Name = name;
@@ -76,9 +76,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the timezone as UTC+Offset string.
+        /// Gets the timezone as UTC+Offset string.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The timezone es string.</returns>
         public override string ToString()
         {
             if (Offset == TimeSpan.Zero)
@@ -99,8 +99,8 @@ namespace Cave
         /// <summary>
         /// Checks for equality with another object.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The other time zone.</param>
+        /// <returns>True if the time zones are equal.</returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, null))
@@ -112,9 +112,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the hashcode of this instance based on the offset from utc.
+        /// Gets the hashcode of this instance based on the offset from utc.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The hash code.</returns>
         public override int GetHashCode()
         {
             return Offset.GetHashCode();

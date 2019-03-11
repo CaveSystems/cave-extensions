@@ -48,7 +48,7 @@ namespace Cave
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="items">The items to shuffle.</param>
         /// <param name="seed">The seed.</param>
-        /// <returns></returns>
+        /// <returns>List of shuffled items.</returns>
         public static List<T> Shuffle<T>(this IEnumerable<T> items, int seed = 0)
         {
             unchecked
@@ -136,7 +136,7 @@ namespace Cave
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
-        /// <returns></returns>
+        /// <returns>Array of concated items.</returns>
         public static T[] Concat<T>(this T[] t1, params T[] t2)
         {
             var result = new T[t1.Length + t2.Length];
@@ -149,7 +149,7 @@ namespace Cave
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="t1">The t1.</param>
         /// <param name="t2">The t2.</param>
-        /// <returns></returns>
+        /// <returns>Array of concated items.</returns>
         public static T[] Concat<T>(this T[] t1, params T[][] t2)
         {
             var count = t1.Length;
@@ -173,7 +173,7 @@ namespace Cave
         /// <param name="offset">The offset.</param>
         /// <param name="count">The count.</param>
         /// <param name="comparand">The comparand.</param>
-        /// <returns></returns>
+        /// <returns>True if the range matches.</returns>
         public static bool RangeEquals(this byte[] bytes, int offset, int count, byte[] comparand)
         {
             if (offset < 0 || count < 0 || bytes.Length < offset + count)
@@ -195,7 +195,7 @@ namespace Cave
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
         /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8"/>).</param>
-        /// <returns></returns>
+        /// <returns>True if data starts with the pattern.</returns>
         public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
         {
             if (encoding == null)
@@ -210,7 +210,7 @@ namespace Cave
         /// <summary>Checks whether data starts with the specified pattern or not.</summary>
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
-        /// <returns></returns>
+        /// <returns>True if data starts with the pattern.</returns>
         public static bool StartsWith(this byte[] data, byte[] pattern)
         {
             if (pattern.Length > data.Length)
@@ -232,7 +232,7 @@ namespace Cave
         /// <summary>Finds the startindex of the first occurence of the specified pattern.</summary>
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
-        /// <returns></returns>
+        /// <returns>The startindex.</returns>
         public static int IndexOf(this byte[] data, byte[] pattern)
         {
             var matchIndex = 0;
@@ -260,7 +260,7 @@ namespace Cave
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
         /// <param name="replacer">The replacer.</param>
-        /// <returns></returns>
+        /// <returns>The replaced Data.</returns>
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, byte[] replacer)
         {
@@ -282,7 +282,7 @@ namespace Cave
         /// <param name="data">The data.</param>
         /// <param name="pattern">The pattern.</param>
         /// <param name="replacers">The replacers.</param>
-        /// <returns></returns>
+        /// <returns>The replaced Data.</returns>
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, params byte[][] replacers)
         {

@@ -12,10 +12,10 @@ namespace Cave
         #region Static implementation
 
         /// <summary>
-        /// Obtains whether the string contains non 7Bit ASCII chars (!=17..127).
+        /// Gets whether the string contains non 7Bit ASCII chars (!=17..127).
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">The string.</param>
+        /// <returns>True if the string does not contain 7Bit ASCII chars.</returns>
         public static bool IsClean(string text)
         {
             if (text == null)
@@ -41,7 +41,7 @@ namespace Cave
         /// <param name="minimumCharacter">The minimum character value to keep (defaults to 32 = space).</param>
         /// <param name="replacer">The replacer.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The cleaned string.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         public static string Clean(string text, int start = 0, int count = -1, char minimumCharacter = ' ', char replacer = ' ', bool termination = false)
         {
@@ -72,10 +72,10 @@ namespace Cave
             return new string(result);
         }
 
-        /// <summary>Obtains the bytes for a specified 7Bit ASCII string.</summary>
+        /// <summary>Gets the bytes for a specified 7Bit ASCII string.</summary>
         /// <param name="text">The text.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The byte array.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static byte[] GetBytes(string text, bool termination = false)
@@ -88,12 +88,12 @@ namespace Cave
             return GetBytes(text, 0, -1, termination);
         }
 
-        /// <summary>Obtains the bytes for a specified 7Bit ASCII string.</summary>
+        /// <summary>Gets the bytes for a specified 7Bit ASCII string.</summary>
         /// <param name="text">String to encode.</param>
         /// <param name="start">Startindex at the string to encode.</param>
         /// <param name="count">Length in characters to encode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The byte array.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static byte[] GetBytes(string text, int start, int count, bool termination = false)
@@ -131,9 +131,9 @@ namespace Cave
             }
         }
 
-        /// <summary>Obtains the string for the specified 7Bit ASCII bytes.</summary>
+        /// <summary>Gets the string for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static string GetString(byte[] bytes)
@@ -146,9 +146,9 @@ namespace Cave
             return GetString(bytes, 0, bytes.Length);
         }
 
-        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes.</summary>
+        /// <summary>Gets the chars for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static char[] GetChars(byte[] bytes)
@@ -161,12 +161,12 @@ namespace Cave
             return GetChars(bytes, 0, bytes.Length);
         }
 
-        /// <summary>Obtains the chars for the specified 7Bit ASCII bytes.</summary>
+        /// <summary>Gets the chars for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
         /// <param name="start">Startindex at the array to decode.</param>
         /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The char array.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static char[] GetChars(byte[] bytes, int start, int count, bool termination = false)
@@ -199,12 +199,12 @@ namespace Cave
             }
         }
 
-        /// <summary>Obtains the string for the specified 7Bit ASCII bytes.</summary>
+        /// <summary>Gets the string for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
         /// <param name="start">Startindex at the array to decode.</param>
         /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
         public static string GetString(byte[] bytes, int start, int count, bool termination = false)
@@ -213,14 +213,14 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the string for the specified 7Bit ASCII bytes (0..127).
+        /// Gets the string for the specified 7Bit ASCII bytes (0..127).
         /// Any invalid character is replaced by char 255.
         /// </summary>
         /// <param name="bytes">Bytes to decode.</param>
         /// <param name="start">Startindex at the array to decode.</param>
         /// <param name="count">Length in bytes to decode.</param>
         /// <param name="termination">if set to <c>true</c> [obey termination].</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         public static string GetCleanString(byte[] bytes, int start = 0, int count = -1, bool termination = false)
         {
@@ -258,13 +258,13 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains a part of a string.
+        /// Gets a part of a string.
         /// </summary>
         /// <param name="data">Data to parse.</param>
         /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
         /// <param name="startMark">StartMark to check/search for.</param>
         /// <param name="endMark">EndMark to search for.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         public static string GetString(byte[] data, int start, byte startMark, byte endMark)
         {
             if (data == null)
@@ -295,7 +295,7 @@ namespace Cave
 
         /// <summary>Gets the hexadecimal character for the lower nibble.</summary>
         /// <param name="value">The value.</param>
-        /// <returns></returns>
+        /// <returns>The char.</returns>
         public static char GetHexChar(int value)
         {
             value &= 0xF;
@@ -311,7 +311,7 @@ namespace Cave
         /// </summary>
         /// <param name="c">The character.</param>
         /// <param name="escapeCharacter">The escape character.</param>
-        /// <returns></returns>
+        /// <returns>The char array.</returns>
         /// <exception cref="InvalidOperationException">Cannot escape character {0}!.</exception>
         public static char[] EscapeHex(char c, char escapeCharacter = '\\')
         {
@@ -329,7 +329,7 @@ namespace Cave
         /// <summary>Escapes all invalid characters (newline, tab, ... and everything above us ascii 127).</summary>
         /// <param name="text">The text.</param>
         /// <param name="escapeCharacter">The escape character to use.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         public static string Escape(string text, char escapeCharacter = '\\')
         {
@@ -395,7 +395,7 @@ namespace Cave
         /// <summary>Reverts a previous <see cref="Escape(string, char)" />.</summary>
         /// <param name="text">The text.</param>
         /// <param name="escapeCharacter">The escape character.</param>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="InvalidDataException">Invalid escape characters.</exception>
         public static string Unescape(string text, char escapeCharacter = '\\')

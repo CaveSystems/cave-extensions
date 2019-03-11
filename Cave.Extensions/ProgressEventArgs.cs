@@ -59,11 +59,11 @@ namespace Cave
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressEventArgs"/> class.
         /// </summary>
-        /// <param name="userItem"></param>
-        /// <param name="position"></param>
-        /// <param name="part"></param>
-        /// <param name="count"></param>
-        /// <param name="canBreak"></param>
+        /// <param name="userItem">The user item.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="part">The part done between last callback and current.</param>
+        /// <param name="count">The overall count.</param>
+        /// <param name="canBreak">A value indicating whether breaking the current operation is possible or not.</param>
         public ProgressEventArgs(object userItem, long position, int part, long count, bool canBreak)
         {
             CanBreak = canBreak;

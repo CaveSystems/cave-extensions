@@ -16,24 +16,24 @@ namespace Cave
         /// <summary>
         /// Checks two ConnectionString instances for inequality.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">The first connection string.</param>
+        /// <param name="b">The second connection string.</param>
+        /// <returns>True if the connection strings are not equal.</returns>
         public static bool operator ==(ConnectionString a, ConnectionString b) => a.Equals(b);
 
         /// <summary>
         /// Checks two ConnectionString instances for equality.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">The first connection string.</param>
+        /// <param name="b">The second connection string.</param>
+        /// <returns>True if the connection strings are equal.</returns>
         public static bool operator !=(ConnectionString a, ConnectionString b) => !a.Equals(b);
 
         /// <summary>
         /// converts a string to a connection string using <see cref="Parse(string)"/>.
         /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
+        /// <param name="connectionString">The String.</param>
+        /// <returns>The connection string.</returns>
         public static implicit operator ConnectionString(string connectionString)
         {
             if (connectionString == null)
@@ -47,8 +47,8 @@ namespace Cave
         /// <summary>
         /// converts a connection string to a string including credentials.
         /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
+        /// <param name="connectionString">The connection string.</param>
+        /// <returns>The string representation.</returns>
         public static implicit operator string(ConnectionString connectionString)
         {
             return connectionString.ToString(ConnectionStringPart.All);
@@ -61,6 +61,7 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].
         /// </summary>
+        /// <param name="connectionString">The connection string.</param>
         /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString)
         {
@@ -70,6 +71,14 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[&amp;option=value]]].
         /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="defaultProtocol">The protocol.</param>
+        /// <param name="defaultUserName">The user name.</param>
+        /// <param name="defaultPassword">The password.</param>
+        /// <param name="defaultServer">The server.</param>
+        /// <param name="defaultPort">The port.</param>
+        /// <param name="defaultPath">The path.</param>
+        /// <param name="defaultOptions">The options.</param>
         /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString, string defaultProtocol, string defaultUserName, string defaultPassword, string defaultServer, ushort? defaultPort, string defaultPath, string defaultOptions)
         {
@@ -169,6 +178,8 @@ namespace Cave
         /// <summary>
         /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].
         /// </summary>
+        /// <param name="connectionString">the string.</param>
+        /// <param name="result">The parsed result.</param>
         /// <returns>Returns true on success, false otherwise.</returns>
         public static bool TryParse(string connectionString, out ConnectionString result)
         {
@@ -271,8 +282,8 @@ namespace Cave
         /// <summary>
         /// Gets or sets the port of the <see cref="ConnectionString"/>.
         /// </summary>
-        /// <param name="defaultPort"></param>
-        /// <returns></returns>
+        /// <param name="defaultPort">The default port.</param>
+        /// <returns>The port.</returns>
         public int GetPort(int defaultPort)
         {
             if (Port <= 0)
@@ -301,8 +312,8 @@ namespace Cave
         /// <summary>
         /// Changes the path and returns a new ConnectionString.
         /// </summary>
-        /// <param name="relativePath"></param>
-        /// <returns></returns>
+        /// <param name="relativePath">The relative path.</param>
+        /// <returns>The connection string.</returns>
         public ConnectionString ChangePath(string relativePath)
         {
             ConnectionString copy = this;
@@ -318,30 +329,30 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains <see cref="NetworkCredential"/>s.
+        /// Gets <see cref="NetworkCredential"/>s.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The network credentials.</returns>
         public NetworkCredential GetCredentials()
         {
             return new NetworkCredential(UserName, Password);
         }
 
         /// <summary>
-        /// Obtains an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
+        /// Gets an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
         /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!.
         /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
+        /// <param name="items">The connection string parts.</param>
+        /// <returns>The uri.</returns>
         public Uri ToUri(ConnectionStringPart items)
         {
             return new Uri(ToString(items));
         }
 
         /// <summary>
-        /// Obtains an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
+        /// Gets an <see cref="Uri"/> for the <see cref="ConnectionString"/>. Only <see cref="ConnectionString"/>s with the Protocol
         /// file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri"/>!.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the uri.</returns>
         public Uri ToUri()
         {
             return new Uri(ToString());
@@ -350,6 +361,7 @@ namespace Cave
         /// <summary>
         /// Provides a connection string with (if known) or without the password.
         /// </summary>
+        /// <param name="items">The connection string parts.</param>
         /// <returns>Returns a new string.</returns>
         public string ToString(ConnectionStringPart items)
         {
@@ -411,7 +423,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the connection string with credentials (username and password). If you want to strip some parts of the connection string
+        /// Gets the connection string with credentials (username and password). If you want to strip some parts of the connection string
         /// use <see cref="ToString(ConnectionStringPart)"/>.
         /// </summary>
         /// <returns>Returns a new string.</returns>
@@ -423,8 +435,8 @@ namespace Cave
         /// <summary>
         /// Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The connection string.</param>
+        /// <returns>True if the connection strings are equal.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ConnectionString))
@@ -436,7 +448,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains hash code for the connection string.
+        /// Gets hash code for the connection string.
         /// </summary>
         /// <returns>Returns a new hash code.</returns>
         public override int GetHashCode()
