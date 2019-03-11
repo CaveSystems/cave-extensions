@@ -10,7 +10,7 @@ namespace Cave
     public static class AssemblyExtension
     {
         /// <summary>
-        /// Obtains a local file path for the specified assembly.
+        /// Gets a local file path for the specified assembly.
         /// </summary>
         /// <param name="assembly">Assembly instance.</param>
         /// <returns>Returns the file path.</returns>

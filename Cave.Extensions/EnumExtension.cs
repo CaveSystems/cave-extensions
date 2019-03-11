@@ -12,9 +12,9 @@ namespace Cave
         /// <summary>
         /// Gets an array containing all single flags set. (flag1, flag4, ..)
         /// </summary>
-        /// <typeparam name="TEnum"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>The flags as array.</returns>
         public static TEnum[] GetFlags<TEnum>(this TEnum value)
             where TEnum : struct, IConvertible
         {
@@ -37,9 +37,9 @@ namespace Cave
         /// <summary>
         /// Gets a string for all single flags set. ("flag1, flag4, ..").
         /// </summary>
-        /// <typeparam name="TEnum"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>The flags as string.</returns>
         public static string GetString<TEnum>(this TEnum value)
             where TEnum : struct, IConvertible
         {
@@ -68,7 +68,7 @@ namespace Cave
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value to be returned if no valid value was found.</param>
-        /// <returns></returns>
+        /// <returns>The enum value.</returns>
         public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default(TEnum))
             where TEnum : struct, IConvertible
         {
@@ -85,7 +85,7 @@ namespace Cave
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
-        /// <returns></returns>
+        /// <returns>True if the value could be parsed.</returns>
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
@@ -96,7 +96,7 @@ namespace Cave
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
-        /// <returns></returns>
+        /// <returns>True if the value could be parsed.</returns>
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
@@ -121,9 +121,9 @@ namespace Cave
         /// <summary>
         /// Determines whether one or more bit fields are set at the enum.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="flag"></param>
-        /// <returns></returns>
+        /// <param name="value">The enum value.</param>
+        /// <param name="flag">The flag.</param>
+        /// <returns>True if the flag is set in the value.</returns>
         public static bool HasFlag(this Enum value, IConvertible flag)
         {
             var test = Convert.ToUInt64(flag);

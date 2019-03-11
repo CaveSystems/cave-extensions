@@ -10,17 +10,17 @@ namespace Cave
         /// <summary>
         /// Checks two SubStringResult instances for equality.
         /// </summary>
-        /// <param name="subStringResult1"></param>
-        /// <param name="subStringResult2"></param>
-        /// <returns></returns>
+        /// <param name="subStringResult1">The first substringResult.</param>
+        /// <param name="subStringResult2">The second substringResult.</param>
+        /// <returns>True if the substringResults are equal.</returns>
         public static bool operator ==(SubStringResult subStringResult1, SubStringResult subStringResult2) => subStringResult1.Equals(subStringResult2);
 
         /// <summary>
         /// Checks two SubStringResult instances for inequality.
         /// </summary>
-        /// <param name="subStringResult1"></param>
-        /// <param name="subStringResult2"></param>
-        /// <returns></returns>
+        /// <param name="subStringResult1">The first substringResult.</param>
+        /// <param name="subStringResult2">The second substringResult.</param>
+        /// <returns>True if the substringResults are not equal.</returns>
         public static bool operator !=(SubStringResult subStringResult1, SubStringResult subStringResult2) => !subStringResult1.Equals(subStringResult2);
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Cave
         /// </summary>
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
-        /// <returns></returns>
+        /// <returns>The substringResult.</returns>
         public static SubStringResult Find(string text, string value)
         {
             if (text == null)
@@ -56,7 +56,7 @@ namespace Cave
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
         /// <param name="startIndex">Startindex to begin searching at.</param>
-        /// <returns></returns>
+        /// <returns>The substringResult.</returns>
         public static SubStringResult Find(string text, string value, int startIndex)
         {
             if (text == null)
@@ -79,7 +79,7 @@ namespace Cave
         /// <param name="text">Full string.</param>
         /// <param name="startIndex">start index.</param>
         /// <param name="endIndex">end index.</param>
-        /// <returns></returns>
+        /// <returns>The substringResult.</returns>
         public static SubStringResult FromIndices(string text, int startIndex, int endIndex)
         {
             return new SubStringResult(text, startIndex, endIndex - startIndex);
@@ -107,8 +107,8 @@ namespace Cave
         /// <summary>
         /// Checks whether an index is part of this substring or not.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">The index.</param>
+        /// <returns>True if the index is contained.</returns>
         public bool Contains(int index)
         {
             return (index >= Index) && (index < EndIndex);
@@ -140,9 +140,9 @@ namespace Cave
         public readonly int EndIndex;
 
         /// <summary>
-        /// Obtains a string "[Length] Start..End 'Text'.
+        /// Gets a string "[Length] Start..End 'Text'.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string.</returns>
         public override string ToString()
         {
             if (Index < 0)
@@ -154,9 +154,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the hash code for this instance.
+        /// Gets the hash code for this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The hash code.</returns>
         public override int GetHashCode()
         {
             return Index ^ Length ^ Text.GetHashCode();
@@ -165,8 +165,8 @@ namespace Cave
         /// <summary>
         /// Checks this instance with another one.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The other substringresult.</param>
+        /// <returns>True if both instances are equal.</returns>
         public override bool Equals(object obj)
         {
             if (obj is SubStringResult other)

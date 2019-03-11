@@ -26,7 +26,7 @@ namespace Cave
         /// <param name="length">Number of bytes to copy.</param>
         /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
-        /// <returns></returns>
+        /// <returns>The number of bytes copied.</returns>
         /// <exception cref="ArgumentNullException">
         /// source
         /// or
@@ -92,7 +92,7 @@ namespace Cave
         /// <param name="length">The number of bytes to read or -1 to read the whole stream.</param>
         /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
-        /// <returns></returns>
+        /// <returns>The bytes read.</returns>
         /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
@@ -137,7 +137,7 @@ namespace Cave
         /// </summary>
         /// <param name="source">Source stream.</param>
         /// <param name="count">The number of bytes to read.</param>
-        /// <returns></returns>
+        /// <returns>The bytes read.</returns>
         public static byte[] ReadBlock(this Stream source, int count)
         {
             return ReadBlock(source, count, null);
@@ -148,7 +148,7 @@ namespace Cave
         /// <param name="count">The number of bytes to read.</param>
         /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
-        /// <returns></returns>
+        /// <returns>The bytes read.</returns>
         /// <exception cref="ArgumentNullException">source.</exception>
         public static byte[] ReadBlock(this Stream source, int count, ProgressCallback callback, object userItem = null)
         {

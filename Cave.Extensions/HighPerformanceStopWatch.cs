@@ -12,7 +12,7 @@ namespace Cave
         /// <summary>
         /// Starts a new stopwatch.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The new started stopwatch.</returns>
         public static HighPerformanceStopWatch StartNew()
         {
             var result = new HighPerformanceStopWatch();
@@ -32,8 +32,8 @@ namespace Cave
         /// <summary>
         /// Checks for equality with another stopwatch.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The other stopwatch.</param>
+        /// <returns>True if the stopwatches are equal.</returns>
         public override bool Equals(object obj)
         {
             var other = obj as IStopWatch;
@@ -48,9 +48,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the hashcode for this instance.
+        /// Gets the hashcode for this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The hash code.</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();

@@ -110,7 +110,7 @@ namespace Cave
         /// <summary>Formats the price.</summary>
         /// <param name="price">The price.</param>
         /// <param name="culture">The culture.</param>
-        /// <returns></returns>
+        /// <returns>The formated string.</returns>
         public static string FormatPrice(this double price, CultureInfo culture = null)
         {
 #if !NETSTANDARD13

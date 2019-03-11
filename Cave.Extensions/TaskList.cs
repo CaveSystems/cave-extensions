@@ -49,12 +49,15 @@ namespace Cave
         }
 
         /// <summary>Waits for all tasks to complete.</summary>
+        /// <param name="action">The action to wait for.</param>
         public void WaitAll(Action action)
         {
             WaitAll(action, 1000);
         }
 
         /// <summary>Waits for all tasks to complete.</summary>
+        /// <param name="action">The action to wait for.</param>
+        /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
         public void WaitAll(Action action, int sleepTime)
         {
             while (true)
@@ -75,12 +78,15 @@ namespace Cave
         }
 
         /// <summary>Waits for any task to complete.</summary>
+        /// <param name="action">The action to wait for.</param>
         public void WaitAny(Action action)
         {
             WaitAny(action, 1000);
         }
 
         /// <summary>Waits for any task to complete.</summary>
+        /// <param name="action">The action to wait for.</param>
+        /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
         public void WaitAny(Action action, int sleepTime)
         {
             while (true)
@@ -101,12 +107,15 @@ namespace Cave
         }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
+        /// <param name="action">The action to wait for.</param>
         public void Wait(Action action)
         {
             Wait(action, 1000);
         }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
+        /// <param name="action">The action to wait for.</param>
+        /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
         public void Wait(Action action, int sleepTime)
         {
             while (true)

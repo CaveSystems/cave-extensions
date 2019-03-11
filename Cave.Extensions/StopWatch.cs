@@ -21,9 +21,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains a new started IStopWatch object.
+        /// Gets a new started IStopWatch object.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The started stopwatch.</returns>
         public static IStopWatch StartNew()
         {
             var watch = (IStopWatch)Activator.CreateInstance(SelectedType);
@@ -34,7 +34,7 @@ namespace Cave
         /// <summary>Checks the resolution.</summary>
         /// <param name="watch">The IStopWatch to check.</param>
         /// <param name="samples">The samples.</param>
-        /// <returns></returns>
+        /// <returns>The resolution.</returns>
         /// <exception cref="ArgumentNullException">watch.</exception>
         public static TimeSpan CheckResolution(IStopWatch watch, int samples = 50)
         {

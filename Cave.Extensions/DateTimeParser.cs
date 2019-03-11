@@ -144,7 +144,7 @@ namespace Cave
         /// </summary>
         /// <param name="text">The string to parse.</param>
         /// <param name="timeZoneData">The detected timezone.</param>
-        /// <returns></returns>
+        /// <returns>Returns the string bounds of the timezone.</returns>
         public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
         {
             Match match = Regex.Match(text, @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))", RegexOptions.Compiled);

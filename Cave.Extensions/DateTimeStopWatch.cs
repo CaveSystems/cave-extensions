@@ -13,7 +13,7 @@ namespace Cave
         /// <summary>
         /// Starts a new stop watch.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The started stop watch.</returns>
         public static DateTimeStopWatch StartNew()
         {
             var result = new DateTimeStopWatch();
@@ -22,7 +22,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the elapsed time if the timer is no longer running.
+        /// Gets the elapsed time if the timer is no longer running.
         /// </summary>
         TimeSpan elapsed;
 
@@ -37,8 +37,8 @@ namespace Cave
         /// <summary>
         /// Checks for equality with another stopwatch.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The other stopwatch.</param>
+        /// <returns>True if the stopwatches are equal.</returns>
         public override bool Equals(object obj)
         {
             var other = obj as IStopWatch;
@@ -53,9 +53,9 @@ namespace Cave
         }
 
         /// <summary>
-        /// Obtains the hashcode for this instance.
+        /// Gets the hashcode for this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The hash code.</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();
