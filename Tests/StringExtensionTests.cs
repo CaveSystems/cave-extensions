@@ -1,14 +1,14 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text;
 using Cave;
+using NUnit.Framework;
 
 namespace Tests
 {
-    [TestClass]
+    [TestFixture]
     public class StringExtensionTests
     {
-        [TestMethod]
+        [Test]
         public void UnEscape()
         {
             StringBuilder sb = new StringBuilder();

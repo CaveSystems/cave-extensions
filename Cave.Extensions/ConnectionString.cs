@@ -108,19 +108,19 @@ namespace Cave
             if (parts[parts.Length - 1].Trim().Length > 0)
             {
                 server = parts[parts.Length - 1].Trim();
-            }
 
-            // get path (if any) and remove it from server string
-            var pathIndex = server.IndexOfAny(new char[] { '/', '\\' });
-            if ((pathIndex == 2) && (protocol.ToUpperInvariant() == "FILE"))
-            {
-                path = server;
-                server = null;
-            }
-            else if (pathIndex > -1)
-            {
-                path = server.Substring(pathIndex + 1);
-                server = server.Substring(0, pathIndex);
+                // get path (if any) and remove it from server string
+                var pathIndex = server.IndexOfAny(new char[] { '/', '\\' });
+                if ((pathIndex == 2) && (protocol.ToUpperInvariant() == "FILE"))
+                {
+                    path = server;
+                    server = null;
+                }
+                else if (pathIndex > -1)
+                {
+                    path = server.Substring(pathIndex + 1);
+                    server = server.Substring(0, pathIndex);
+                }
             }
 
             // get server and port
@@ -172,98 +172,19 @@ namespace Cave
         /// <returns>Returns true on success, false otherwise.</returns>
         public static bool TryParse(string connectionString, out ConnectionString result)
         {
-            if (connectionString == null)
+            // TODO: Fixme
+            try
             {
-                throw new ArgumentNullException("connectionString");
+                result = Parse(connectionString);
+                return true;
             }
-
-            ushort port = 0;
-            string protocol;
-            string username = null;
-            string password = null;
-            string server = string.Empty;
-            string path = null;
-            string options = null;
-
-            // get protocol
-            var parts = connectionString.Split(new string[] { "://" }, 2, StringSplitOptions.None);
-            if (parts.Length > 1)
-            {
-                protocol = parts[0];
-            }
-            else
+            catch
             {
                 result = default;
                 return false;
             }
-
-            // get username & password, server & port & path parts
-            parts = parts[parts.Length - 1].Split(new char[] { '@' }, 2);
-
-            // get server, port and path part
-            if (parts[parts.Length - 1].Trim().Length > 0)
-            {
-                server = parts[parts.Length - 1].Trim();
-            }
-
-            // get path (if any) and remove it from server string
-            var pathIndex = server.IndexOf('/');
-            if (pathIndex > -1)
-            {
-                path = server.Substring(pathIndex + 1);
-                server = server.Substring(0, pathIndex);
-            }
-
-            // get server and port
-            var portIndex = server.IndexOf(':');
-            if ((portIndex == 1) && (server[portIndex + 1] == '\\'))
-            {
-                path = server;
-                server = null;
-            }
-            else if (portIndex > -1)
-            {
-                var portString = server.Substring(portIndex + 1);
-                if (ushort.TryParse(portString, out port))
-                {
-                    server = server.Substring(0, portIndex);
-                }
-            }
-
-            // get user and password
-            if (parts.Length > 1)
-            {
-                var usernamePassword = parts[0];
-                for (var i = 1; i < parts.Length - 1; i++)
-                {
-                    usernamePassword += "@" + parts[i];
-                }
-                parts = usernamePassword.Split(new char[] { ':' }, 2);
-                username = parts[0];
-                if (parts.Length > 1)
-                {
-                    password = parts[1];
-                }
-            }
-
-            // get options
-            if (path != null)
-            {
-                var index = path.IndexOf('?');
-                if (index > -1)
-                {
-                    options = path.Substring(index + 1);
-                    path = options.Substring(0, index);
-                }
-            }
-            if ((port < 0) || (port > 65535))
-            {
-                port = 0;
-            }
-
-            result = new ConnectionString(protocol, username, password, server, port, path, options);
-            return true;
         }
+
         #endregion
 
         /// <summary>

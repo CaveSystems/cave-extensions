@@ -76,14 +76,14 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    testAssemblyVer2: '**\Test.exe'
+    testAssemblyVer2: '**\bin\Release\**\Test.exe'
 
 - task: NuGetCommand@2
   displayName: Push to nuget (release)
   #condition: ne(variables['GIT_TAG'], '')
   inputs:
     command: push
-    packagesToPush: '$(Build.SourcesDirectory)/**/*.nupkg'
+    packagesToPush: '$(Build.SourcesDirectory)/**/bin/Release/*.nupkg'
     nuGetFeedType: external
     publishFeedCredentials: 'nuget-default'
     versioningScheme: byEnvVar
