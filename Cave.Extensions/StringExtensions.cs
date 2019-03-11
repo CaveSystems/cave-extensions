@@ -412,7 +412,7 @@ namespace Cave
             var result = new StringBuilder();
             if (timeSpan.Hours > 0)
             {
-                result.Append(Math.Truncate(timeSpan.TotalHours));
+                result.Append((timeSpan.Ticks / TimeSpan.TicksPerHour).ToString("00"));
                 result.Append(":");
             }
             result.Append(timeSpan.Minutes.ToString("00"));
