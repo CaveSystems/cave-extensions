@@ -124,5 +124,82 @@ namespace Tests
             Assert.AreEqual((ushort)123, c.Port);
             Assert.AreEqual(null, c.Location);
         }
+
+        [Test]
+        public void ConnectionStringTest1()
+        {
+            string text = "http://admin:password@localhost:80/somewhere/at/the/forest";
+            var string1 = new ConnectionString("http", "admin", "password", "localhost", 80, "somewhere/at/the/forest");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(text, string1.ToString());
+        }
+
+        [Test]
+        public void ConnectionStringTest2()
+        {
+            string text = @"file:///c:\somewhere\at\the\window";
+            var string1 = new ConnectionString("file", null, null, null, 0, @"c:\somewhere\at\the\window");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(@"file:///c:/somewhere/at/the/window", string1.ToString());
+        }
+
+        [Test]
+        public void ConnectionStringTest3()
+        {
+            string text = @"file:////somewhere/at/the/root";
+            var string1 = new ConnectionString("file", null, null, null, 0, @"/somewhere/at/the/root");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(text, string1.ToString(ConnectionStringPart.All));
+        }
+
+        [Test]
+        public void ConnectionStringTest4()
+        {
+            string text = "http://admin@localhost/somewhere/at/the/forest";
+            var string1 = new ConnectionString("http", "admin", null, "localhost", 0, "somewhere/at/the/forest");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(text, string1.ToString(ConnectionStringPart.All));
+        }
+
+        [Test]
+        public void ConnectionStringTest5()
+        {
+            string text = "http://localhost//somewhere/at/the/forest:54554:123";
+            var string1 = new ConnectionString("http", null, null, "localhost", 0, "/somewhere/at/the/forest:54554:123");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(text, string1.ToString(ConnectionStringPart.All));
+        }
+
+
+        [Test]
+        public void ConnectionStringPath()
+        {
+            string text = @"c:\test";
+
+            var string1 = new ConnectionString(null, null, null, null, 0, @"c:\test");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(@"c:/test", string1.ToString(ConnectionStringPart.All));
+        }
+
+        [Test]
+        public void ConnectionStringUNC()
+        {
+            string text = @"\\test\2\3\4";
+            string alt = @"//test/2/3/4";
+            var string1 = new ConnectionString(null, null, null, null, 0, text);
+            var string2 = ConnectionString.Parse(text);
+            var string3 = new ConnectionString(null, null, null, null, 0, text);
+            var string4 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(string2, string3);
+            Assert.AreEqual(string3, string4);
+            Assert.AreEqual("//test/2/3/4", string1.ToString(ConnectionStringPart.All));
+        }
     }
 }
