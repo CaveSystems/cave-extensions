@@ -86,6 +86,7 @@ namespace Cave
             {
                 throw new ArgumentNullException("connectionString");
             }
+            connectionString = connectionString.Replace('\\', '/');
 
             var port = (defaultPort != null) ? ((ushort)defaultPort) : (ushort)0;
             var protocol = defaultProtocol;
@@ -119,15 +120,15 @@ namespace Cave
                 server = parts[parts.Length - 1].Trim();
 
                 // get path (if any) and remove it from server string
-                var pathIndex = server.IndexOfAny(new char[] { '/', '\\' });
-                if ((pathIndex == 2) && (protocol.ToUpperInvariant() == "FILE"))
+                var pathIndex = server.IndexOfAny(new char[] { '/' });
+                if ((pathIndex == 2) && (protocol == null || protocol.ToUpperInvariant() == "FILE"))
                 {
                     path = server;
                     server = null;
                 }
                 else if (pathIndex > -1)
                 {
-                    path = server.Substring(pathIndex + 1);
+                    path = server.Substring(protocol == null ? pathIndex : pathIndex + 1);
                     server = server.Substring(0, pathIndex);
                 }
             }
@@ -233,6 +234,10 @@ namespace Cave
             if (string.IsNullOrEmpty(location))
             {
                 location = null;
+            }
+            else
+            {
+                location = location.Replace('\\', '/');
             }
 
             Protocol = protocol;
@@ -411,7 +416,10 @@ namespace Cave
             // path
             if (((items & ConnectionStringPart.Path) != 0) && !string.IsNullOrEmpty(Location))
             {
-                result.Append("/");
+                if (result.Length > 0)
+                {
+                    result.Append("/");
+                }
                 result.Append(Location);
             }
             if (((items & ConnectionStringPart.Options) != 0) && !string.IsNullOrEmpty(Options))
