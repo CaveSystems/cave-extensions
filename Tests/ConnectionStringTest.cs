@@ -194,8 +194,8 @@ namespace Tests
             string alt = @"//test/2/3/4";
             var string1 = new ConnectionString(null, null, null, null, 0, text);
             var string2 = ConnectionString.Parse(text);
-            var string3 = new ConnectionString(null, null, null, null, 0, text);
-            var string4 = ConnectionString.Parse(text);
+            var string3 = new ConnectionString(null, null, null, null, 0, alt);
+            var string4 = ConnectionString.Parse(alt);
             Assert.AreEqual(string1, string2);
             Assert.AreEqual(string2, string3);
             Assert.AreEqual(string3, string4);
