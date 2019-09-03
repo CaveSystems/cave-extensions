@@ -69,7 +69,7 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value to be returned if no valid value was found.</param>
         /// <returns>The enum value.</returns>
-        public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default(TEnum))
+        public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default)
             where TEnum : struct, IConvertible
         {
             if (!value.TryParse(out TEnum result))
@@ -80,7 +80,7 @@ namespace Cave
             return result;
         }
 
-#if NET40 || NET45 || NET46 || NET47 || NETSTANDARD20 || NETCOREAPP20
+#if NET40 || NET45 || NET46 || NET47 || NETSTANDARD20
         /// <summary>Tries to parse the specified string.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
@@ -91,7 +91,7 @@ namespace Cave
         {
             return Enum.TryParse(value, true, out result);
         }
-#elif NET35 || NET20 || NETCOREAPP13 || NETSTANDARD13
+#elif NET35 || NET20 || NETSTANDARD13
         /// <summary>Tries the parse.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
@@ -103,7 +103,7 @@ namespace Cave
             Type t = typeof(TEnum);
             if (value == null)
             {
-                result = default(TEnum);
+                result = default;
                 return false;
             }
             try
@@ -113,7 +113,7 @@ namespace Cave
             }
             catch
             {
-                result = default(TEnum);
+                result = default;
                 return false;
             }
         }
