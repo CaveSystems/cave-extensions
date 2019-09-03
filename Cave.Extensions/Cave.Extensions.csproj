@@ -58,7 +58,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
-    <PackageReference Include="Cave.Backports" Version="1.0.6-ci-20190824-1" />
+    <PackageReference Include="Cave.Backports" Version="1.0.6" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
