@@ -81,7 +81,7 @@ namespace Tests
 
         [Test]
         public void Parse7()
-        { 
+        {
             ConnectionString.TryParse("memory://", out ConnectionString c);
             Assert.AreEqual("memory", c.Protocol);
             Assert.AreEqual(null, c.UserName);
