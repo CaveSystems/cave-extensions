@@ -1,37 +1,62 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Cave
 {
     /// <summary>
-    /// Provides access to 7Bit ASCII chars / bytes.
+    /// Provides access to ASCII chars / bytes.
     /// </summary>
     public static class ASCII
     {
         #region Static implementation
 
         /// <summary>
-        /// Gets whether the string contains non 7Bit ASCII chars (!=17..127).
+        /// Gets whether the string contains non ASCII chars (0, &gt;<paramref name="maxCharacterCode"/>).
         /// </summary>
         /// <param name="text">The string.</param>
-        /// <returns>True if the string does not contain 7Bit ASCII chars.</returns>
-        public static bool IsClean(string text)
+        /// <param name="maxCharacterCode">The maximum allowed character code.</param>
+        /// <returns>True if the string does not contain any character outside the valid range.</returns>
+        public static bool IsClean(string text, int maxCharacterCode = 127)
         {
             if (text == null)
             {
                 throw new ArgumentNullException("text");
             }
 
-            for (var i = 0; i < text.Length; i++)
+            return !text.Any(c => c < 1 || c > maxCharacterCode);
+        }
+
+        /// <summary>
+        /// Gets whether the string contains non printable ASCII chars (&lt;32, &gt;<paramref name="maxCharacterCode"/>).
+        /// </summary>
+        /// <param name="text">The string.</param>
+        /// <param name="maxCharacterCode">The maximum allowed character code.</param>
+        /// <returns>True if the string does not contain any character outside the valid range.</returns>
+        public static bool IsPrintable(this string text, int maxCharacterCode = 127)
+        {
+            if (text == null)
             {
-                int value = text[i];
-                if ((value < 17) || (value > 127))
-                {
-                    return false;
-                }
+                throw new ArgumentNullException("text");
             }
-            return true;
+
+            return !text.Any(c => c < 32 || c > maxCharacterCode);
+        }
+
+        /// <summary>
+        /// Gets whether the string contains characters not valid at connection strings.
+        /// </summary>
+        /// <param name="text">The string.</param>
+        /// <returns>True if the string does not contain any character outside the valid range.</returns>
+        public static bool IsValidForConnectionString(this string text)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+
+            return !text.Any(c => c < 32 || c > 127 || c == ';' || c == '\\');
         }
 
         /// <summary>Cleans a string from all non ascii and control characters by replacing invalid chars.</summary>
