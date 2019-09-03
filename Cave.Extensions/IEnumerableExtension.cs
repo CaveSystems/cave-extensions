@@ -23,6 +23,21 @@ namespace Cave
             return value;
         }
 
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <typeparam name="T">The type of the items.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static long BinaryXor<T>(this IEnumerable<T> items, Func<T, long> predicate)
+        {
+            long value = 0;
+            foreach (T item in items)
+            {
+                value ^= predicate(item);
+            }
+            return value;
+        }
+
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
@@ -52,6 +67,21 @@ namespace Cave
             foreach (T item in items)
             {
                 value |= predicate(item);
+            }
+            return value;
+        }
+
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <typeparam name="T">The type of the items.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static ulong BinaryXor<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
+        {
+            ulong value = 0;
+            foreach (T item in items)
+            {
+                value ^= predicate(item);
             }
             return value;
         }
@@ -89,6 +119,21 @@ namespace Cave
             return value;
         }
 
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <typeparam name="T">The type of the items.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static int BinaryXor<T>(this IEnumerable<T> items, Func<T, int> predicate)
+        {
+            var value = 0;
+            foreach (T item in items)
+            {
+                value ^= predicate(item);
+            }
+            return value;
+        }
+
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
@@ -122,6 +167,21 @@ namespace Cave
             return value;
         }
 
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <typeparam name="T">The type of the items.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static uint BinaryXor<T>(this IEnumerable<T> items, Func<T, uint> predicate)
+        {
+            uint value = 0;
+            foreach (T item in items)
+            {
+                value ^= predicate(item);
+            }
+            return value;
+        }
+
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <typeparam name="T">The type of the items.</typeparam>
         /// <param name="items">The items.</param>
@@ -145,6 +205,19 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static long BinaryOr(this IEnumerable<long> items)
+        {
+            long value = 0;
+            foreach (var item in items)
+            {
+                value |= item;
+            }
+            return value;
+        }
+
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <param name="items">The items.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static long BinaryXor(this IEnumerable<long> items)
         {
             long value = 0;
             foreach (var item in items)
@@ -183,6 +256,19 @@ namespace Cave
             return value;
         }
 
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <param name="items">The items.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static ulong BinaryXor(this IEnumerable<ulong> items)
+        {
+            ulong value = 0;
+            foreach (var item in items)
+            {
+                value ^= item;
+            }
+            return value;
+        }
+
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
@@ -208,6 +294,19 @@ namespace Cave
             foreach (var item in items)
             {
                 value |= item;
+            }
+            return value;
+        }
+
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <param name="items">The items.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static int BinaryXor(this IEnumerable<int> items)
+        {
+            var value = 0;
+            foreach (var item in items)
+            {
+                value ^= item;
             }
             return value;
         }
@@ -241,6 +340,19 @@ namespace Cave
             return value;
         }
 
+        /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
+        /// <param name="items">The items.</param>
+        /// <returns>The binary or result of the values in the sequence.</returns>
+        public static uint BinaryXor(this IEnumerable<uint> items)
+        {
+            uint value = 0;
+            foreach (var item in items)
+            {
+                value ^= item;
+            }
+            return value;
+        }
+
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
@@ -254,5 +366,30 @@ namespace Cave
             return value;
         }
         #endregion
+
+        /// <summary>
+        /// Calculates the hash for all properties of the specified items.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns>Returns the hashcode for all items.</returns>
+        public static long CalculatePropertyHash<T>(this IEnumerable<T> items)
+        {
+            long result = 0;
+            var properties = typeof(T).GetProperties();
+            foreach (var item in items)
+            {
+                foreach (var property in properties)
+                {
+                    result.Rol();
+#if NET20 || NET35 || NET40
+                    result ^= property.GetValue(item, null)?.GetHashCode() ?? 0;
+#else
+                    result ^= property.GetValue(item)?.GetHashCode() ?? 0;
+#endif
+                }
+            }
+            return result;
+        }
     }
 }
