@@ -101,23 +101,12 @@ namespace Cave
         /// </summary>
         /// <param name="obj">The other time zone.</param>
         /// <returns>True if the time zones are equal.</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(obj, null))
-            {
-                return false;
-            }
-
-            return ToString() == obj.ToString();
-        }
+        public override bool Equals(object obj) => (obj is null) ? false : ToString() == obj.ToString();
 
         /// <summary>
         /// Gets the hashcode of this instance based on the offset from utc.
         /// </summary>
         /// <returns>The hash code.</returns>
-        public override int GetHashCode()
-        {
-            return Offset.GetHashCode();
-        }
+        public override int GetHashCode() => Offset.GetHashCode();
     }
 }
