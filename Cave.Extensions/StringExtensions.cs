@@ -591,13 +591,23 @@ namespace Cave
                 return "<null>";
             }
 
+            // special handling for roundtrip types
+            if (value is double d)
+            {
+                return d.ToString("R", cultureInfo);
+            }
+            if (value is float f)
+            {
+                return f.ToString("R", cultureInfo);
+            }
+
             if (value is IFormattable)
             {
                 return ((IFormattable)value).ToString(null, cultureInfo);
             }
             if (value is ICollection)
             {
-                return value.ToString() + " {" + Join((ICollection)value, ",", cultureInfo) + "}";
+                return value.ToString() + " {" + StringExtensions.Join((ICollection)value, ",", cultureInfo) + "}";
             }
             return value.ToString();
         }
@@ -607,19 +617,7 @@ namespace Cave
         /// </summary>
         /// <param name="value">Value to format.</param>
         /// <returns>The string.</returns>
-        public static string ToString(object value)
-        {
-            if (value == null)
-            {
-                return "<null>";
-            }
-
-            if (value is ICollection)
-            {
-                return value.ToString() + " {" + Join((ICollection)value, ",") + "}";
-            }
-            return value.ToString();
-        }
+        public static string ToString(object value) => ToString(value, CultureInfo.CurrentCulture);
 
         /// <summary>
         /// Returns an array of strings using the element objects ToString() method with invariant culture.
@@ -1951,6 +1949,40 @@ namespace Cave
                     case '\r': sb.Append("\\r"); continue;
                 }
                 if (c < ' ' || c > (char)127)
+                {
+                    sb.Append("\\u");
+                    sb.Append(((int)c).ToString("x4"));
+                    continue;
+                }
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>Escapes all characters at the specified string below ascii 32.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>Returns an escaped utf8 string.</returns>
+        public static string EscapeUtf8(this string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+            foreach (var c in text)
+            {
+                switch (c)
+                {
+                    case '\\':
+                    case '"': sb.Append('\\'); sb.Append(c); continue;
+                    case '\b': sb.Append("\\b"); continue;
+                    case '\t': sb.Append("\\t"); continue;
+                    case '\n': sb.Append("\\n"); continue;
+                    case '\f': sb.Append("\\f"); continue;
+                    case '\r': sb.Append("\\r"); continue;
+                }
+                if (c < ' ')
                 {
                     sb.Append("\\u");
                     sb.Append(((int)c).ToString("x4"));
