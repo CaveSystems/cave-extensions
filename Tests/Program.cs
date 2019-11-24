@@ -19,22 +19,21 @@ namespace Test
                 }
 
                 var instance = Activator.CreateInstance(type);
-                foreach (System.Reflection.MethodInfo method in type.GetMethods())
+                foreach (var method in type.GetMethods())
                 {
                     if (!method.GetCustomAttributes(typeof(TestAttribute), false).Any())
                     {
                         continue;
                     }
 
-                    GC.Collect(999, GCCollectionMode.Default, true);
+                    GC.Collect(999, GCCollectionMode.Default);
 
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name}");
                     Console.ResetColor();
                     try
                     {
-                        var action = (Action)method.CreateDelegate(typeof(Action), instance);
-                        action();
+                        method.Invoke(instance, null);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name}");
                         Console.ResetColor();
