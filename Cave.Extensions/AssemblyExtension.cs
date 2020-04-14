@@ -63,10 +63,10 @@ namespace Cave
         }
 
         /// <summary>
-        /// Gets a local file path for the specified assembly.
+        /// Gets a local file path (directory and filename) for the specified assembly.
         /// </summary>
         /// <param name="assembly">Assembly instance.</param>
-        /// <returns>Returns the file path.</returns>
+        /// <returns>Returns the full file path.</returns>
         public static string GetAssemblyFilePath(this Assembly assembly)
         {
             if (assembly == null)
@@ -103,5 +103,12 @@ namespace Cave
 
             throw new FileNotFoundException("Could not resolve Assembly path.", assembly.ToString());
         }
+
+        /// <summary>
+        /// Gets the directory the assembly was located at during load time.
+        /// </summary>
+        /// <param name="assembly">Assembly instance.</param>
+        /// <returns>Returns a directory.</returns>
+        public static string GetDirectory(this Assembly assembly) => Path.GetDirectoryName(GetAssemblyFilePath(assembly));
     }
 }
