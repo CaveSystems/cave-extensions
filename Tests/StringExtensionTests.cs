@@ -27,23 +27,37 @@ namespace Tests
         [Test]
         public void ToStringParse()
         {
+            void Test<T>(T value, CultureInfo culture)
+            {
+                var s = StringExtensions.ToString(value, culture);
+                var test = TypeExtension.ConvertValue(typeof(T), s, culture);
+                Assert.AreEqual(value, test);
+            }
+
             Random rnd = new Random();
             var allCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             foreach (var culture in allCultures)
             {
                 if (culture.IsNeutralCulture) continue;
-                float f = (float)rnd.NextDouble();
-                var s = StringExtensions.ToString(f, culture);
-                var test = TypeExtension.ConvertValue(typeof(float), s, culture);
-                Assert.AreEqual(f, test);
-            }
-            foreach (var culture in allCultures)
-            {
-                if (culture.IsNeutralCulture) continue;
-                double d = rnd.NextDouble();
-                var s = StringExtensions.ToString(d, culture);
-                var test = TypeExtension.ConvertValue(typeof(double), s, culture);
-                Assert.AreEqual(d, test);
+
+                Test((float)rnd.NextDouble(), culture);
+                Test(rnd.NextDouble(), culture);
+                Test((decimal)rnd.NextDouble(), culture);
+                Test((sbyte)rnd.Next(), culture);
+                Test((byte)rnd.Next(), culture);
+                Test((short)rnd.Next(), culture);
+                Test((ushort)rnd.Next(), culture);
+                Test(rnd.Next(), culture);
+                Test((uint)rnd.Next(), culture);
+                Test(rnd.Next() * rnd.Next() + rnd.Next(), culture);
+                Test((ulong)(rnd.Next() * rnd.Next() + rnd.Next()), culture);
+                Test(TimeSpan.FromHours(rnd.NextDouble()), culture);
+                Test(DateTime.Now + TimeSpan.FromHours(rnd.NextDouble()), culture);
+                byte[] buf = new byte[50];
+                rnd.NextBytes(buf);
+                Test(buf, culture);
+                var arrayI = new[] { rnd.Next(), rnd.Next() };
+                Test(arrayI, culture);
             }
         }
 

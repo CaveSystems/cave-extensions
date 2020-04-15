@@ -600,6 +600,10 @@ namespace Cave
             {
                 return f.ToString("R", cultureInfo);
             }
+            if (value is DateTime dt)
+            {
+                return dt.ToString(InterOpDateTimeFormat);
+            }
 
             if (value is IFormattable)
             {

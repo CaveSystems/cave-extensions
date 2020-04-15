@@ -240,6 +240,26 @@ namespace Cave
                 return str;
             }
 
+            if (toType.IsArray)
+            {
+#if NETSTANDARD13
+                throw new NotSupportedException();
+#else
+                var elementType = toType.GetElementType();
+                if (!elementType.IsPrimitive)
+                {
+                    throw new NotSupportedException($"Not primitive array type {elementType} not supported!");
+                }
+                var parts = str.AfterFirst('{').BeforeLast('}').Split(',');
+                var array = Array.CreateInstance(elementType, parts.Length);
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    array.SetValue(ConvertValue(elementType, parts[i], cultureInfo), i);
+                }
+                return array;
+#endif
+            }
+
             if (toType == typeof(DateTime))
             {
                 if (long.TryParse(str, out var ticks))
@@ -247,12 +267,14 @@ namespace Cave
                     return new DateTime(ticks, DateTimeKind.Unspecified);
                 }
 
-                if (DateTime.TryParse(str, cultureInfo, DateTimeStyles.AssumeLocal, out DateTime dt) ||
+                if (DateTime.TryParseExact(str, StringExtensions.InterOpDateTimeFormat, cultureInfo, DateTimeStyles.AssumeUniversal, out DateTime dt) ||
+                    DateTime.TryParse(str, cultureInfo, DateTimeStyles.AssumeLocal, out dt) ||
                     DateTimeParser.TryParseDateTime(str, out dt))
                 {
                     return dt;
                 }
             }
+
             if (toType == typeof(TimeSpan))
             {
                 try
