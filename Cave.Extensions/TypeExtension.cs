@@ -336,7 +336,22 @@ namespace Cave
                         errors.Add(ex.InnerException);
                     }
                 }
-
+#if NETSTANDARD13
+                method = toType.GetTypeInfo().GetDeclaredMethods("op_Implicit").SingleOrDefault(m => m.ReturnType == toType && m.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null);
+#else
+                method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null);
+#endif
+                if (method != null)
+                {
+                    try
+                    {
+                        return method.Invoke(null, new object[] { str });
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        errors.Add(ex.InnerException);
+                    }
+                }
 #if NETSTANDARD13
                 var cctor = toType.GetTypeInfo().DeclaredConstructors.Where(c => c.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null).SingleOrDefault();
 #else
