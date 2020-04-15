@@ -336,12 +336,29 @@ namespace Cave
                         errors.Add(ex.InnerException);
                     }
                 }
+
+#if NETSTANDARD13
+                var cctor = toType.GetTypeInfo().DeclaredConstructors.Where(c => c.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null).SingleOrDefault();
+#else
+                var cctor = toType.GetConstructor(new[] { typeof(string) });
+#endif
+                if (cctor != null)
+                {
+                    try
+                    {
+                        return cctor.Invoke(new object[] { str });
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        errors.Add(ex.InnerException);
+                    }
+                }
+
                 if (errors.Count > 0)
                 {
                     throw new AggregateException(errors.ToArray());
                 }
-
-                throw new MissingMethodException(string.Format("Type {0} has no public static Parse(string, IFormatProvider) or Parse(string) method!", toType));
+                throw new MissingMethodException(string.Format("Type {0} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!", toType));
             }
         }
     }
