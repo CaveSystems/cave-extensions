@@ -49,16 +49,77 @@ namespace Tests
                 Test((ushort)rnd.Next(), culture);
                 Test(rnd.Next(), culture);
                 Test((uint)rnd.Next(), culture);
-                Test(rnd.Next() * rnd.Next() + rnd.Next(), culture);
+                Test((long)rnd.Next() * rnd.Next() + rnd.Next(), culture);
                 Test((ulong)(rnd.Next() * rnd.Next() + rnd.Next()), culture);
-                Test(TimeSpan.FromHours(rnd.NextDouble()), culture);
-                Test(DateTime.Now + TimeSpan.FromHours(rnd.NextDouble()), culture);
+                Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+
+                Test((float?)rnd.NextDouble(), culture);
+                Test((double?)rnd.NextDouble(), culture);
+                Test((decimal?)rnd.NextDouble(), culture);
+                Test((sbyte?)rnd.Next(), culture);
+                Test((byte?)rnd.Next(), culture);
+                Test((short?)rnd.Next(), culture);
+                Test((ushort?)rnd.Next(), culture);
+                Test((int?)rnd.Next(), culture);
+                Test((uint?)rnd.Next(), culture);
+                Test((long?)((long)rnd.Next() * rnd.Next() + rnd.Next()), culture);
+                Test((ulong?)(rnd.Next() * rnd.Next() + rnd.Next()), culture);
+                Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test((DateTime?)(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble())), culture);
+
+                Test((float?)null, culture);
+                Test((double?)null, culture);
+                Test((decimal?)null, culture);
+                Test((sbyte?)null, culture);
+                Test((byte?)null, culture);
+                Test((short?)null, culture);
+                Test((ushort?)null, culture);
+                Test((int?)null, culture);
+                Test((uint?)null, culture);
+                Test((long?)null, culture);
+                Test((ulong?)null, culture);
+                Test((TimeSpan?)null, culture);
+                Test((DateTime?)null, culture);
+
                 byte[] buf = new byte[50];
                 rnd.NextBytes(buf);
                 Test(buf, culture);
                 var arrayI = new[] { rnd.Next(), rnd.Next() };
                 Test(arrayI, culture);
             }
+        }
+
+        [Test]
+        public void FormatTime()
+        {
+            void Test(TimeSpan timespan)
+            {
+                var str1 = StringExtensions.ToString(timespan);
+                var check1 = str1.ParseValue<TimeSpan>();
+                var str2 = timespan.FormatTime();
+                var check2 = str2.ParseValue<TimeSpan>();
+                Assert.AreEqual(timespan, check1);
+                // 1% precision
+                Assert.AreEqual(timespan.Ticks, check2.Ticks, timespan.Ticks / 100 + 1);
+            }
+
+            Random rnd = new Random();
+            for(int i = 0; i < 1000; i++)
+            {
+                var timespan = new TimeSpan(rnd.Next());
+                Test(timespan);
+            }
+
+            Test(TimeSpan.FromMilliseconds(0.00123));
+            Test(TimeSpan.FromMilliseconds(0.123));
+            Test(TimeSpan.FromMilliseconds(1.234));
+            Test(TimeSpan.FromSeconds(1.234));
+            Test(TimeSpan.FromMinutes(1.234));
+            Test(TimeSpan.FromHours(1.234));
+            Test(TimeSpan.FromDays(1.234));
+            Test(TimeSpan.FromDays(1000));
+            Test(TimeSpan.FromDays(10000));
         }
 
         [Test]
