@@ -303,11 +303,19 @@ namespace Cave
         /// </summary>
         /// <param name="timeSpan">TimeSpan to format.</param>
         /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        public static string FormatTime(this TimeSpan timeSpan)
+        public static string FormatTime(this TimeSpan timeSpan) => FormatTime(timeSpan, CultureInfo.InvariantCulture);
+
+        /// <summary>
+        /// Formats a time span to a short one unit value (1.20h, 15.3ms, ...)
+        /// </summary>
+        /// <param name="timeSpan">TimeSpan to format.</param>
+        /// <param name="culture">Culture used to format the double value.</param>
+        /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
+        public static string FormatTime(this TimeSpan timeSpan, CultureInfo culture)
         {
             if (timeSpan < TimeSpan.Zero)
             {
-                return "-" + FormatTime(-timeSpan);
+                return "-" + FormatTime(-timeSpan, culture);
             }
 
             if (timeSpan == TimeSpan.Zero)
@@ -318,50 +326,50 @@ namespace Cave
             if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
             {
                 var nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
-                return (nano > 9.99) ? nano.ToString("0.0") + "ns" : nano.ToString("0.00") + "ns";
+                return (nano > 9.99) ? nano.ToString("0.0", culture) + "ns" : nano.ToString("0.00", culture) + "ns";
             }
             if (timeSpan.Ticks < TimeSpan.TicksPerSecond)
             {
                 var msec = timeSpan.TotalMilliseconds;
-                return (msec > 9.99) ? msec.ToString("0.0") + "ms" : msec.ToString("0.00") + "ms";
+                return (msec > 9.99) ? msec.ToString("0.0", culture) + "ms" : msec.ToString("0.00", culture) + "ms";
             }
             if (timeSpan.Ticks < TimeSpan.TicksPerMinute)
             {
                 var sec = timeSpan.TotalSeconds;
-                return (sec > 9.99) ? sec.ToString("0.0") + "s" : sec.ToString("0.00") + "s";
+                return (sec > 9.99) ? sec.ToString("0.0", culture) + "s" : sec.ToString("0.00", culture) + "s";
             }
             if (timeSpan.Ticks < TimeSpan.TicksPerHour)
             {
                 var min = timeSpan.TotalMinutes;
-                return (min > 9.99) ? min.ToString("0.0") + "min" : min.ToString("0.00") + "min";
+                return (min > 9.99) ? min.ToString("0.0", culture) + "min" : min.ToString("0.00", culture) + "min";
             }
             if (timeSpan.Ticks < TimeSpan.TicksPerDay)
             {
                 var h = timeSpan.TotalHours;
-                return (h > 9.99) ? h.ToString("0.0") + "h" : h.ToString("0.00") + "h";
+                return (h > 9.99) ? h.ToString("0.0", culture) + "h" : h.ToString("0.00", culture) + "h";
             }
             var d = timeSpan.TotalDays;
             if (d >= 36525)
             {
-                return (d / 365.25).ToString("0") + "a";
+                return (d / 365.25).ToString("0", culture) + "a";
             }
 
             if (d >= 3652.5)
             {
-                return (d / 365.25).ToString("0.0") + "a";
+                return (d / 365.25).ToString("0.0", culture) + "a";
             }
 
             if (d > 99.9)
             {
-                return (d / 365.25).ToString("0.00") + "a";
+                return (d / 365.25).ToString("0.00", culture) + "a";
             }
 
             if (d > 9.99)
             {
-                return d.ToString("0.0") + "d";
+                return d.ToString("0.0", culture) + "d";
             }
 
-            return d.ToString("0.00") + "d";
+            return d.ToString("0.00", culture) + "d";
         }
 
         /// <summary>
@@ -579,6 +587,18 @@ namespace Cave
         }
 
         /// <summary>
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)"/> method.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to.</typeparam>
+        /// <param name="value">String value to convert.</param>
+        /// <param name="culture">Culture to use.</param>
+        /// <returns>Returns a new value instance.</returns>
+        public static T ParseValue<T>(this string value, CultureInfo culture = null)
+        {
+            return (T)TypeExtension.ConvertValue(typeof(T), value, culture);
+        }
+
+        /// <summary>
         /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
         /// <param name="value">Value to format.</param>
@@ -589,6 +609,11 @@ namespace Cave
             if (value == null)
             {
                 return "<null>";
+            }
+
+            if (cultureInfo == null)
+            {
+                cultureInfo = CultureInfo.InvariantCulture;
             }
 
             // special handling for roundtrip types
@@ -602,6 +627,10 @@ namespace Cave
             }
             if (value is DateTime dt)
             {
+                if (dt.Kind == DateTimeKind.Unspecified)
+                {
+                    throw new ArgumentOutOfRangeException("Please specify DateTime.Kind!");
+                }
                 return dt.ToString(InterOpDateTimeFormat);
             }
 
@@ -621,7 +650,7 @@ namespace Cave
         /// </summary>
         /// <param name="value">Value to format.</param>
         /// <returns>The string.</returns>
-        public static string ToString(object value) => ToString(value, CultureInfo.CurrentCulture);
+        public static string ToString(object value) => ToString(value, null);
 
         /// <summary>
         /// Returns an array of strings using the element objects ToString() method with invariant culture.
@@ -860,7 +889,9 @@ namespace Cave
             return new RectangleF(x, y, w, h);
         }
 
-        /// <summary>Gets a substring from the end of the specified string.</summary>
+        /// <summary>Gets a substring from the end of the specified string.
+        /// Positive values retrieve the number of characters from end.
+        /// Negative values retrieve everything in front of the specified len - count.</summary>
         /// <param name="text">The string.</param>
         /// <param name="count">The number of characters at the end to be retrieved.</param>
         /// <returns>The substring.</returns>
@@ -872,13 +903,20 @@ namespace Cave
             }
 
             var len = text.Length;
-            count = Math.Min(count, len);
-            if (count == 0)
+            if (count > len || count == 0 || -count > len)
             {
-                return string.Empty;
+                throw new ArgumentOutOfRangeException(nameof(count), "Count needs to be in range -len..-1 or 1..len");
             }
 
-            return text.Substring(len - count);
+            if (count > 0)
+            {
+                return text.Substring(len - count);
+            }
+            else
+            {
+                // if count < 0
+                return text.Substring(0, len + count);
+            }
         }
 
         /// <summary>Gets a part of a string.</summary>
