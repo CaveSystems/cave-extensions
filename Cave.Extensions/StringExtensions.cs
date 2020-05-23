@@ -1686,18 +1686,12 @@ namespace Cave
                 var lastWasUpper = isUpper;
                 isUpper = char.IsUpper(text[current]);
 
-                // is upper do nothing
-                if (isUpper)
-                {
-                    continue;
-                }
-
                 // is not upper and last was upper, split before last
-                if (lastWasUpper)
+                if (isUpper && !lastWasUpper)
                 {
                     if (current > 1)
                     {
-                        splits.Add(current - 1);
+                        splits.Add(current);
                     }
                 }
             }
