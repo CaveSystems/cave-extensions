@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -144,7 +145,7 @@ namespace Cave
 
             if (cultureInfo == null)
             {
-                cultureInfo = CultureInfo.CurrentCulture;
+                cultureInfo = CultureInfo.InvariantCulture;
             }
 
             if (value == null)
@@ -152,9 +153,12 @@ namespace Cave
                 return null;
             }
 
-            // if (toType.Name.StartsWith("Nullable"))
             if (Nullable.GetUnderlyingType(toType) != null)
             {
+                if (Equals(value, "<null>"))
+                {
+                    return null;
+                }
 #if NET45 || NET46 || NET47 || NETSTANDARD13 || NETSTANDARD20
                 toType = toType.GenericTypeArguments[0];
 #elif NET20 || NET35 || NET40
@@ -211,7 +215,7 @@ namespace Cave
                 }
                 else
                 {
-                    // try to find public ToString(IFormatProvider) method in class
+                    Trace.TraceWarning("Try to find public ToString(IFormatProvider) method in class");
 #if NETSTANDARD13
                     var methods = value.GetType().GetTypeInfo().GetDeclaredMethods("ToString");
                     var method = methods.FirstOrDefault(m => m.GetParameters().SingleOrDefault()?.ParameterType == typeof(IFormatProvider) && m.ReturnType == typeof(string));
@@ -240,6 +244,27 @@ namespace Cave
                 return str;
             }
 
+            if (toType.IsArray)
+            {
+                var elementType = toType.GetElementType();
+#if NETSTANDARD13
+                var isPrimitive = elementType.GetTypeInfo().IsPrimitive;
+#else
+                var isPrimitive = elementType.IsPrimitive;
+#endif
+                if (!isPrimitive)
+                {
+                    throw new NotSupportedException($"Not primitive array type {elementType} not supported!");
+                }
+                var parts = str.AfterFirst('{').BeforeLast('}').Split(',');
+                var array = Array.CreateInstance(elementType, parts.Length);
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    array.SetValue(ConvertValue(elementType, parts[i], cultureInfo), i);
+                }
+                return array;
+            }
+
             if (toType == typeof(DateTime))
             {
                 if (long.TryParse(str, out var ticks))
@@ -247,12 +272,14 @@ namespace Cave
                     return new DateTime(ticks, DateTimeKind.Unspecified);
                 }
 
-                if (DateTime.TryParse(str, cultureInfo, DateTimeStyles.AssumeLocal, out DateTime dt) ||
+                if (DateTime.TryParseExact(str, StringExtensions.InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime dt) ||
+                    DateTime.TryParse(str, cultureInfo, DateTimeStyles.AssumeLocal, out dt) ||
                     DateTimeParser.TryParseDateTime(str, out dt))
                 {
                     return dt;
                 }
             }
+
             if (toType == typeof(TimeSpan))
             {
                 try
@@ -261,13 +288,35 @@ namespace Cave
                     {
                         return TimeSpan.Parse(str);
                     }
+                    if (str.EndsWith("ns"))
+                    {
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * (TimeSpan.TicksPerMillisecond / 1000)));
+                    }
                     if (str.EndsWith("ms"))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(1)) * TimeSpan.TicksPerMillisecond));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * TimeSpan.TicksPerMillisecond));
                     }
-                    return str.EndsWith("s")
-                        ? new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(1)) * TimeSpan.TicksPerSecond))
-                        : (object)new TimeSpan(long.Parse(str));
+                    if (str.EndsWith("s"))
+                    {
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerSecond));
+                    }
+                    if (str.EndsWith("min"))
+                    {
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), cultureInfo) * TimeSpan.TicksPerMinute));
+                    }
+                    if (str.EndsWith("h"))
+                    {
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerHour));
+                    }
+                    if (str.EndsWith("d"))
+                    {
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerDay));
+                    }
+                    if (str.EndsWith("a"))
+                    {
+                        return TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), cultureInfo) * 365.25);
+                    }
+                    return new TimeSpan(long.Parse(str));
                 }
                 catch (Exception ex)
                 {
@@ -314,12 +363,44 @@ namespace Cave
                         errors.Add(ex.InnerException);
                     }
                 }
+#if NETSTANDARD13
+                method = toType.GetTypeInfo().GetDeclaredMethods("op_Implicit").SingleOrDefault(m => m.ReturnType == toType && m.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null);
+#else
+                method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null);
+#endif
+                if (method != null)
+                {
+                    try
+                    {
+                        return method.Invoke(null, new object[] { str });
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        errors.Add(ex.InnerException);
+                    }
+                }
+#if NETSTANDARD13
+                var cctor = toType.GetTypeInfo().DeclaredConstructors.Where(c => c.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null).SingleOrDefault();
+#else
+                var cctor = toType.GetConstructor(new[] { typeof(string) });
+#endif
+                if (cctor != null)
+                {
+                    try
+                    {
+                        return cctor.Invoke(new object[] { str });
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        errors.Add(ex.InnerException);
+                    }
+                }
+
                 if (errors.Count > 0)
                 {
                     throw new AggregateException(errors.ToArray());
                 }
-
-                throw new MissingMethodException(string.Format("Type {0} has no public static Parse(string, IFormatProvider) or Parse(string) method!", toType));
+                throw new MissingMethodException(string.Format("Type {0} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!", toType));
             }
         }
     }
