@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -434,7 +435,7 @@ namespace Cave
                         {// rooted:
                             resultParts.Clear();
                             separator = pathSeparator;
-                            root = separator.ToString();
+                            root = $"{separator}";
                             break;
                         }
                         default:

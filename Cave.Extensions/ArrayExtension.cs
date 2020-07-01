@@ -139,6 +139,14 @@ namespace Cave
         /// <returns>Array of concated items.</returns>
         public static T[] Concat<T>(this T[] t1, params T[] t2)
         {
+            if (t1 == null)
+            {
+                throw new ArgumentNullException(nameof(t1));
+            }
+            if (t2 == null)
+            {
+                throw new ArgumentNullException(nameof(t2));
+            }
             var result = new T[t1.Length + t2.Length];
             Array.Copy(t1, 0, result, 0, t1.Length);
             Array.Copy(t2, 0, result, t1.Length, t2.Length);
@@ -152,6 +160,14 @@ namespace Cave
         /// <returns>Array of concated items.</returns>
         public static T[] Concat<T>(this T[] t1, params T[][] t2)
         {
+            if (t1 == null)
+            {
+                throw new ArgumentNullException(nameof(t1));
+            }
+            if (t2 == null)
+            {
+                throw new ArgumentNullException(nameof(t2));
+            }
             var count = t1.Length;
             for (var i = 0; i < t2.Length; i++)
             {
@@ -176,6 +192,16 @@ namespace Cave
         /// <returns>True if the range matches.</returns>
         public static bool RangeEquals(this byte[] bytes, int offset, int count, byte[] comparand)
         {
+            if (bytes == null)
+            {
+                throw new ArgumentNullException(nameof(bytes));
+            }
+
+            if (comparand == null)
+            {
+                throw new ArgumentNullException(nameof(comparand));
+            }
+
             if (offset < 0 || count < 0 || bytes.Length < offset + count)
             {
                 return false;
@@ -198,6 +224,16 @@ namespace Cave
         /// <returns>True if data starts with the pattern.</returns>
         public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
@@ -213,6 +249,16 @@ namespace Cave
         /// <returns>True if data starts with the pattern.</returns>
         public static bool StartsWith(this byte[] data, byte[] pattern)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
             if (pattern.Length > data.Length)
             {
                 return false;
@@ -235,6 +281,16 @@ namespace Cave
         /// <returns>The startindex.</returns>
         public static int IndexOf(this byte[] data, byte[] pattern)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
             var matchIndex = 0;
             for (var i = 0; i < data.Length; i++)
             {
@@ -264,6 +320,21 @@ namespace Cave
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, byte[] replacer)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
+            if (replacer == null)
+            {
+                throw new ArgumentNullException(nameof(replacer));
+            }
+
             var i = data.IndexOf(pattern);
             if (i < 0)
             {
@@ -286,6 +357,21 @@ namespace Cave
         /// <exception cref="ArgumentException">Pattern not found.</exception>
         public static byte[] ReplaceFirst(this byte[] data, byte[] pattern, params byte[][] replacers)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
+            if (replacers == null)
+            {
+                throw new ArgumentNullException(nameof(replacers));
+            }
+
             var i = data.IndexOf(pattern);
             if (i < 0)
             {
@@ -319,6 +405,11 @@ namespace Cave
         /// <returns>The zero-based index of the first occurrence of value in the entire array, if found; otherwise, –1.</returns>
         public static int IndexOf<T>(this T[] array, T value)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
             return Array.IndexOf(array, value);
         }
     }

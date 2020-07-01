@@ -28,8 +28,9 @@ namespace Cave
         /// </summary>
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult Find(string text, string value)
+        public static SubStringResult Find(string text, string value, StringComparison stringComparison = default)
         {
             if (text == null)
             {
@@ -41,7 +42,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var index = text.IndexOf(value);
+            var index = text.IndexOf(value, stringComparison);
             if (index < 0)
             {
                 return default;
@@ -56,8 +57,9 @@ namespace Cave
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
         /// <param name="startIndex">Startindex to begin searching at.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult Find(string text, string value, int startIndex)
+        public static SubStringResult Find(string text, string value, int startIndex, StringComparison stringComparison = default)
         {
             if (text == null)
             {
@@ -69,7 +71,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var index = text.IndexOf(value, startIndex);
+            var index = text.IndexOf(value, startIndex, stringComparison);
             return new SubStringResult(text, index, index < 0 ? 0 : value.Length);
         }
 

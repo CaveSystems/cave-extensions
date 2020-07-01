@@ -432,6 +432,7 @@ namespace Cave
             var result = FileSystem.GetFullPath(value);
             if (!Directory.Exists(result))
             {
+                Verbose($"Error accessing directory {value}");
                 throw new DirectoryNotFoundException();
             }
             return result;

@@ -9,10 +9,79 @@ namespace Cave
     /// </summary>
     public class FileLocation
     {
+        #region static functions
+
         /// <summary>Performs an implicit conversion from <see cref="FileLocation"/> to <see cref="string"/>.</summary>
         /// <param name="location">The location.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator string(FileLocation location) => location.ToString();
+        public static implicit operator string(FileLocation location) => location?.ToString();
+
+        static string GetRootAndroid(RootLocation root)
+        {
+            switch (root)
+            {
+                case RootLocation.AllUserConfig:
+                case RootLocation.AllUsersData:
+                {
+                    string path = FileSystem.Combine(ProgramDirectory, ".AllUsers");
+                    Directory.CreateDirectory(path);
+                    return path;
+                }
+                case RootLocation.LocalUserConfig:
+                case RootLocation.LocalUserData:
+                case RootLocation.RoamingUserConfig:
+                case RootLocation.RoamingUserData:
+                {
+                    string path = FileSystem.Combine(ProgramDirectory, ".User_" + Environment.UserName);
+                    Directory.CreateDirectory(path);
+                    return path;
+                }
+
+                case RootLocation.Program: return ProgramDirectory;
+
+                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
+            }
+        }
+
+        static string GetRootWindows(RootLocation root)
+        {
+            switch (root)
+            {
+                case RootLocation.AllUserConfig:
+                case RootLocation.AllUsersData: return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+
+                case RootLocation.LocalUserConfig:
+                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+                case RootLocation.RoamingUserConfig:
+                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+                case RootLocation.Program: return ProgramDirectory;
+
+                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
+            }
+        }
+
+        static string GetRootUnix(RootLocation root)
+        {
+            switch (root)
+            {
+                case RootLocation.AllUserConfig: return "/etc";
+                case RootLocation.AllUsersData: return "/var/lib";
+
+                case RootLocation.LocalUserConfig:
+                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+                case RootLocation.RoamingUserConfig:
+                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+                case RootLocation.Program: return ProgramDirectory;
+
+                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Gets the program directory.
@@ -94,71 +163,6 @@ namespace Cave
                 case PlatformType.Xbox:
                 case PlatformType.CompactFramework: return GetRootWindows(Root);
                 default: return GetRootUnix(Root);
-            }
-        }
-
-        static string GetRootAndroid(RootLocation root)
-        {
-            switch (root)
-            {
-                case RootLocation.AllUserConfig:
-                case RootLocation.AllUsersData:
-                {
-                    string path = FileSystem.Combine(ProgramDirectory, ".AllUsers");
-                    Directory.CreateDirectory(path);
-                    return path;
-                }
-                case RootLocation.LocalUserConfig:
-                case RootLocation.LocalUserData:
-                case RootLocation.RoamingUserConfig:
-                case RootLocation.RoamingUserData:
-                {
-                    string path = FileSystem.Combine(ProgramDirectory, ".User_" + Environment.UserName);
-                    Directory.CreateDirectory(path);
-                    return path;
-                }
-
-                case RootLocation.Program: return ProgramDirectory;
-
-                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
-            }
-        }
-
-        static string GetRootWindows(RootLocation root)
-        {
-            switch (root)
-            {
-                case RootLocation.AllUserConfig:
-                case RootLocation.AllUsersData: return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-
-                case RootLocation.LocalUserConfig:
-                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-                case RootLocation.RoamingUserConfig:
-                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-                case RootLocation.Program: return ProgramDirectory;
-
-                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
-            }
-        }
-
-        static string GetRootUnix(RootLocation root)
-        {
-            switch (root)
-            {
-                case RootLocation.AllUserConfig: return "/etc";
-                case RootLocation.AllUsersData: return "/var/lib";
-
-                case RootLocation.LocalUserConfig:
-                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-                case RootLocation.RoamingUserConfig:
-                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-                case RootLocation.Program: return ProgramDirectory;
-
-                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
             }
         }
     }

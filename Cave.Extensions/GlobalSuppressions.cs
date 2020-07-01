@@ -19,3 +19,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1633:File must have header", Justification = "Unwanted rule")]
 [assembly: SuppressMessage("Design", "CA1051:Sichtbare Instanzfelder nicht deklarieren", Justification = "Unwanted rule")]
 [assembly: SuppressMessage("Globalization", "CA1308:Zeichenfolgen in Großbuchstaben normalisieren", Justification = "Unwanted rule")]
+[assembly: SuppressMessage("Reliability", "CA2008:Keine Tasks ohne Übergabe eines TaskSchedulers erstellen", Justification = "Always using default scheduler")]
+[assembly: SuppressMessage("Performance", "CA1825:Vermeiden Sie Arrayzuordnungen mit einer Länge von null.", Justification = "Not available at most frameworks")]

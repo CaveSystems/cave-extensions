@@ -88,11 +88,11 @@ namespace Cave
 
             if (Offset > TimeSpan.Zero)
             {
-                return string.Format("{0}+{1,2:00}:{2,2:00}", Name, Offset.Hours, Offset.Minutes);
+                return $"{Name}+{Offset.Hours,2:00}:{Offset.Minutes,2:00}";
             }
             else
             {
-                return string.Format("{0}-{1,2:00}:{2,2:00}", Name, Offset.Hours, Offset.Minutes);
+                return $"{Name}-{Offset.Hours,2:00}:{Offset.Minutes,2:00}";
             }
         }
 
@@ -101,7 +101,7 @@ namespace Cave
         /// </summary>
         /// <param name="obj">The other time zone.</param>
         /// <returns>True if the time zones are equal.</returns>
-        public override bool Equals(object obj) => (obj is null) ? false : ToString() == obj.ToString();
+        public override bool Equals(object obj) => !(obj is null) && ToString() == obj.ToString();
 
         /// <summary>
         /// Gets the hashcode of this instance based on the offset from utc.

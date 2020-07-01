@@ -29,6 +29,7 @@ namespace Cave
 
                     if (interfaceType.IsAssignableFrom(type))
                     {
+#pragma warning disable CA1031 // Keine allgemeinen Ausnahmetypen abfangen
                         try
                         {
                             T api = (T)Activator.CreateInstance(type);
@@ -38,6 +39,7 @@ namespace Cave
                         {
                             Trace.TraceError($"Could not create instance of type {type}!");
                         }
+#pragma warning restore CA1031 // Keine allgemeinen Ausnahmetypen abfangen
                     }
                 }
             }

@@ -138,8 +138,18 @@ namespace Cave
         /// <summary>Joins the camel case.</summary>
         /// <param name="parts">The parts.</param>
         /// <returns>The joned string.</returns>
-        public static string JoinCamelCase(this string[] parts)
+        public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
         {
+            if (parts == null)
+            {
+                throw new ArgumentNullException(nameof(parts));
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
             var result = new StringBuilder();
             foreach (var part in parts)
             {
@@ -149,10 +159,10 @@ namespace Cave
                     continue;
                 }
 
-                result.Append(char.ToUpper(t[0]));
+                result.Append(char.ToUpper(t[0], culture));
                 if (t.Length > 1)
                 {
-                    result.Append(t.Substring(1).ToLower());
+                    result.Append(t.Substring(1).ToLower(culture));
                 }
             }
             return result.ToString();
@@ -232,7 +242,7 @@ namespace Cave
                     strings.Add("Data:");
                     foreach (var key in ex.Data.Keys)
                     {
-                        strings.Add(string.Format("  {0}: {1}", key, ex.Data[key]));
+                        strings.Add($"  {key}: {ex.Data[key]}");
                     }
                 }
 
@@ -261,9 +271,9 @@ namespace Cave
                 strings.AddRange(ToStrings(ex.InnerException, debug));
             }
 
-            if (ex is ReflectionTypeLoadException)
+            if (ex is ReflectionTypeLoadException reflectionTypeLoadException)
             {
-                foreach (Exception inner in ((ReflectionTypeLoadException)ex).LoaderExceptions)
+                foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
                 {
                     if (debug)
                     {
@@ -290,7 +300,7 @@ namespace Cave
                 args = new object[0];
             }
 
-            var result = text;
+            var result = text ?? throw new ArgumentNullException(nameof(text));
             for (var i = 0; i < args.Length; i++)
             {
                 var argument = (args[i] == null) ? "<null>" : args[i].ToString();
@@ -399,17 +409,17 @@ namespace Cave
                 return FormatTime(TimeSpan.FromTicks((long)(seconds * TimeSpan.TicksPerSecond)));
             }
             var part = seconds;
-            for (SiFraction i = SiFraction.m; i <= SiFraction.y; i++)
+            for (SiFraction fraction = SiFraction.m; fraction <= SiFraction.y; fraction++)
             {
                 part *= 1000.0;
                 if (part > 9.99)
                 {
-                    return part.ToString("0.0") + i + "s";
+                    return part.ToString("0.0", culture) + fraction + "s";
                 }
 
                 if (part > 0.999)
                 {
-                    return part.ToString("0.00") + i + "s";
+                    return part.ToString("0.00", culture) + fraction + "s";
                 }
             }
             return seconds.ToString() + "s";
@@ -610,7 +620,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)"/> method.
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)"/> method.
         /// </summary>
         /// <typeparam name="T">Type to convert to.</typeparam>
         /// <param name="value">String value to convert.</param>
@@ -657,13 +667,13 @@ namespace Cave
                 return dt.ToString(InterOpDateTimeFormat, culture);
             }
 
-            if (value is IFormattable)
+            if (value is IFormattable formattable)
             {
-                return ((IFormattable)value).ToString(null, culture);
+                return formattable.ToString(null, culture);
             }
-            if (value is ICollection)
+            if (value is ICollection collection)
             {
-                return value.ToString() + " {" + StringExtensions.Join((ICollection)value, ",", culture) + "}";
+                return value.ToString() + " {" + Join(collection, ",", culture) + "}";
             }
             return value.ToString();
         }
@@ -1159,7 +1169,7 @@ namespace Cave
             var format = upperCase ? "X2" : "x2";
             for (var i = 0; i < data.Length; i++)
             {
-                stringBuilder.Append(data[i].ToString(format));
+                stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
             }
             return stringBuilder.ToString();
         }
@@ -1267,7 +1277,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -2251,9 +2261,9 @@ namespace Cave
             return text;
         }
 
-        /// <summary>Parses a binary size string created by <see cref="FormatSize(double)"/> or <see cref="FormatBinarySize(double)"/>.</summary>
+        /// <summary>Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)"/> or <see cref="FormatBinarySize(double, IFormatProvider)"/>.</summary>
         /// <param name="value">The value string.</param>
-        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long)"/>.</returns>
+        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)"/>.</returns>
         /// <exception cref="ArgumentNullException">value.</exception>
         /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
         public static double ParseBinarySize(string value)
@@ -2313,17 +2323,22 @@ namespace Cave
         /// <returns>Returns a new string with random case.</returns>
         public static string RandomCase(this string value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             var rnd = new Random(Environment.TickCount);
             var result = new char[value.Length];
             for (var i = 0; i < value.Length; i++)
             {
                 if ((rnd.Next() % 1) == 0)
                 {
-                    result[i] = char.ToUpper(value[i]);
+                    result[i] = char.ToUpperInvariant(value[i]);
                 }
                 else
                 {
-                    result[i] = char.ToLower(value[i]);
+                    result[i] = char.ToLowerInvariant(value[i]);
                 }
             }
             return new string(result);
@@ -2335,13 +2350,8 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterFirst(this string value, char character)
         {
-            var i = value.IndexOf(character);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + 1);
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2350,18 +2360,13 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterFirst(this string value, string pattern)
         {
-            if (value == null)
+            if (pattern == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            var i = value.IndexOf(pattern);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + pattern.Length);
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2370,18 +2375,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeFirst(this string value, char character)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var i = value.IndexOf(character);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2390,18 +2385,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeFirst(this string value, string pattern)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var i = value.IndexOf(pattern);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2410,18 +2395,8 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterLast(this string value, char character)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var i = value.LastIndexOf(character);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + 1);
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2430,18 +2405,13 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterLast(this string value, string pattern)
         {
-            if (value == null)
+            if (pattern == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            var i = value.LastIndexOf(pattern);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + pattern.Length);
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2450,18 +2420,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeLast(this string value, char character)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var i = value.LastIndexOf(character);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2470,18 +2430,12 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeLast(this string value, string pattern)
         {
-            if (value == null)
+            if (pattern == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(pattern));
             }
-
-            var i = value.LastIndexOf(pattern);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Converts a string to a bool.</summary>
@@ -2583,6 +2537,16 @@ namespace Cave
             if (string.IsNullOrEmpty(text))
             {
                 return false;
+            }
+
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+
+            if (end == null)
+            {
+                throw new ArgumentNullException(nameof(end));
             }
 
             return text.StartsWith(start) && text.EndsWith(end);

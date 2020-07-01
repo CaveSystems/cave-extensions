@@ -1,3 +1,5 @@
+#pragma warning disable CA1707 // Bezeichner dürfen keine Unterstriche enthalten
+
 using System;
 
 namespace Cave
@@ -69,3 +71,5 @@ namespace Cave
         Testing_Debug = Testing | Debug,
     }
 }
+
+#pragma warning restore CA1707 // Bezeichner dürfen keine Unterstriche enthalten
