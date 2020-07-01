@@ -41,8 +41,7 @@ namespace Cave
         /// <returns>True if the stopwatches are equal.</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as IStopWatch;
-            if (other is null)
+            if (!(obj is IStopWatch other))
             {
                 return false;
             }

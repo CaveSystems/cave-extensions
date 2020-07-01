@@ -71,7 +71,7 @@ namespace Cave
         {
             if (assembly == null)
             {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
 
 #if !NETSTANDARD13

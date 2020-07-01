@@ -40,7 +40,7 @@ namespace Cave
         {
             if (watch == null)
             {
-                throw new ArgumentNullException("watch");
+                throw new ArgumentNullException(nameof(watch));
             }
 
             if (!watch.IsRunning)

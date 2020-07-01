@@ -136,7 +136,7 @@ namespace Cave
         /// <param name="value">Value to convert.</param>
         /// <param name="cultureInfo">The culture to use during formatting.</param>
         /// <returns>Returns a new instance of the specified type.</returns>
-        public static object ConvertValue(this Type toType, object value, CultureInfo cultureInfo)
+        public static object ConvertValue(this Type toType, object value, IFormatProvider cultureInfo)
         {
             if (toType == null)
             {

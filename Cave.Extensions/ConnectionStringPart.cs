@@ -3,7 +3,7 @@ namespace Cave
     /// <summary>
     /// Provides selection of <see cref="ConnectionString"/> parts.
     /// </summary>
-    public enum ConnectionStringPart : byte
+    public enum ConnectionStringPart
     {
         /// <summary>
         /// All parts of the connection string

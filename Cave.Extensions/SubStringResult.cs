@@ -5,7 +5,7 @@ namespace Cave
     /// <summary>
     /// Provides a string search result containing start index an length.
     /// </summary>
-    public struct SubStringResult
+    public struct SubStringResult : IEquatable<SubStringResult>
     {
         /// <summary>
         /// Checks two SubStringResult instances for equality.
@@ -33,12 +33,12 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             var index = text.IndexOf(value);
@@ -61,12 +61,12 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             var index = text.IndexOf(value, startIndex);
@@ -95,7 +95,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             Index = index;
@@ -109,10 +109,7 @@ namespace Cave
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>True if the index is contained.</returns>
-        public bool Contains(int index)
-        {
-            return (index >= Index) && (index < EndIndex);
-        }
+        public bool Contains(int index) => (index >= Index) && (index < EndIndex);
 
         /// <summary>
         /// Gets a value indicating whether the substring is valid or not.
@@ -143,15 +140,7 @@ namespace Cave
         /// Gets a string "[Length] Start..End 'Text'.
         /// </summary>
         /// <returns>The string.</returns>
-        public override string ToString()
-        {
-            if (Index < 0)
-            {
-                return "Invalid";
-            }
-
-            return "[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'";
-        }
+        public override string ToString() => Index < 0 ? "Invalid" : ("[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'");
 
         /// <summary>
         /// Gets the hash code for this instance.
@@ -165,15 +154,15 @@ namespace Cave
         /// <summary>
         /// Checks this instance with another one.
         /// </summary>
-        /// <param name="obj">The other substringresult.</param>
+        /// <param name="obj">The other SubStringResult.</param>
         /// <returns>True if both instances are equal.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is SubStringResult other)
-            {
-                return (other.Index == Index) && (other.Length == Length) && (other.Text == Text);
-            }
-            return false;
-        }
+        public override bool Equals(object obj) => obj is SubStringResult other && Equals(other);
+
+        /// <summary>
+        /// Checks this instance with another one.
+        /// </summary>
+        /// <param name="other">The other SubStringResult.</param>
+        /// <returns>True if both instances are equal.</returns>
+        public bool Equals(SubStringResult other) => (other.Index == Index) && (other.Length == Length) && (other.Text == Text);
     }
 }

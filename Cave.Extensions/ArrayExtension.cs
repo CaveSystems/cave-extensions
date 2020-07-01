@@ -36,7 +36,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var result = new T[data.Length - index];
@@ -83,7 +83,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var result = new T[count];

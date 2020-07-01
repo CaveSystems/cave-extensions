@@ -36,12 +36,12 @@ namespace Cave
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (target == null)
             {
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             }
 
             long written = 0;
@@ -154,7 +154,7 @@ namespace Cave
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             var buf = new byte[count];
@@ -189,7 +189,7 @@ namespace Cave
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             var data = Encoding.UTF8.GetBytes(text);

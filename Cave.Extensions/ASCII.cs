@@ -1,3 +1,5 @@
+#pragma warning disable CA1034
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +24,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             return !text.Any(c => c < 1 || c > maxCharacterCode);
@@ -38,7 +40,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             return !text.Any(c => c < 32 || c > maxCharacterCode);
@@ -53,7 +55,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             return !text.Any(c => c < 32 || c > 127 || c == ';' || c == '\\');
@@ -77,7 +79,7 @@ namespace Cave
 
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var result = text.ToCharArray(start, count);
@@ -86,7 +88,7 @@ namespace Cave
                 int value = result[i];
                 if (termination && value == 0)
                 {
-                    new string(result, 0, i);
+                    return new string(result, 0, i);
                 }
 
                 if ((value < minimumCharacter) || (value > 127))
@@ -107,7 +109,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             return GetBytes(text, 0, -1, termination);
@@ -125,7 +127,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             unchecked
@@ -165,7 +167,7 @@ namespace Cave
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             return GetString(bytes, 0, bytes.Length);
@@ -180,7 +182,7 @@ namespace Cave
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             return GetChars(bytes, 0, bytes.Length);
@@ -198,7 +200,7 @@ namespace Cave
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             unchecked
@@ -256,7 +258,7 @@ namespace Cave
 
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             unchecked
@@ -294,7 +296,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (start < 0)
@@ -360,7 +362,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var result = new List<char>();
@@ -427,7 +429,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var result = new List<char>();
@@ -477,22 +479,22 @@ namespace Cave
             /// <summary>
             /// Gets space and tab [ \t].
             /// </summary>
-            public static byte[] Spaces => new byte[] { 0x20, 0x09 };
+            public static IList<byte> Spaces => new byte[] { 0x20, 0x09 };
 
             /// <summary>
             /// Gets lower case letters [a-z].
             /// </summary>
-            public static byte[] LowercaseLetters => new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a };
+            public static IList<byte> LowercaseLetters => new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a };
 
             /// <summary>
             /// Gets upper case letters [A-Z].
             /// </summary>
-            public static byte[] UppercaseLetters => new byte[] { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a };
+            public static IList<byte> UppercaseLetters => new byte[] { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a };
 
             /// <summary>
             /// Gets all letters [A-Z], [a-z].
             /// </summary>
-            public static byte[] Letters => new byte[]
+            public static IList<byte> Letters => new byte[]
             {
                 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75,
                 0x76, 0x77, 0x78, 0x79, 0x7a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
@@ -502,32 +504,32 @@ namespace Cave
             /// <summary>
             /// Gets digits [0-9].
             /// </summary>
-            public static byte[] Digits => new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
+            public static IList<byte> Digits => new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
 
             /// <summary>
             /// Gets non zero digits [1-9].
             /// </summary>
-            public static byte[] NonZeroDigits => new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
+            public static IList<byte> NonZeroDigits => new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
 
             /// <summary>
             /// Gets punctuation marks.
             /// </summary>
-            public static byte[] PunctuationMarks => new byte[] { 0x21, 0x2e, 0x2c, 0x3a, 0x3b, 0x3d, 0x3f };
+            public static IList<byte> PunctuationMarks => new byte[] { 0x21, 0x2e, 0x2c, 0x3a, 0x3b, 0x3d, 0x3f };
 
             /// <summary>
             /// Gets arithmetic operators.
             /// </summary>
-            public static byte[] ArithmeticOperators => new byte[] { 0x2b, 0x2d, 0x2a, 0x2f, 0x5e };
+            public static IList<byte> ArithmeticOperators => new byte[] { 0x2b, 0x2d, 0x2a, 0x2f, 0x5e };
 
             /// <summary>
             /// Gets brackets.
             /// </summary>
-            public static byte[] Brackets => new byte[] { 0x28, 0x29, 0x5b, 0x5d, 0x7b, 0x7d };
+            public static IList<byte> Brackets => new byte[] { 0x28, 0x29, 0x5b, 0x5d, 0x7b, 0x7d };
 
             /// <summary>
             /// Gets printable ascii chars.
             /// </summary>
-            public static byte[] Printable => new byte[]
+            public static IList<byte> Printable => new byte[]
             {
                 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33,
                 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
@@ -539,7 +541,7 @@ namespace Cave
             /// <summary>
             /// Gets the utf8 bom.
             /// </summary>
-            public static byte[] UTF8BOM => new byte[] { 0xef, 0xbb, 0xbf };
+            public static IList<byte> UTF8BOM => new byte[] { 0xef, 0xbb, 0xbf };
 
             /// <summary>
             /// Carriage return = 0x13.
@@ -554,12 +556,12 @@ namespace Cave
             /// <summary>
             /// Gets carriage return &amp; line feed.
             /// </summary>
-            public static byte[] CRLF => new byte[] { CR, LF };
+            public static IList<byte> CRLF => new byte[] { CR, LF };
 
             /// <summary>
             /// Gets characters for safe names (usable as filesystem item, database item, ...)
             /// </summary>
-            public static byte[] SafeName => new byte[]
+            public static IList<byte> SafeName => new byte[]
             {
                 0x20, 0x23, 0x28, 0x29, 0x2B, 0x2D, 0x2E, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
                 0x39, 0x3D, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
@@ -676,3 +678,5 @@ namespace Cave
         #endregion
     }
 }
+
+#pragma warning restore CA1034
