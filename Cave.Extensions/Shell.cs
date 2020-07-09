@@ -34,60 +34,62 @@ namespace Cave
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
-            using (var outputWaitHandle = new ManualResetEvent(false))
-            using (var errorWaitHandle = new ManualResetEvent(false))
-            using (var process = Process.Start(startInfo))
+            using var outputWaitHandle = new ManualResetEvent(false);
+            using var errorWaitHandle = new ManualResetEvent(false);
+            using var process = Process.Start(startInfo);
+            Debug.WriteLine($"Start reading from process [{process.Id}] {filename}");
+            process.ErrorDataReceived += (sender, e) =>
             {
-                Debug.WriteLine($"Start reading from process [{process.Id}] {filename}");
-                process.ErrorDataReceived += (sender, e) =>
+                if (e.Data != null)
                 {
-                    if (e.Data != null)
-                    {
-                        stderr?.Invoke(e.Data);
-                    }
-                    else
-                    {
-                        errorWaitHandle.Set();
-                    }
-                };
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (e.Data != null)
-                    {
-                        stdout?.Invoke(e.Data);
-                    }
-                    else
-                    {
-                        outputWaitHandle.Set();
-                    }
-                };
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
-                Debug.WriteLine($"Wait for exit [{process.Id}] {filename}");
-                if (timeoutMilliseconds < 1)
-                {
-                    timeoutMilliseconds = -1;
-                }
-
-                if (process.WaitForExit(timeoutMilliseconds) && outputWaitHandle.WaitOne(timeoutMilliseconds) && errorWaitHandle.WaitOne(timeoutMilliseconds))
-                {
-                    Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
-                    return process.ExitCode;
+                    stderr?.Invoke(e.Data);
                 }
                 else
                 {
-                    try
-                    {
-                        process.Kill();
-                    }
-                    catch
-                    {
-                    }
-                    throw new TimeoutException($"Process {filename} timed out.");
+                    errorWaitHandle.Set();
                 }
+            };
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    stdout?.Invoke(e.Data);
+                }
+                else
+                {
+                    outputWaitHandle.Set();
+                }
+            };
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            Debug.WriteLine($"Wait for exit [{process.Id}] {filename}");
+            if (timeoutMilliseconds < 1)
+            {
+                timeoutMilliseconds = -1;
+            }
+
+            if (process.WaitForExit(timeoutMilliseconds) && outputWaitHandle.WaitOne(timeoutMilliseconds) && errorWaitHandle.WaitOne(timeoutMilliseconds))
+            {
+                Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
+                return process.ExitCode;
+            }
+            else
+            {
+#pragma warning disable CA1031 // need to catch any kill errors
+                try
+                {
+                    process.Kill();
+                }
+                catch
+                {
+                    Debug.WriteLine($"Error killing process {filename}");
+                }
+#pragma warning restore CA1031
+                throw new TimeoutException($"Process {filename} timed out.");
             }
         }
 
+#pragma warning disable CA1031
         /// <summary>
         /// Runs a process with redirected output and error stream.
         /// </summary>
@@ -95,11 +97,11 @@ namespace Cave
         /// <param name="arguments">Arguments.</param>
         /// <param name="timeoutMilliseconds">Timeout in milliseconds.</param>
         /// <returns>Returns a result dataset.</returns>
-        public static Result RunRedirected(string filename, string arguments, int timeoutMilliseconds = default)
+        public static ShellResult RunRedirected(string filename, string arguments, int timeoutMilliseconds = default)
         {
             var stdoutLines = new LinkedList<string>();
             var stderrLines = new LinkedList<string>();
-            var result = new Result();
+            var result = new ShellResult();
             try
             {
                 result.ExitCode = RunRedirected(filename, arguments, s => stdoutLines.AddLast(s), s => stderrLines.AddLast(s), timeoutMilliseconds);
@@ -113,31 +115,6 @@ namespace Cave
             }
             return result;
         }
-
-        /// <summary>
-        /// A process result.
-        /// </summary>
-        public class Result
-        {
-            /// <summary>
-            /// Gets or sets all output lines.
-            /// </summary>
-            public string[] StdOut { get; protected internal set; }
-
-            /// <summary>
-            /// Gets or sets all error lines.
-            /// </summary>
-            public string[] StdErr { get; protected internal set; }
-
-            /// <summary>
-            /// Gets or sets the exit code of the process.
-            /// </summary>
-            public int ExitCode { get; protected internal set; }
-
-            /// <summary>
-            /// Gets or sets the exception catched on process start.
-            /// </summary>
-            public Exception Exception { get; protected internal set; }
-        }
+#pragma warning restore CA1031
     }
 }

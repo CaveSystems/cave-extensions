@@ -5,50 +5,50 @@
 namespace Cave
 {
     /// <summary>
-    /// Provides the international system of units default units.
+    /// si unit fractions.
     /// </summary>
     [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
-    public enum SiUnits : int
+    public enum SiFraction : int
     {
         /// <summary>
-        /// kilo
+        /// Milli
         /// </summary>
-        k = 1,
+        m = 1,
 
         /// <summary>
-        /// Mega
+        /// Micro
         /// </summary>
-        M,
+        µ,
 
         /// <summary>
-        /// Giga
+        /// Nano
         /// </summary>
-        G,
+        n,
 
         /// <summary>
-        /// Tera
+        /// Pico
         /// </summary>
-        T,
+        p,
 
         /// <summary>
-        /// Peta
+        /// Femto
         /// </summary>
-        P,
+        f,
 
         /// <summary>
-        /// Exa
+        /// Atto
         /// </summary>
-        E,
+        a,
 
         /// <summary>
-        /// Zetta
+        /// Zepto
         /// </summary>
-        Z,
+        z,
 
         /// <summary>
-        /// Yota
+        /// Yocto
         /// </summary>
-        Y,
+        y,
     }
 }
 

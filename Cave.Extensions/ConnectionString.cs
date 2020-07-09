@@ -84,7 +84,7 @@ namespace Cave
         {
             if (connectionString == null)
             {
-                throw new ArgumentNullException("connectionString");
+                throw new ArgumentNullException(nameof(connectionString));
             }
             connectionString = connectionString.Replace('\\', '/');
 
@@ -254,15 +254,7 @@ namespace Cave
         /// </summary>
         public ConnectionType ConnectionType
         {
-            get
-            {
-                if (Protocol != null)
-                {
-                    Protocol.TryParse(out ConnectionType connectionType);
-                    return connectionType;
-                }
-                return ConnectionType.Unknown;
-            }
+            get => Protocol != null && Protocol.TryParse(out ConnectionType connectionType) ? connectionType : ConnectionType.Unknown;
             set => Protocol = value.ToString();
         }
 

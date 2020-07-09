@@ -101,7 +101,7 @@ namespace Tests
                 var check2 = str2.ParseValue<TimeSpan>();
                 Assert.AreEqual(timespan, check1);
                 // 1% precision
-                Assert.AreEqual(timespan.Ticks, check2.Ticks, timespan.Ticks / 100 + 1);
+                Assert.AreEqual(timespan.Ticks / 100 + 1, Math.Abs(timespan.Ticks - check2.Ticks));
             }
 
             Random rnd = new Random();

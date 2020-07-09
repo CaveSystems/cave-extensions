@@ -15,6 +15,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static long BinaryOr<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = 0;
             foreach (T item in items)
             {
@@ -30,6 +35,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static long BinaryXor<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = 0;
             foreach (T item in items)
             {
@@ -45,6 +55,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static long BinaryAnd<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = -1;
             foreach (T item in items)
             {
@@ -63,6 +78,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static ulong BinaryOr<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             ulong value = 0;
             foreach (T item in items)
             {
@@ -78,6 +98,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static ulong BinaryXor<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             ulong value = 0;
             foreach (T item in items)
             {
@@ -93,6 +118,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static ulong BinaryAnd<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0xffffffffffffffff;
             foreach (T item in items)
             {
@@ -111,6 +141,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryOr<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0;
             foreach (T item in items)
             {
@@ -126,6 +161,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryXor<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0;
             foreach (T item in items)
             {
@@ -141,6 +181,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static int BinaryAnd<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = -1;
             foreach (T item in items)
             {
@@ -159,6 +204,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static uint BinaryOr<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             uint value = 0;
             foreach (T item in items)
             {
@@ -174,6 +224,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static uint BinaryXor<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             uint value = 0;
             foreach (T item in items)
             {
@@ -189,6 +244,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static uint BinaryAnd<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0xffffffff;
             foreach (T item in items)
             {
@@ -206,6 +266,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static long BinaryOr(this IEnumerable<long> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = 0;
             foreach (var item in items)
             {
@@ -219,6 +284,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static long BinaryXor(this IEnumerable<long> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = 0;
             foreach (var item in items)
             {
@@ -232,6 +302,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static long BinaryAnd(this IEnumerable<long> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long value = -1;
             foreach (var item in items)
             {
@@ -248,6 +323,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static ulong BinaryOr(this IEnumerable<ulong> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             ulong value = 0;
             foreach (var item in items)
             {
@@ -261,6 +341,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static ulong BinaryXor(this IEnumerable<ulong> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             ulong value = 0;
             foreach (var item in items)
             {
@@ -274,6 +359,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static ulong BinaryAnd(this IEnumerable<ulong> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0xffffffffffffffff;
             foreach (var item in items)
             {
@@ -290,6 +380,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryOr(this IEnumerable<int> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0;
             foreach (var item in items)
             {
@@ -303,6 +398,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static int BinaryXor(this IEnumerable<int> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0;
             foreach (var item in items)
             {
@@ -316,6 +416,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static int BinaryAnd(this IEnumerable<int> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = -1;
             foreach (var item in items)
             {
@@ -332,6 +437,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static uint BinaryOr(this IEnumerable<uint> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             uint value = 0;
             foreach (var item in items)
             {
@@ -345,6 +455,11 @@ namespace Cave
         /// <returns>The binary or result of the values in the sequence.</returns>
         public static uint BinaryXor(this IEnumerable<uint> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             uint value = 0;
             foreach (var item in items)
             {
@@ -358,6 +473,11 @@ namespace Cave
         /// <returns>The binary and result of the values in the sequence.</returns>
         public static uint BinaryAnd(this IEnumerable<uint> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var value = 0xffffffff;
             foreach (var item in items)
             {
@@ -375,13 +495,18 @@ namespace Cave
         /// <returns>Returns the hashcode for all items.</returns>
         public static long CalculatePropertyHash<T>(this IEnumerable<T> items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             long result = 0;
             var properties = typeof(T).GetProperties();
             foreach (var item in items)
             {
                 foreach (var property in properties)
                 {
-                    result.Rol();
+                    result = result.BitwiseRotateLeft();
 #if NET20 || NET35 || NET40
                     result ^= property.GetValue(item, null)?.GetHashCode() ?? 0;
 #else

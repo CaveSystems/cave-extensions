@@ -1,7 +1,8 @@
+#pragma warning disable CA1307
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -72,7 +73,7 @@ namespace Cave
         /// <param name="separator">The seperator.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo = null)
+        public static string Join(this IEnumerable array, string separator, IFormatProvider cultureInfo = null)
         {
             if (cultureInfo == null)
             {
@@ -81,12 +82,12 @@ namespace Cave
 
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             if (separator == null)
             {
-                throw new ArgumentNullException("separator");
+                throw new ArgumentNullException(nameof(separator));
             }
 
             var result = new StringBuilder();
@@ -109,7 +110,7 @@ namespace Cave
         /// <param name="separator">The seperator.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo = null)
+        public static string Join(this IEnumerable array, char separator, IFormatProvider cultureInfo = null)
         {
             if (cultureInfo == null)
             {
@@ -118,7 +119,7 @@ namespace Cave
 
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             var result = new StringBuilder();
@@ -136,9 +137,20 @@ namespace Cave
 
         /// <summary>Joins the camel case.</summary>
         /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        public static string JoinCamelCase(this string[] parts)
+        public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
         {
+            if (parts == null)
+            {
+                throw new ArgumentNullException(nameof(parts));
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
             var result = new StringBuilder();
             foreach (var part in parts)
             {
@@ -148,10 +160,10 @@ namespace Cave
                     continue;
                 }
 
-                result.Append(char.ToUpper(t[0]));
+                result.Append(char.ToUpper(t[0], culture));
                 if (t.Length > 1)
                 {
-                    result.Append(t.Substring(1).ToLower());
+                    result.Append(t.Substring(1).ToLower(culture));
                 }
             }
             return result.ToString();
@@ -231,7 +243,7 @@ namespace Cave
                     strings.Add("Data:");
                     foreach (var key in ex.Data.Keys)
                     {
-                        strings.Add(string.Format("  {0}: {1}", key, ex.Data[key]));
+                        strings.Add($"  {key}: {ex.Data[key]}");
                     }
                 }
 
@@ -260,9 +272,9 @@ namespace Cave
                 strings.AddRange(ToStrings(ex.InnerException, debug));
             }
 
-            if (ex is ReflectionTypeLoadException)
+            if (ex is ReflectionTypeLoadException reflectionTypeLoadException)
             {
-                foreach (Exception inner in ((ReflectionTypeLoadException)ex).LoaderExceptions)
+                foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
                 {
                     if (debug)
                     {
@@ -289,7 +301,7 @@ namespace Cave
                 args = new object[0];
             }
 
-            var result = text;
+            var result = text ?? throw new ArgumentNullException(nameof(text));
             for (var i = 0; i < args.Length; i++)
             {
                 var argument = (args[i] == null) ? "<null>" : args[i].ToString();
@@ -302,17 +314,15 @@ namespace Cave
         /// Formats a time span to a short one unit value (1.20h, 15.3ms, ...)
         /// </summary>
         /// <param name="timeSpan">TimeSpan to format.</param>
-        /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        public static string FormatTime(this TimeSpan timeSpan) => FormatTime(timeSpan, CultureInfo.InvariantCulture);
-
-        /// <summary>
-        /// Formats a time span to a short one unit value (1.20h, 15.3ms, ...)
-        /// </summary>
-        /// <param name="timeSpan">TimeSpan to format.</param>
         /// <param name="culture">Culture used to format the double value.</param>
         /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        public static string FormatTime(this TimeSpan timeSpan, CultureInfo culture)
+        public static string FormatTime(this TimeSpan timeSpan, IFormatProvider culture = null)
         {
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+
             if (timeSpan < TimeSpan.Zero)
             {
                 return "-" + FormatTime(-timeSpan, culture);
@@ -376,9 +386,15 @@ namespace Cave
         /// Formats a time span to a short one unit value (1.20h, 15.3ms, ...)
         /// </summary>
         /// <param name="seconds">Seconds to format.</param>
+        /// <param name="culture">Culture used to format the double value.</param>
         /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        public static string FormatTime(this double seconds)
+        public static string FormatTime(this double seconds, IFormatProvider culture = null)
         {
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+
             if (seconds < 0)
             {
                 return "-" + FormatTime(-seconds);
@@ -394,17 +410,17 @@ namespace Cave
                 return FormatTime(TimeSpan.FromTicks((long)(seconds * TimeSpan.TicksPerSecond)));
             }
             var part = seconds;
-            for (SiFractions i = SiFractions.m; i <= SiFractions.y; i++)
+            for (SiFraction fraction = SiFraction.m; fraction <= SiFraction.y; fraction++)
             {
                 part *= 1000.0;
                 if (part > 9.99)
                 {
-                    return part.ToString("0.0") + i + "s";
+                    return part.ToString("0.0", culture) + fraction + "s";
                 }
 
                 if (part > 0.999)
                 {
-                    return part.ToString("0.00") + i + "s";
+                    return part.ToString("0.00", culture) + fraction + "s";
                 }
             }
             return seconds.ToString() + "s";
@@ -460,15 +476,20 @@ namespace Cave
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this float size)
+        public static string FormatSize(this float size, IFormatProvider culture = null)
         {
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
             if (size < 0)
             {
                 return "-" + FormatSize(-size);
             }
             var calc = size;
-            SiUnits unit = 0;
+            SiUnit unit = 0;
             while (calc >= 1000)
             {
                 calc /= 1000;
@@ -477,11 +498,11 @@ namespace Cave
             string result;
             if (Math.Truncate(calc) == calc)
             {
-                result = calc.ToString();
+                result = calc.ToString(culture);
             }
             else
             {
-                result = calc.ToString("0.000");
+                result = calc.ToString("0.000", culture);
             }
             if (result.Length > 5)
             {
@@ -495,49 +516,58 @@ namespace Cave
         /// Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)
         /// </summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this ulong size)
+        public static string FormatSize(this ulong size, IFormatProvider culture = null)
         {
-            return FormatSize((float)size);
+            return FormatSize((float)size, culture);
         }
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this long size)
+        public static string FormatSize(this long size, IFormatProvider culture = null)
         {
-            return FormatSize((float)size);
+            return FormatSize((float)size, culture);
         }
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this decimal size)
+        public static string FormatSize(this decimal size, IFormatProvider culture = null)
         {
-            return FormatSize((float)size);
+            return FormatSize((float)size, culture);
         }
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this double size)
+        public static string FormatSize(this double size, IFormatProvider culture = null)
         {
-            return FormatSize((float)size);
+            return FormatSize((float)size, culture);
         }
 
         /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
         /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatBinarySize(this float size)
+        public static string FormatBinarySize(this float size, IFormatProvider culture = null)
         {
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
             var negative = size < 0;
-            IecUnits unit = 0;
+            IecUnit unit = 0;
             while (size >= 1024)
             {
                 size /= 1024;
                 unit++;
             }
-            var result = size.ToString("0.000");
+            var result = size.ToString("0.000", culture);
             if (result.Length > 5)
             {
                 result = result.Substring(0, 5);
@@ -550,50 +580,54 @@ namespace Cave
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this double value)
+        public static string FormatBinarySize(this double value, IFormatProvider culture = null)
         {
-            return FormatBinarySize((float)value);
+            return FormatBinarySize((float)value, culture);
         }
 
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this decimal value)
+        public static string FormatBinarySize(this decimal value, IFormatProvider culture = null)
         {
-            return FormatBinarySize((float)value);
+            return FormatBinarySize((float)value, culture);
         }
 
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this ulong value)
+        public static string FormatBinarySize(this ulong value, IFormatProvider culture = null)
         {
-            return FormatBinarySize((float)value);
+            return FormatBinarySize((float)value, culture);
         }
 
         /// <summary>
         /// Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)
         /// </summary>
         /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this long value)
+        public static string FormatBinarySize(this long value, IFormatProvider culture = null)
         {
-            return FormatBinarySize((float)value);
+            return FormatBinarySize((float)value, culture);
         }
 
         /// <summary>
-        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)"/> method.
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)"/> method.
         /// </summary>
         /// <typeparam name="T">Type to convert to.</typeparam>
         /// <param name="value">String value to convert.</param>
-        /// <param name="culture">Culture to use.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a new value instance.</returns>
-        public static T ParseValue<T>(this string value, CultureInfo culture = null)
+        public static T ParseValue<T>(this string value, IFormatProvider culture = null)
         {
             return (T)TypeExtension.ConvertValue(typeof(T), value, culture);
         }
@@ -602,28 +636,28 @@ namespace Cave
         /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <param name="cultureInfo">The culture to use during formatting.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The string.</returns>
-        public static string ToString(object value, CultureInfo cultureInfo)
+        public static string ToString(object value, IFormatProvider culture = null)
         {
             if (value == null)
             {
                 return "<null>";
             }
 
-            if (cultureInfo == null)
+            if (culture == null)
             {
-                cultureInfo = CultureInfo.InvariantCulture;
+                culture = CultureInfo.InvariantCulture;
             }
 
             // special handling for roundtrip types
             if (value is double d)
             {
-                return d.ToString("R", cultureInfo);
+                return d.ToString("R", culture);
             }
             if (value is float f)
             {
-                return f.ToString("R", cultureInfo);
+                return f.ToString("R", culture);
             }
             if (value is DateTime dt)
             {
@@ -631,16 +665,16 @@ namespace Cave
                 {
                     throw new ArgumentOutOfRangeException("Please specify DateTime.Kind!");
                 }
-                return dt.ToString(InterOpDateTimeFormat);
+                return dt.ToString(InterOpDateTimeFormat, culture);
             }
 
-            if (value is IFormattable)
+            if (value is IFormattable formattable)
             {
-                return ((IFormattable)value).ToString(null, cultureInfo);
+                return formattable.ToString(null, culture);
             }
-            if (value is ICollection)
+            if (value is ICollection collection)
             {
-                return value.ToString() + " {" + StringExtensions.Join((ICollection)value, ",", cultureInfo) + "}";
+                return value.ToString() + " {" + Join(collection, ",", culture) + "}";
             }
             return value.ToString();
         }
@@ -672,12 +706,12 @@ namespace Cave
         {
             if (enumerable == null)
             {
-                throw new ArgumentNullException("enumerable");
+                throw new ArgumentNullException(nameof(enumerable));
             }
 
             if (cultureInfo == null)
             {
-                throw new ArgumentNullException("cultureInfo");
+                throw new ArgumentNullException(nameof(cultureInfo));
             }
 
             var result = new List<string>();
@@ -742,17 +776,17 @@ namespace Cave
             var parts = data.Split(',');
             if (parts.Length != 2)
             {
-                throw new ArgumentException(string.Format("Invalid point data '{0}'!", point), "point");
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
             if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
             {
-                throw new ArgumentException(string.Format("Invalid point data '{0}'!", point), "point");
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
             if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
             {
-                throw new ArgumentException(string.Format("Invalid point data '{0}'!", point), "point");
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
             var x = int.Parse(parts[0].Trim().Substring(2));
@@ -771,17 +805,17 @@ namespace Cave
             var parts = data.Split(',');
             if (parts.Length != 2)
             {
-                throw new ArgumentException(string.Format("Invalid size data '{0}'!", size), "size");
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
             if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH="))
             {
-                throw new ArgumentException(string.Format("Invalid size data '{0}'!", size), "size");
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
             if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
             {
-                throw new ArgumentException(string.Format("Invalid size data '{0}'!", size), "size");
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
             var w = int.Parse(parts[0].Trim().Substring(6));
@@ -800,27 +834,27 @@ namespace Cave
             var parts = data.Split(',');
             if (parts.Length != 4)
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH="))
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             var x = int.Parse(parts[0].Trim().Substring(2));
@@ -841,7 +875,7 @@ namespace Cave
             var parts = data.ToUpperInvariant().Split(new string[] { "X=", "Y=" }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 2)
             {
-                throw new ArgumentException(string.Format("Invalid point data '{0}'!", point), "point");
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
             var x = float.Parse(parts[0].Trim(' ', ','));
@@ -860,7 +894,7 @@ namespace Cave
             var parts = data.ToUpperInvariant().Split(new string[] { "WIDTH=", "HEIGHT=" }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 2)
             {
-                throw new ArgumentException(string.Format("Invalid size data '{0}'!", size), "size");
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
             var w = float.Parse(parts[0].Trim(' ', ','));
@@ -879,7 +913,7 @@ namespace Cave
             var parts = data.ToUpperInvariant().Split(new string[] { "X=", "Y=", "WIDTH=", "HEIGHT=" }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 4)
             {
-                throw new ArgumentException(string.Format("Invalid rect data '{0}'!", rect), "rect");
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
             var x = float.Parse(parts[0].Trim(' ', ','));
@@ -899,7 +933,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var len = text.Length;
@@ -937,7 +971,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (start < 0)
@@ -1000,17 +1034,17 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (string.IsNullOrEmpty(startMark))
             {
-                throw new ArgumentNullException("startMark");
+                throw new ArgumentNullException(nameof(startMark));
             }
 
             if (string.IsNullOrEmpty(endMark))
             {
-                throw new ArgumentNullException("endMark");
+                throw new ArgumentNullException(nameof(endMark));
             }
 
             if (start < 0)
@@ -1124,7 +1158,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (isLittleEndian)
@@ -1136,7 +1170,7 @@ namespace Cave
             var format = upperCase ? "X2" : "x2";
             for (var i = 0; i < data.Length; i++)
             {
-                stringBuilder.Append(data[i].ToString(format));
+                stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
             }
             return stringBuilder.ToString();
         }
@@ -1150,7 +1184,7 @@ namespace Cave
         {
             if (hex == null)
             {
-                throw new ArgumentNullException("hex");
+                throw new ArgumentNullException(nameof(hex));
             }
 
             try
@@ -1164,7 +1198,7 @@ namespace Cave
             }
             catch
             {
-                throw new ArgumentException(string.Format("Invalid hex string {0}", hex));
+                throw new ArgumentException($"Invalid hex string {hex}");
             }
         }
 
@@ -1179,17 +1213,17 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (pattern == null)
             {
-                throw new ArgumentNullException("pattern");
+                throw new ArgumentNullException(nameof(pattern));
             }
 
             if (replacement == null)
             {
-                throw new ArgumentNullException("replacement");
+                throw new ArgumentNullException(nameof(replacement));
             }
 
             var result = text.ToUpperInvariant();
@@ -1244,7 +1278,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text missing");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1272,7 +1306,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1301,7 +1335,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1330,7 +1364,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (string.IsNullOrEmpty(validChars))
@@ -1528,7 +1562,7 @@ namespace Cave
                     var part = text.Substring(last, len);
                     result.Add(part);
                 }
-                result.Add(text[next].ToString());
+                result.Add($"{text[next]}");
                 last = next + 1;
                 next = text.IndexOfAny(separators, last);
             }
@@ -1549,7 +1583,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var result = new List<string>();
@@ -1780,7 +1814,7 @@ namespace Cave
         {
             var parts = text.Split(separator);
             parts[index] = newValue;
-            return string.Join(separator.ToString(), parts);
+            return string.Join($"{separator}", parts);
         }
 
         /// <summary>
@@ -1804,7 +1838,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             var result = new StringBuilder(text.Length);
@@ -1912,7 +1946,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (text.IndexOf("\r\n") > -1)
@@ -2073,17 +2107,17 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (start == null)
             {
-                throw new ArgumentNullException("start");
+                throw new ArgumentNullException(nameof(start));
             }
 
             if (end == null)
             {
-                throw new ArgumentNullException("end");
+                throw new ArgumentNullException(nameof(end));
             }
 
             if (text.Length > start.Length && text.StartsWith(start) && text.EndsWith(end))
@@ -2093,7 +2127,7 @@ namespace Cave
 
             if (throwEx)
             {
-                throw new FormatException(string.Format("Could not unbox {0} string {1}!", start, end));
+                throw new FormatException($"Could not unbox {start} string {end}!");
             }
 
             return text;
@@ -2125,7 +2159,7 @@ namespace Cave
 
             if (throwEx)
             {
-                throw new FormatException(string.Format("Could not unbox {0} string {0}!", border));
+                throw new FormatException($"Could not unbox {border} string {border}!");
             }
 
             return text;
@@ -2142,7 +2176,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (text.Length > 1 && text[0] == border && text[text.Length - 1] == border)
@@ -2151,7 +2185,7 @@ namespace Cave
             }
             if (throwEx)
             {
-                throw new FormatException(string.Format("Could not unbox {0} string {0}!", border));
+                throw new FormatException($"Could not unbox {border} string {border}!");
             }
 
             return text;
@@ -2167,7 +2201,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (text.Length > 1)
@@ -2184,7 +2218,7 @@ namespace Cave
             }
             if (throwEx)
             {
-                throw new FormatException(string.Format("Could not unbox {0} string {1}'!", '"', '"'));
+                throw new FormatException($"Could not unbox {'"'} string {'"'}'!");
             }
 
             return text;
@@ -2200,7 +2234,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (text.Length > 1)
@@ -2222,22 +2256,22 @@ namespace Cave
             }
             if (throwEx)
             {
-                throw new FormatException(string.Format("Could not unbox {0} string {1}!", '"', '"'));
+                throw new FormatException($"Could not unbox {'"'} string {'"'}!");
             }
 
             return text;
         }
 
-        /// <summary>Parses a binary size string created by <see cref="FormatSize(double)"/> or <see cref="FormatBinarySize(double)"/>.</summary>
+        /// <summary>Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)"/> or <see cref="FormatBinarySize(double, IFormatProvider)"/>.</summary>
         /// <param name="value">The value string.</param>
-        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long)"/>.</returns>
+        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)"/>.</returns>
         /// <exception cref="ArgumentNullException">value.</exception>
         /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
         public static double ParseBinarySize(string value)
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             var parts = value.Split(' ');
@@ -2250,22 +2284,39 @@ namespace Cave
                     return size;
                 }
 
-                foreach (SiUnits u in Enum.GetValues(typeof(SiUnits)))
+                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
                 {
-                    if (parts[1] == u.ToString() + "B")
+                    if (parts[1] == unit.ToString() + "Bit")
                     {
-                        return size * Math.Pow(1000, (int)u);
+                        return size * Math.Pow(1000, (int)unit);
                     }
                 }
-                foreach (IecUnits u in Enum.GetValues(typeof(IecUnits)))
+
+                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
                 {
-                    if (parts[1] == u.ToString() + "B")
+                    if (parts[1] == unit.ToString() + "it")
                     {
-                        return size * Math.Pow(1024, (int)u);
+                        return size * Math.Pow(1024, (int)unit);
+                    }
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
+                {
+                    if (parts[1] == unit.ToString() + "B")
+                    {
+                        return size * Math.Pow(1000, (int)unit);
+                    }
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
+                {
+                    if (parts[1] == unit.ToString())
+                    {
+                        return size * Math.Pow(1024, (int)unit);
                     }
                 }
             }
-            throw new ArgumentException(string.Format("Invalid format in binary size. Expected '<value> <unit>'. Example '15 MB'. Got '{0}'.", value));
+            throw new ArgumentException($"Invalid format in binary size. Expected '<value> <unit>'. Example '15 MB'. Got '{value}'.");
         }
 
         /// <summary>Randomizes the character casing.</summary>
@@ -2273,17 +2324,22 @@ namespace Cave
         /// <returns>Returns a new string with random case.</returns>
         public static string RandomCase(this string value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             var rnd = new Random(Environment.TickCount);
             var result = new char[value.Length];
             for (var i = 0; i < value.Length; i++)
             {
                 if ((rnd.Next() % 1) == 0)
                 {
-                    result[i] = char.ToUpper(value[i]);
+                    result[i] = char.ToUpperInvariant(value[i]);
                 }
                 else
                 {
-                    result[i] = char.ToLower(value[i]);
+                    result[i] = char.ToLowerInvariant(value[i]);
                 }
             }
             return new string(result);
@@ -2295,13 +2351,8 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterFirst(this string value, char character)
         {
-            var i = value.IndexOf(character);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + 1);
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2310,13 +2361,13 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterFirst(this string value, string pattern)
         {
-            var i = value.IndexOf(pattern);
-            if (i < 0)
+            if (pattern == null)
             {
-                return string.Empty;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            return value.Substring(i + pattern.Length);
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2325,13 +2376,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeFirst(this string value, char character)
         {
-            var i = value.IndexOf(character);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2340,13 +2386,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeFirst(this string value, string pattern)
         {
-            var i = value.IndexOf(pattern);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2355,13 +2396,8 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterLast(this string value, char character)
         {
-            var i = value.LastIndexOf(character);
-            if (i < 0)
-            {
-                return string.Empty;
-            }
-
-            return value.Substring(i + 1);
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -2370,13 +2406,13 @@ namespace Cave
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
         public static string AfterLast(this string value, string pattern)
         {
-            var i = value.LastIndexOf(pattern);
-            if (i < 0)
+            if (pattern == null)
             {
-                return string.Empty;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            return value.Substring(i + pattern.Length);
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2385,13 +2421,8 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeLast(this string value, char character)
         {
-            var i = value.LastIndexOf(character);
-            if (i < 0)
-            {
-                return value;
-            }
-
-            return value.Substring(0, i);
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -2400,13 +2431,12 @@ namespace Cave
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
         public static string BeforeLast(this string value, string pattern)
         {
-            var i = value.LastIndexOf(pattern);
-            if (i < 0)
+            if (pattern == null)
             {
-                return value;
+                throw new ArgumentNullException(nameof(pattern));
             }
-
-            return value.Substring(0, i);
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
         }
 
         /// <summary>Converts a string to a bool.</summary>
@@ -2510,7 +2540,19 @@ namespace Cave
                 return false;
             }
 
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+
+            if (end == null)
+            {
+                throw new ArgumentNullException(nameof(end));
+            }
+
             return text.StartsWith(start) && text.EndsWith(end);
         }
     }
 }
+
+#pragma warning restore CA1307

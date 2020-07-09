@@ -48,7 +48,9 @@ namespace Cave
         /// <param name="attributeType">The attribute type to check for.</param>
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
-        public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false) => type.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a));
+        public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false)
+            => type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
+            ?? throw new ArgumentNullException(nameof(type));
 
         /// <summary>
         /// Gets a specific <see cref="Attribute"/> present at the type. If the attribute type cannot be found null is returned.
@@ -68,7 +70,9 @@ namespace Cave
         /// <param name="attributeType">The attribute type to check for.</param>
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns the attribute found or null.</returns>
-        public static object GetAttribute(this Type type, Type attributeType, bool inherit = false) => type.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault();
+        public static object GetAttribute(this Type type, Type attributeType, bool inherit = false)
+            => type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
+            ?? throw new ArgumentNullException(nameof(type));
 
         /// <summary>
         /// Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.
@@ -78,9 +82,9 @@ namespace Cave
         public static string GetProductName(this Type type)
         {
 #if NETSTANDARD13
-            return type.GetTypeInfo().Assembly.GetProductName();
+            return type?.GetTypeInfo().Assembly.GetProductName();
 #else
-            return type.Assembly.GetProductName();
+            return type?.Assembly.GetProductName();
 #endif
         }
 
@@ -92,9 +96,9 @@ namespace Cave
         public static string GetCompanyName(this Type type)
         {
 #if NETSTANDARD13
-            return type.GetTypeInfo().Assembly.GetCompanyName();
+            return type?.GetTypeInfo().Assembly.GetCompanyName();
 #else
-            return type.Assembly.GetCompanyName();
+            return type?.Assembly.GetCompanyName();
 #endif
         }
 
@@ -105,9 +109,9 @@ namespace Cave
         /// <param name="type">The type to check.</param>
         /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
 #if NETSTANDARD13
-        public static bool IsStruct(this Type type) => type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
+        public static bool IsStruct(this Type type) => type?.GetTypeInfo().IsValueType == true && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
 #else
-        public static bool IsStruct(this Type type) => type.IsValueType && !type.IsPrimitive && !type.IsEnum;
+        public static bool IsStruct(this Type type) => type?.IsValueType == true && !type.IsPrimitive && !type.IsEnum;
 #endif
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace Cave
             }
             catch (Exception ex)
             {
-                throw new NotSupportedException(string.Format("The value '{0}' cannot be converted to target type '{1}'!", value, toType), ex);
+                throw new NotSupportedException($"The value '{value}' cannot be converted to target type '{toType}'!", ex);
             }
         }
 
@@ -136,7 +140,7 @@ namespace Cave
         /// <param name="value">Value to convert.</param>
         /// <param name="cultureInfo">The culture to use during formatting.</param>
         /// <returns>Returns a new instance of the specified type.</returns>
-        public static object ConvertValue(this Type toType, object value, CultureInfo cultureInfo)
+        public static object ConvertValue(this Type toType, object value, IFormatProvider cultureInfo)
         {
             if (toType == null)
             {
@@ -169,7 +173,7 @@ namespace Cave
             }
             if (toType == typeof(bool))
             {
-                switch (value.ToString().ToLower())
+                switch (value.ToString().ToLowerInvariant())
                 {
                     case "true":
                     case "on":
@@ -209,9 +213,9 @@ namespace Cave
             // convert to string
             string str;
             {
-                if (value is string)
+                if (value is string s)
                 {
-                    str = (string)value;
+                    str = s;
                 }
                 else
                 {
@@ -286,41 +290,45 @@ namespace Cave
                 {
                     if (str.Contains(":"))
                     {
+#if NET20 || NET35
                         return TimeSpan.Parse(str);
+#else
+                        return TimeSpan.Parse(str, cultureInfo);
+#endif
                     }
-                    if (str.EndsWith("ns"))
+                    if (str.EndsWith("ns", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * (TimeSpan.TicksPerMillisecond / 1000)));
                     }
-                    if (str.EndsWith("ms"))
+                    if (str.EndsWith("ms", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * TimeSpan.TicksPerMillisecond));
                     }
-                    if (str.EndsWith("s"))
+                    if (str.EndsWith("s", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerSecond));
                     }
-                    if (str.EndsWith("min"))
+                    if (str.EndsWith("min", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), cultureInfo) * TimeSpan.TicksPerMinute));
                     }
-                    if (str.EndsWith("h"))
+                    if (str.EndsWith("h", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerHour));
                     }
-                    if (str.EndsWith("d"))
+                    if (str.EndsWith("d", StringComparison.Ordinal))
                     {
                         return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerDay));
                     }
-                    if (str.EndsWith("a"))
+                    if (str.EndsWith("a", StringComparison.Ordinal))
                     {
                         return TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), cultureInfo) * 365.25);
                     }
-                    return new TimeSpan(long.Parse(str));
+                    return new TimeSpan(long.Parse(str, cultureInfo));
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidDataException(string.Format("Value '{0}' is not a valid TimeSpan!", str), ex);
+                    throw new InvalidDataException($"Value '{str}' is not a valid TimeSpan!", ex);
                 }
             }
 
@@ -400,7 +408,7 @@ namespace Cave
                 {
                     throw new AggregateException(errors.ToArray());
                 }
-                throw new MissingMethodException(string.Format("Type {0} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!", toType));
+                throw new MissingMethodException($"Type {toType} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!");
             }
         }
     }

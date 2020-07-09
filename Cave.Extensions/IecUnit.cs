@@ -5,7 +5,7 @@ namespace Cave
     /// <summary>
     /// Provides common IEC units for binary values (byte).
     /// </summary>
-    public enum IecUnits : int
+    public enum IecUnit : int
     {
         /// <summary>
         /// Byte

@@ -5,7 +5,7 @@ namespace Cave
     /// <summary>
     /// Provides a string search result containing start index an length.
     /// </summary>
-    public struct SubStringResult
+    public struct SubStringResult : IEquatable<SubStringResult>
     {
         /// <summary>
         /// Checks two SubStringResult instances for equality.
@@ -28,20 +28,21 @@ namespace Cave
         /// </summary>
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult Find(string text, string value)
+        public static SubStringResult Find(string text, string value, StringComparison stringComparison = default)
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
-            var index = text.IndexOf(value);
+            var index = text.IndexOf(value, stringComparison);
             if (index < 0)
             {
                 return default;
@@ -56,20 +57,21 @@ namespace Cave
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
         /// <param name="startIndex">Startindex to begin searching at.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult Find(string text, string value, int startIndex)
+        public static SubStringResult Find(string text, string value, int startIndex, StringComparison stringComparison = default)
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
-            var index = text.IndexOf(value, startIndex);
+            var index = text.IndexOf(value, startIndex, stringComparison);
             return new SubStringResult(text, index, index < 0 ? 0 : value.Length);
         }
 
@@ -95,7 +97,7 @@ namespace Cave
         {
             if (text == null)
             {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
 
             Index = index;
@@ -109,10 +111,7 @@ namespace Cave
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>True if the index is contained.</returns>
-        public bool Contains(int index)
-        {
-            return (index >= Index) && (index < EndIndex);
-        }
+        public bool Contains(int index) => (index >= Index) && (index < EndIndex);
 
         /// <summary>
         /// Gets a value indicating whether the substring is valid or not.
@@ -143,15 +142,7 @@ namespace Cave
         /// Gets a string "[Length] Start..End 'Text'.
         /// </summary>
         /// <returns>The string.</returns>
-        public override string ToString()
-        {
-            if (Index < 0)
-            {
-                return "Invalid";
-            }
-
-            return "[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'";
-        }
+        public override string ToString() => Index < 0 ? "Invalid" : ("[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'");
 
         /// <summary>
         /// Gets the hash code for this instance.
@@ -165,15 +156,15 @@ namespace Cave
         /// <summary>
         /// Checks this instance with another one.
         /// </summary>
-        /// <param name="obj">The other substringresult.</param>
+        /// <param name="obj">The other SubStringResult.</param>
         /// <returns>True if both instances are equal.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is SubStringResult other)
-            {
-                return (other.Index == Index) && (other.Length == Length) && (other.Text == Text);
-            }
-            return false;
-        }
+        public override bool Equals(object obj) => obj is SubStringResult other && Equals(other);
+
+        /// <summary>
+        /// Checks this instance with another one.
+        /// </summary>
+        /// <param name="other">The other SubStringResult.</param>
+        /// <returns>True if both instances are equal.</returns>
+        public bool Equals(SubStringResult other) => (other.Index == Index) && (other.Length == Length) && (other.Text == Text);
     }
 }

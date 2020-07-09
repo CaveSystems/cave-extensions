@@ -17,6 +17,11 @@ namespace Cave
         /// <returns>Returns the obfuscated byte buffer.</returns>
         public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             IDisposable disposable = null;
             if (algorithm == null)
             {
@@ -53,6 +58,11 @@ namespace Cave
         /// <returns>Returns the deobfuscated byte buffer.</returns>
         public static byte[] Deobfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             IDisposable disposable = null;
             if (algorithm == null)
             {
@@ -88,6 +98,11 @@ namespace Cave
         /// <returns>Returns an array of nibbles.</returns>
         public static byte[] GetNibbles(this byte[] data)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             byte[] result = new byte[data.Length << 2];
             for (int i = 0, n = 0; i < data.Length; i++)
             {
