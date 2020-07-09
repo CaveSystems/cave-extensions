@@ -137,6 +137,7 @@ namespace Cave
 
         /// <summary>Joins the camel case.</summary>
         /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
         public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
         {
@@ -1561,7 +1562,7 @@ namespace Cave
                     var part = text.Substring(last, len);
                     result.Add(part);
                 }
-                result.Add(text[next].ToString());
+                result.Add($"{text[next]}");
                 last = next + 1;
                 next = text.IndexOfAny(separators, last);
             }
@@ -1813,7 +1814,7 @@ namespace Cave
         {
             var parts = text.Split(separator);
             parts[index] = newValue;
-            return string.Join(separator.ToString(), parts);
+            return string.Join($"{separator}", parts);
         }
 
         /// <summary>

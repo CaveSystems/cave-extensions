@@ -1,0 +1,42 @@
+﻿#if NET20
+
+using Cave;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace System.Linq
+{
+    sealed class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
+    {
+        readonly IEnumerable<TElement> elements;
+
+        public OrderedEnumerable(IEnumerable<TElement> elements) => this.elements = elements;
+
+        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending)
+        {
+            var dict = new SortedDictionary<TKey, List<TElement>>(comparer);
+            foreach (var element in elements)
+            {
+                var key = keySelector(element);
+                if (!dict.TryGetValue(key, out var list))
+                {
+                    list = new List<TElement>();
+                }
+                list.Add(element);
+            }
+            var sorted = dict.Values.ToList();
+            if (descending)
+            {
+                sorted.Reverse();
+            }
+
+            return new OrderedEnumerable<TElement>(sorted.SelectMany(s => s));
+        }
+
+        public IEnumerator<TElement> GetEnumerator() => elements.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => elements.GetEnumerator();
+    }
+}
+
+#endif

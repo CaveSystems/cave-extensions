@@ -95,12 +95,12 @@ namespace Cave
         {
             if (version1 is null)
             {
-                throw new ArgumentNullException(nameof(version1));
+                return version2 is null;
             }
 
             if (version2 is null)
             {
-                throw new ArgumentNullException(nameof(version2));
+                return false;
             }
 
             return version1.Equals(version2);
@@ -363,9 +363,9 @@ namespace Cave
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj is SemanticVersion)
+            if (obj is SemanticVersion version)
             {
-                Equals((SemanticVersion)obj);
+                Equals(version);
             }
 
             return base.Equals(obj);

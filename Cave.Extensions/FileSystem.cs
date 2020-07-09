@@ -286,7 +286,7 @@ namespace Cave
                 var start = parts.FirstOrDefault() ?? string.Empty;
                 if (start.Length == 2 && start[1] == ':')
                 {
-                    current = new Stack<string>(new[] { start });
+                    current = new Stack<string>(new string[] { start });
                     parts = parts.Skip(1);
                 }
                 else
