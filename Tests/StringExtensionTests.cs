@@ -40,6 +40,15 @@ namespace Tests
             {
                 if (culture.IsNeutralCulture) continue;
 
+                if (culture.Calendar is GregorianCalendar)
+                {
+
+                }
+                else
+                {
+                    continue;
+                }
+
                 Test((float)rnd.NextDouble(), culture);
                 Test(rnd.NextDouble(), culture);
                 Test((decimal)rnd.NextDouble(), culture);
@@ -101,7 +110,7 @@ namespace Tests
                 var check2 = str2.ParseValue<TimeSpan>();
                 Assert.AreEqual(timespan, check1);
                 // 1% precision
-                Assert.AreEqual(timespan.Ticks / 100 + 1, Math.Abs(timespan.Ticks - check2.Ticks));
+                Assert.AreEqual(true, timespan.Ticks / 100 + 1 > Math.Abs(timespan.Ticks - check2.Ticks));
             }
 
             Random rnd = new Random();

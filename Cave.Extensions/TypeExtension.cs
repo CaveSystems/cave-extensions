@@ -138,18 +138,22 @@ namespace Cave
         /// </summary>
         /// <param name="toType">Type to convert to.</param>
         /// <param name="value">Value to convert.</param>
-        /// <param name="cultureInfo">The culture to use during formatting.</param>
+        /// <param name="format">The culture to use during formatting.</param>
         /// <returns>Returns a new instance of the specified type.</returns>
-        public static object ConvertValue(this Type toType, object value, IFormatProvider cultureInfo)
+        public static object ConvertValue(this Type toType, object value, IFormatProvider format)
         {
             if (toType == null)
             {
                 throw new ArgumentNullException(nameof(toType));
             }
 
-            if (cultureInfo == null)
+            if (format == null)
             {
-                cultureInfo = CultureInfo.InvariantCulture;
+                format = CultureInfo.InvariantCulture;
+            }
+            else if (format is CultureInfo culture && !(culture.Calendar is GregorianCalendar))
+            {
+                throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
             }
 
             if (value == null)
@@ -193,12 +197,12 @@ namespace Cave
             if (toType.IsPrimitive)
 #endif
             {
-                return ConvertPrimitive(toType, value, cultureInfo);
+                return ConvertPrimitive(toType, value, format);
             }
 
             if (toType.IsAssignableFrom(value.GetType()))
             {
-                return ConvertPrimitive(toType, value, cultureInfo);
+                return ConvertPrimitive(toType, value, format);
             }
 
 #if NETSTANDARD13
@@ -230,7 +234,7 @@ namespace Cave
                     {
                         try
                         {
-                            str = (string)method.Invoke(value, new object[] { cultureInfo });
+                            str = (string)method.Invoke(value, new object[] { format });
                         }
                         catch (TargetInvocationException ex)
                         {
@@ -264,7 +268,7 @@ namespace Cave
                 var array = Array.CreateInstance(elementType, parts.Length);
                 for (int i = 0; i < parts.Length; i++)
                 {
-                    array.SetValue(ConvertValue(elementType, parts[i], cultureInfo), i);
+                    array.SetValue(ConvertValue(elementType, parts[i], format), i);
                 }
                 return array;
             }
@@ -277,7 +281,7 @@ namespace Cave
                 }
 
                 if (DateTime.TryParseExact(str, StringExtensions.InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime dt) ||
-                    DateTime.TryParse(str, cultureInfo, DateTimeStyles.AssumeLocal, out dt) ||
+                    DateTime.TryParse(str, format, DateTimeStyles.AssumeLocal, out dt) ||
                     DateTimeParser.TryParseDateTime(str, out dt))
                 {
                     return dt;
@@ -293,38 +297,38 @@ namespace Cave
 #if NET20 || NET35
                         return TimeSpan.Parse(str);
 #else
-                        return TimeSpan.Parse(str, cultureInfo);
+                        return TimeSpan.Parse(str, format);
 #endif
                     }
                     if (str.EndsWith("ns", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * (TimeSpan.TicksPerMillisecond / 1000)));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), format) * (TimeSpan.TicksPerMillisecond / 1000)));
                     }
                     if (str.EndsWith("ms", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), cultureInfo) * TimeSpan.TicksPerMillisecond));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), format) * TimeSpan.TicksPerMillisecond));
                     }
                     if (str.EndsWith("s", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerSecond));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerSecond));
                     }
                     if (str.EndsWith("min", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), cultureInfo) * TimeSpan.TicksPerMinute));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), format) * TimeSpan.TicksPerMinute));
                     }
                     if (str.EndsWith("h", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerHour));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerHour));
                     }
                     if (str.EndsWith("d", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), cultureInfo) * TimeSpan.TicksPerDay));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerDay));
                     }
                     if (str.EndsWith("a", StringComparison.Ordinal))
                     {
-                        return TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), cultureInfo) * 365.25);
+                        return TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), format) * 365.25);
                     }
-                    return new TimeSpan(long.Parse(str, cultureInfo));
+                    return new TimeSpan(long.Parse(str, format));
                 }
                 catch (Exception ex)
                 {
@@ -347,7 +351,7 @@ namespace Cave
                 {
                     try
                     {
-                        return method.Invoke(null, new object[] { str, cultureInfo });
+                        return method.Invoke(null, new object[] { str, format });
                     }
                     catch (TargetInvocationException ex)
                     {

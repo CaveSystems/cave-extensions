@@ -636,28 +636,32 @@ namespace Cave
         /// Returns the objects.ToString() result or "&lt;null&gt;".
         /// </summary>
         /// <param name="value">Value to format.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <param name="format">An object that supplies culture-specific formatting information.</param>
         /// <returns>The string.</returns>
-        public static string ToString(object value, IFormatProvider culture = null)
+        public static string ToString(object value, IFormatProvider format = null)
         {
             if (value == null)
             {
                 return "<null>";
             }
 
-            if (culture == null)
+            if (format == null)
             {
-                culture = CultureInfo.InvariantCulture;
+                format = CultureInfo.InvariantCulture;
+            }
+            else if (format is CultureInfo culture && !(culture.Calendar is GregorianCalendar))
+            {
+                throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
             }
 
             // special handling for roundtrip types
             if (value is double d)
             {
-                return d.ToString("R", culture);
+                return d.ToString("R", format);
             }
             if (value is float f)
             {
-                return f.ToString("R", culture);
+                return f.ToString("R", format);
             }
             if (value is DateTime dt)
             {
@@ -665,16 +669,16 @@ namespace Cave
                 {
                     throw new ArgumentOutOfRangeException("Please specify DateTime.Kind!");
                 }
-                return dt.ToString(InterOpDateTimeFormat, culture);
+                return dt.ToString(InterOpDateTimeFormat, format);
             }
 
             if (value is IFormattable formattable)
             {
-                return formattable.ToString(null, culture);
+                return formattable.ToString(null, format);
             }
             if (value is ICollection collection)
             {
-                return value.ToString() + " {" + Join(collection, ",", culture) + "}";
+                return value.ToString() + " {" + Join(collection, ",", format) + "}";
             }
             return value.ToString();
         }
