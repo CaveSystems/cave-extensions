@@ -20,7 +20,7 @@ namespace System.Linq
                 var key = keySelector(element);
                 if (!dict.TryGetValue(key, out var list))
                 {
-                    list = new List<TElement>();
+                    dict[key] = list = new List<TElement>();
                 }
                 list.Add(element);
             }
