@@ -4,14 +4,10 @@ using System.Threading;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides extensions for double to decimal conversion.
-    /// </summary>
+    /// <summary>Gets extensions for double to decimal conversion.</summary>
     public static class DoubleExtension
     {
-        /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals.
-        /// </summary>
+        /// <summary>Removes rouding errors on doubles and converts them to decimals.</summary>
         /// <param name="value">The double value.</param>
         /// <param name="digits">The number of digits needed.</param>
         /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
@@ -22,13 +18,15 @@ namespace Cave
                 return decimal.Zero;
             }
 
-            if (double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value) || (value < (double)decimal.MinValue) || (value > (double)decimal.MaxValue))
+            if (double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value) || (value < (double) decimal.MinValue) ||
+                (value > (double) decimal.MaxValue))
             {
                 throw new ArgumentOutOfRangeException(nameof(value));
             }
+
             if (digits == 0)
             {
-                return (decimal)Math.Round(value);
+                return (decimal) Math.Round(value);
             }
 
             if (digits < 1)
@@ -41,12 +39,11 @@ namespace Cave
             {
                 p *= 10;
             }
-            return ((decimal)Math.Round(value * (double)p)) / p;
+
+            return (decimal) Math.Round(value * (double) p) / p;
         }
 
-        /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals.
-        /// </summary>
+        /// <summary>Removes rouding errors on doubles and converts them to decimals.</summary>
         /// <param name="value">The double value.</param>
         /// <param name="digits">The number of digits needed.</param>
         /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
@@ -67,19 +64,19 @@ namespace Cave
                 return decimal.Zero;
             }
 
-            if (value < (double)decimal.MinValue)
+            if (value < (double) decimal.MinValue)
             {
                 return decimal.Zero;
             }
 
-            if (value > (double)decimal.MaxValue)
+            if (value > (double) decimal.MaxValue)
             {
                 return decimal.Zero;
             }
 
             if (digits == 0)
             {
-                return (decimal)Math.Round(value);
+                return (decimal) Math.Round(value);
             }
 
             if (digits < 1)
@@ -92,20 +89,16 @@ namespace Cave
             {
                 p *= 10;
             }
-            return ((decimal)Math.Round(value * (double)p)) / p;
+
+            return (decimal) Math.Round(value * (double) p) / p;
         }
 
-        /// <summary>
-        /// Removes rouding errors on doubles and converts them to decimals.
-        /// </summary>
+        /// <summary>Removes rouding errors on doubles and converts them to decimals.</summary>
         /// <param name="value">The double value.</param>
         /// <param name="multiplier">The multiplier to shift the double to a whole number.</param>
         /// <param name="divisor">The divisor to build the decimal from the whole number.</param>
         /// <returns>Returns decimal rounded to the leas significant decimal place.</returns>
-        public static decimal ToDecimal(this double value, decimal multiplier, long divisor)
-        {
-            return ((decimal)Math.Round(value * divisor)) * multiplier;
-        }
+        public static decimal ToDecimal(this double value, decimal multiplier, long divisor) => (decimal) Math.Round(value * divisor) * multiplier;
 
         /// <summary>Formats the price.</summary>
         /// <param name="price">The price.</param>
@@ -121,17 +114,19 @@ namespace Cave
 #endif
 
             // maximum 5 digits
-            var decimalValue = (long)Math.Round((price % 1) * 100000);
-            if (decimalValue % 100 != 0)
+            var decimalValue = (long) Math.Round((price % 1) * 100000);
+            if ((decimalValue % 100) != 0)
             {
                 // need all (5) digits
                 return price.ToString("N5", culture);
             }
-            if (decimalValue % 1000 != 0)
+
+            if ((decimalValue % 1000) != 0)
             {
                 // need 3 digits
                 return price.ToString("N3", culture);
             }
+
             if (decimalValue != 0)
             {
                 // need 2 digits

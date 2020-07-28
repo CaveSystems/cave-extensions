@@ -4,21 +4,13 @@ using System.Text;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides extensions to <see cref="Stream"/> implementations.
-    /// </summary>
+    /// <summary>Gets extensions to <see cref="Stream" /> implementations.</summary>
     public static class StreamExtensions
     {
         static int blockSize = 64 * 1024;
 
-        /// <summary>
-        /// Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.
-        /// </summary>
-        public static int BlockSize
-        {
-            get => blockSize;
-            set => blockSize = Math.Min(1024, value);
-        }
+        /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.</summary>
+        public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
 
         /// <summary>Does a stream copy from source to destination.</summary>
         /// <param name="source">Source stream.</param>
@@ -27,11 +19,7 @@ namespace Cave
         /// <param name="callback">Callback to be called during copy or null.</param>
         /// <param name="userItem">The user item.</param>
         /// <returns>The number of bytes copied.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// source
-        /// or
-        /// target.
-        /// </exception>
+        /// <exception cref="ArgumentNullException">source or target.</exception>
         public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
             if (source == null)
@@ -52,14 +40,16 @@ namespace Cave
                     length = source.Length - source.Position;
                 }
             }
+
             if (length <= 0)
             {
                 length = long.MaxValue;
             }
+
             var buffer = new byte[blockSize];
             while (written < length)
             {
-                var block = (int)Math.Min(buffer.Length, length - written);
+                var block = (int) Math.Min(buffer.Length, length - written);
                 if (block == 0)
                 {
                     break;
@@ -73,7 +63,6 @@ namespace Cave
 
                 target.Write(buffer, 0, read);
                 written += read;
-
                 if (callback != null)
                 {
                     var e = new ProgressEventArgs(userItem, written, read, length, true);
@@ -84,6 +73,7 @@ namespace Cave
                     }
                 }
             }
+
             return written;
         }
 
@@ -97,7 +87,7 @@ namespace Cave
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
             // if (length == 0) throw new ArgumentOutOfRangeException(nameof(length));
-            if (length <= 0 && source.CanSeek)
+            if ((length <= 0) && source.CanSeek)
             {
                 length = source.Length - source.Position;
             }
@@ -108,16 +98,17 @@ namespace Cave
                 var done = 0;
                 while (done < length)
                 {
-                    var read = source.Read(buffer, done, (int)length - done);
+                    var read = source.Read(buffer, done, (int) length - done);
                     var e = new ProgressEventArgs(userItem, done, read, length, true);
                     callback?.Invoke(source, e);
-                    if (read == -1 || e.Break)
+                    if ((read == -1) || e.Break)
                     {
                         break;
                     }
 
                     done += read;
                 }
+
                 if (done != length)
                 {
                     throw new EndOfStreamException();
@@ -125,6 +116,7 @@ namespace Cave
 
                 return buffer;
             }
+
             using (var buffer = new MemoryStream())
             {
                 CopyBlocksTo(source, buffer, -1, callback, userItem);
@@ -132,16 +124,11 @@ namespace Cave
             }
         }
 
-        /// <summary>
-        /// Reads all bytes from the specified stream.
-        /// </summary>
+        /// <summary>Reads all bytes from the specified stream.</summary>
         /// <param name="source">Source stream.</param>
         /// <param name="count">The number of bytes to read.</param>
         /// <returns>The bytes read.</returns>
-        public static byte[] ReadBlock(this Stream source, int count)
-        {
-            return ReadBlock(source, count, null);
-        }
+        public static byte[] ReadBlock(this Stream source, int count) => ReadBlock(source, count, null);
 
         /// <summary>Reads a block from the specified stream (nonblocking).</summary>
         /// <param name="source">Source stream.</param>
@@ -167,6 +154,7 @@ namespace Cave
                     Array.Resize(ref buf, size);
                     return buf;
                 }
+
                 pos += size;
                 if (callback != null)
                 {
@@ -178,6 +166,7 @@ namespace Cave
                     }
                 }
             }
+
             return buf;
         }
 

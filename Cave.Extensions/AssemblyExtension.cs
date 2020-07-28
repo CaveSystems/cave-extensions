@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
+#if NET20 || NET35 || NET40
+using System.Collections.Generic;
+#endif
+
 namespace Cave
 {
-    /// <summary>
-    /// Provides extensions for <see cref="Assembly"/> instances.
-    /// </summary>
+    /// <summary>Gets extensions for <see cref="Assembly" /> instances.</summary>
     public static class AssemblyExtension
     {
 #if NET20 || NET35 || NET40
@@ -21,7 +22,7 @@ namespace Cave
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>(this Assembly assembly)
             where TAttribute : Attribute
         {
-            List<TAttribute> result = new List<TAttribute>();
+            var result = new List<TAttribute>();
             foreach (var attribute in assembly.GetCustomAttributes(typeof(TAttribute), true))
             {
                 result.Add((TAttribute)attribute);
@@ -30,9 +31,7 @@ namespace Cave
         }
 #endif
 
-        /// <summary>
-        /// Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.
-        /// </summary>
+        /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
         /// <param name="assembly">The assembly to inspect.</param>
         /// <returns>The product name.</returns>
         public static string GetProductName(this Assembly assembly)
@@ -46,9 +45,7 @@ namespace Cave
             return attributes.FirstOrDefault()?.Product ?? throw new ArgumentException("Product attribute unset!");
         }
 
-        /// <summary>
-        /// Get the assembly company name using the <see cref="AssemblyCompanyAttribute"/>.
-        /// </summary>
+        /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
         /// <param name="assembly">The assembly to inspect.</param>
         /// <returns>The company name.</returns>
         public static string GetCompanyName(this Assembly assembly)
@@ -62,9 +59,7 @@ namespace Cave
             return attributes.FirstOrDefault()?.Company ?? throw new ArgumentException("Company attribute unset!");
         }
 
-        /// <summary>
-        /// Gets a local file path (directory and filename) for the specified assembly.
-        /// </summary>
+        /// <summary>Gets a local file path (directory and filename) for the specified assembly.</summary>
         /// <param name="assembly">Assembly instance.</param>
         /// <returns>Returns the full file path.</returns>
         public static string GetAssemblyFilePath(this Assembly assembly)
@@ -76,13 +71,14 @@ namespace Cave
 
 #if !NETSTANDARD13
             {
-                string path = assembly.Location;
+                var path = assembly.Location;
 
                 // strip connection string
-                if (ConnectionString.TryParse(path, out ConnectionString connectionString))
+                if (ConnectionString.TryParse(path, out var connectionString))
                 {
                     path = connectionString.Location;
                 }
+
                 if (File.Exists(path))
                 {
                     return path;
@@ -91,22 +87,20 @@ namespace Cave
 #endif
             {
                 var path = assembly.ManifestModule.FullyQualifiedName;
-                if (ConnectionString.TryParse(path, out ConnectionString connectionString))
+                if (ConnectionString.TryParse(path, out var connectionString))
                 {
                     path = connectionString.Location;
                 }
+
                 if (File.Exists(path))
                 {
                     return path;
                 }
             }
-
             throw new FileNotFoundException("Could not resolve Assembly path.", assembly.ToString());
         }
 
-        /// <summary>
-        /// Gets the directory the assembly was located at during load time.
-        /// </summary>
+        /// <summary>Gets the directory the assembly was located at during load time.</summary>
         /// <param name="assembly">Assembly instance.</param>
         /// <returns>Returns a directory.</returns>
         public static string GetDirectory(this Assembly assembly) => Path.GetDirectoryName(GetAssemblyFilePath(assembly));

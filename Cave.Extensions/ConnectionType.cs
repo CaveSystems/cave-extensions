@@ -55,6 +55,6 @@ namespace Cave
         PGSQL,
 
         /// <summary>The postgresql alias for <see cref="PGSQL" /></summary>
-        POSTGRESQL = PGSQL,
+        POSTGRESQL = PGSQL
     }
 }

@@ -4,14 +4,10 @@ using System.Text;
 
 namespace Cave
 {
-    /// <summary>
-    /// Backport of enum extensions.
-    /// </summary>
+    /// <summary>Backport of enum extensions.</summary>
     public static class EnumExtension
     {
-        /// <summary>
-        /// Gets an array containing all single flags set. (flag1, flag4, ..)
-        /// </summary>
+        /// <summary>Gets an array containing all single flags set. (flag1, flag4, ..)</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns>The flags as array.</returns>
@@ -31,12 +27,11 @@ namespace Cave
                     }
                 }
             }
+
             return flags.ToArray();
         }
 
-        /// <summary>
-        /// Gets a string for all single flags set. ("flag1, flag4, ..").
-        /// </summary>
+        /// <summary>Gets a string for all single flags set. ("flag1, flag4, ..").</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns>The flags as string.</returns>
@@ -61,6 +56,7 @@ namespace Cave
                     }
                 }
             }
+
             return sb.ToString();
         }
 
@@ -87,10 +83,8 @@ namespace Cave
         /// <param name="result">The result.</param>
         /// <returns>True if the value could be parsed.</returns>
         public static bool TryParse<TEnum>(this string value, out TEnum result)
-            where TEnum : struct, IConvertible
-        {
-            return Enum.TryParse(value, true, out result);
-        }
+            where TEnum : struct, IConvertible =>
+            Enum.TryParse(value, true, out result);
 #elif NET35 || NET20 || NETSTANDARD13
         /// <summary>Tries the parse.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
@@ -100,7 +94,7 @@ namespace Cave
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
-            Type t = typeof(TEnum);
+            var t = typeof(TEnum);
             if (value == null)
             {
                 result = default;

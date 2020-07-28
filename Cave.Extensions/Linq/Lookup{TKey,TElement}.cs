@@ -1,4 +1,5 @@
 ﻿#if NET20
+#pragma warning disable CS1591 // we will not document back ports
 
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace System.Linq
             }
         }
 
-        public int Count => (defaultGroup == null) ? groups.Count : groups.Count + 1;
+        public int Count => defaultGroup == null ? groups.Count : groups.Count + 1;
 
         public IEnumerable<TElement> this[TKey key]
         {
@@ -35,7 +36,7 @@ namespace System.Linq
                 }
                 else if (key != null)
                 {
-                    if (groups.TryGetValue(key, out IGrouping<TKey, TElement> group))
+                    if (groups.TryGetValue(key, out var group))
                     {
                         return group;
                     }
@@ -56,7 +57,7 @@ namespace System.Linq
             }
         }
 
-        public bool Contains(TKey key) => (key == null) ? defaultGroup != null : groups.ContainsKey(key);
+        public bool Contains(TKey key) => key == null ? defaultGroup != null : groups.ContainsKey(key);
 
         public bool TryGetGroup(TKey key, out IGrouping<TKey, TElement> group)
         {
@@ -87,4 +88,5 @@ namespace System.Linq
     }
 }
 
+#pragma warning restore CS1591
 #endif

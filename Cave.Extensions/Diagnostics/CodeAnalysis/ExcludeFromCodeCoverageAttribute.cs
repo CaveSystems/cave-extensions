@@ -2,9 +2,10 @@
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>
-    /// Provides the ExcludeFromCodeCoverage attribute missing in some older .net implementations.
+    /// Gets the ExcludeFromCodeCoverage attribute missing in some older .net implementations.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event, AllowMultiple
+ = false, Inherited = false)]
     public sealed class ExcludeFromCodeCoverageAttribute : Attribute
     {
         /// <summary>

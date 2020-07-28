@@ -2,7 +2,7 @@
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// Provides a backport of the ExtensionAttribute.
+    /// Gets a backport of the ExtensionAttribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly)]
     public sealed class ExtensionAttribute : Attribute

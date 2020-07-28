@@ -1,33 +1,21 @@
 namespace Cave
 {
-    /// <summary>
-    /// Provides all platform types.
-    /// </summary>
+    /// <summary>Gets all platform types.</summary>
     public enum PlatformType
     {
-        /// <summary>
-        /// Unknown platform
-        /// </summary>
+        /// <summary>Unknown platform</summary>
         Unknown = 0,
 
-        /// <summary>
-        /// Windows platform
-        /// </summary>
+        /// <summary>Windows platform</summary>
         Windows = 1,
 
-        /// <summary>
-        /// MacOS platform
-        /// </summary>
+        /// <summary>MacOS platform</summary>
         MacOS = 2,
 
-        /// <summary>
-        /// Compact framework platform
-        /// </summary>
+        /// <summary>Compact framework platform</summary>
         CompactFramework = 3,
 
-        /// <summary>
-        /// Xbox platform
-        /// </summary>
+        /// <summary>Xbox platform</summary>
         Xbox = 4,
 
         /// <summary>Unknown unix platform</summary>
@@ -43,6 +31,6 @@ namespace Cave
         BSD = 8,
 
         /// <summary>The android platform</summary>
-        Android = 9,
+        Android = 9
     }
 }

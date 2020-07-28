@@ -3,14 +3,10 @@ using System.Collections.Generic;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides extensions for <see cref="IDictionary{TKey, TValue}"/> instances.
-    /// </summary>
+    /// <summary>Gets extensions for <see cref="IDictionary{TKey,TValue}" /> instances.</summary>
     public static class DictionaryExtension
     {
-        /// <summary>
-        /// Tries to add an entry to the <see cref="IDictionary{TKey, TValue}"/> instance.
-        /// </summary>
+        /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -28,9 +24,7 @@ namespace Cave
             return true;
         }
 
-        /// <summary>
-        /// Tries to add an entry to the <see cref="IDictionary{TKey, TValue}"/> instance.
-        /// </summary>
+        /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -44,14 +38,12 @@ namespace Cave
                 return false;
             }
 
-            TValue value = valueFunc != null ? valueFunc(key) : default(TValue);
+            var value = valueFunc != null ? valueFunc(key) : default;
             dictionary.Add(key, value);
             return true;
         }
 
-        /// <summary>
-        /// Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}"/> instance.
-        /// </summary>
+        /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -64,9 +56,7 @@ namespace Cave
             }
         }
 
-        /// <summary>
-        /// Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}"/> instance.
-        /// </summary>
+        /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -80,9 +70,7 @@ namespace Cave
             }
         }
 
-        /// <summary>
-        /// Tries to retrieve the value for the specified key.
-        /// </summary>
+        /// <summary>Tries to retrieve the value for the specified key.</summary>
         /// <typeparam name="TKey">Key type.</typeparam>
         /// <typeparam name="TValue">Value type.</typeparam>
         /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -90,7 +78,7 @@ namespace Cave
         /// <returns>Returns the value found or default(value).</returns>
         public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            dictionary.TryGetValue(key, out TValue value);
+            dictionary.TryGetValue(key, out var value);
             return value;
         }
     }

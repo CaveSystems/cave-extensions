@@ -2,55 +2,35 @@
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides common IEC units for binary values (byte).
-    /// </summary>
-    public enum IecUnit : int
+    /// <summary>Gets common IEC units for binary values (byte).</summary>
+    public enum IecUnit
     {
-        /// <summary>
-        /// Byte
-        /// </summary>
+        /// <summary>Byte</summary>
         B = 0,
 
-        /// <summary>
-        /// kilo Byte
-        /// </summary>
+        /// <summary>kilo Byte</summary>
         kiB,
 
-        /// <summary>
-        /// Mega Byte
-        /// </summary>
+        /// <summary>Mega Byte</summary>
         MiB,
 
-        /// <summary>
-        /// Giga Byte
-        /// </summary>
+        /// <summary>Giga Byte</summary>
         GiB,
 
-        /// <summary>
-        /// Tera Byte
-        /// </summary>
+        /// <summary>Tera Byte</summary>
         TiB,
 
-        /// <summary>
-        /// Peta Byte
-        /// </summary>
+        /// <summary>Peta Byte</summary>
         PiB,
 
-        /// <summary>
-        /// Exa Byte
-        /// </summary>
+        /// <summary>Exa Byte</summary>
         EiB,
 
-        /// <summary>
-        /// Zetta Byte
-        /// </summary>
+        /// <summary>Zetta Byte</summary>
         ZiB,
 
-        /// <summary>
-        /// Yotta Byte
-        /// </summary>
-        YiB,
+        /// <summary>Yotta Byte</summary>
+        YiB
     }
 }
 

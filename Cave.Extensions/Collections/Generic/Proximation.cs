@@ -3,34 +3,97 @@ using System.Collections.Generic;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>
-    /// Provides a basic moving average calculated with values based on a time axis (no continuous sampling needed).
-    /// </summary>
+    /// <summary>Gets a basic moving average calculated with values based on a time axis (no continuous sampling needed).</summary>
     public class Proximation
     {
-        class ProximationValue
+        readonly LinkedList<ProximationValue> items = new LinkedList<ProximationValue>();
+
+        /// <summary>Gets the maximum value.</summary>
+        public long Maximum { get; private set; }
+
+        /// <summary>Gets the minimum value.</summary>
+        public long Minimum { get; private set; }
+
+        /// <summary>Gets the (local) datetime of the first recorded value.</summary>
+        public DateTime StartTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+
+        /// <summary>Gets the (local) datetime of the last recorded value.</summary>
+        public DateTime EndTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+
+        /// <summary>Gets the duration between StartTime and EndTime.</summary>
+        public TimeSpan Duration => EndTime - StartTime;
+
+        /// <summary>Gets the current moving average.</summary>
+        public long Average
         {
-            public DateTime TimeStamp;
-            public long Value;
-
-            public ProximationValue(DateTime timeStamp, long value)
+            get
             {
-                Value = value;
-                TimeStamp = timeStamp;
-            }
+                if (items.Count == 0)
+                {
+                    return 0;
+                }
 
-            public ProximationValue(long value)
-            {
-                Value = value;
-                TimeStamp = DateTime.UtcNow;
+                long result = 0;
+                foreach (var i in items)
+                {
+                    result += i.Value;
+                }
+
+                return result / items.Count;
             }
         }
 
-        LinkedList<ProximationValue> items = new LinkedList<ProximationValue>();
+        /// <summary>Gets the weighted average of the whole recorded timeline. Startweight is 0% and endweight is 100%.</summary>
+        public long WeightedAverage
+        {
+            get
+            {
+                if (items.Count == 0)
+                {
+                    return 0;
+                }
 
-        /// <summary>
-        /// Adds a value to the proximation.
-        /// </summary>
+                var duration = Duration.Ticks;
+                double result = 0;
+                double div = 0;
+                foreach (var i in items)
+                {
+                    var pos = (i.TimeStamp - StartTime).Ticks;
+                    var weight = duration / pos;
+                    result += i.Value * weight;
+                    div += weight;
+                }
+
+                return (long) (result / div);
+            }
+        }
+
+        /// <summary>Gets the reverse weighted average of the whole recorded timeline. Startweight is 100% and endweight is 0%.</summary>
+        public long ReverseWeightedAverage
+        {
+            get
+            {
+                if (items.Count == 0)
+                {
+                    return 0;
+                }
+
+                var duration = Duration.Ticks;
+                double result = 0;
+                double div = 0;
+                foreach (var i in items)
+                {
+                    var pos = (i.TimeStamp - StartTime).Ticks;
+                    var weight = pos / duration;
+                    result += i.Value * weight;
+                    div += weight;
+                }
+
+                return (long) (result / div);
+            }
+        }
+
+        /// <summary>Adds a value to the proximation.</summary>
         /// <param name="value">The value to add.</param>
         public void AddValue(long value)
         {
@@ -67,122 +130,35 @@ namespace Cave.Collections.Generic
             }
         }
 
-        /// <summary>
-        /// Clears all recorded values.
-        /// </summary>
-        public void Clear()
-        {
-            items.Clear();
-        }
+        /// <summary>Clears all recorded values.</summary>
+        public void Clear() { items.Clear(); }
 
-        /// <summary>
-        /// Clears all values with a specified age or older.
-        /// </summary>
+        /// <summary>Clears all values with a specified age or older.</summary>
         /// <param name="age">The maximum age for values to keep.</param>
         public void ClearOlderThan(TimeSpan age)
         {
-            DateTime earliest = EndTime - age;
+            var earliest = EndTime - age;
             while ((items.Count > 0) && (items.First.Value.TimeStamp < earliest))
             {
                 items.RemoveFirst();
             }
         }
 
-        /// <summary>
-        /// Gets the maximum value.
-        /// </summary>
-        public long Maximum { get; private set; }
-
-        /// <summary>
-        /// Gets the minimum value.
-        /// </summary>
-        public long Minimum { get; private set; }
-
-        /// <summary>
-        /// Obtains the (local) datetime of the first recorded value.
-        /// </summary>
-        public DateTime StartTime => (items.Count == 0) ? default(DateTime) : items.First.Value.TimeStamp;
-
-        /// <summary>
-        /// Obtains the (local) datetime of the last recorded value.
-        /// </summary>
-        public DateTime EndTime => (items.Count == 0) ? default(DateTime) : items.First.Value.TimeStamp;
-
-        /// <summary>
-        /// Obtains the duration between StartTime and EndTime.
-        /// </summary>
-        public TimeSpan Duration => EndTime - StartTime;
-
-        /// <summary>
-        /// Obtains the current moving average.
-        /// </summary>
-        public long Average
+        class ProximationValue
         {
-            get
-            {
-                if (items.Count == 0)
-                {
-                    return 0;
-                }
+            public readonly DateTime TimeStamp;
+            public readonly long Value;
 
-                long result = 0;
-                foreach (ProximationValue i in items)
-                {
-                    result += i.Value;
-                }
-                return result / items.Count;
+            public ProximationValue(DateTime timeStamp, long value)
+            {
+                Value = value;
+                TimeStamp = timeStamp;
             }
-        }
 
-        /// <summary>
-        /// Obtains the weighted average of the whole recorded timeline. Startweight is 0% and endweight is 100%.
-        /// </summary>
-        public long WeightedAverage
-        {
-            get
+            public ProximationValue(long value)
             {
-                if (items.Count == 0)
-                {
-                    return 0;
-                }
-
-                long duration = Duration.Ticks;
-                double result = 0;
-                double div = 0;
-                foreach (ProximationValue i in items)
-                {
-                    long pos = (i.TimeStamp - StartTime).Ticks;
-                    long weight = duration / pos;
-                    result += i.Value * weight;
-                    div += weight;
-                }
-                return (long)(result / div);
-            }
-        }
-
-        /// <summary>
-        /// Obtains the reverse weighted average of the whole recorded timeline. Startweight is 100% and endweight is 0%.
-        /// </summary>
-        public long ReverseWeightedAverage
-        {
-            get
-            {
-                if (items.Count == 0)
-                {
-                    return 0;
-                }
-
-                long duration = Duration.Ticks;
-                double result = 0;
-                double div = 0;
-                foreach (ProximationValue i in items)
-                {
-                    long pos = (i.TimeStamp - StartTime).Ticks;
-                    long weight = pos / duration;
-                    result += i.Value * weight;
-                    div += weight;
-                }
-                return (long)(result / div);
+                Value = value;
+                TimeStamp = DateTime.UtcNow;
             }
         }
     }

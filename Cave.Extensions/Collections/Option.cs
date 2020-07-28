@@ -4,30 +4,23 @@ using System.Text;
 
 namespace Cave.Collections
 {
-    /// <summary>
-    /// Provides string based option handling of the form "option=long value text".
-    /// </summary>
+    /// <summary>Gets string based option handling of the form "option=long value text".</summary>
     public sealed class Option : IEquatable<Option>
     {
-        /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="Option"/>.</summary>
+        /// <summary>Performs an implicit conversion from <see cref="string" /> to <see cref="Option" />.</summary>
         /// <param name="s">The string.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Option(string s)
-        {
-            return Parse(s);
-        }
+        public static implicit operator Option(string s) => Parse(s);
 
         #region static functions
 
-        /// <summary>
-        /// Removes the option prefix at the beginning (-, -- and /).
-        /// </summary>
+        /// <summary>Removes the option prefix at the beginning (-, -- and /).</summary>
         /// <param name="option"></param>
         /// <returns></returns>
         public static string RemovePrefix(string option)
         {
             option = option.UnboxText(false);
-            string optionID = GetPrefix(option);
+            var optionID = GetPrefix(option);
             if (optionID == null)
             {
                 return option;
@@ -36,9 +29,7 @@ namespace Cave.Collections
             return option.Substring(optionID.Length);
         }
 
-        /// <summary>
-        /// Obtains only the option prefix at the beginning null, "-", "--".
-        /// </summary>
+        /// <summary>Gets only the option prefix at the beginning null, "-", "--".</summary>
         /// <param name="option"></param>
         /// <returns></returns>
         public static string GetPrefix(string option)
@@ -48,7 +39,7 @@ namespace Cave.Collections
                 return null;
             }
 
-            string result = option.UnboxText(false);
+            var result = option.UnboxText(false);
             if (result.StartsWith("--"))
             {
                 return "--";
@@ -63,25 +54,22 @@ namespace Cave.Collections
         }
 
         /// <summary>
-        /// Checks whether a string is an option string or not.
-        /// <para>
-        /// The following option types are detected:
-        /// -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].
-        /// </para>
+        ///     Checks whether a string is an option string or not.
+        ///     <para>
+        ///         The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"]
+        ///         [...]name=['value'].
+        ///     </para>
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static bool IsOption(string option)
-        {
-            return IsOption(option, true);
-        }
+        public static bool IsOption(string option) => IsOption(option, true);
 
         /// <summary>
-        /// Checks whether a string is an option string or not.
-        /// <para>
-        /// The following option types are detected:
-        /// -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].
-        /// </para>
+        ///     Checks whether a string is an option string or not.
+        ///     <para>
+        ///         The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"]
+        ///         [...]name=['value'].
+        ///     </para>
         /// </summary>
         /// <param name="option"></param>
         /// <param name="allowMissingPrefix"></param>
@@ -111,38 +99,33 @@ namespace Cave.Collections
             return false;
         }
 
-        /// <summary>
-        /// Obtains an <see cref="Option"/> from a specified string.
-        /// </summary>
+        /// <summary>Gets an <see cref="Option" /> from a specified string.</summary>
         /// <param name="option">The whole option string of the form "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;".</param>
         /// <returns></returns>
-        public static Option Parse(string option)
-        {
-            return Parse(option, "=");
-        }
+        public static Option Parse(string option) => Parse(option, "=");
 
         /// <summary>Obtains an <see cref="Option" /> from a specified string.</summary>
         /// <param name="option">The whole option string of the form "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;".</param>
         /// <param name="separator">The name value separator.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">OptionString.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">OptionString.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="option" /> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="option" /> contains invalid characters.</exception>
         public static Option Parse(string option, string separator)
         {
             if (option == null)
             {
-                throw new ArgumentNullException("option");
+                throw new ArgumentNullException(nameof(option));
             }
 
-            if (option.IndexOfAny(new char[] { '\r', '\n' }) > -1)
+            if (option.IndexOfAny(new[] { '\r', '\n' }) > -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(option));
             }
 
-            int index = option.IndexOf(separator);
+            var index = option.IndexOf(separator);
             string prefix;
             string name;
-            string value = string.Empty;
+            var value = string.Empty;
             if (index < 0)
             {
                 prefix = GetPrefix(option);
@@ -154,6 +137,7 @@ namespace Cave.Collections
                 name = option.Substring(0, index);
                 prefix = GetPrefix(name);
             }
+
             if (prefix == null)
             {
                 name = name.Trim();
@@ -162,23 +146,21 @@ namespace Cave.Collections
             {
                 name = name.Substring(prefix.Length).Trim();
             }
+
             return new Option(prefix, name, separator, value.Trim());
         }
 
-        /// <summary>
-        /// Obtains an <see cref="Option"/> from a <see cref="DictionaryEntry"/>.
-        /// </summary>
+        /// <summary>Gets an <see cref="Option" /> from a <see cref="DictionaryEntry" />.</summary>
         /// <param name="dictionaryEntry"></param>
         /// <returns></returns>
-        public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry)
-        {
-            return new Option(null, dictionaryEntry.Key.ToString(), "=", dictionaryEntry.Value.ToString());
-        }
+        public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) =>
+            new Option(null, dictionaryEntry.Key.ToString(), "=", dictionaryEntry.Value.ToString());
+
         #endregion
 
         #region constructor
 
-        /// <summary>Initializes a new instance of the <see cref="Option"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Option" /> class.</summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         public Option(string name, string value)
@@ -189,26 +171,23 @@ namespace Cave.Collections
             Separator = "=";
         }
 
-        /// <summary>
-        /// Creates a new <see cref="Option" /> with the specified name and value string.
-        /// </summary>
+        /// <summary>Creates a new <see cref="Option" /> with the specified name and value string.</summary>
         /// <param name="prefix">The identifier of the <see cref="Option" />.</param>
         /// <param name="name">The name of the <see cref="Option" />.</param>
         /// <param name="separator">The separator.</param>
         /// <param name="value">The value of the <see cref="Option" />.</param>
         /// <exception cref="ArgumentNullException">Name.</exception>
-        /// <exception cref="ArgumentException">
-        /// </exception>
+        /// <exception cref="ArgumentException"></exception>
         public Option(string prefix, string name, string separator, string value)
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (separator == null)
             {
-                throw new ArgumentNullException("separator");
+                throw new ArgumentNullException(nameof(separator));
             }
 
             if (!string.IsNullOrEmpty(prefix) && name.StartsWith(prefix))
@@ -234,45 +213,40 @@ namespace Cave.Collections
                 Value = value.UnboxText(false).Replace("''", "'");
             }
         }
+
         #endregion
 
         #region public properties
 
-        /// <summary>
-        /// Obtains the used prefix (e.g. null, "", "-"  or "--").
-        /// </summary>
+        /// <summary>Gets the used prefix (e.g. null, "", "-"  or "--").</summary>
         public readonly string Prefix;
 
-        /// <summary>
-        /// Obtains the name of the <see cref="Option"/>.
-        /// </summary>
+        /// <summary>Gets the name of the <see cref="Option" />.</summary>
         public readonly string Name;
 
         /// <summary>Obtains the separator.</summary>
         public readonly string Separator;
 
-        /// <summary>
-        /// Obtains the value of the <see cref="Option"/>.
-        /// </summary>
+        /// <summary>Gets the value of the <see cref="Option" />.</summary>
         public readonly string Value;
+
         #endregion
 
         #region public functions
 
-        /// <summary>
-        /// Provides a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string.
-        /// </summary>
+        /// <summary>Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string.</summary>
         /// <param name="alwaysShowSeaparator">Always add separator even if value is null.</param>
         /// <returns></returns>
         public string ToString(bool alwaysShowSeaparator)
         {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
             if (Prefix != null)
             {
                 result.Append(Prefix);
             }
+
             result.Append(Name);
-            string value = Value;
+            var value = Value;
             if (alwaysShowSeaparator || !string.IsNullOrEmpty(value))
             {
                 result.Append(Separator);
@@ -290,12 +264,11 @@ namespace Cave.Collections
                     }
                 }
             }
+
             return result.ToString();
         }
 
-        /// <summary>
-        /// Checks another option for equality (the option prefix will be ignored).
-        /// </summary>
+        /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
         /// <param name="other"></param>
         /// <returns></returns>
         public bool Equals(Option other)
@@ -307,37 +280,27 @@ namespace Cave.Collections
 
             return (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
         }
+
         #endregion
 
         #region overrides
 
         /// <summary>
-        /// Provides a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string for the option or "&lt;Name&gt;" if value is null or empty.
+        ///     Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string for the option or "&lt;Name&gt;" if value is null
+        ///     or empty.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return ToString(false);
-        }
+        public override string ToString() => ToString(false);
 
-        /// <summary>
-        /// Obtains a hash code based on the result of <see cref="ToString()"/>.
-        /// </summary>
+        /// <summary>Gets a hash code based on the result of <see cref="ToString()" />.</summary>
         /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
+        public override int GetHashCode() => ToString().GetHashCode();
 
-        /// <summary>
-        /// Checks another option for equality (the option prefix will be ignored).
-        /// </summary>
+        /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Option);
-        }
+        public override bool Equals(object obj) => Equals(obj as Option);
+
         #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿#if NET20
+#pragma warning disable CS1591 // we will not document back ports
 
-using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Linq
@@ -11,4 +11,5 @@ namespace System.Linq
     }
 }
 
+#pragma warning restore CS1591
 #endif

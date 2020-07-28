@@ -2,30 +2,22 @@ using System;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides a string search result containing start index an length.
-    /// </summary>
+    /// <summary>Gets a string search result containing start index an length.</summary>
     public struct SubStringResult : IEquatable<SubStringResult>
     {
-        /// <summary>
-        /// Checks two SubStringResult instances for equality.
-        /// </summary>
+        /// <summary>Checks two SubStringResult instances for equality.</summary>
         /// <param name="subStringResult1">The first substringResult.</param>
         /// <param name="subStringResult2">The second substringResult.</param>
         /// <returns>True if the substringResults are equal.</returns>
         public static bool operator ==(SubStringResult subStringResult1, SubStringResult subStringResult2) => subStringResult1.Equals(subStringResult2);
 
-        /// <summary>
-        /// Checks two SubStringResult instances for inequality.
-        /// </summary>
+        /// <summary>Checks two SubStringResult instances for inequality.</summary>
         /// <param name="subStringResult1">The first substringResult.</param>
         /// <param name="subStringResult2">The second substringResult.</param>
         /// <returns>True if the substringResults are not equal.</returns>
         public static bool operator !=(SubStringResult subStringResult1, SubStringResult subStringResult2) => !subStringResult1.Equals(subStringResult2);
 
-        /// <summary>
-        /// Searches for a sub string at the specified string.
-        /// </summary>
+        /// <summary>Searches for a sub string at the specified string.</summary>
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
@@ -51,9 +43,7 @@ namespace Cave
             return new SubStringResult(text, index, value.Length);
         }
 
-        /// <summary>
-        /// Searches for a sub string at the specified string.
-        /// </summary>
+        /// <summary>Searches for a sub string at the specified string.</summary>
         /// <param name="text">Full string.</param>
         /// <param name="value">Substring to be searched.</param>
         /// <param name="startIndex">Startindex to begin searching at.</param>
@@ -75,21 +65,14 @@ namespace Cave
             return new SubStringResult(text, index, index < 0 ? 0 : value.Length);
         }
 
-        /// <summary>
-        /// Creates a new instance from the specified start and end indices.
-        /// </summary>
+        /// <summary>Creates a new instance from the specified start and end indices.</summary>
         /// <param name="text">Full string.</param>
         /// <param name="startIndex">start index.</param>
         /// <param name="endIndex">end index.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult FromIndices(string text, int startIndex, int endIndex)
-        {
-            return new SubStringResult(text, startIndex, endIndex - startIndex);
-        }
+        public static SubStringResult FromIndices(string text, int startIndex, int endIndex) => new SubStringResult(text, startIndex, endIndex - startIndex);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SubStringResult"/> struct.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SubStringResult" /> struct.</summary>
         /// <param name="text">The String contining the Substring.</param>
         /// <param name="index">Start index of the substring.</param>
         /// <param name="count">Length of the substring.</param>
@@ -106,63 +89,40 @@ namespace Cave
             Text = text.Substring(Index, Length);
         }
 
-        /// <summary>
-        /// Checks whether an index is part of this substring or not.
-        /// </summary>
+        /// <summary>Checks whether an index is part of this substring or not.</summary>
         /// <param name="index">The index.</param>
         /// <returns>True if the index is contained.</returns>
         public bool Contains(int index) => (index >= Index) && (index < EndIndex);
 
-        /// <summary>
-        /// Gets a value indicating whether the substring is valid or not.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the substring is valid or not.</summary>
         public bool Valid => Length > 0;
 
-        /// <summary>
-        /// Substring Text.
-        /// </summary>
+        /// <summary>Substring Text.</summary>
         public readonly string Text;
 
-        /// <summary>
-        /// Index of the sub string.
-        /// </summary>
+        /// <summary>Index of the sub string.</summary>
         public readonly int Index;
 
-        /// <summary>
-        /// Length of the sub string.
-        /// </summary>
+        /// <summary>Length of the sub string.</summary>
         public readonly int Length;
 
-        /// <summary>
-        /// Endindex (Index+Length).
-        /// </summary>
+        /// <summary>Endindex (Index+Length).</summary>
         public readonly int EndIndex;
 
-        /// <summary>
-        /// Gets a string "[Length] Start..End 'Text'.
-        /// </summary>
+        /// <summary>Gets a string "[Length] Start..End 'Text'.</summary>
         /// <returns>The string.</returns>
-        public override string ToString() => Index < 0 ? "Invalid" : ("[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'");
+        public override string ToString() => Index < 0 ? "Invalid" : "[" + Length + "] " + Index + ".." + EndIndex + " = '" + Text + "'";
 
-        /// <summary>
-        /// Gets the hash code for this instance.
-        /// </summary>
+        /// <summary>Gets the hash code for this instance.</summary>
         /// <returns>The hash code.</returns>
-        public override int GetHashCode()
-        {
-            return Index ^ Length ^ Text.GetHashCode();
-        }
+        public override int GetHashCode() => Index ^ Length ^ Text.GetHashCode();
 
-        /// <summary>
-        /// Checks this instance with another one.
-        /// </summary>
+        /// <summary>Checks this instance with another one.</summary>
         /// <param name="obj">The other SubStringResult.</param>
         /// <returns>True if both instances are equal.</returns>
         public override bool Equals(object obj) => obj is SubStringResult other && Equals(other);
 
-        /// <summary>
-        /// Checks this instance with another one.
-        /// </summary>
+        /// <summary>Checks this instance with another one.</summary>
         /// <param name="other">The other SubStringResult.</param>
         /// <returns>True if both instances are equal.</returns>
         public bool Equals(SubStringResult other) => (other.Index == Index) && (other.Length == Length) && (other.Text == Text);

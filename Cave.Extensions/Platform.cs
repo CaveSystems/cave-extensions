@@ -7,60 +7,49 @@ using System.Threading.Tasks;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides access to the current platform type.
-    /// </summary>
+    /// <summary>Gets access to the current platform type.</summary>
     [ExcludeFromCodeCoverage]
     public static class Platform
     {
-        /// <summary>
-        /// Gets the <see cref="PlatformType"/> of the current platform.
-        /// </summary>
+        /// <summary>Gets the <see cref="PlatformType" /> of the current platform.</summary>
         public static PlatformType Type => GetCached(nameof(Type), GetPlatformType);
 
         /// <summary>Gets the system version string.</summary>
         /// <value>The system version string.</value>
         public static string SystemVersionString => GetCached(nameof(SystemVersionString), GetSystemVersionString);
 
-        /// <summary>
-        /// Gets a value indicating whether we run under mono or not.
-        /// </summary>
+        /// <summary>Gets a value indicating whether we run under mono or not.</summary>
         public static bool IsMono => GetCached(nameof(IsMono), GetIsMono);
 
-        /// <summary>
-        /// Gets a value indicating whether we run at android or not.
-        /// </summary>
+        /// <summary>Gets a value indicating whether we run at android or not.</summary>
         public static bool IsAndroid => GetCached(nameof(IsAndroid), GetIsAndroid);
 
-        /// <summary>
-        /// Gets a value indicating whether we run at a microsoft os or not.
-        /// </summary>
+        /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
         public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
 
-        static Dictionary<string, object> values = new Dictionary<string, object>();
+        static readonly Dictionary<string, object> CachedValues = new Dictionary<string, object>();
 
         static T GetCached<T>(string name, Func<T> getter)
         {
-            if (!values.TryGetValue(name, out object value))
+            if (!CachedValues.TryGetValue(name, out var value))
             {
                 value = getter();
-                values[name] = value;
+                CachedValues[name] = value;
             }
-            return (T)value;
+
+            return (T) value;
         }
 
         static PlatformType GetPlatformType()
         {
-            switch ((int)Environment.OSVersion.Platform)
+            switch ((int) Environment.OSVersion.Platform)
             {
                 case 0: /*Win32S*/
                 case 1: /*Win32NT*/
                 case 2: /*Win32Windows*/
                     return PlatformType.Windows;
-
                 case 3: /*Windows CE / Compact Framework*/
                     return PlatformType.CompactFramework;
-
                 case 4: /*Unix, mono returns this on all platforms except windows*/
                     if (AppDom.FindAssembly("Mono.Android", false) != null)
                     {
@@ -75,45 +64,48 @@ namespace Cave
                         }
                     }
                     catch
-                    { /*Exception on Android on this one... why ?*/
+                    {
+                        /*Exception on Android on this one... why ?*/
                     }
 
-                    string osType = SystemVersionString.ToLower();
+                    var osType = SystemVersionString.ToLower();
                     if (osType.StartsWith("linux"))
                     {
                         return PlatformType.Linux;
                     }
+
                     if (osType.StartsWith("darwin"))
                     {
                         return PlatformType.MacOS;
                     }
+
                     if (osType.StartsWith("solaris"))
                     {
                         return PlatformType.Solaris;
                     }
+
                     if (osType.StartsWith("bsd"))
                     {
                         return PlatformType.BSD;
                     }
+
                     if (osType.StartsWith("msys"))
                     {
                         return PlatformType.Windows;
                     }
+
                     if (osType.StartsWith("cygwin"))
                     {
                         return PlatformType.Windows;
                     }
-                    return PlatformType.UnknownUnix;
 
+                    return PlatformType.UnknownUnix;
                 case 5: /*Xbox*/
                     return PlatformType.Xbox;
-
                 case 6: /*MacOSX*/
                     return PlatformType.MacOS;
-
                 case 128:
                     return PlatformType.UnknownUnix;
-
                 default:
                     return PlatformType.Unknown;
             }
@@ -140,11 +132,9 @@ namespace Cave
                 var versionString = string.Empty;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Process process = Process.Start(new ProcessStartInfo("uname", "-a")
+                    var process = Process.Start(new ProcessStartInfo("uname", "-a")
                     {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
+                        CreateNoWindow = true, UseShellExecute = false, RedirectStandardOutput = true
                     });
                     versionString = process.StandardOutput.ReadToEnd();
                 });
@@ -153,12 +143,13 @@ namespace Cave
                     systemVersionString = versionString;
                 }
             }
+
             return systemVersionString.BeforeFirst('\n');
         }
 
         static bool GetIsMicrosoft()
         {
-            switch ((int)Environment.OSVersion.Platform)
+            switch ((int) Environment.OSVersion.Platform)
             {
                 case 0: /*Win32S*/
                 case 1: /*Win32NT*/
@@ -166,7 +157,6 @@ namespace Cave
                 case 3: /*Windows CE / Compact Framework*/
                 case 5: /*Xbox*/
                     return true;
-
                 default:
                 case 4: /*Unix*/
                 case 6: /*MacOSX*/
@@ -248,7 +238,8 @@ namespace Cave
             }
             else
             {
-                Process process = Process.Start(new ProcessStartInfo("uname", "-a") { CreateNoWindow = true, UseShellExecute = false, RedirectStandardOutput = true, });
+                Process process = Process.Start(new ProcessStartInfo("uname", "-a") { CreateNoWindow = true, UseShellExecute = false, RedirectStandardOutput =
+ true, });
                 var task = Task.Factory.StartNew(() => { systemVersionString = process.StandardOutput.ReadToEnd(); });
                 if (!process.WaitForExit(10000))
                 {
@@ -281,14 +272,8 @@ namespace Cave
         }
 #endif
 
-        static bool GetIsMono()
-        {
-            return AppDom.FindType("Mono.Runtime", null, AppDom.LoadFlags.NoException) != null;
-        }
+        static bool GetIsMono() => AppDom.FindType("Mono.Runtime", null, AppDom.LoadFlags.NoException) != null;
 
-        static bool GetIsAndroid()
-        {
-            return AppDom.FindType("Android.Runtime", null, AppDom.LoadFlags.NoException) != null;
-        }
+        static bool GetIsAndroid() => AppDom.FindType("Android.Runtime", null, AppDom.LoadFlags.NoException) != null;
     }
 }

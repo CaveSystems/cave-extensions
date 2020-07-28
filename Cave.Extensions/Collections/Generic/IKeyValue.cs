@@ -1,8 +1,6 @@
 ﻿namespace Cave.Collections.Generic
 {
-    /// <summary>
-    /// Provides an interface for values with key.
-    /// </summary>
+    /// <summary>Gets an interface for values with key.</summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     public interface IKeyValue<TKey>
         where TKey : struct

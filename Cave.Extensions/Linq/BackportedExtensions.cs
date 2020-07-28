@@ -1,4 +1,5 @@
 ﻿#if NET20
+#pragma warning disable CS1591 // we will not document back ports
 
 using System.Collections;
 using System.Collections.Generic;
@@ -11,15 +12,17 @@ namespace System.Linq
 
         #region Aggregate
 
-        public static TResult Aggregate<TSource, TAccumulate, TResult>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
+        public static TResult Aggregate<TSource, TAccumulate, TResult>(this IEnumerable<TSource> source, TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
         {
-            bool empty = true;
+            var empty = true;
             TAccumulate accu = default;
             foreach (var item in source)
             {
                 empty = false;
                 accu = func(accu, item);
             }
+
             if (empty)
             {
                 throw new ArgumentException("Empty sequence!");
@@ -28,7 +31,8 @@ namespace System.Linq
             return resultSelector(accu);
         }
 
-        public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> func)
             => Aggregate(source, seed, func, (a) => a);
 
         public static TSource Aggregate<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, TSource> func)
@@ -63,6 +67,7 @@ namespace System.Linq
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -76,7 +81,8 @@ namespace System.Linq
 
         #region Average
 
-        static TResult CalcAverage<TSource, TAggregate, TResult>(this IEnumerable<TSource> source, Func<TAggregate, TSource, TAggregate> totalAddValue, Func<TAggregate, long, TResult> totalDivCount)
+        static TResult CalcAverage<TSource, TAggregate, TResult>(this IEnumerable<TSource> source, Func<TAggregate, TSource, TAggregate> totalAddValue,
+            Func<TAggregate, long, TResult> totalDivCount)
             where TSource : struct
             where TAggregate : struct
             where TResult : struct
@@ -88,6 +94,7 @@ namespace System.Linq
                 total = totalAddValue(total, element);
                 counter++;
             }
+
             if (counter == 0)
             {
                 ThrowSequenceEmpty<TResult>();
@@ -97,10 +104,10 @@ namespace System.Linq
         }
 
         public static double Average(this IEnumerable<int> source)
-            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
+            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
         public static double Average(this IEnumerable<long> source)
-            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
+            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
         public static double Average(this IEnumerable<double> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
@@ -111,7 +118,8 @@ namespace System.Linq
         public static decimal Average(this IEnumerable<decimal> source)
             => CalcAverage<decimal, decimal, decimal>(source, (value, total) => value + total, (total, count) => total / count);
 
-        static TResult? CalcAverage<TSource, TAggregate, TResult>(this IEnumerable<TSource?> source, Func<TAggregate, TSource, TAggregate> totalAddValue, Func<TAggregate, long, TResult> totalDivCount)
+        static TResult? CalcAverage<TSource, TAggregate, TResult>(this IEnumerable<TSource?> source, Func<TAggregate, TSource, TAggregate> totalAddValue,
+            Func<TAggregate, long, TResult> totalDivCount)
             where TSource : struct
             where TAggregate : struct
             where TResult : struct
@@ -128,6 +136,7 @@ namespace System.Linq
                 total = totalAddValue(total, element.Value);
                 counter++;
             }
+
             if (counter == 0)
             {
                 return null;
@@ -137,10 +146,10 @@ namespace System.Linq
         }
 
         public static double? Average(this IEnumerable<int?> source)
-            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
+            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
         public static double? Average(this IEnumerable<long?> source)
-            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
+            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
         public static double? Average(this IEnumerable<double?> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
@@ -151,7 +160,8 @@ namespace System.Linq
         public static float? Average(this IEnumerable<float?> source)
             => CalcAverage<float, float, float>(source, (value, total) => value + total, (total, count) => total / count);
 
-        static TResult CalcAverageWithSelector<TSource, TAggregate, TSelected, TResult>(this IEnumerable<TSource> source, Func<TAggregate, TSelected, TAggregate> totalAddValue, Func<TAggregate, long, TResult> totalDivCount, Func<TSource, TSelected> selector)
+        static TResult CalcAverageWithSelector<TSource, TAggregate, TSelected, TResult>(this IEnumerable<TSource> source,
+            Func<TAggregate, TSelected, TAggregate> totalAddValue, Func<TAggregate, long, TResult> totalDivCount, Func<TSource, TSelected> selector)
             where TAggregate : struct
         {
             TAggregate total = default;
@@ -163,9 +173,11 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 total = totalAddValue(total, selected);
                 counter++;
             }
+
             if (counter == 0)
             {
                 TResult result = default;
@@ -173,6 +185,7 @@ namespace System.Linq
                 {
                     ThrowSequenceEmpty<TResult>();
                 }
+
                 return result;
             }
 
@@ -183,31 +196,41 @@ namespace System.Linq
             => CalcAverageWithSelector<TSource, long, int, double>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
-            => CalcAverageWithSelector<TSource, long, int?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, long, int?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+                selector);
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
-            => CalcAverageWithSelector<TSource, long, long, double>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, long, long, double>(source, (total, value) => checked(total + value), (total, count) => total / count,
+                selector);
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
-            => CalcAverageWithSelector<TSource, long, long?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, long, long?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+                selector);
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
-            => CalcAverageWithSelector<TSource, double, double, double>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, double, double, double>(source, (total, value) => checked(total + value), (total, count) => total / count,
+                selector);
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
-            => CalcAverageWithSelector<TSource, double, double?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, double, double?, double?>(source, (total, value) => checked(total + value ?? 0),
+                (total, count) => total / count, selector);
 
         public static float Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
-            => CalcAverageWithSelector<TSource, float, float, float>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, float, float, float>(source, (total, value) => checked(total + value), (total, count) => total / count,
+                selector);
 
         public static float? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
-            => CalcAverageWithSelector<TSource, float, float?, float?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, float, float?, float?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+                selector);
 
         public static decimal Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
-            => CalcAverageWithSelector<TSource, decimal, decimal, decimal>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, decimal, decimal, decimal>(source, (total, value) => checked(total + value), (total, count) => total / count,
+                selector);
 
         public static decimal? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
-            => CalcAverageWithSelector<TSource, decimal, decimal?, decimal?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count, selector);
+            => CalcAverageWithSelector<TSource, decimal, decimal?, decimal?>(source, (total, value) => checked(total + value ?? 0),
+                (total, count) => total / count, selector);
+
         #endregion
 
         #region Cast
@@ -218,6 +241,7 @@ namespace System.Linq
             {
                 return result;
             }
+
             IEnumerable<TResult> Iterator()
             {
                 foreach (TResult element in source)
@@ -225,6 +249,7 @@ namespace System.Linq
                     yield return element;
                 }
             }
+
             return Iterator();
         }
 
@@ -236,15 +261,17 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                foreach (TSource element in first)
+                foreach (var element in first)
                 {
                     yield return element;
                 }
-                foreach (TSource element in second)
+
+                foreach (var element in second)
                 {
                     yield return element;
                 }
             }
+
             return Iterator();
         }
 
@@ -258,6 +285,7 @@ namespace System.Linq
             {
                 return collection.Contains(value);
             }
+
             return Contains(source, value, null);
         }
 
@@ -267,6 +295,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             return source.Any((i) => comparer.Equals(i, value));
         }
 
@@ -281,7 +310,7 @@ namespace System.Linq
                 return collection.Count;
             }
 
-            int counter = 0;
+            var counter = 0;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -298,7 +327,7 @@ namespace System.Linq
 
         public static int Count<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            int counter = 0;
+            var counter = 0;
             foreach (var element in source)
             {
                 if (predicate(element))
@@ -309,6 +338,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return counter;
         }
 
@@ -322,8 +352,8 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                bool empty = true;
-                foreach (TSource item in source)
+                var empty = true;
+                foreach (var item in source)
                 {
                     empty = false;
                     yield return item;
@@ -334,6 +364,7 @@ namespace System.Linq
                     yield return defaultValue;
                 }
             }
+
             return Iterator();
         }
 
@@ -349,6 +380,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             IEnumerable<TSource> Iterator()
             {
                 var items = new Dictionary<TSource, object>(comparer);
@@ -361,6 +393,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -372,12 +405,14 @@ namespace System.Linq
         {
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
+
             if (source is IList<TSource> list)
             {
                 return list[index];
             }
+
             long counter = 0;
             foreach (var element in source)
             {
@@ -386,11 +421,12 @@ namespace System.Linq
                     return element;
                 }
             }
+
             return defaultValue();
         }
 
         public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, int index)
-            => source.ElementAt(index, () => throw new ArgumentOutOfRangeException());
+            => source.ElementAt(index, () => throw new ArgumentOutOfRangeException(nameof(index)));
 
         #endregion
 
@@ -418,6 +454,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             IEnumerable<TSource> Iterator()
             {
                 var items = new Dictionary<TSource, object>(comparer);
@@ -425,6 +462,7 @@ namespace System.Linq
                 {
                     items.Add(item, null);
                 }
+
                 foreach (var item in first)
                 {
                     if (!items.ContainsKey(item))
@@ -434,6 +472,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -450,11 +489,12 @@ namespace System.Linq
                     return element;
                 }
             }
+
             return defaultValue();
         }
 
         public static TSource First<TSource>(this IEnumerable<TSource> source)
-             => First(source, null, ThrowSequenceEmpty<TSource>);
+            => First(source, null, ThrowSequenceEmpty<TSource>);
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => First(source, predicate, ThrowSequenceEmpty<TSource>);
@@ -473,138 +513,160 @@ namespace System.Linq
 
         #region GroupBy
 
-        public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IEqualityComparer<TKey> comparer)
         {
             IEnumerable<IGrouping<TKey, TSource>> Iterator()
             {
                 var groups = new Dictionary<TKey, List<TSource>>(comparer);
                 List<TSource> defaultList = null;
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
-                    TKey key = keySelector(element);
+                    var key = keySelector(element);
                     if (key == null)
                     {
                         if (defaultList == null)
                         {
                             defaultList = new List<TSource>();
                         }
+
                         defaultList.Add(element);
                     }
                     else
                     {
-                        if (!groups.TryGetValue(key, out List<TSource> group))
+                        if (!groups.TryGetValue(key, out var group))
                         {
                             group = new List<TSource>();
                             groups.Add(key, group);
                         }
+
                         group.Add(element);
                     }
                 }
+
                 if (defaultList != null)
                 {
                     yield return new Grouping<TKey, TSource>(default, defaultList);
                 }
+
                 foreach (var group in groups)
                 {
                     yield return new Grouping<TKey, TSource>(group.Key, group.Value);
                 }
             }
+
             return Iterator();
         }
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => GroupBy(source, keySelector, null);
 
-        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
             IEnumerable<IGrouping<TKey, TElement>> Iterator()
             {
                 var groups = new Dictionary<TKey, List<TElement>>(comparer);
                 List<TElement> defaultList = null;
-                foreach (TSource item in source)
+                foreach (var item in source)
                 {
-                    TKey key = keySelector(item);
-                    TElement element = elementSelector(item);
+                    var key = keySelector(item);
+                    var element = elementSelector(item);
                     if (key == null)
                     {
                         if (defaultList == null)
                         {
                             defaultList = new List<TElement>();
                         }
+
                         defaultList.Add(element);
                     }
                     else
                     {
-                        if (!groups.TryGetValue(key, out List<TElement> group))
+                        if (!groups.TryGetValue(key, out var group))
                         {
                             group = new List<TElement>();
                             groups.Add(key, group);
                         }
+
                         group.Add(element);
                     }
                 }
+
                 if (defaultList != null)
                 {
                     yield return new Grouping<TKey, TElement>(default, defaultList);
                 }
+
                 foreach (var group in groups)
                 {
                     yield return new Grouping<TKey, TElement>(group.Key, group.Value);
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
             => GroupBy(source, keySelector, elementSelector, null);
 
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
             => GroupBy(source, keySelector, elementSelector, resultSelector, null);
 
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
             IEnumerable<TResult> Iterator()
             {
                 var groups = GroupBy(source, keySelector, elementSelector, comparer);
-                foreach (IGrouping<TKey, TElement> group in groups)
+                foreach (var group in groups)
                 {
                     yield return resultSelector(group.Key, group);
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
             IEnumerable<TResult> Iterator()
             {
                 var groups = GroupBy(source, keySelector, comparer);
-                foreach (IGrouping<TKey, TSource> group in groups)
+                foreach (var group in groups)
                 {
                     yield return resultSelector(group.Key, group);
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
             => GroupBy(source, keySelector, resultSelector, null);
 
         #endregion
 
         #region GroupJoin
 
-        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector)
+        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector)
             => GroupJoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector, null);
 
-        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector,
+            IEqualityComparer<TKey> comparer)
         {
             IEnumerable<TResult> Iterator()
             {
                 var innerKeys = ToLookup(inner, innerKeySelector, comparer);
-                foreach (TOuter element in outer)
+                foreach (var element in outer)
                 {
-                    TKey outerKey = outerKeySelector(element);
+                    var outerKey = outerKeySelector(element);
                     if (outerKey != null && innerKeys.Contains(outerKey))
                     {
                         yield return resultSelector(element, innerKeys[outerKey]);
@@ -620,6 +682,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TKey>.Default;
             }
+
             return Iterator();
         }
 
@@ -633,14 +696,16 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             IEnumerable<TSource> Iterator()
             {
                 var items = new Dictionary<TSource, object>(comparer);
-                foreach (TSource item in second)
+                foreach (var item in second)
                 {
                     items.Add(item, null);
                 }
-                foreach (TSource element in first)
+
+                foreach (var element in first)
                 {
                     if (items.Remove(element))
                     {
@@ -648,6 +713,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -658,31 +724,36 @@ namespace System.Linq
 
         #region Join
 
-        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector,
+            IEqualityComparer<TKey> comparer)
         {
             if (comparer == null)
             {
                 comparer = EqualityComparer<TKey>.Default;
             }
+
             IEnumerable<TResult> Iterator()
             {
                 var innerKeys = ToLookup(inner, innerKeySelector, comparer);
-                foreach (TOuter element in outer)
+                foreach (var element in outer)
                 {
-                    TKey outerKey = outerKeySelector(element);
+                    var outerKey = outerKeySelector(element);
                     if (outerKey != null && innerKeys.Contains(outerKey))
                     {
-                        foreach (TInner innerElement in innerKeys[outerKey])
+                        foreach (var innerElement in innerKeys[outerKey])
                         {
                             yield return resultSelector(element, innerElement);
                         }
                     }
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
             => outer.Join(inner, outerKeySelector, innerKeySelector, resultSelector, null);
 
         #endregion
@@ -705,6 +776,7 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 item = element;
                 empty = false;
             }
@@ -713,6 +785,7 @@ namespace System.Linq
             {
                 item = defaultValue();
             }
+
             return item;
         }
 
@@ -739,13 +812,14 @@ namespace System.Linq
             {
                 return array.LongLength;
             }
+
             return LongCount(source, null);
         }
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             long counter = 0;
-            foreach (TSource item in source)
+            foreach (var item in source)
             {
                 if (predicate?.Invoke(item) ?? true)
                 {
@@ -755,6 +829,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return counter;
         }
 
@@ -762,9 +837,10 @@ namespace System.Linq
 
         #region Max
 
-        static TResult CalcMinOrMax<TSource, TResult>(this IEnumerable<TSource> source, Func<TResult, TResult, TResult> func, Func<TResult> defaultValue, Func<TSource, TResult> selector)
+        static TResult CalcMinOrMax<TSource, TResult>(this IEnumerable<TSource> source, Func<TResult, TResult, TResult> func, Func<TResult> defaultValue,
+            Func<TSource, TResult> selector)
         {
-            bool empty = true;
+            var empty = true;
             TResult max = default;
             foreach (var element in source)
             {
@@ -784,10 +860,12 @@ namespace System.Linq
                     max = func(selected, max);
                 }
             }
+
             if (empty)
             {
                 return defaultValue();
             }
+
             return max;
         }
 
@@ -825,12 +903,16 @@ namespace System.Linq
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>, selector);
+                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                    selector);
             }
+
             if (typeof(IComparable).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>, selector);
+                return CalcMinOrMax(source, (element, max) => ((IComparable) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                    selector);
             }
+
             throw new InvalidOperationException("IComparable or IComparable<TSource> required!");
         }
 
@@ -902,12 +984,16 @@ namespace System.Linq
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>, selector);
+                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                    selector);
             }
+
             if (typeof(IComparable).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>, selector);
+                return CalcMinOrMax(source, (element, max) => ((IComparable) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                    selector);
             }
+
             throw new InvalidOperationException("IComparable or IComparable<TSource> required!");
         }
 
@@ -949,14 +1035,15 @@ namespace System.Linq
         {
             IEnumerable<TResult> Iterator()
             {
-                foreach (object element in source)
+                foreach (var element in source)
                 {
                     if (element is TResult)
                     {
-                        yield return (TResult)element;
+                        yield return (TResult) element;
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -967,7 +1054,8 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => OrderBy(source, keySelector, null);
 
-        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IComparer<TKey> comparer)
             => new OrderedEnumerable<TSource>(source).CreateOrderedEnumerable(keySelector, comparer, false);
 
         #endregion
@@ -977,7 +1065,8 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => OrderByDescending(source, keySelector, null);
 
-        public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IComparer<TKey> comparer)
             => new OrderedEnumerable<TSource>(source).CreateOrderedEnumerable(keySelector, comparer, true);
 
         #endregion
@@ -993,8 +1082,8 @@ namespace System.Linq
 
             IEnumerable<int> Iterator()
             {
-                int n = start;
-                for (int i = 0; i < count; i++, n = checked(n + 1))
+                var n = start;
+                for (var i = 0; i < count; i++, n = checked(n + 1))
                 {
                     yield return n;
                 }
@@ -1016,7 +1105,7 @@ namespace System.Linq
 
             IEnumerable<TResult> Iterator()
             {
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     yield return element;
                 }
@@ -1049,6 +1138,7 @@ namespace System.Linq
                     yield return selector(element);
                 }
             }
+
             return Iterator();
         }
 
@@ -1056,13 +1146,14 @@ namespace System.Linq
         {
             IEnumerable<TResult> Iterator()
             {
-                int counter = 0;
-                foreach (TSource element in source)
+                var counter = 0;
+                foreach (var element in source)
                 {
                     yield return selector(element, counter);
                     counter++;
                 }
             }
+
             return Iterator();
         }
 
@@ -1074,14 +1165,15 @@ namespace System.Linq
         {
             IEnumerable<TResult> Iterator()
             {
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
-                    foreach (TResult item in selector(element))
+                    foreach (var item in selector(element))
                     {
                         yield return item;
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1089,47 +1181,53 @@ namespace System.Linq
         {
             IEnumerable<TResult> Iterator()
             {
-                int counter = 0;
-                foreach (TSource element in source)
+                var counter = 0;
+                foreach (var element in source)
                 {
-                    foreach (TResult item in selector(element, counter))
+                    foreach (var item in selector(element, counter))
                     {
                         yield return item;
                     }
+
                     counter++;
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             IEnumerable<TResult> Iterator()
             {
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
-                    foreach (TCollection collection in collectionSelector(element))
+                    foreach (var collection in collectionSelector(element))
                     {
                         yield return resultSelector(element, collection);
                     }
                 }
             }
+
             return Iterator();
         }
 
-        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             IEnumerable<TResult> Iterator()
             {
-                int counter = 0;
-                foreach (TSource element in source)
+                var counter = 0;
+                foreach (var element in source)
                 {
-                    foreach (TCollection collection in collectionSelector(element, counter++))
+                    foreach (var collection in collectionSelector(element, counter++))
                     {
                         yield return resultSelector(element, collection);
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1152,13 +1250,16 @@ namespace System.Linq
                 {
                     throw new InvalidOperationException("More than one element satisfies the condition in predicate.");
                 }
+
                 found = true;
                 item = element;
             }
+
             if (!found)
             {
                 item = defaultValue();
             }
+
             return item;
         }
 
@@ -1166,7 +1267,7 @@ namespace System.Linq
             => Single(source, (i) => true, ThrowSequenceEmpty<TSource>);
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
-             => Single(source, predicate, () => throw new InvalidOperationException("No element satisfies the condition in predicate."));
+            => Single(source, predicate, () => throw new InvalidOperationException("No element satisfies the condition in predicate."));
 
         #endregion
 
@@ -1195,12 +1296,14 @@ namespace System.Linq
                             yield break;
                         }
                     }
+
                     while (enumerator.MoveNext())
                     {
                         yield return enumerator.Current;
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1212,8 +1315,8 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                bool yield = false;
-                foreach (TSource element in source)
+                var yield = false;
+                foreach (var element in source)
                 {
                     if (yield)
                     {
@@ -1226,6 +1329,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1233,10 +1337,10 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                int counter = 0;
-                bool yield = false;
+                var counter = 0;
+                var yield = false;
 
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
                     if (yield)
                     {
@@ -1247,9 +1351,11 @@ namespace System.Linq
                         yield = true;
                         yield return element;
                     }
+
                     counter++;
                 }
             }
+
             return Iterator();
         }
 
@@ -1264,6 +1370,7 @@ namespace System.Linq
             {
                 result = calc(result, element);
             }
+
             return result;
         }
 
@@ -1278,11 +1385,12 @@ namespace System.Linq
                     result = calc(result, selected);
                 }
             }
+
             return result;
         }
 
         public static int Sum(this IEnumerable<int> source)
-             => CalcSum(source, (result, element) => result + element);
+            => CalcSum(source, (result, element) => result + element);
 
         public static int? Sum(this IEnumerable<int?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
@@ -1294,7 +1402,7 @@ namespace System.Linq
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
         public static long Sum(this IEnumerable<long> source)
-             => CalcSum(source, (result, element) => result + element);
+            => CalcSum(source, (result, element) => result + element);
 
         public static long? Sum(this IEnumerable<long?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
@@ -1306,7 +1414,7 @@ namespace System.Linq
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
         public static double Sum(this IEnumerable<double> source)
-             => CalcSum(source, (result, element) => result + element);
+            => CalcSum(source, (result, element) => result + element);
 
         public static double? Sum(this IEnumerable<double?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
@@ -1318,7 +1426,7 @@ namespace System.Linq
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
         public static float Sum(this IEnumerable<float> source)
-             => CalcSum(source, (result, element) => result + element);
+            => CalcSum(source, (result, element) => result + element);
 
         public static float? Sum(this IEnumerable<float?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
@@ -1330,7 +1438,7 @@ namespace System.Linq
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
         public static decimal Sum(this IEnumerable<decimal> source)
-             => CalcSum(source, (result, element) => result + element);
+            => CalcSum(source, (result, element) => result + element);
 
         public static decimal? Sum(this IEnumerable<decimal?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
@@ -1353,8 +1461,9 @@ namespace System.Linq
                 {
                     yield break;
                 }
-                int counter = 0;
-                foreach (TSource element in source)
+
+                var counter = 0;
+                foreach (var element in source)
                 {
                     if (counter++ == count)
                     {
@@ -1366,6 +1475,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1389,6 +1499,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1396,7 +1507,7 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                int counter = 0;
+                var counter = 0;
                 foreach (var element in source)
                 {
                     if (predicate(element, counter++))
@@ -1409,6 +1520,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1419,7 +1531,8 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => ThenBy(source, keySelector, null);
 
-        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IComparer<TKey> comparer)
             => source.CreateOrderedEnumerable(keySelector, comparer, false);
 
         #endregion
@@ -1438,6 +1551,7 @@ namespace System.Linq
                 collection.CopyTo(result, 0);
                 return result;
             }
+
             return source.ToList().ToArray();
         }
 
@@ -1445,36 +1559,41 @@ namespace System.Linq
 
         #region ToDictionary
 
-        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            Dictionary<TKey, TElement> result = (comparer == null) ? new Dictionary<TKey, TElement>() : new Dictionary<TKey, TElement>(comparer);
+            var result = comparer == null ? new Dictionary<TKey, TElement>() : new Dictionary<TKey, TElement>(comparer);
             foreach (var e in source)
             {
                 result.Add(keySelector(e), elementSelector(e));
             }
+
             return result;
         }
 
-        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
             => ToDictionary(source, keySelector, elementSelector, null);
 
         public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => ToDictionary(source, keySelector, null);
 
-        public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IEqualityComparer<TKey> comparer)
             => ToDictionary(source, keySelector, (i) => i, comparer);
 
         #endregion
 
         #region ToList
 
-        public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source) => (source is List<TSource> list) ? list : new List<TSource>(source);
+        public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source) => source is List<TSource> list ? list : new List<TSource>(source);
 
         #endregion
 
         #region ToLookup
 
-        public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
             List<TElement> defaultKeyElements = null;
             var lookup = new Dictionary<TKey, List<TElement>>(comparer ?? EqualityComparer<TKey>.Default);
@@ -1496,18 +1615,22 @@ namespace System.Linq
                     list = new List<TElement>();
                     lookup.Add(key, list);
                 }
+
                 list.Add(elementSelector(element));
             }
+
             return new Lookup<TKey, TElement>(lookup, defaultKeyElements);
         }
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => ToLookup(source, keySelector, (i) => i, null);
 
-        public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            IEqualityComparer<TKey> comparer)
             => ToLookup(source, keySelector, (i) => i, comparer);
 
-        public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
             => ToLookup(source, keySelector, elementSelector, null);
 
         #endregion
@@ -1520,6 +1643,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             using (var firstEnumerator = first.GetEnumerator())
             using (var secondEnumerator = second.GetEnumerator())
             {
@@ -1529,11 +1653,13 @@ namespace System.Linq
                     {
                         return false;
                     }
+
                     if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                     {
                         return false;
                     }
                 }
+
                 return !secondEnumerator.MoveNext();
             }
         }
@@ -1553,6 +1679,7 @@ namespace System.Linq
             {
                 comparer = EqualityComparer<TSource>.Default;
             }
+
             IEnumerable<TSource> Iterator()
             {
                 var items = new Dictionary<TSource, object>(comparer);
@@ -1564,6 +1691,7 @@ namespace System.Linq
                         yield return element;
                     }
                 }
+
                 foreach (var element in second)
                 {
                     if (!items.ContainsKey(element))
@@ -1573,6 +1701,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1584,7 +1713,7 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                foreach (TSource element in source)
+                foreach (var element in source)
                 {
                     if (predicate(element))
                     {
@@ -1592,6 +1721,7 @@ namespace System.Linq
                     }
                 }
             }
+
             return Iterator();
         }
 
@@ -1599,16 +1729,18 @@ namespace System.Linq
         {
             IEnumerable<TSource> Iterator()
             {
-                int counter = 0;
-                foreach (TSource element in source)
+                var counter = 0;
+                foreach (var element in source)
                 {
                     if (predicate(element, counter))
                     {
                         yield return element;
                     }
+
                     counter++;
                 }
             }
+
             return Iterator();
         }
 
@@ -1616,4 +1748,5 @@ namespace System.Linq
     }
 }
 
+#pragma warning restore CS1591
 #endif

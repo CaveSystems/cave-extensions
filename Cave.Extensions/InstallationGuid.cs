@@ -2,11 +2,13 @@
 using System.IO;
 using System.Reflection;
 
+#if !NETSTANDARD20
+using Microsoft.Win32;
+#endif
+
 namespace Cave
 {
-    /// <summary>
-    /// Provides an installation guid.
-    /// </summary>
+    /// <summary>Gets an installation guid.</summary>
     public static class InstallationGuid
     {
         static Guid? programGuid;
@@ -21,17 +23,18 @@ namespace Cave
 #else
                 if (Platform.IsMicrosoft)
                 {
-                    var software = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE");
+                    var software = Registry.LocalMachine.OpenSubKey(@"SOFTWARE");
                     if (!(software.GetValue("SystemGuid") is byte[] data))
                     {
                         data = Guid.NewGuid().ToByteArray();
-                        software.SetValue("SystemGuid", data, Microsoft.Win32.RegistryValueKind.Binary);
+                        software.SetValue("SystemGuid", data, RegistryValueKind.Binary);
                     }
+
                     return new Guid(data);
                 }
 #endif
                 var root = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string fileName = Path.Combine(root, "system.guid");
+                var fileName = Path.Combine(root, "system.guid");
                 if (!File.Exists(fileName))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(fileName));
@@ -44,7 +47,7 @@ namespace Cave
 
         /// <summary>Gets the installation identifier.</summary>
         /// <value>The installation identifier.</value>
-        /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()"/> failes.</exception>
+        /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()" /> failes.</exception>
         public static Guid ProgramGuid
         {
             get
@@ -54,14 +57,16 @@ namespace Cave
                     var guidBytes = SystemGuid.ToByteArray();
                     long programLong =
                         (AppDomain.CurrentDomain.BaseDirectory?.GetHashCode() ?? 0) ^
-                        (Assembly.GetEntryAssembly()?.FullName.GetHashCode() ?? 0) << 32;
+                        ((Assembly.GetEntryAssembly()?.FullName.GetHashCode() ?? 0) << 32);
                     var programBytes = BitConverter.GetBytes(programLong);
-                    for (int i = 0; i < 8; i++)
+                    for (var i = 0; i < 8; i++)
                     {
                         guidBytes[guidBytes.Length - i - 1] ^= programBytes[i];
                     }
+
                     programGuid = new Guid(guidBytes);
                 }
+
                 return programGuid.Value;
             }
         }

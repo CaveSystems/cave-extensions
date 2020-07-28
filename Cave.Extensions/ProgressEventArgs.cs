@@ -2,63 +2,12 @@
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides information about the current state of a long running progress.
-    /// </summary>
+    /// <summary>Gets information about the current state of a long running progress.</summary>
     public class ProgressEventArgs : EventArgs
     {
         bool doBreak;
 
-        /// <summary>
-        /// Gets user item used at parent function.
-        /// </summary>
-        public object UserItem { get; }
-
-        /// <summary>
-        /// Gets current Position.
-        /// </summary>
-        public long Position { get; }
-
-        /// <summary>
-        /// Gets part done between last callback and current.
-        /// </summary>
-        public int Part { get; }
-
-        /// <summary>
-        /// Gets overall count.
-        /// </summary>
-        public long Count { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the current process should break.
-        /// </summary>
-        public bool Break
-        {
-            get => doBreak;
-            set
-            {
-                if (value && !CanBreak)
-                {
-                    throw new InvalidOperationException($"Break operation is not allowed!");
-                }
-
-                if (!value && doBreak)
-                {
-                    throw new InvalidOperationException($"Break flag has already been set!");
-                }
-
-                doBreak |= value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether breaking the current operation is possible or not.
-        /// </summary>
-        public bool CanBreak { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProgressEventArgs"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ProgressEventArgs" /> class.</summary>
         /// <param name="userItem">The user item.</param>
         /// <param name="position">The position.</param>
         /// <param name="part">The part done between last callback and current.</param>
@@ -72,5 +21,40 @@ namespace Cave
             Count = count;
             Part = part;
         }
+
+        /// <summary>Gets user item used at parent function.</summary>
+        public object UserItem { get; }
+
+        /// <summary>Gets current Position.</summary>
+        public long Position { get; }
+
+        /// <summary>Gets part done between last callback and current.</summary>
+        public int Part { get; }
+
+        /// <summary>Gets overall count.</summary>
+        public long Count { get; }
+
+        /// <summary>Gets or sets a value indicating whether the current process should break.</summary>
+        public bool Break
+        {
+            get => doBreak;
+            set
+            {
+                if (value && !CanBreak)
+                {
+                    throw new InvalidOperationException("Break operation is not allowed!");
+                }
+
+                if (!value && doBreak)
+                {
+                    throw new InvalidOperationException("Break flag has already been set!");
+                }
+
+                doBreak |= value;
+            }
+        }
+
+        /// <summary>Gets a value indicating whether breaking the current operation is possible or not.</summary>
+        public bool CanBreak { get; }
     }
 }

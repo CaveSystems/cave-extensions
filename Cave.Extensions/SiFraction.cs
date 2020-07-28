@@ -4,51 +4,33 @@
 
 namespace Cave
 {
-    /// <summary>
-    /// si unit fractions.
-    /// </summary>
+    /// <summary>si unit fractions.</summary>
     [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
-    public enum SiFraction : int
+    public enum SiFraction
     {
-        /// <summary>
-        /// Milli
-        /// </summary>
+        /// <summary>Milli</summary>
         m = 1,
 
-        /// <summary>
-        /// Micro
-        /// </summary>
+        /// <summary>Micro</summary>
         µ,
 
-        /// <summary>
-        /// Nano
-        /// </summary>
+        /// <summary>Nano</summary>
         n,
 
-        /// <summary>
-        /// Pico
-        /// </summary>
+        /// <summary>Pico</summary>
         p,
 
-        /// <summary>
-        /// Femto
-        /// </summary>
+        /// <summary>Femto</summary>
         f,
 
-        /// <summary>
-        /// Atto
-        /// </summary>
+        /// <summary>Atto</summary>
         a,
 
-        /// <summary>
-        /// Zepto
-        /// </summary>
+        /// <summary>Zepto</summary>
         z,
 
-        /// <summary>
-        /// Yocto
-        /// </summary>
-        y,
+        /// <summary>Yocto</summary>
+        y
     }
 }
 

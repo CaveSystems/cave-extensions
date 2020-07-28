@@ -5,12 +5,10 @@ using System.Reflection;
 
 namespace Cave
 {
-    /// <summary>
-    /// Retrieves the main assembly of the running program.
-    /// </summary>
+    /// <summary>Retrieves the main assembly of the running program.</summary>
     public static class MainAssembly
     {
-        static Assembly mainAssembly = null;
+        static Assembly mainAssembly;
 
         /// <summary>Gets the MainAssembly.</summary>
         /// <returns>Returns the main assembly instance.</returns>
@@ -20,6 +18,7 @@ namespace Cave
             {
                 mainAssembly = FindProgramAssembly();
             }
+
             return mainAssembly;
         }
 
@@ -30,15 +29,15 @@ namespace Cave
                 Debug.WriteLine("androidEntryPoint");
                 MethodInfo bestOnCreate = null;
                 MethodInfo first = null;
-                foreach (StackFrame frame in new StackTrace().GetFrames())
+                foreach (var frame in new StackTrace().GetFrames())
                 {
                     if (!(frame.GetMethod() is MethodInfo method))
                     {
                         continue;
                     }
 
-                    string asmName = method.Module?.Assembly?.GetName().Name;
-                    if (asmName != null && (asmName != "mscorlib") && (asmName != "Mono.Android"))
+                    var asmName = method.Module?.Assembly?.GetName().Name;
+                    if ((asmName != null) && (asmName != "mscorlib") && (asmName != "Mono.Android"))
                     {
                         first = method;
                         if (method.Name == "OnCreate")
@@ -47,6 +46,7 @@ namespace Cave
                         }
                     }
                 }
+
                 if (bestOnCreate != null)
                 {
                     return bestOnCreate.Module.Assembly;
@@ -56,7 +56,7 @@ namespace Cave
             }
 
             Debug.WriteLine("GetEntryAssembly");
-            Assembly result = Assembly.GetEntryAssembly();
+            var result = Assembly.GetEntryAssembly();
             if (result != null)
             {
                 return result;
@@ -64,31 +64,33 @@ namespace Cave
 
             Debug.WriteLine("bestStatic");
             MethodInfo bestStatic = null;
-            foreach (StackFrame frame in new StackTrace().GetFrames())
+            foreach (var frame in new StackTrace().GetFrames())
             {
                 if (!(frame.GetMethod() is MethodInfo method))
                 {
                     continue;
                 }
 
-                if (method.IsStatic && Path.GetExtension(method.Module.Name) == ".exe")
+                if (method.IsStatic && (Path.GetExtension(method.Module.Name) == ".exe"))
                 {
                     bestStatic = method;
                 }
             }
+
             if (bestStatic != null)
             {
                 return bestStatic.Module.Assembly;
             }
 
             Debug.WriteLine("CurrentDomain");
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (a.EntryPoint != null && !a.ReflectionOnly)
+                if ((a.EntryPoint != null) && !a.ReflectionOnly)
                 {
                     return a;
                 }
             }
+
             return null;
         }
     }

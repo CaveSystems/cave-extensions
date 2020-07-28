@@ -1,80 +1,76 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net20;net35;net40;net45</TargetFrameworks>
-        <Authors>Andreas Rohleder</Authors>
-        <Company>CaveSystems GmbH, Andreas Rohleder</Company>
-        <Copyright>(c) 2003-$([System.DateTime]::UtcNow.Year) Andreas Rohleder</Copyright>
-        <PackageIcon>cavesystems.jpg</PackageIcon>
-        <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-        <FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
-        <LangVersion>latest</LangVersion>
-        <!--project-->
-        <RootNamespace>Cave</RootNamespace>
-        <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
-        <Product>CaveSystems Extensions Library</Product>
-        <PackageTags>CaveSystems Extensions</PackageTags>
-        <Description>CaveSystems Extensions Bibliothek. This packages contains extensions methods.</Description>
-        <PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/CaveSystems/cave-extensions</RepositoryUrl>
-        <!--settings-->
-        <PackageReleaseNotes />
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <SignAssembly>true</SignAssembly>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <NeutralLanguage />
-        <DelaySign>false</DelaySign>
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <IncludeSymbols>true</IncludeSymbols>
-        <IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <Deterministic>true</Deterministic>
-        <DeterministicSourcePaths>false</DeterministicSourcePaths>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DefineConstants>TRACE;DEBUG;</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup>
-        <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
-        <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
-    </PropertyGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
-        <Reference Include="System" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net47'">
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="Microsoft.CSharp" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Remove="stylecop.json" />
-        <None Include="cavesystems.jpg" Pack="true" PackagePath="\" />
-    </ItemGroup>
-    <ItemGroup>
-        <AdditionalFiles Include="stylecop.json" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Properties\" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net20;net35;net40;net45</TargetFrameworks>
+    <Authors>Andreas Rohleder</Authors>
+    <Company>CaveSystems GmbH, Andreas Rohleder</Company>
+    <Copyright>(c) 2003-$([System.DateTime]::UtcNow.Year) Andreas Rohleder</Copyright>
+    <PackageIcon>cavesystems.jpg</PackageIcon>
+    <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
+    <LangVersion>8.0</LangVersion>
+    <!--project-->
+    <RootNamespace>Cave</RootNamespace>
+    <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
+    <Product>CaveSystems Extensions Library</Product>
+    <PackageTags>CaveSystems Extensions</PackageTags>
+    <Description>CaveSystems Extensions Bibliothek. This packages contains extensions methods.</Description>
+    <PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CaveSystems/cave-extensions</RepositoryUrl>
+    <!--settings-->
+    <PackageReleaseNotes />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <SignAssembly>true</SignAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NeutralLanguage />
+    <DelaySign>false</DelaySign>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
+    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));NET$(TargetFramework.ToUpper().Replace("_", "").Replace(".", "").Replace("NET", ""))</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net47'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cavesystems.jpg" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

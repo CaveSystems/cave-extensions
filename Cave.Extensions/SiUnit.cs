@@ -4,51 +4,33 @@
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides the international system of units default units.
-    /// </summary>
+    /// <summary>Gets the international system of units default units.</summary>
     [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
-    public enum SiUnit : int
+    public enum SiUnit
     {
-        /// <summary>
-        /// kilo
-        /// </summary>
+        /// <summary>kilo</summary>
         k = 1,
 
-        /// <summary>
-        /// Mega
-        /// </summary>
+        /// <summary>Mega</summary>
         M,
 
-        /// <summary>
-        /// Giga
-        /// </summary>
+        /// <summary>Giga</summary>
         G,
 
-        /// <summary>
-        /// Tera
-        /// </summary>
+        /// <summary>Tera</summary>
         T,
 
-        /// <summary>
-        /// Peta
-        /// </summary>
+        /// <summary>Peta</summary>
         P,
 
-        /// <summary>
-        /// Exa
-        /// </summary>
+        /// <summary>Exa</summary>
         E,
 
-        /// <summary>
-        /// Zetta
-        /// </summary>
+        /// <summary>Zetta</summary>
         Z,
 
-        /// <summary>
-        /// Yota
-        /// </summary>
-        Y,
+        /// <summary>Yota</summary>
+        Y
     }
 }
 

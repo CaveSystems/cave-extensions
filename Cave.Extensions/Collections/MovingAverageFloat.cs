@@ -7,7 +7,7 @@ namespace Cave.Collections
     /// <seealso cref="IAverage{T}" />
     public class MovingAverageFloat : IAverage<float>
     {
-        LinkedList<float> items = new LinkedList<float>();
+        readonly LinkedList<float> items = new LinkedList<float>();
         float total;
 
         /// <summary>Gets the average for the current items.</summary>
@@ -16,7 +16,10 @@ namespace Cave.Collections
 
         /// <summary>Gets or sets the maximum item count.</summary>
         /// <value>The maximum count.</value>
-        /// <remarks>Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(float)"/>.</remarks>
+        /// <remarks>
+        ///     Setting this to zero or negative values disables the maximum item count. An update is done after next call to
+        ///     <see cref="Add(float)" />.
+        /// </remarks>
         public int MaximumCount { get; set; }
 
         /// <summary>Gets the current item count.</summary>
@@ -48,18 +51,10 @@ namespace Cave.Collections
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<float> GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
+        public IEnumerator<float> GetEnumerator() => items.GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
     }
 }

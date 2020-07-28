@@ -70,7 +70,7 @@ namespace System
         /// <param name="msg">The error message that explains the reason for the exception.</param>
         /// <param name="innerExceptions">The exceptions that are the cause of the current exception.</param>
         public AggregateException(string msg, params Exception[] innerExceptions)
-            : base(msg, (innerExceptions != null && innerExceptions.Length > 0) ? innerExceptions[0] : null)
+            : base(msg, innerExceptions != null && innerExceptions.Length > 0 ? innerExceptions[0] : null)
         {
             exceptions = innerExceptions;
         }

@@ -1,11 +1,10 @@
 ﻿#if NET20 || NET35 || NETSTANDARD10
-
 using System.Collections.Generic;
 
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides backports of the Parallel class in net &gt; 4.
+    /// Gets backports of the Parallel class in net &gt; 4.
     /// </summary>
     public class Parallel
     {
@@ -19,9 +18,9 @@ namespace System.Threading.Tasks
         /// <param name="action">The delegate that is invoked once per iteration.</param>
         public static void For(int fromInclusive, int toExclusive, Action<int> action)
         {
-            using (Runner<int> instance = new Runner<int>(Environment.ProcessorCount << 2, action))
+            using (var instance = new Runner<int>(Environment.ProcessorCount << 2, action))
             {
-                for (int i = fromInclusive; i < toExclusive; i++)
+                for (var i = fromInclusive; i < toExclusive; i++)
                 {
                     instance.Start(i);
                 }
@@ -35,9 +34,9 @@ namespace System.Threading.Tasks
         /// <param name="action">The action.</param>
         public static void ForEach<T>(int concurrentTasks, IEnumerable<T> items, Action<T> action)
         {
-            using (Runner<T> instance = new Runner<T>(concurrentTasks, action))
+            using (var instance = new Runner<T>(concurrentTasks, action))
             {
-                foreach (T item in items)
+                foreach (var item in items)
                 {
                     instance.Start(item);
                 }
@@ -50,9 +49,9 @@ namespace System.Threading.Tasks
         /// <param name="action">The action.</param>
         public static void ForEach<T>(IEnumerable<T> items, Action<T> action)
         {
-            using (Runner<T> instance = new Runner<T>(Environment.ProcessorCount << 2, action))
+            using (var instance = new Runner<T>(Environment.ProcessorCount << 2, action))
             {
-                foreach (T item in items)
+                foreach (var item in items)
                 {
                     instance.Start(item);
                 }

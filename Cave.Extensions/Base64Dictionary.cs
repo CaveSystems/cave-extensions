@@ -4,32 +4,15 @@ using System.IO;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides a dictionary for <see cref="Base64"/> implementations
-    /// </summary>
-    public sealed class Base64Dictionary 
+    /// <summary>Gets a dictionary for <see cref="Base64" /> implementations.</summary>
+    public sealed class Base64Dictionary
     {
-        #region private implementation
-        char[] m_Characters = new char[64];
-        int[] m_Values = new int[128];
-        int m_Count = 0;
-
-        private Base64Dictionary(Base64Dictionary cloneData)
-        {
-            m_Characters = (char[])cloneData.m_Characters.Clone();
-            m_Values = (int[])cloneData.m_Values.Clone();
-            m_Count = cloneData.m_Count;
-        }
-        #endregion
-
-        /// <summary>
-        /// Creates a new empty <see cref="Base64Dictionary"/>
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Base64Dictionary" /> class.</summary>
         public Base64Dictionary(string charset)
         {
             if (charset == null)
             {
-                throw new ArgumentNullException("charset");
+                throw new ArgumentNullException(nameof(charset));
             }
 
             if (charset.Length != 64)
@@ -37,66 +20,66 @@ namespace Cave
                 throw new ArgumentOutOfRangeException(nameof(charset), "Charset of 64 7 bit ascii characters expected!");
             }
 
-            foreach (char c in charset)
+            foreach (var c in charset)
             {
                 if ((c < 1) || (c > 127))
                 {
-                    throw new InvalidDataException(string.Format("Invalid character 0x{0}!", ((int)c).ToString("x")));
+                    throw new InvalidDataException($"Invalid character 0x{(int) c:x}!");
                 }
 
-                m_Characters[m_Count] = c;
-                m_Values[c] = ++m_Count;
+                this.charset[count] = c;
+                values[c] = ++count;
             }
         }
 
-        /// <summary>
-        /// Obtains the value for the specified character
-        /// </summary>
-        /// <param name="c">The <see cref="char"/> to look up</param>
-        /// <returns>Returns the value (index) for the char</returns>
-        /// <exception cref="ArgumentException">Thrown if the dictionary was not jet completed</exception>
-        /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found</exception>
+        /// <summary>Gets the value for the specified character.</summary>
+        /// <param name="c">The <see cref="char" /> to look up.</param>
+        /// <returns>Returns the value (index) for the char.</returns>
+        /// <exception cref="ArgumentException">Thrown if the dictionary was not jet completed.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found.</exception>
         public int this[char c]
         {
             get
             {
-                if (m_Count != 64)
+                if (count != 64)
                 {
                     throw new ArgumentException("Dictionary does not contain 64 key valid combinations!");
                 }
 
-                int result = m_Values[c] - 1;
+                var result = values[c] - 1;
                 if (result < 0)
                 {
-                    throw new KeyNotFoundException(string.Format("Invalid symbol '{0}'!", c));
+                    throw new KeyNotFoundException($"Invalid symbol '{c}'!");
                 }
 
                 return result;
             }
         }
 
-        /// <summary>
-        /// Obtains the character for the specified value
-        /// </summary>
-        /// <param name="value">The value to look up</param>
-        /// <returns>Returns the character for the value</returns>
-        public char this[int value]
-        {
-            get
-            {
-                return m_Characters[value];
-            }
-        }
+        /// <summary>Gets the character for the specified value.</summary>
+        /// <param name="value">The value to look up.</param>
+        /// <returns>Returns the character for the value.</returns>
+        public char this[int value] => charset[value];
 
         #region ICloneable Member
 
-        /// <summary>
-        /// Clones the <see cref="Base64Dictionary"/>
-        /// </summary>
-        /// <returns>Returns a copy</returns>
-        public Base64Dictionary Clone()
+        /// <summary>Clones the <see cref="Base64Dictionary" />.</summary>
+        /// <returns>Returns a copy.</returns>
+        public Base64Dictionary Clone() => new Base64Dictionary(this);
+
+        #endregion
+
+        #region private implementation
+
+        readonly char[] charset = new char[64];
+        readonly int[] values = new int[128];
+        readonly int count;
+
+        Base64Dictionary(Base64Dictionary source)
         {
-            return new Base64Dictionary(this);
+            charset = (char[]) source.charset.Clone();
+            values = (int[]) source.values.Clone();
+            count = source.count;
         }
 
         #endregion

@@ -10,11 +10,61 @@ using System.Threading.Tasks;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides an asynchronous file finder.
-    /// </summary>
+    /// <summary>Gets an asynchronous file finder.</summary>
     public class DirectoryFinder
     {
+        readonly Queue<DirectoryItem> directoryList = new Queue<DirectoryItem>();
+        string baseDirectory;
+        bool deepestFirst;
+        int depth;
+        string directoryMask;
+        int maxDepth;
+        Task task;
+
+        /// <summary>Gets a value indicating whether the search task is still running.</summary>
+        public bool SearchRunning { get; private set; }
+
+        /// <summary>Gets the current progress of the finder. This is a very rough estimation.</summary>
+        public float Progress { get; private set; }
+
+        /// <summary>Gets the comparers used to (un)select a directory.</summary>
+        public IList<IDirectoryFinderComparer> Comparer { get; private set; } = new List<IDirectoryFinderComparer>();
+
+        /// <summary>Gets or sets the directory mask applied while searching.</summary>
+        public string DirectoryMask
+        {
+            get => directoryMask;
+            set => directoryMask = !Started ? value : throw new ReadOnlyException("FileFinder already started!");
+        }
+
+        /// <summary>Gets or sets the base directory of the search.</summary>
+        public string BaseDirectory
+        {
+            get => baseDirectory;
+            set => baseDirectory = !Started ? CheckDirectory(value) : throw new ReadOnlyException("FileFinder already started!");
+        }
+
+        /// <summary>Gets a value indicating whether the finder has been started.</summary>
+        public bool Started { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the finder returns the deepest directory first (e.g. first
+        ///     /tmp/some/dir then /tmp/some).
+        /// </summary>
+        public bool DeepestFirst { get => deepestFirst; set => deepestFirst = !Started ? value : throw new ReadOnlyException("Finder was already started!"); }
+
+        /// <summary>Gets a value indicating whether the filefinder has completed the search task and all items have been read.</summary>
+        public bool Completed => Started && !SearchRunning;
+
+        /// <summary>Gets or sets the maximum number of directories in queue.</summary>
+        public int MaximumDirectoriesQueued { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Trace" /> output is enabled.</summary>
+        public bool EnableTrace { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Debug" /> output is enabled.</summary>
+        public bool EnableDebug { get; set; }
+
         static string CheckDirectory(string value)
         {
             var result = FileSystem.GetFullPath(value);
@@ -22,16 +72,9 @@ namespace Cave
             {
                 throw new DirectoryNotFoundException();
             }
+
             return result;
         }
-
-        readonly Queue<DirectoryItem> directoryList = new Queue<DirectoryItem>();
-        Task task;
-        string baseDirectory;
-        string directoryMask;
-        bool deepestFirst;
-        int maxDepth;
-        int depth;
 
         void RecursiveSearch(DirectoryItem current)
         {
@@ -54,10 +97,10 @@ namespace Cave
                     return;
                 }
 
-                foreach (string dir in dirs)
+                foreach (var dir in dirs)
                 {
                     var directory = DirectoryItem.FromFullPath(BaseDirectory, dir);
-                    foreach (IDirectoryFinderComparer comparer in Comparer)
+                    foreach (var comparer in Comparer)
                     {
                         if (!comparer.DirectoryMatches(directory))
                         {
@@ -65,6 +108,7 @@ namespace Cave
                             break;
                         }
                     }
+
                     if (directory != null)
                     {
                         if (deepestFirst)
@@ -73,7 +117,7 @@ namespace Cave
                             RecursiveSearch(directory);
                         }
 
-                        bool addDirectoryToList = true;
+                        var addDirectoryToList = true;
                         var callback = FoundDirectory;
                         if (callback != null)
                         {
@@ -85,16 +129,19 @@ namespace Cave
                         // then add items to list
                         while (SearchRunning && addDirectoryToList)
                         {
-                            lock (this)
+                            lock (directoryList)
                             {
-                                if (directoryList.Count < MaximumDirectoriesQueued)
+                                if ((MaximumDirectoriesQueued <= 0) || (directoryList.Count < MaximumDirectoriesQueued))
                                 {
                                     directoryList.Enqueue(directory);
+                                    Monitor.Pulse(directoryList);
                                     break;
                                 }
+
+                                Monitor.Wait(directoryList);
                             }
-                            Thread.Sleep(1);
                         }
+
                         if (!deepestFirst)
                         {
                             // recursive search later
@@ -109,7 +156,7 @@ namespace Cave
                 }
                 else
                 {
-                    var newProgress = Math.Max(1 - (--depth / (float)maxDepth), Progress);
+                    var newProgress = Math.Max(1 - (--depth / (float) maxDepth), Progress);
                     if (newProgress > Progress)
                     {
                         Progress = Math.Min(Progress + 0.01f, newProgress);
@@ -122,23 +169,18 @@ namespace Cave
             }
         }
 
-        /// <summary>
-        /// runs the current search.
-        /// </summary>
+        /// <summary>runs the current search.</summary>
         void SearchDirectories()
         {
             Thread.CurrentThread.Priority = ThreadPriority.Lowest;
             Thread.CurrentThread.IsBackground = true;
             Verbose($"Starting directory search at {BaseDirectory}");
-
             RecursiveSearch(new DirectoryItem(BaseDirectory, "."));
             SearchRunning = false;
             Verbose($"Completed directory search at {BaseDirectory}");
         }
 
-        /// <summary>
-        /// Starts the finder.
-        /// </summary>
+        /// <summary>Starts the finder.</summary>
         public void Start()
         {
             lock (this)
@@ -162,9 +204,7 @@ namespace Cave
             task = Task.Factory.StartNew(SearchDirectories);
         }
 
-        /// <summary>
-        /// Retrieves (dequeues) all files already found. This may called repeatedly until Completed==true.
-        /// </summary>
+        /// <summary>Retrieves (dequeues) all files already found. This may called repeatedly until Completed==true.</summary>
         /// <param name="wait">Wait until at least one file was found.</param>
         /// <param name="maximum">Maximum number of items to return.</param>
         /// <returns>Returns an array of files.</returns>
@@ -174,22 +214,25 @@ namespace Cave
             {
                 if (wait)
                 {
-                    while (directoryList.Count == 0 && SearchRunning)
+                    while ((directoryList.Count == 0) && SearchRunning)
                     {
                         Monitor.Wait(directoryList);
                     }
                 }
+
                 if (maximum > 0)
                 {
                     if (directoryList.Count < maximum)
                     {
                         maximum = directoryList.Count;
                     }
+
                     var result = new List<DirectoryItem>(maximum);
-                    for (int i = 0; i < maximum; i++)
+                    for (var i = 0; i < maximum; i++)
                     {
                         result.Add(directoryList.Dequeue());
                     }
+
                     return result;
                 }
                 else
@@ -203,104 +246,53 @@ namespace Cave
         }
 
         /// <summary>
-        /// Retrieves the next directory found.
-        /// This function waits until a directory is found or the search thread completes without finding any further items.
+        ///     Retrieves the next directory found. This function waits until a directory is found or the search thread
+        ///     completes without finding any further items.
         /// </summary>
         /// <param name="waitAction">An action to call when entering wait for next search results.</param>
         /// <returns>Returns the next file found or null if the finder completed without finding any further directories.</returns>
         public DirectoryItem GetNext(Action waitAction = null)
         {
+            DirectoryItem result = null;
             while (SearchRunning)
             {
                 lock (directoryList)
                 {
                     if (directoryList.Count > 0)
                     {
-                        return directoryList.Dequeue();
+                        result = directoryList.Dequeue();
+                        break;
                     }
+
                     if (waitAction == null)
                     {
                         Monitor.Wait(directoryList);
                     }
                 }
+
                 waitAction?.Invoke();
             }
+
             lock (directoryList)
             {
-                if (directoryList.Count > 0)
+                if ((result == null) && (directoryList.Count > 0))
                 {
-                    return directoryList.Dequeue();
+                    result = directoryList.Dequeue();
                 }
+
+                Monitor.Pulse(directoryList);
             }
-            return null;
+
+            return result;
         }
 
-        /// <summary>
-        /// Called on each error
-        /// </summary>
+        /// <summary>Called on each error</summary>
         public event EventHandler<ErrorEventArgs> Error;
 
         /// <summary>The found directory event</summary>
         public event EventHandler<DirectoryItemEventArgs> FoundDirectory;
 
-        /// <summary>
-        /// Gets a value indicating whether the search task is still running.
-        /// </summary>
-        public bool SearchRunning { get; private set; }
-
-        /// <summary>
-        /// Gets the current progress of the finder. This is a very rough estimation.
-        /// </summary>
-        public float Progress { get; private set; }
-
-        /// <summary>
-        /// Gets the comparers used to (un)select a directory.
-        /// </summary>
-        public IList<IDirectoryFinderComparer> Comparer { get; private set; } = new List<IDirectoryFinderComparer>();
-
-        /// <summary>
-        /// Gets or sets the directory mask applied while searching.
-        /// </summary>
-        public string DirectoryMask { get => directoryMask; set => directoryMask = !Started ? value : throw new ReadOnlyException("FileFinder already started!"); }
-
-        /// <summary>
-        /// Gets or sets the base directory of the search.
-        /// </summary>
-        public string BaseDirectory { get => baseDirectory; set => baseDirectory = !Started ? CheckDirectory(value) : throw new ReadOnlyException("FileFinder already started!"); }
-
-        /// <summary>
-        /// Gets a value indicating whether the finder has been started.
-        /// </summary>
-        public bool Started { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the finder returns the deepest directory first (e.g. first /tmp/some/dir then /tmp/some).
-        /// </summary>
-        public bool DeepestFirst { get => deepestFirst; set => deepestFirst = !Started ? value : throw new ReadOnlyException("Finder was already started!"); }
-
-        /// <summary>
-        /// Gets a value indicating whether the filefinder has completed the search task and all items have been read.
-        /// </summary>
-        public bool Completed => Started && !SearchRunning;
-
-        /// <summary>
-        /// Gets or sets the maximum number of directories in queue.
-        /// </summary>
-        public int MaximumDirectoriesQueued { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether logging of messages to <see cref="Trace"/> output is enabled.
-        /// </summary>
-        public bool EnableTrace { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether logging of messages to <see cref="Debug"/> output is enabled.
-        /// </summary>
-        public bool EnableDebug { get; set; }
-
-        /// <summary>
-        /// Closes the finder.
-        /// </summary>
+        /// <summary>Closes the finder.</summary>
         public void Close()
         {
             SearchRunning = false;
@@ -320,6 +312,7 @@ namespace Cave
                     Trace.WriteLine(message);
                 }
             }
+
             if (EnableDebug)
             {
                 Debug.WriteLine(message);

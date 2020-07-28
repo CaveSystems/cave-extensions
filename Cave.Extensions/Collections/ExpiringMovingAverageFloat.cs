@@ -2,36 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cave.Collections.Generic;
 
 namespace Cave.Collections
 {
-    /// <summary>
-    /// Provides a simple moving average calculation.
-    /// </summary>
+    /// <summary>Gets a simple moving average calculation.</summary>
     /// <seealso cref="IAverage{T}" />
     public class ExpiringMovingAverageFloat : IAverage<float>
     {
-        class Item
-        {
-            public DateTime DateTime;
-            public float Float;
-        }
-        LinkedList<Item> items = new LinkedList<Item>();
+        readonly LinkedList<Item> items = new LinkedList<Item>();
         float total;
-
-        /// <summary>Gets the average for the current items.</summary>
-        /// <value>The average.</value>
-        public float Average => total / items.Count;
-
-        /// <summary>Gets or sets the maximum item count.</summary>
-        /// <value>The maximum count.</value>
-        /// <remarks>Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(float)"/>.</remarks>
-        public int MaximumCount { get; set; }
 
         /// <summary>Gets or sets the maximum age of the items.</summary>
         /// <value>The maximum age.</value>
-        /// <remarks>Setting this to zero or negative values disables the maximum age. An update is done after next call to <see cref="Add(float)"/>.</remarks>
+        /// <remarks>
+        ///     Setting this to zero or negative values disables the maximum age. An update is done after next call to
+        ///     <see cref="Add(float)" />.
+        /// </remarks>
         public TimeSpan MaximumAge { get; set; }
 
         /// <summary>Gets the duration of the items.</summary>
@@ -44,9 +30,22 @@ namespace Cave.Collections
                 {
                     return items.Last.Value.DateTime - items.First.Value.DateTime;
                 }
+
                 return TimeSpan.Zero;
             }
         }
+
+        /// <summary>Gets the average for the current items.</summary>
+        /// <value>The average.</value>
+        public float Average => total / items.Count;
+
+        /// <summary>Gets or sets the maximum item count.</summary>
+        /// <value>The maximum count.</value>
+        /// <remarks>
+        ///     Setting this to zero or negative values disables the maximum item count. An update is done after next call to
+        ///     <see cref="Add(float)" />.
+        /// </remarks>
+        public int MaximumCount { get; set; }
 
         /// <summary>Gets the current item count.</summary>
         /// <value>The item count.</value>
@@ -56,7 +55,7 @@ namespace Cave.Collections
         /// <param name="item">The item.</param>
         public void Add(float item)
         {
-            items.AddLast(new Item() { DateTime = DateTime.UtcNow, Float = item, });
+            items.AddLast(new Item { DateTime = DateTime.UtcNow, Float = item });
             total += item;
             if (MaximumCount > 0)
             {
@@ -66,9 +65,10 @@ namespace Cave.Collections
                     items.RemoveFirst();
                 }
             }
+
             if (MaximumAge > TimeSpan.Zero)
             {
-                DateTime keepAfter = DateTime.UtcNow - MaximumAge;
+                var keepAfter = DateTime.UtcNow - MaximumAge;
                 while (items.First.Value.DateTime < keepAfter)
                 {
                     total -= items.First.Value.Float;
@@ -86,18 +86,16 @@ namespace Cave.Collections
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<float> GetEnumerator()
-        {
-            return items.Select(i => i.Float).GetEnumerator();
-        }
+        public IEnumerator<float> GetEnumerator() { return items.Select(i => i.Float).GetEnumerator(); }
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() { return items.Select(i => i.Float).GetEnumerator(); }
+
+        class Item
         {
-            return items.Select(i => i.Float).GetEnumerator();
+            public DateTime DateTime;
+            public float Float;
         }
     }
 }

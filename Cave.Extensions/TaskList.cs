@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides a task list for organizing waits.
-    /// </summary>
+    /// <summary>Gets a task list for organizing waits.</summary>
     public class TaskList
     {
-        /// <summary>
-        /// The maximum concurrent threads.
-        /// </summary>
+        readonly Dictionary<Task, object> tasks = new Dictionary<Task, object>();
+
+        /// <summary>The maximum concurrent threads.</summary>
         public int MaximumConcurrentThreads = Environment.ProcessorCount * 2;
 
-        Dictionary<Task, object> tasks = new Dictionary<Task, object>();
+        /// <summary>Gets the task count.</summary>
+        /// <value>The task count.</value>
+        public int Count => tasks.Count;
 
         void Cleanup()
         {
-            foreach (Task task in tasks.Keys.ToArray())
+            foreach (var task in tasks.Keys.ToArray())
             {
                 if (task.IsCompleted)
                 {
@@ -27,6 +27,7 @@ namespace Cave
                     {
                         tasks.Remove(task);
                     }
+
                     if (task is IDisposable disposable)
                     {
                         disposable.Dispose();
@@ -37,23 +38,14 @@ namespace Cave
 
         /// <summary>Adds the specified task.</summary>
         /// <param name="task">The task.</param>
-        public void Add(Task task)
-        {
-            tasks.TryAdd(task, null);
-        }
+        public void Add(Task task) { tasks.TryAdd(task, null); }
 
         /// <summary>Waits for all tasks to complete.</summary>
-        public void WaitAll()
-        {
-            WaitAll(null, 1000);
-        }
+        public void WaitAll() { WaitAll(null, 1000); }
 
         /// <summary>Waits for all tasks to complete.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void WaitAll(Action action)
-        {
-            WaitAll(action, 1000);
-        }
+        public void WaitAll(Action action) { WaitAll(action, 1000); }
 
         /// <summary>Waits for all tasks to complete.</summary>
         /// <param name="action">The action to wait for.</param>
@@ -67,22 +59,17 @@ namespace Cave
                     Cleanup();
                     return;
                 }
+
                 action?.Invoke();
             }
         }
 
         /// <summary>Waits for any task to complete.</summary>
-        public void WaitAny()
-        {
-            WaitAny(null, 1000);
-        }
+        public void WaitAny() { WaitAny(null, 1000); }
 
         /// <summary>Waits for any task to complete.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void WaitAny(Action action)
-        {
-            WaitAny(action, 1000);
-        }
+        public void WaitAny(Action action) { WaitAny(action, 1000); }
 
         /// <summary>Waits for any task to complete.</summary>
         /// <param name="action">The action to wait for.</param>
@@ -96,22 +83,17 @@ namespace Cave
                     Cleanup();
                     return;
                 }
+
                 action?.Invoke();
             }
         }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
-        public void Wait()
-        {
-            Wait(null, 1000);
-        }
+        public void Wait() { Wait(null, 1000); }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void Wait(Action action)
-        {
-            Wait(action, 1000);
-        }
+        public void Wait(Action action) { Wait(action, 1000); }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
         /// <param name="action">The action to wait for.</param>
@@ -120,7 +102,7 @@ namespace Cave
         {
             while (true)
             {
-                Task[] tasks = ToArray();
+                var tasks = ToArray();
                 if (tasks.Length < MaximumConcurrentThreads)
                 {
                     return;
@@ -141,16 +123,6 @@ namespace Cave
         {
             Cleanup();
             return tasks.Keys.ToArray();
-        }
-
-        /// <summary>Gets the task count.</summary>
-        /// <value>The task count.</value>
-        public int Count
-        {
-            get
-            {
-                return tasks.Count;
-            }
         }
     }
 }

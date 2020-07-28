@@ -1,8 +1,6 @@
 ﻿namespace Cave
 {
-    /// <summary>
-    /// Available root locations.
-    /// </summary>
+    /// <summary>Available root locations.</summary>
     public enum RootLocation
     {
         /// <summary>The roaming user data folder</summary>
@@ -24,6 +22,6 @@
         AllUserConfig,
 
         /// <summary>The program installation folder</summary>
-        Program,
+        Program
     }
 }

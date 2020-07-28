@@ -4,18 +4,13 @@ using System.Linq;
 
 namespace Cave.Collections
 {
-    /// <summary>
-    /// Provides a synchronzation wrapper for <see cref="IAverage{T}"/> implementations.
-    /// </summary>
+    /// <summary>Gets a synchronzation wrapper for <see cref="IAverage{T}" /> implementations.</summary>
     /// <seealso cref="IAverage{T}" />
     public class SynchronizedAverage<T> : IAverage<T>
     {
-        /// <summary>Initializes a new instance of the <see cref="SynchronizedAverage{T}"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedAverage{T}" /> class.</summary>
         /// <param name="base">The base.</param>
-        public SynchronizedAverage(IAverage<T> @base)
-        {
-            Base = @base;
-        }
+        public SynchronizedAverage(IAverage<T> @base) => Base = @base;
 
         /// <summary>Gets the base.</summary>
         /// <value>The base.</value>
@@ -37,7 +32,8 @@ namespace Cave.Collections
         /// <summary>Gets or sets the maximum item count.</summary>
         /// <value>The maximum count.</value>
         /// <remarks>
-        /// Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(T)" />.
+        ///     Setting this to zero or negative values disables the maximum item count. An update is done after next call to
+        ///     <see cref="Add(T)" />.
         /// </remarks>
         public int MaximumCount
         {

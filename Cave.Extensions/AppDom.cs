@@ -6,18 +6,37 @@ using System.Reflection;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides <see cref="AppDomain"/> specific extensions.
-    /// </summary>
+    /// <summary>Gets <see cref="AppDomain" /> specific extensions.</summary>
     public static class AppDom
     {
+        /// <summary>Gets loader modes.</summary>
+        [Flags]
+        public enum LoadFlags
+        {
+            /// <summary>Throw exceptions on loader error and do not load additional assemblies.</summary>
+            None = 0,
+
+            /// <summary>Do not throw exceptions</summary>
+            NoException = 1,
+
+            /// <summary>Try to load assemblies if type cannot be found (insecure!)</summary>
+            /// <remarks>Using this function may result in a security risk if someone can put assemblies to the program folder!</remarks>
+            LoadAssemblies = 2
+        }
+
+        /// <summary>Gets the installation identifier.</summary>
+        /// <value>The installation identifier.</value>
+        /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()" /> failes.</exception>
+        [Obsolete("Use InstallationGuid.ProgramGuid")]
+        public static uint ProgramID => (uint) InstallationGuid.ProgramGuid.ToString().GetHashCode();
+
         /// <summary>Gets all loaded types assignable to the specified one and containing a default constructor.</summary>
         /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
         /// <returns>Returns a list of types.</returns>
         public static List<T> GetTypes<T>()
         {
-            Type interfaceType = typeof(T);
-            List<T> types = new List<T>();
+            var interfaceType = typeof(T);
+            var types = new List<T>();
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 foreach (var type in asm.GetTypes())
@@ -32,7 +51,7 @@ namespace Cave
 #pragma warning disable CA1031 // Keine allgemeinen Ausnahmetypen abfangen
                         try
                         {
-                            T api = (T)Activator.CreateInstance(type);
+                            var api = (T) Activator.CreateInstance(type);
                             types.Add(api);
                         }
                         catch
@@ -50,12 +69,6 @@ namespace Cave
         /// <summary>Gets the installation unique identifier.</summary>
         /// <returns>unique id as GUID.</returns>
         public static Guid GetInstallationGuid() => InstallationGuid.SystemGuid;
-
-        /// <summary>Gets the installation identifier.</summary>
-        /// <value>The installation identifier.</value>
-        /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()"/> failes.</exception>
-        [Obsolete("Use InstallationGuid.ProgramGuid")]
-        public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
 
         /// <summary>Finds the type with the specified name.</summary>
         /// <param name="name">The name of the type.</param>
@@ -79,6 +92,7 @@ namespace Cave
             {
                 throw new ArgumentNullException(nameof(typeName));
             }
+
             if (typeName.IndexOf(',') > -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(typeName), "Type name has to be the full qualified typename without additional arguments.");
@@ -113,6 +127,7 @@ namespace Cave
                     Trace.TraceWarning("Could not find assembly <red>{0}", assemblyName);
                 }
             }
+
             foreach (var assembly in assemblies)
             {
                 Trace.TraceInformation("Searching for type <cyan>{0}<default> in assembly <cyan>{1}", typeName, assembly);
@@ -125,7 +140,7 @@ namespace Cave
             }
 
             // load assembly
-            if ((mode & LoadFlags.LoadAssemblies) != 0 && (assemblyName != null))
+            if (((mode & LoadFlags.LoadAssemblies) != 0) && (assemblyName != null))
             {
                 var assembly = Assembly.LoadWithPartialName(assemblyName);
                 if (assembly != null)
@@ -143,7 +158,7 @@ namespace Cave
             Trace.TraceError("Could not find type <red>{0}", typeName);
             if ((mode & LoadFlags.NoException) == 0)
             {
-                throw new TypeLoadException(string.Format("Cannot load type {0}", typeName));
+                throw new TypeLoadException($"Cannot load type {typeName}");
             }
 
             return null;
@@ -167,27 +182,10 @@ namespace Cave
 
             if (throwException)
             {
-                throw new ArgumentException(string.Format("Cannot find assembly {0}", name));
+                throw new ArgumentException($"Cannot find assembly {name}");
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Provides loader modes.
-        /// </summary>
-        [Flags]
-        public enum LoadFlags
-        {
-            /// <summary>Throw exceptions on loader error and do not load additional assemblies.</summary>
-            None = 0,
-
-            /// <summary>Do not throw exceptions</summary>
-            NoException = 1,
-
-            /// <summary>Try to load assemblies if type cannot be found (insecure!)</summary>
-            /// <remarks>Using this function may result in a security risk if someone can put assemblies to the program folder!</remarks>
-            LoadAssemblies = 2,
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Cave.Collections
     /// <seealso cref="IAverage{T}" />
     public class MovingAverageLong : IAverage<long>
     {
-        LinkedList<long> items = new LinkedList<long>();
+        readonly LinkedList<long> items = new LinkedList<long>();
         long total;
 
         /// <summary>Gets the average for the current items.</summary>
@@ -16,7 +16,10 @@ namespace Cave.Collections
 
         /// <summary>Gets or sets the maximum item count.</summary>
         /// <value>The maximum count.</value>
-        /// <remarks>Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(long)"/>.</remarks>
+        /// <remarks>
+        ///     Setting this to zero or negative values disables the maximum item count. An update is done after next call to
+        ///     <see cref="Add(long)" />.
+        /// </remarks>
         public int MaximumCount { get; set; }
 
         /// <summary>Gets the current item count.</summary>
@@ -48,18 +51,10 @@ namespace Cave.Collections
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<long> GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
+        public IEnumerator<long> GetEnumerator() => items.GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
     }
 }

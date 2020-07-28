@@ -1,10 +1,9 @@
 #if NETSTANDARD10
 #elif NET35 || NET20
-
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides a basic set tasking functions backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
+    /// Gets a basic set tasking functions backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
     /// </summary>
     public class Task : IDisposable
     {
@@ -16,10 +15,10 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("Tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
-            foreach (Task task in tasks)
+            foreach (var task in tasks)
             {
                 task.Wait();
             }
@@ -41,13 +40,13 @@ namespace System.Threading.Tasks
 
             if (tasks == null)
             {
-                throw new ArgumentNullException("Tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
-            DateTime timeout = DateTime.UtcNow + new TimeSpan(TimeSpan.TicksPerMillisecond * timeoutMillis);
-            foreach (Task task in tasks)
+            var timeout = DateTime.UtcNow + new TimeSpan(TimeSpan.TicksPerMillisecond * timeoutMillis);
+            foreach (var task in tasks)
             {
-                TimeSpan wait = timeout - DateTime.UtcNow;
+                var wait = timeout - DateTime.UtcNow;
                 if (wait < TimeSpan.Zero && !task.IsCompleted)
                 {
                     return false;
@@ -70,12 +69,12 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("Tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
             while (true)
             {
-                for (int i = 0; i < tasks.Length; i++)
+                for (var i = 0; i < tasks.Length; i++)
                 {
                     if (tasks[i].IsCompleted)
                     {
@@ -96,13 +95,13 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                throw new ArgumentNullException("Tasks");
+                throw new ArgumentNullException(nameof(tasks));
             }
 
-            DateTime timeout = DateTime.UtcNow + new TimeSpan(timeoutMillis * TimeSpan.TicksPerMillisecond);
+            var timeout = DateTime.UtcNow + new TimeSpan(timeoutMillis * TimeSpan.TicksPerMillisecond);
             while (DateTime.UtcNow <= timeout)
             {
-                for (int i = 0; i < tasks.Length; i++)
+                for (var i = 0; i < tasks.Length; i++)
                 {
                     if (tasks[i].IsCompleted)
                     {
@@ -117,7 +116,7 @@ namespace System.Threading.Tasks
         #region Task.Factory class
 
         /// <summary>
-        /// Provides a simple task starting mechanism backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
+        /// Gets a simple task starting mechanism backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
         /// </summary>
         public static class Factory
         {
@@ -129,7 +128,7 @@ namespace System.Threading.Tasks
             /// <returns>Returns a new <see cref="Task"/> instance.</returns>
             public static Task StartNew(Action action, TaskCreationOptions options = TaskCreationOptions.None)
             {
-                Task task = new Task(options, action, null);
+                var task = new Task(options, action, null);
                 ThreadPool.QueueUserWorkItem(task.Worker, action);
                 return task;
             }
@@ -143,7 +142,7 @@ namespace System.Threading.Tasks
             /// <returns>Returns a new <see cref="Task"/> instance.</returns>
             public static Task StartNew(Action<object> action, object state, TaskCreationOptions options = TaskCreationOptions.None)
             {
-                Task task = new Task(options, action, state);
+                var task = new Task(options, action, state);
                 ThreadPool.QueueUserWorkItem(task.Worker, action);
                 return task;
             }
@@ -172,12 +171,12 @@ namespace System.Threading.Tasks
 
         void Worker(object nothing = null)
         {
-            object action = this.action;
+            var action = this.action;
 
             // spawn a new seperate thread for long running threads
             if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
             {
-                Thread thread = new Thread(Worker)
+                var thread = new Thread(Worker)
                 {
                     IsBackground = true,
                 };

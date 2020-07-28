@@ -7,14 +7,10 @@ using System.Threading;
 
 namespace Cave
 {
-    /// <summary>
-    /// Shell extensions.
-    /// </summary>
+    /// <summary>Shell extensions.</summary>
     public static class Shell
     {
-        /// <summary>
-        /// Runs a process with redirected output and error stream.
-        /// </summary>
+        /// <summary>Runs a process with redirected output and error stream.</summary>
         /// <param name="filename">Filename to start.</param>
         /// <param name="arguments">Arguments.</param>
         /// <param name="stdout">Action to call for each incoming line at the output stream.</param>
@@ -24,7 +20,7 @@ namespace Cave
         public static int RunRedirected(string filename, string arguments, Action<string> stdout, Action<string> stderr, int timeoutMilliseconds = default)
         {
             Debug.WriteLine($"Run {filename} {arguments}");
-            var startInfo = new ProcessStartInfo()
+            var startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = Directory.GetCurrentDirectory(),
                 FileName = filename,
@@ -32,7 +28,7 @@ namespace Cave
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true,
+                RedirectStandardError = true
             };
             using var outputWaitHandle = new ManualResetEvent(false);
             using var errorWaitHandle = new ManualResetEvent(false);
@@ -73,26 +69,21 @@ namespace Cave
                 Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
                 return process.ExitCode;
             }
-            else
-            {
 #pragma warning disable CA1031 // need to catch any kill errors
-                try
-                {
-                    process.Kill();
-                }
-                catch
-                {
-                    Debug.WriteLine($"Error killing process {filename}");
-                }
-#pragma warning restore CA1031
-                throw new TimeoutException($"Process {filename} timed out.");
+            try
+            {
+                process.Kill();
             }
+            catch
+            {
+                Debug.WriteLine($"Error killing process {filename}");
+            }
+#pragma warning restore CA1031
+            throw new TimeoutException($"Process {filename} timed out.");
         }
 
 #pragma warning disable CA1031
-        /// <summary>
-        /// Runs a process with redirected output and error stream.
-        /// </summary>
+        /// <summary>Runs a process with redirected output and error stream.</summary>
         /// <param name="filename">Filename to start.</param>
         /// <param name="arguments">Arguments.</param>
         /// <param name="timeoutMilliseconds">Timeout in milliseconds.</param>
@@ -113,6 +104,7 @@ namespace Cave
                 result.Exception = ex;
                 Debug.WriteLine($"Process {filename} exited with exception {ex}.");
             }
+
             return result;
         }
 #pragma warning restore CA1031

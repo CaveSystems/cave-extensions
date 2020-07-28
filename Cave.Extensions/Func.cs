@@ -2,7 +2,6 @@
 
 #if NET35 || NETSTANDARD10
 #elif NET20
-
 namespace System
 {
     /// <summary>
