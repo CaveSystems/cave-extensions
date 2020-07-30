@@ -9,44 +9,18 @@ namespace Cave
         /// <param name="value1">The value1.</param>
         /// <param name="value2">The value2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(DateTimeStringResult value1, DateTimeStringResult value2)
-        {
-            if (ReferenceEquals(null, value1))
-            {
-                return ReferenceEquals(null, value2);
-            }
-
-            if (ReferenceEquals(null, value2))
-            {
-                return false;
-            }
-
-            return (value1.Time == value2.Time) && (value1.Date == value2.Date);
-        }
+        public static bool operator ==(DateTimeStringResult value1, DateTimeStringResult value2) => Equals(value1.Time, value2.Time) && Equals(value1.Date, value2.Date);
 
         /// <summary>Implements the operator !=.</summary>
         /// <param name="value1">The value1.</param>
         /// <param name="value2">The value2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(DateTimeStringResult value1, DateTimeStringResult value2)
-        {
-            if (ReferenceEquals(null, value1))
-            {
-                return !ReferenceEquals(null, value2);
-            }
+        public static bool operator !=(DateTimeStringResult value1, DateTimeStringResult value2) => !Equals(value1.Time, value2.Time) || !Equals(value1.Date, value2.Date);
 
-            if (ReferenceEquals(null, value2))
-            {
-                return true;
-            }
-
-            return (value1.Time != value2.Time) || (value1.Date != value2.Date);
-        }
-
-        /// <summary>Gets/sets Time SubStringResult.</summary>
+        /// <summary>Gets or sets Time SubStringResult.</summary>
         public SubStringResult Time;
 
-        /// <summary>Gets/sets Date SubStringResult.</summary>
+        /// <summary>Gets or sets Date SubStringResult.</summary>
         public SubStringResult Date;
 
         /// <summary>Returns a hash code for this instance.</summary>
