@@ -2,19 +2,19 @@
 using NUnit.Framework;
 using Cave;
 
-namespace Tests
+namespace Test
 {
     [TestFixture]
     class PlatformTests
     {
         [Test]
-        public void Test()
+        public void Platform()
         {
-            Console.WriteLine($"Platform.IsAndroid: {Platform.IsAndroid}");
-            Console.WriteLine($"Platform.IsMicrosoft: {Platform.IsMicrosoft}");
-            Console.WriteLine($"Platform.IsMono: {Platform.IsMono}");
-            Console.WriteLine($"Platform.Type: {Platform.Type}");
-            Console.WriteLine($"Platform.SystemVersionString: {Platform.SystemVersionString}");
+            Console.WriteLine($"Platform.IsAndroid: {Cave.Platform.IsAndroid}");
+            Console.WriteLine($"Platform.IsMicrosoft: {Cave.Platform.IsMicrosoft}");
+            Console.WriteLine($"Platform.IsMono: {Cave.Platform.IsMono}");
+            Console.WriteLine($"Platform.Type: {Cave.Platform.Type}");
+            Console.WriteLine($"Platform.SystemVersionString: {Cave.Platform.SystemVersionString}");
         }
     }
 }

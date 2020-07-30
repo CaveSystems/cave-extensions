@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 
 namespace Cave.Collections
 {
     /// <summary>Gets a simple integer range.</summary>
-    public class Range : IEnumerable
+    [SuppressMessage("Naming", "CA1710")]
+    public class Range : IEquatable<Range>, IEnumerable<int>, IEnumerable
     {
         #region static functionality
 
@@ -107,13 +110,13 @@ namespace Cave.Collections
                         throw new ArgumentException("Expected 'start-end'!", nameof(text));
                     }
 
-                    var start = int.Parse(parts[0]);
+                    var start = int.Parse(parts[0], CultureInfo.InvariantCulture);
                     if (start < minValue)
                     {
                         throw new ArgumentOutOfRangeException(nameof(minValue));
                     }
 
-                    return Counter.Create(start, int.Parse(parts[1]));
+                    return Counter.Create(start, int.Parse(parts[1], CultureInfo.InvariantCulture));
                 }
 
                 if (text.IndexOf(RepetitionSeparator) > -1)
@@ -126,16 +129,16 @@ namespace Cave.Collections
 
                     if (parts[0] == AllValuesString)
                     {
-                        return Counter.Create(minValue, maxValue, int.Parse(parts[1]));
+                        return Counter.Create(minValue, maxValue, int.Parse(parts[1],CultureInfo.InvariantCulture));
                     }
 
-                    var start = int.Parse(parts[0]);
+                    var start = int.Parse(parts[0], CultureInfo.InvariantCulture);
                     if (start < minValue)
                     {
                         throw new ArgumentOutOfRangeException(nameof(minValue));
                     }
 
-                    return Counter.Create(start, maxValue, int.Parse(parts[1]));
+                    return Counter.Create(start, maxValue, int.Parse(parts[1], CultureInfo.InvariantCulture));
                 }
 
                 if (text == AllValuesString)
@@ -144,7 +147,7 @@ namespace Cave.Collections
                 }
 
                 {
-                    var start = int.Parse(text);
+                    var start = int.Parse(text, CultureInfo.InvariantCulture);
                     if (start < minValue)
                     {
                         throw new ArgumentOutOfRangeException(nameof(minValue));
@@ -252,6 +255,7 @@ namespace Cave.Collections
         /// <param name="text"></param>
         public void Parse(string text)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             this.counters.Clear();
             var counters = ParseRange(text, Minimum, Maximum);
             foreach (var counter in counters)
@@ -396,44 +400,32 @@ namespace Cave.Collections
                             return AllValuesString + RepetitionSeparator + counter.Step;
                         }
 
-                        result.Append(counter.Start.ToString() + RepetitionSeparator + counter.Step);
+                        result.Append($"{counter.Start}{RepetitionSeparator}{counter.Step}");
                         continue;
                     }
 
-                    result.Append(counter.Start.ToString() + RangeSeparator + counter.End);
+                    result.Append($"{counter.Start}{RangeSeparator}{counter.End}");
                     continue;
                 }
 
-                result.Append(counter.Start.ToString());
+                result.Append($"{counter.Start}");
             }
 
-            currentString = result.ToString();
+            currentString = $"{result}";
             return currentString;
         }
 
-        /// <summary>Gets a hash code for this instance.</summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public override int GetHashCode() => ToString().GetHashCode();
 
-        /// <summary>Checks two ranges for equality.</summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
-        {
-            var other = obj as Range;
-            if (other is null)
-            {
-                return false;
-            }
-
-            return ToString().Equals(other.ToString());
-        }
+        /// <inheritdoc />
+        public override bool Equals(object obj) => obj is Range range ? Equals(range) : false;
 
         #endregion
 
         #region IEnumerable Member
 
-        class RangeEnumerator : IEnumerator
+        class RangeEnumerator : IEnumerator<int>, IEnumerator
         {
             readonly Range range;
             long current;
@@ -446,7 +438,7 @@ namespace Cave.Collections
 
             #region IEnumerator Member
 
-            public object Current
+            public int Current
             {
                 get
                 {
@@ -463,6 +455,10 @@ namespace Cave.Collections
                     return (int) current;
                 }
             }
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose() => throw new NotImplementedException();
 
             public bool MoveNext()
             {
@@ -482,14 +478,21 @@ namespace Cave.Collections
                 return true;
             }
 
-            public void Reset() { current = range.Minimum - 1L; }
+            public void Reset() => current = range.Minimum - 1L;
 
             #endregion
         }
 
         /// <summary>Gets an <see cref="IEnumerator" />.</summary>
         /// <returns></returns>
-        public IEnumerator GetEnumerator() => new RangeEnumerator(this);
+        IEnumerator IEnumerable.GetEnumerator() => new RangeEnumerator(this);
+
+        /// <summary>Gets an <see cref="IEnumerator" />.</summary>
+        /// <returns></returns>
+        public IEnumerator<int> GetEnumerator() => new RangeEnumerator(this);
+
+        /// <inheritdoc />
+        public bool Equals(Range other) => string.Equals(ToString(), other?.ToString(), StringComparison.OrdinalIgnoreCase);
 
         #endregion
     }

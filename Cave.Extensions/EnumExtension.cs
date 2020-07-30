@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 
 namespace Cave
@@ -15,13 +17,13 @@ namespace Cave
             where TEnum : struct, IConvertible
         {
             var flags = new List<TEnum>();
-            var val = Convert.ToInt64(value);
+            var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
             for (var i = 0; i < 63; i++)
             {
                 var check = 1L << i;
                 if ((val & check) != 0)
                 {
-                    if (TryParse(check.ToString(), out TEnum flag))
+                    if (TryParse($"{check}", out TEnum flag))
                     {
                         flags.Add(flag);
                     }
@@ -39,7 +41,7 @@ namespace Cave
             where TEnum : struct, IConvertible
         {
             var sb = new StringBuilder();
-            var val = Convert.ToInt64(value);
+            var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
             for (var i = 0; i < 63; i++)
             {
                 var check = 1L << i;
@@ -50,7 +52,7 @@ namespace Cave
                         sb.Append(", ");
                     }
 
-                    if (TryParse(check.ToString(), out TEnum flag))
+                    if (TryParse($"{check}", out TEnum flag))
                     {
                         sb.Append(flag.ToString());
                     }
@@ -91,6 +93,7 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
         /// <returns>True if the value could be parsed.</returns>
+        [SuppressMessage("Design", "CA1031")]
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {
@@ -120,8 +123,8 @@ namespace Cave
         /// <returns>True if the flag is set in the value.</returns>
         public static bool HasFlag(this Enum value, IConvertible flag)
         {
-            var test = Convert.ToUInt64(flag);
-            return test == (Convert.ToUInt64(value) & test);
+            var test = Convert.ToUInt64(flag, CultureInfo.InvariantCulture);
+            return test == (Convert.ToUInt64(value, CultureInfo.InvariantCulture) & test);
         }
 #else
 #error No code defined for the current framework or NETXX version define missing!

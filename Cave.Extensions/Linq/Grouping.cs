@@ -16,15 +16,9 @@ namespace System.Linq
 
         public TKey Key { get; }
 
-        public IEnumerator<TElement> GetEnumerator()
-        {
-            return Group.GetEnumerator();
-        }
+        public IEnumerator<TElement> GetEnumerator() => Group.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Group.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => Group.GetEnumerator();
     }
 }
 

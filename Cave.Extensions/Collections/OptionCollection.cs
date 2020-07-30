@@ -31,7 +31,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Gets all option names.</summary>
-        public string[] Names => items.ItemsA;
+        public IList<string> Names => items.ItemsA;
 
         /// <summary>Allows direct access to the first<see cref="Option" /> with the specified name.</summary>
         /// <param name="optionName">Name of the option.</param>
@@ -60,7 +60,7 @@ namespace Cave.Collections.Generic
         public int Count => items.Count;
 
         /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
-        public bool IsReadOnly => true;
+        public static bool IsReadOnly => true;
 
         /// <summary>Returns an enumerator that iterates through all items.</summary>
         /// <returns></returns>
@@ -235,7 +235,7 @@ namespace Cave.Collections.Generic
         /// <summary>Copies all elements of the collection to an Array, starting at a particular Array index.</summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(Option[] array, int arrayIndex) { items.CopyTo(array, arrayIndex); }
+        public void CopyTo(Option[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
         /// <summary>Gets all options of the collection as one dimensional array.</summary>
         /// <returns></returns>

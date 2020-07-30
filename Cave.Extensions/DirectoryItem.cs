@@ -56,7 +56,7 @@ namespace Cave
             }
 
             return "." + Path.DirectorySeparatorChar +
-                string.Join(Path.DirectorySeparatorChar.ToString(), relative, baseCheck.Length, relative.Length - baseCheck.Length);
+                string.Join($"{Path.DirectorySeparatorChar}", relative, baseCheck.Length, relative.Length - baseCheck.Length);
         }
 
         /// <summary>

@@ -86,7 +86,7 @@ namespace Cave
         /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
-            // if (length == 0) throw new ArgumentOutOfRangeException(nameof(length));
+            if (source == null) throw new ArgumentNullException(nameof(source));
             if ((length <= 0) && source.CanSeek)
             {
                 length = source.Length - source.Position;

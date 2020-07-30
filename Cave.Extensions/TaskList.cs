@@ -38,14 +38,14 @@ namespace Cave
 
         /// <summary>Adds the specified task.</summary>
         /// <param name="task">The task.</param>
-        public void Add(Task task) { tasks.TryAdd(task, null); }
+        public void Add(Task task) => tasks.TryAdd(task, null);
 
         /// <summary>Waits for all tasks to complete.</summary>
-        public void WaitAll() { WaitAll(null, 1000); }
+        public void WaitAll() => WaitAll(null, 1000);
 
         /// <summary>Waits for all tasks to complete.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void WaitAll(Action action) { WaitAll(action, 1000); }
+        public void WaitAll(Action action) => WaitAll(action, 1000);
 
         /// <summary>Waits for all tasks to complete.</summary>
         /// <param name="action">The action to wait for.</param>
@@ -65,11 +65,11 @@ namespace Cave
         }
 
         /// <summary>Waits for any task to complete.</summary>
-        public void WaitAny() { WaitAny(null, 1000); }
+        public void WaitAny() => WaitAny(null, 1000);
 
         /// <summary>Waits for any task to complete.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void WaitAny(Action action) { WaitAny(action, 1000); }
+        public void WaitAny(Action action) => WaitAny(action, 1000);
 
         /// <summary>Waits for any task to complete.</summary>
         /// <param name="action">The action to wait for.</param>
@@ -89,11 +89,11 @@ namespace Cave
         }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
-        public void Wait() { Wait(null, 1000); }
+        public void Wait() => Wait(null, 1000);
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
         /// <param name="action">The action to wait for.</param>
-        public void Wait(Action action) { Wait(action, 1000); }
+        public void Wait(Action action) => Wait(action, 1000);
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
         /// <param name="action">The action to wait for.</param>

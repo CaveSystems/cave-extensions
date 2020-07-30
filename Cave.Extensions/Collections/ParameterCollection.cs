@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace Cave.Collections.Generic
 {
     /// <summary>Gets a list implementation for string parameters.</summary>
     [DebuggerDisplay("Count={Count}")]
-    public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterCollection>
+    public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterCollection>, ICollection<string>
     {
         readonly string[] items;
 
@@ -16,10 +17,10 @@ namespace Cave.Collections.Generic
         /// <param name="items"></param>
         public ParameterCollection(params string[] items) => this.items = items;
 
-        /// <summary>Gets the number of elements within the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <inheritdoc />
         public int Count => items.Length;
 
-        /// <summary>Gets a value indicating whether the collection is readonly or not.</summary>
+        /// <inheritdoc />
         public bool IsReadOnly => true;
 
         /// <summary>Gets or sets the <see cref="string" /> at the specified index.</summary>
@@ -28,18 +29,10 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public string this[int index] => items[index];
 
-        /// <summary>Gibt einen Enumerator zur�ck, der die Auflistung durchl�uft.</summary>
-        /// <returns>
-        ///     Ein <see cref="T:System.Collections.Generic.IEnumerator`1" />, der zum Durchlaufen der Auflistung verwendet
-        ///     werden kann.
-        /// </returns>
+        /// <inheritdoc />
         public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>) items).GetEnumerator();
 
-        /// <summary>Gibt einen Enumerator zur�ck, der eine Auflistung durchl�uft.</summary>
-        /// <returns>
-        ///     Ein <see cref="T:System.Collections.IEnumerator" />-Objekt, das zum Durchlaufen der Auflistung verwendet
-        ///     werden kann.
-        /// </returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
@@ -59,7 +52,7 @@ namespace Cave.Collections.Generic
 
             for (var i = 0; i < Count; i++)
             {
-                if (!this[i].Equals(other[i]))
+                if (!Equals(this[i], other[i]))
                 {
                     return false;
                 }
@@ -68,30 +61,14 @@ namespace Cave.Collections.Generic
             return true;
         }
 
-        /// <summary>Bestimmt den Index eines bestimmten Elements in der <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-        /// <param name="item">Das im <see cref="T:System.Collections.Generic.IList`1" /> zu suchende Objekt.</param>
-        /// <returns>Der Index von <paramref name="item" />, wenn das Element in der Liste gefunden wird, andernfalls -1.</returns>
-        int IndexOf(string item) => Array.IndexOf(items, item);
+        /// <inheritdoc />
+        public int IndexOf(string item) => Array.IndexOf(items, item);
 
-        /// <summary>Bestimmt, ob <see cref="T:System.Collections.Generic.ICollection`1" /> einen bestimmten Wert enth�lt.</summary>
-        /// <param name="item">Das im <see cref="T:System.Collections.Generic.ICollection`1" /> zu suchende Objekt.</param>
-        /// <returns>
-        ///     true, wenn sich <paramref name="item" /> in <see cref="T:System.Collections.Generic.ICollection`1" />
-        ///     befindet, andernfalls false.
-        /// </returns>
+        /// <inheritdoc />
         public bool Contains(string item) => IndexOf(item) > -1;
 
-        /// <summary>
-        ///     Kopiert die Elemente von <see cref="T:System.Collections.Generic.ICollection`1" /> in ein
-        ///     <see cref="T:System.Array" />, beginnend bei einem bestimmten <see cref="T:System.Array" />-Index.
-        /// </summary>
-        /// <param name="array">
-        ///     Das eindimensionale <see cref="T:System.Array" />, das das Ziel der aus
-        ///     <see cref="T:System.Collections.Generic.ICollection`1" /> kopierten Elemente ist.F�r <see cref="T:System.Array" />
-        ///     muss eine nullbasierte Indizierung verwendet werden.
-        /// </param>
-        /// <param name="arrayIndex">Der nullbasierte Index in <paramref name="array" />, an dem das Kopieren beginnt.</param>
-        void CopyTo(string[] array, int arrayIndex) { items.CopyTo(array, arrayIndex); }
+        /// <inheritdoc />
+        public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
         /// <summary>Gets a string containing all parameters.</summary>
         /// <returns></returns>
@@ -120,5 +97,17 @@ namespace Cave.Collections.Generic
 
             return result.ToString();
         }
+
+        void ICollection<string>.Add(string item) => throw new ReadOnlyException();
+
+        void ICollection<string>.Clear() => throw new ReadOnlyException();
+
+        bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
+
+        /// <inheritdoc />
+        public override bool Equals(object obj) => Equals(obj as ParameterCollection);
+
+        /// <inheritdoc />
+        public override int GetHashCode() => ToString().GetHashCode();
     }
 }

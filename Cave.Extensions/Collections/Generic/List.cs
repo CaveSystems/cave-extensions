@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -10,6 +11,7 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TValue1">The type of the first object.</typeparam>
     /// <typeparam name="TValue2">The type of the second object.</typeparam>
     [DebuggerDisplay("Count={Count}")]
+    [SuppressMessage("Naming", "CA1710")]
     public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     {
         readonly List<TValue1> listA;
@@ -56,7 +58,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Sets the list readonly. This operation is not reversible.</summary>
-        public void SetReadOnly() { IsReadOnly = true; }
+        public void SetReadOnly() => IsReadOnly = true;
 
         /// <summary>Adds an ItemPair to the list.</summary>
         /// <param name="value1">A item to add.</param>
@@ -187,7 +189,7 @@ namespace Cave.Collections.Generic
         /// <summary>Sets the A value at the specified index.</summary>
         /// <param name="index">The index to write at.</param>
         /// <param name="value1">The value to write.</param>
-        public void SetA(int index, TValue1 value1) { listA[index] = value1; }
+        public void SetA(int index, TValue1 value1) => listA[index] = value1;
 
         /// <summary>Checks whether the specified value is present or not.</summary>
         /// <param name="value1">The value to search for.</param>
@@ -197,7 +199,7 @@ namespace Cave.Collections.Generic
         /// <summary>Copies all A items to the specified array starting at the specified index.</summary>
         /// <param name="array">The array to write to.</param>
         /// <param name="arrayIndex">The array index to start writing at.</param>
-        public void CopyTo(TValue1[] array, int arrayIndex) { listA.CopyTo(array, arrayIndex); }
+        public void CopyTo(TValue1[] array, int arrayIndex) => listA.CopyTo(array, arrayIndex);
 
         /// <summary>Removes the first occurance of the specified A value from the list.</summary>
         /// <param name="value1">The A value to remove.</param>
@@ -215,7 +217,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Gets all A items present.</summary>
-        public TValue1[] ItemsA => listA.ToArray();
+        public IList<TValue1> ItemsA => listA.ToArray();
 
         #endregion
 
@@ -240,7 +242,7 @@ namespace Cave.Collections.Generic
         /// <summary>Sets the B value at the specified index.</summary>
         /// <param name="index">The index to write at.</param>
         /// <param name="value2">The value to write.</param>
-        public void SetB(int index, TValue2 value2) { listB[index] = value2; }
+        public void SetB(int index, TValue2 value2) => listB[index] = value2;
 
         /// <summary>Checks whether the specified value is present or not.</summary>
         /// <param name="value2">The value to search for.</param>
@@ -250,7 +252,7 @@ namespace Cave.Collections.Generic
         /// <summary>Copies all A items to the specified array starting at the specified index.</summary>
         /// <param name="array">The array to write to.</param>
         /// <param name="arrayIndex">The array index to start writing at.</param>
-        public void CopyTo(TValue2[] array, int arrayIndex) { listB.CopyTo(array, arrayIndex); }
+        public void CopyTo(TValue2[] array, int arrayIndex) => listB.CopyTo(array, arrayIndex);
 
         /// <summary>Removes the first occurance of the specified B value from the list.</summary>
         /// <param name="value2">The B value to remove.</param>
@@ -268,7 +270,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Gets all B items present.</summary>
-        public TValue2[] ItemsB => listB.ToArray();
+        public IList<TValue2> ItemsB => listB.ToArray();
 
         /// <summary>Gets/sets a B item at the first found A item.</summary>
         /// <param name="value2">The B value to search for.</param>

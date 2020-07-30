@@ -24,11 +24,11 @@ namespace Cave.Collections.Generic
         /// Gets all items.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public T[] Items
+        public IList<T> Items
         {
             get
             {
-                T[] result = new T[collection.Count];
+                var result = new T[collection.Count];
                 collection.CopyTo(result, 0);
                 return result;
             }

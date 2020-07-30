@@ -15,6 +15,7 @@ namespace Cave
         /// <returns>Returns true if the entry was added, false otherwise.</returns>
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             if (dictionary.ContainsKey(key))
             {
                 return false;
@@ -33,6 +34,9 @@ namespace Cave
         /// <returns>Returns true if the entry was added, false otherwise.</returns>
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> valueFunc)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+            if (valueFunc == null) throw new ArgumentNullException(nameof(valueFunc));
+
             if (dictionary.ContainsKey(key))
             {
                 return false;
@@ -50,6 +54,9 @@ namespace Cave
         /// <param name="pairs">The key value pairs to add.</param>
         public static void TryAddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> pairs)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+            if (pairs == null) throw new ArgumentNullException(nameof(pairs));
+
             foreach (var pair in pairs)
             {
                 TryAdd(dictionary, pair.Key, pair.Value);
@@ -64,6 +71,10 @@ namespace Cave
         /// <param name="valueFunc">A function to retrieve the value for a specified key.</param>
         public static void TryAddRange<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<TKey> keys, Func<TKey, TValue> valueFunc)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+            if (valueFunc == null) throw new ArgumentNullException(nameof(valueFunc));
+
             foreach (var key in keys)
             {
                 TryAdd(dictionary, key, valueFunc);
@@ -78,6 +89,7 @@ namespace Cave
         /// <returns>Returns the value found or default(value).</returns>
         public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             dictionary.TryGetValue(key, out var value);
             return value;
         }

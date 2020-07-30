@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections
 {
     /// <summary>Interface for average calculations.</summary>
+    [SuppressMessage("Naming", "CA1710")]
     public interface IAverage<T> : IEnumerable<T>
     {
         /// <summary>Gets the average for the current items.</summary>

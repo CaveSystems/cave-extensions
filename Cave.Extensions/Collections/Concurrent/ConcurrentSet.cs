@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Cave.Collections.Generic;
 
 #endif
@@ -14,6 +15,8 @@ namespace Cave.Collections.Concurrent
 #else
     /// <summary>Provides a concurrent set based on the <see cref="ConcurrentDictionary{T1, T2}" /> class.</summary>
     /// <typeparam name="T">Element type.</typeparam>
+    [SuppressMessage("Design", "CA1000")]
+    [SuppressMessage("Naming", "CA1710")]
     public class ConcurrentSet<T> : IItemSet<T>
     {
         #region private Member
@@ -416,19 +419,24 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc cref="ICollection{T}" />
-        public bool Remove(T item)
+        bool ICollection<T>.Remove(T item)
+        {
+            Remove(item);
+            return true;
+        }
+
+        /// <inheritdoc cref="IItemSet{T}" />
+        public void Remove(T item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (!list.TryRemove(item, out var b))
+            if (!list.TryRemove(item, out _))
             {
                 throw new KeyNotFoundException();
             }
-
-            return true;
         }
 
         /// <inheritdoc />
@@ -469,7 +477,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <summary>Clears the set.</summary>
-        public void Clear() { list.Clear(); }
+        public void Clear() => list.Clear();
 
         #endregion
 
@@ -478,7 +486,7 @@ namespace Cave.Collections.Concurrent
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) { list.Keys.CopyTo(array, arrayIndex); }
+        public void CopyTo(T[] array, int arrayIndex) => list.Keys.CopyTo(array, arrayIndex);
 
         /// <summary>Gets the number of objects present at the set.</summary>
         public int Count => list.Count;

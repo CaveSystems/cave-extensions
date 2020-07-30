@@ -40,6 +40,7 @@ namespace Cave
             return (T) value;
         }
 
+        [SuppressMessage("Design", "CA1031")]
         static PlatformType GetPlatformType()
         {
             switch ((int) Environment.OSVersion.Platform)
@@ -63,38 +64,40 @@ namespace Cave
                             return PlatformType.MacOS;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Trace.TraceInformation("Exception on File.Exists(/usr/lib/libc.dylib).");
+                        Trace.TraceInformation(ex.ToString());
                         /*Exception on Android on this one... why ?*/
                     }
 
-                    var osType = SystemVersionString.ToLower();
-                    if (osType.StartsWith("linux"))
+                    var osType = SystemVersionString.ToUpperInvariant();
+                    if (osType.StartsWith("LINUX", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.Linux;
                     }
 
-                    if (osType.StartsWith("darwin"))
+                    if (osType.StartsWith("DARWIN", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.MacOS;
                     }
 
-                    if (osType.StartsWith("solaris"))
+                    if (osType.StartsWith("SOLARIS", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.Solaris;
                     }
 
-                    if (osType.StartsWith("bsd"))
+                    if (osType.StartsWith("BSD", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.BSD;
                     }
 
-                    if (osType.StartsWith("msys"))
+                    if (osType.StartsWith("MSYS", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.Windows;
                     }
 
-                    if (osType.StartsWith("cygwin"))
+                    if (osType.StartsWith("CYGWIN", StringComparison.OrdinalIgnoreCase))
                     {
                         return PlatformType.Windows;
                     }

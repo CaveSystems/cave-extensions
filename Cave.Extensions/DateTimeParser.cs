@@ -1,4 +1,7 @@
 using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Cave
@@ -6,7 +9,7 @@ namespace Cave
     /// <summary>Gets a parser for DateTime strings.</summary>
     public static class DateTimeParser
     {
-        static readonly string timeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+        static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
         static DateTime? defaultDateTime;
 
         /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
@@ -24,6 +27,7 @@ namespace Cave
             set => defaultDateTime = value;
         }
 
+        [SuppressMessage("Design", "CA1031")]
         static bool ConvertDate(string year, string month, string day, out DateTime date)
         {
             date = new DateTime(0, DateTimeKind.Utc);
@@ -65,8 +69,10 @@ namespace Cave
             {
                 date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
             }
-            catch
+            catch(Exception ex)
             {
+                Trace.TraceInformation($"Error at {nameof(DateTimeParser)}.{nameof(ConvertDate)}:");
+                Trace.TraceInformation($"{ex}");
                 return false;
             }
 
@@ -140,7 +146,7 @@ namespace Cave
         public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
         {
             var match = Regex.Match(text,
-                @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
+                @"(?=^|\s*)" + TimeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
                 RegexOptions.Compiled);
             var offset = TimeSpan.Zero;
             timeZoneData = null;
@@ -151,18 +157,18 @@ namespace Cave
 
             if (match.Groups["Offset"].Success)
             {
-                var offsetValue = int.Parse(match.Groups["Offset"].Value);
+                var offsetValue = int.Parse(match.Groups["Offset"].Value, CultureInfo.InvariantCulture);
                 offset += new TimeSpan(offsetValue / 100, offsetValue % 100, 0);
             }
 
             if (match.Groups["OffsetHour"].Success)
             {
-                offset += TimeSpan.FromHours(int.Parse(match.Groups["OffsetHour"].Value));
+                offset += TimeSpan.FromHours(int.Parse(match.Groups["OffsetHour"].Value, CultureInfo.InvariantCulture));
             }
 
             if (match.Groups["OffsetMinute"].Success)
             {
-                offset += TimeSpan.FromMinutes(int.Parse(match.Groups["OffsetMinute"].Value));
+                offset += TimeSpan.FromMinutes(int.Parse(match.Groups["OffsetMinute"].Value, CultureInfo.InvariantCulture));
             }
 
             if (match.Groups["TimeZone"].Success)
@@ -187,20 +193,20 @@ namespace Cave
             offset = TimeSpan.Zero;
             var pattern = @"(?<hour>\d{1,2})\s*:\s*(?<minute>\d{2})\s*(?::(?<second>\d{1,2}){0,1}\s*(?:\.(?<microsecond>\d{1,7})){0,1}){0,1}\s*" +
                 @"(?:(?<OffsetSign>[\+\-])(?<OffsetHour>\d{2}):{0,1}(?<OffsetMinute>\d{2}){0,1}){0,1}\s*" +
-                @"(?<ampm>(?i:pm|am)){0,1}\s*" + timeZoneRegEx + @"(?=$|[^\d\w])";
+                @"(?<ampm>(?i:pm|am)){0,1}\s*" + TimeZoneRegEx + @"(?=$|[^\d\w])";
             var match = Regex.Match(text, pattern, RegexOptions.Compiled);
             if (!match.Success)
             {
                 return default;
             }
 
-            var h = int.Parse(match.Groups["hour"].Value);
+            var h = int.Parse(match.Groups["hour"].Value, CultureInfo.InvariantCulture);
             if ((h < 0) || (h > 23))
             {
                 return default;
             }
 
-            var m = int.Parse(match.Groups["minute"].Value);
+            var m = int.Parse(match.Groups["minute"].Value, CultureInfo.InvariantCulture);
             if ((m < 0) || (m > 59))
             {
                 return default;
@@ -209,18 +215,18 @@ namespace Cave
             var s = 0;
             if (!string.IsNullOrEmpty(match.Groups["second"].Value))
             {
-                s = int.Parse(match.Groups["second"].Value);
+                s = int.Parse(match.Groups["second"].Value, CultureInfo.InvariantCulture);
                 if ((s < 0) || (s > 59))
                 {
                     return default;
                 }
             }
 
-            if ((string.Compare(match.Groups["ampm"].Value, "PM", true) == 0) && (h < 12))
+            if ((string.Compare(match.Groups["ampm"].Value, "PM", true, CultureInfo.InvariantCulture) == 0) && (h < 12))
             {
                 h += 12;
             }
-            else if ((string.Compare(match.Groups["ampm"].Value, "AM", true) == 0) && (h == 12))
+            else if ((string.Compare(match.Groups["ampm"].Value, "AM", true, CultureInfo.InvariantCulture) == 0) && (h == 12))
             {
                 h -= 12;
             }
@@ -230,17 +236,17 @@ namespace Cave
             // Microsecond
             if (match.Groups["microsecond"].Success)
             {
-                var microsecond = int.Parse(match.Groups["microsecond"].Value.PadRight(7, '0'));
+                var microsecond = int.Parse(match.Groups["microsecond"].Value.PadRight(7, '0'), CultureInfo.InvariantCulture);
                 time += new TimeSpan(microsecond);
             }
 
             if (match.Groups["OffsetHour"].Success)
             {
-                var offsetHour = int.Parse(match.Groups["OffsetHour"].Value);
+                var offsetHour = int.Parse(match.Groups["OffsetHour"].Value, CultureInfo.InvariantCulture);
                 var offsetMinute = 0;
                 if (match.Groups["OffsetMinute"].Success)
                 {
-                    offsetMinute = int.Parse(match.Groups["OffsetMinute"].Value);
+                    offsetMinute = int.Parse(match.Groups["OffsetMinute"].Value, CultureInfo.InvariantCulture);
                 }
 
                 offset = new TimeSpan(offsetHour, offsetMinute, 0);
@@ -402,7 +408,7 @@ namespace Cave
             }
             else
             {
-                year = Default.Year.ToString();
+                year = $"{Default.Year}";
             }
 
             if (ConvertDate(year, month, match.Groups["day"].Value, out date))

@@ -6,7 +6,7 @@ namespace System.Threading.Tasks
     /// <summary>
     /// Gets backports of the Parallel class in net &gt; 4.
     /// </summary>
-    public class Parallel
+    public static class Parallel
     {
         #region static class
 
@@ -18,6 +18,7 @@ namespace System.Threading.Tasks
         /// <param name="action">The delegate that is invoked once per iteration.</param>
         public static void For(int fromInclusive, int toExclusive, Action<int> action)
         {
+            if (action == null) throw new ArgumentNullException(nameof(action));
             using (var instance = new Runner<int>(Environment.ProcessorCount << 2, action))
             {
                 for (var i = fromInclusive; i < toExclusive; i++)
@@ -34,6 +35,8 @@ namespace System.Threading.Tasks
         /// <param name="action">The action.</param>
         public static void ForEach<T>(int concurrentTasks, IEnumerable<T> items, Action<T> action)
         {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+            if (action == null) throw new ArgumentNullException(nameof(action));
             using (var instance = new Runner<T>(concurrentTasks, action))
             {
                 foreach (var item in items)
@@ -49,6 +52,8 @@ namespace System.Threading.Tasks
         /// <param name="action">The action.</param>
         public static void ForEach<T>(IEnumerable<T> items, Action<T> action)
         {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+            if (action == null) throw new ArgumentNullException(nameof(action));
             using (var instance = new Runner<T>(Environment.ProcessorCount << 2, action))
             {
                 foreach (var item in items)

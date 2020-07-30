@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Cave.Collections
 {
     /// <summary>Gets string based option handling of the form "option=long value text".</summary>
+    [SuppressMessage("Naming", "CA1716")]
     public sealed class Option : IEquatable<Option>
     {
         /// <summary>Performs an implicit conversion from <see cref="string" /> to <see cref="Option" />.</summary>
@@ -40,7 +42,7 @@ namespace Cave.Collections
             }
 
             var result = option.UnboxText(false);
-            if (result.StartsWith("--"))
+            if (result.StartsWith("--", StringComparison.OrdinalIgnoreCase))
             {
                 return "--";
             }
@@ -122,7 +124,7 @@ namespace Cave.Collections
                 throw new ArgumentOutOfRangeException(nameof(option));
             }
 
-            var index = option.IndexOf(separator);
+            var index = option.IndexOf(separator, StringComparison.OrdinalIgnoreCase);
             string prefix;
             string name;
             var value = string.Empty;
@@ -190,17 +192,17 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(separator));
             }
 
-            if (!string.IsNullOrEmpty(prefix) && name.StartsWith(prefix))
+            if (!string.IsNullOrEmpty(prefix) && name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Do not prefix the optionname with an option prefix!");
             }
 
-            if (name.IndexOf(separator) > -1)
+            if (name.IndexOf(separator, StringComparison.OrdinalIgnoreCase) > -1)
             {
                 throw new ArgumentException("Option name may not contain the separator!");
             }
 
-            if (name.StartsWith("-"))
+            if (name.StartsWith("-", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Option name contains prefix!");
             }

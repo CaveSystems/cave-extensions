@@ -22,6 +22,11 @@ namespace Cave
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>(this Assembly assembly)
             where TAttribute : Attribute
         {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
             var result = new List<TAttribute>();
             foreach (var attribute in assembly.GetCustomAttributes(typeof(TAttribute), true))
             {

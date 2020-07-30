@@ -3,6 +3,11 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic
 {
+    /// <summary>
+    /// Provides a debugger view for ICollection{KeyValuePair{TKey, TValue}} implementations.
+    /// </summary>
+    /// <typeparam name="TKey">Type of key</typeparam>
+    /// <typeparam name="TValue">Type of value</typeparam>
     public sealed class CollectionDebuggerView<TKey, TValue>
     {
         ICollection<KeyValuePair<TKey, TValue>> collection;
@@ -20,11 +25,11 @@ namespace Cave.Collections.Generic
         /// Gets all items.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public KeyValuePair<TKey, TValue>[] Items
+        public IList<KeyValuePair<TKey, TValue>> Items
         {
             get
             {
-                KeyValuePair<TKey, TValue>[] result = new KeyValuePair<TKey, TValue>[collection.Count];
+                var result = new KeyValuePair<TKey, TValue>[collection.Count];
                 collection.CopyTo(result, 0);
                 return result;
             }

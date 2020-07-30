@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tests
+namespace Test.Backports
 {
     [TestFixture]
-    public class BackportedExtensionsTest
+    public class BackportedExtensionsTests
     {
         static string Select(string longest, string next)
         {
@@ -25,9 +25,9 @@ namespace Tests
         {
             string[] fruits = { "apple", "mango", "orange", "passionfruit", "grape" };
 #if NET20
-            string longestName = BackportedExtensions.Aggregate(fruits, "banana", Select, fruit => fruit.ToUpper());
+            var longestName = BackportedExtensions.Aggregate(fruits, "banana", Select, fruit => fruit.ToUpper());
 #else
-            string longestName = Enumerable.Aggregate(fruits, "banana", Select, fruit => fruit.ToUpper());
+            var longestName = Enumerable.Aggregate(fruits, "banana", Select, fruit => fruit.ToUpper());
 #endif
             Assert.AreEqual(longestName, "PASSIONFRUIT");
         }

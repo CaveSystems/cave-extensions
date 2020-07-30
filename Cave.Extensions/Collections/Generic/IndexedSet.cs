@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
     /// <summary>Gets a generic typed set of objects.</summary>
     /// <typeparam name="T">Value type for the set.</typeparam>
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
+    [SuppressMessage("Design", "CA1000")]
+    [SuppressMessage("Naming", "CA1710")]
+    [SuppressMessage("Naming", "CA1716")]
     public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     {
         /// <summary>Checks another Set{T} instance for equality.</summary>
@@ -391,12 +395,12 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Includes an object that is not already present in the set (others are ignored).</summary>
-        /// <param name="obj">The object to be included.</param>
-        public void Include(T obj)
+        /// <param name="item">The object to be included.</param>
+        public void Include(T item)
         {
-            if (!Contains(obj))
+            if (!Contains(item))
             {
-                Add(obj);
+                Add(item);
             }
         }
 
@@ -528,7 +532,7 @@ namespace Cave.Collections.Generic
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) { items.CopyTo(array, arrayIndex); }
+        public void CopyTo(T[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
         /// <summary>Gets the number of objects present at the set.</summary>
         public int Count => items.Count;

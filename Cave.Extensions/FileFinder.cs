@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -105,6 +106,7 @@ namespace Cave
             GC.SuppressFinalize(this);
         }
 
+        [SuppressMessage("Design", "CA1031")]
         void SearchFiles()
         {
             var callback = FoundFile;
@@ -187,6 +189,7 @@ namespace Cave
             throw new Exception("THIS SHOULD NEVER HAPPEN");
         }
 
+        [SuppressMessage("Design", "CA1031")]
         void SearchDirectories()
         {
             lock (directoryList)

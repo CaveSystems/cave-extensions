@@ -15,6 +15,8 @@ namespace Cave
         /// <returns>Returns the modified address.</returns>
         public static IPAddress Modify(this IPAddress address, Action<byte[]> modifier)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
+            if (modifier == null) throw new ArgumentNullException(nameof(modifier));
             var bytes = address.GetAddressBytes();
             modifier(bytes);
             return new IPAddress(bytes);
@@ -26,6 +28,7 @@ namespace Cave
         /// <returns>A new <see cref="IPNetwork" /> instance.</returns>
         public static IPNetwork GetSubnet(this IPAddress address, int subnet)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
                 var bytes = address.GetAddressBytes();
@@ -43,6 +46,7 @@ namespace Cave
         /// <returns>Returns the reverse lookup zone name.</returns>
         public static string GetReverseLookupZone(this IPAddress address, int subnet = -1)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
                 var sb = new StringBuilder();
@@ -107,6 +111,7 @@ namespace Cave
         /// <returns>The number of continious bits.</returns>
         public static int GetSubnetBits(this IPAddress mask)
         {
+            if (mask == null) throw new ArgumentNullException(nameof(mask));
             if (mask.AddressFamily == AddressFamily.InterNetwork)
             {
                 var maskBits = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);

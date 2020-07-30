@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Cave.Collections
 {
     /// <summary>Gets a synchronzation wrapper for <see cref="IAverage{T}" /> implementations.</summary>
     /// <seealso cref="IAverage{T}" />
+    [SuppressMessage("Naming", "CA1710")]
     public class SynchronizedAverage<T> : IAverage<T>
     {
         /// <summary>Initializes a new instance of the <see cref="SynchronizedAverage{T}" /> class.</summary>

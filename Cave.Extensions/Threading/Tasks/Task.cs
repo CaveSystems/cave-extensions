@@ -1,5 +1,7 @@
 #if NETSTANDARD10
 #elif NET35 || NET20
+using System.Diagnostics.CodeAnalysis;
+
 namespace System.Threading.Tasks
 {
     /// <summary>
@@ -118,6 +120,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Gets a simple task starting mechanism backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
         /// </summary>
+        [SuppressMessage("Naming", "CA1034")]
         public static class Factory
         {
             /// <summary>
@@ -155,10 +158,7 @@ namespace System.Threading.Tasks
             /// <param name="state">An object containing data to be used by the action delegate.</param>
             /// <param name="options">LongRunning spawns a new seperate Thread.</param>
             /// <returns>Returns a new <see cref="Task"/> instance.</returns>
-            public static Task StartNew<T>(Action<T> action, T state, TaskCreationOptions options = TaskCreationOptions.None)
-            {
-                return StartNew((object o) => action((T)o), state, options);
-            }
+            public static Task StartNew<T>(Action<T> action, T state, TaskCreationOptions options = TaskCreationOptions.None) => StartNew((object o) => action((T)o), state, options);
         }
 
         #endregion
@@ -169,6 +169,7 @@ namespace System.Threading.Tasks
         readonly TaskCreationOptions creationOptions;
         bool started = false;
 
+        [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
         {
             var action = this.action;
@@ -242,6 +243,7 @@ namespace System.Threading.Tasks
                     Monitor.Wait(this);
                 }
             }
+            if (IsFaulted) throw new AggregateException(Exception);
         }
 
         /// <summary>
@@ -253,12 +255,15 @@ namespace System.Threading.Tasks
         {
             if (IsCompleted)
             {
+                if (IsFaulted) throw new AggregateException(Exception);
                 return true;
             }
 
             lock (this)
             {
-                return Monitor.Wait(this, mssTimeout);
+                var result = Monitor.Wait(this, mssTimeout);
+                if (IsFaulted) throw new AggregateException(Exception);
+                return result;
             }
         }
         #endregion

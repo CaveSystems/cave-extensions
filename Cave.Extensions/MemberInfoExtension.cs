@@ -35,7 +35,11 @@ namespace Cave
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
         public static bool HasAttribute(this MemberInfo member, Type attributeType, bool inherit = false)
-            => member.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a));
+        {
+            if (member == null) throw new ArgumentNullException(nameof(member));
+            if (attributeType == null) throw new ArgumentNullException(nameof(attributeType));
+            return member.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a));
+        }
 
         /// <summary>
         ///     Gets a specific <see cref="Attribute" /> present at the member. If the attribute type cannot be found null is
@@ -58,6 +62,6 @@ namespace Cave
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns the attribute found or null.</returns>
         public static object GetAttribute(this MemberInfo member, Type attributeType, bool inherit = false) =>
-            member.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault();
+            member?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault();
     }
 }

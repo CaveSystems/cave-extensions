@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Text;
 
@@ -13,6 +14,7 @@ namespace Cave
         /// <exception cref="ArgumentOutOfRangeException">Invalid dictionary length or bit count.</exception>
         protected BaseX(CharacterDictionary dictionary, int bitCount)
         {
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             if ((bitCount < 1) || (bitCount > 32))
             {
                 throw new ArgumentOutOfRangeException(nameof(bitCount), "BitCount in range 1..32 required!");
@@ -66,6 +68,7 @@ namespace Cave
         /// <exception cref="InvalidDataException"></exception>
         public uint DecodeUInt32(string value)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             uint result = 0;
             var bitPosition = 0;
             foreach (var character in value)
@@ -91,6 +94,7 @@ namespace Cave
         /// <exception cref="InvalidDataException"></exception>
         public ulong DecodeUInt64(string value)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             ulong result = 0;
             var bitPosition = 0;
             foreach (var character in value)

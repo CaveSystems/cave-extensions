@@ -73,26 +73,24 @@ namespace Cave
         /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
         /// <param name="type">Type to search for the product attribute.</param>
         /// <returns>The product name.</returns>
-        public static string GetProductName(this Type type)
-        {
+        public static string GetProductName(this Type type) =>
 #if NETSTANDARD13
             return type?.GetTypeInfo().Assembly.GetProductName();
 #else
-            return type?.Assembly.GetProductName();
+            type?.Assembly.GetProductName();
 #endif
-        }
+
 
         /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
         /// <param name="type">Type to search for the product attribute.</param>
         /// <returns>The company name.</returns>
-        public static string GetCompanyName(this Type type)
-        {
+        public static string GetCompanyName(this Type type) =>
 #if NETSTANDARD13
-            return type?.GetTypeInfo().Assembly.GetCompanyName();
+            type?.GetTypeInfo().Assembly.GetCompanyName();
 #else
-            return type?.Assembly.GetCompanyName();
+            type?.Assembly.GetCompanyName();
 #endif
-        }
+
 
         /// <summary>
         ///     Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp;
@@ -166,16 +164,16 @@ namespace Cave
 
             if (toType == typeof(bool))
             {
-                switch (value.ToString().ToLowerInvariant())
+                switch (value.ToString().ToUpperInvariant())
                 {
-                    case "true":
-                    case "on":
-                    case "yes":
+                    case "TRUE":
+                    case "ON":
+                    case "YES":
                     case "1":
                         return true;
-                    case "false":
-                    case "off":
-                    case "no":
+                    case "FALSE":
+                    case "OFF":
+                    case "NO":
                     case "0":
                         return false;
                 }

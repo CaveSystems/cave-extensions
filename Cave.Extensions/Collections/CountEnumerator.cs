@@ -45,7 +45,7 @@ namespace Cave.Collections
         public bool MoveNext() => counter.MoveNext();
 
         /// <summary>Resets the <see cref="CountEnumerator" />.</summary>
-        public void Reset() { counter.Reset(); }
+        public void Reset() => counter.Reset();
 
         #endregion
 

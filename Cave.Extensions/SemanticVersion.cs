@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -7,6 +8,7 @@ namespace Cave
     /// <summary>Gets semantic version numbers.</summary>
     /// <seealso cref="IEquatable{T}" />
     /// <seealso cref="IComparable{SemanticVersion}" />
+    [SuppressMessage("Globalization", "CA1308")]
     public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<SemanticVersion>, IComparable
     {
         /// <summary>Gets the valid chars.</summary>
@@ -188,39 +190,13 @@ namespace Cave
         /// <param name="version1">The version1.</param>
         /// <param name="version2">The version2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(SemanticVersion version1, SemanticVersion version2)
-        {
-            if (version1 is null)
-            {
-                return version2 is null;
-            }
-
-            if (version2 is null)
-            {
-                return false;
-            }
-
-            return version1.Equals(version2);
-        }
+        public static bool operator ==(SemanticVersion version1, SemanticVersion version2) => Equals(version1, version2);
 
         /// <summary>Implements the operator !=.</summary>
         /// <param name="version1">The version1.</param>
         /// <param name="version2">The version2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(SemanticVersion version1, SemanticVersion version2)
-        {
-            if (version1 is null)
-            {
-                throw new ArgumentNullException(nameof(version1));
-            }
-
-            if (version2 is null)
-            {
-                throw new ArgumentNullException(nameof(version2));
-            }
-
-            return !version1.Equals(version2);
-        }
+        public static bool operator !=(SemanticVersion version1, SemanticVersion version2) => !Equals(version1, version2);
 
         /// <summary>Parses the specified value major.minor[.patch][-meta[.pre]].</summary>
         /// <param name="value">The value.</param>
@@ -249,6 +225,7 @@ namespace Cave
         /// <exception cref="InvalidDataException">error on parsing.</exception>
         public static bool TryParse(string value, bool throwEx, out SemanticVersion version)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             var result = true;
             var parts = value.Split(new[] { '.' }, 3);
             int major = 1, minor = 0, patch = 0;
@@ -304,7 +281,7 @@ namespace Cave
                         throw new InvalidDataException($"Invalid meta data {meta}!");
                     }
 
-                    meta = meta.ToLower().GetValidChars(ValidChars);
+                    meta = meta.ToLowerInvariant().GetValidChars(ValidChars);
                     result = false;
                 }
             }
@@ -312,6 +289,7 @@ namespace Cave
             version = new SemanticVersion(major, minor, patch, meta);
             return result;
         }
+
 
         /// <summary>Gets the classic version (calculates a build number based on the characters).</summary>
         /// <returns>the classic version.</returns>
@@ -321,7 +299,7 @@ namespace Cave
             {
                 var mul = ValidChars.Length + 1;
                 double value = 0;
-                foreach (var c in Meta.ToLower())
+                foreach (var c in Meta.ToLowerInvariant())
                 {
                     value *= mul;
                     value += ValidChars.IndexOf(c);

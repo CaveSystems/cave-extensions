@@ -48,7 +48,7 @@ namespace Cave.Collections.Generic
         /// <summary>Sets the value at the specified index.</summary>
         /// <param name="index"></param>
         /// <param name="value"></param>
-        public void SetValueAt(int index, TValue value) { dictionary[keys[index]] = value; }
+        public void SetValueAt(int index, TValue value) => dictionary[keys[index]] = value;
 
         /// <summary>Gets the key at the specified index.</summary>
         /// <param name="index">index to read.</param>
@@ -87,7 +87,7 @@ namespace Cave.Collections.Generic
 
             public bool MoveNext() => keyEnumerator.MoveNext();
 
-            public void Reset() { keyEnumerator.Reset(); }
+            public void Reset() => keyEnumerator.Reset();
 
             public KeyValuePair<TKey, TValue> Current
             {
@@ -98,7 +98,7 @@ namespace Cave.Collections.Generic
                 }
             }
 
-            public void Dispose() { keyEnumerator.Dispose(); }
+            public void Dispose() => keyEnumerator.Dispose();
         }
 
         #region IDictionary<T1, T2> implementation
@@ -161,7 +161,7 @@ namespace Cave.Collections.Generic
 
         /// <summary>Adds the specified key and value to the dictionary.</summary>
         /// <param name="item"></param>
-        public void Add(KeyValuePair<TKey, TValue> item) { Add(item.Key, item.Value); }
+        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
 
         /// <summary>Determines whether the dictionary contains a specific key value combination.</summary>
         /// <param name="item"></param>

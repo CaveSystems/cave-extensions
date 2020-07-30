@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cave.Collections.Generic
 {
@@ -14,12 +15,8 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default)
         {
-            if (dictionary.TryGetValue(key, out var value))
-            {
-                return value;
-            }
-
-            return defaultValue;
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
+            return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
         }
     }
 }

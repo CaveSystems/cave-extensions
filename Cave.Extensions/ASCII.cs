@@ -214,6 +214,7 @@ namespace Cave
         /// <exception cref="ArgumentNullException">text.</exception>
         public static string Clean(string text, int start = 0, int count = -1, char minimumCharacter = ' ', char replacer = ' ', bool termination = false)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             if (count < 0)
             {
                 count = text.Length - start;
@@ -390,6 +391,7 @@ namespace Cave
         /// <exception cref="ArgumentNullException">bytes.</exception>
         public static string GetCleanString(byte[] bytes, int start = 0, int count = -1, bool termination = false)
         {
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             if (count < 0)
             {
                 count = bytes.Length - start;

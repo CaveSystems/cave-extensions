@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Cave.Collections
 {
     /// <summary>Gets a simple moving average calculation.</summary>
     /// <seealso cref="IAverage{T}" />
+    [SuppressMessage("Naming", "CA1710")]
     public class ExpiringMovingAverageFloat : IAverage<float>
     {
         readonly LinkedList<Item> items = new LinkedList<Item>();
@@ -86,11 +88,10 @@ namespace Cave.Collections
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<float> GetEnumerator() { return items.Select(i => i.Float).GetEnumerator(); }
+        public IEnumerator<float> GetEnumerator() => items.Select(i => i.Float).GetEnumerator();
 
-        /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator() { return items.Select(i => i.Float).GetEnumerator(); }
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => items.Select(i => i.Float).GetEnumerator();
 
         class Item
         {

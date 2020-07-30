@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,7 +34,7 @@ namespace Cave
         /// <returns>Returns a new regex instance.</returns>
         public static Regex GetExpression(string fieldValue)
         {
-            var valueString = fieldValue;
+            var valueString = fieldValue ?? throw new ArgumentNullException(nameof(fieldValue));
             var lastWasWildcard = false;
             var sb = new StringBuilder();
             sb.Append('^');
@@ -238,7 +240,7 @@ namespace Cave
             }
 
             return "." + Path.DirectorySeparatorChar +
-                string.Join(Path.DirectorySeparatorChar.ToString(), relative, baseCheck.Length, relative.Length - baseCheck.Length);
+                string.Join($"{Path.DirectorySeparatorChar}", relative, baseCheck.Length, relative.Length - baseCheck.Length);
         }
 
         /// <summary>Touches (creates needed directories and creates/opens the file).</summary>
@@ -319,7 +321,7 @@ namespace Cave
 
                 #region handle rooted paths
 
-                if ((path.Length > 4) && path.Substring(1).StartsWith("://"))
+                if ((path.Length > 4) && path.Substring(1).StartsWith("://", StringComparison.OrdinalIgnoreCase))
                 {
                     type = PathType.ConnectionString;
                     separator = '/';
@@ -331,7 +333,7 @@ namespace Cave
                 {
                     if (Platform.IsMicrosoft)
                     {
-                        if (path.StartsWith(WindowsLongPathPrefix))
+                        if (path.StartsWith(WindowsLongPathPrefix, StringComparison.OrdinalIgnoreCase))
                         {
                             separator = '\\';
                             resultParts.Clear();
@@ -339,7 +341,7 @@ namespace Cave
                             path = path.Substring(WindowsLongPathPrefix.Length);
                             type = PathType.Absolute;
                         }
-                        else if (path.StartsWith(WindowsPysicalDrivePrefix))
+                        else if (path.StartsWith(WindowsPysicalDrivePrefix, StringComparison.OrdinalIgnoreCase))
                         {
                             separator = '\\';
                             resultParts.Clear();
@@ -368,7 +370,7 @@ namespace Cave
                         case '\\':
                         {
                             // rooted or unc path
-                            if (path.StartsWith(@"\\") || path.StartsWith("//"))
+                            if (path.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase) || path.StartsWith("//", StringComparison.OrdinalIgnoreCase))
                             {
                                 if (type != PathType.None)
                                 {
@@ -454,7 +456,7 @@ namespace Cave
                 return root ?? ".";
             }
 
-            var result = string.Join(separator.ToString(), resultParts.ToArray());
+            var result = string.Join($"{separator}", resultParts.ToArray());
             return root + result;
         }
 
@@ -577,7 +579,7 @@ namespace Cave
                 {
                     var searchOption = SearchOption.TopDirectoryOnly;
                     var mask = dir;
-                    if (mask.EndsWith("|r") || mask.EndsWith(":r") || recursive)
+                    if (mask.EndsWith("|r", StringComparison.OrdinalIgnoreCase) || mask.EndsWith(":r", StringComparison.OrdinalIgnoreCase) || recursive)
                     {
                         mask = mask.Substring(0, mask.Length - 2);
                         searchOption = SearchOption.AllDirectories;
@@ -651,9 +653,9 @@ namespace Cave
         {
             var basePath = Path.GetTempPath();
             var number = Environment.TickCount;
-            while (Directory.Exists(Combine(basePath, (++number).ToString()))) { }
+            while (Directory.Exists(Combine(basePath, $"{++number}"))) { }
 
-            var result = Combine(basePath, number.ToString());
+            var result = Combine(basePath, $"{number}");
             Directory.CreateDirectory(result);
             return result;
         }
@@ -670,7 +672,7 @@ namespace Cave
             }
 
             var result = path;
-            if (Platform.IsMicrosoft && result.StartsWith(WindowsLongPathPrefix))
+            if (Platform.IsMicrosoft && result.StartsWith(WindowsLongPathPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 result = result.Substring(WindowsLongPathPrefix.Length);
             }
@@ -761,10 +763,12 @@ namespace Cave
             return folders;
         }
 
+
         /// <summary>Tries to delete a file or directory and remove empty parent directories.</summary>
         /// <param name="path">The name of the file / directory to remove.</param>
         /// <param name="recursive">Remove all subdirectories or files.</param>
         /// <returns>Returns true on success.</returns>
+        [SuppressMessage("Design", "CA1031")]
         public static bool TryDeleteDirectory(string path, bool recursive = false)
         {
             if (File.Exists(path))

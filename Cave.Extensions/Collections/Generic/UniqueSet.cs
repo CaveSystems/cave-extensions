@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -13,6 +14,7 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TKey2">The type of the key2.</typeparam>
     /// <seealso cref="Cave.Collections.Generic.IItemSet{TKey1, TKey2}" />
     [DebuggerDisplay("Count={Count}")]
+    [SuppressMessage("Naming", "CA1710")]
     public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     {
         readonly List<ItemPair<TKey1, TKey2>> list = new List<ItemPair<TKey1, TKey2>>();
@@ -230,7 +232,7 @@ namespace Cave.Collections.Generic
         /// <summary>Copies the elements of the set to an Array, starting at a particular Array index.</summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(ItemPair<TKey1, TKey2>[] array, int arrayIndex) { list.CopyTo(array, arrayIndex); }
+        public void CopyTo(ItemPair<TKey1, TKey2>[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
 
         /// <summary>Removes an itempair from the set.</summary>
         /// <param name="item"></param>
@@ -261,7 +263,7 @@ namespace Cave.Collections.Generic
         ///     The exception that is thrown when the key specified for accessing an element in
         ///     a collection does not match any key in the collection.
         /// </exception>
-        public void RemoveA(TKey1 key1) { Remove(GetA(key1)); }
+        public void RemoveA(TKey1 key1) => Remove(GetA(key1));
 
         /// <summary>Removes the item with the specified B key.</summary>
         /// <param name="key2">The A key.</param>
@@ -269,7 +271,7 @@ namespace Cave.Collections.Generic
         ///     The exception that is thrown when the key specified for accessing an element in
         ///     a collection does not match any key in the collection.
         /// </exception>
-        public void RemoveB(TKey2 key2) { Remove(GetB(key2)); }
+        public void RemoveB(TKey2 key2) => Remove(GetB(key2));
 
         /// <summary>
         ///     Rebuilds the index after an operation that destroys (one of) them. This is an O(n) operation, where n is
@@ -351,7 +353,7 @@ namespace Cave.Collections.Generic
         /// <param name="index">The index to insert the item at.</param>
         /// <param name="key1">The A value of the ItemPair to insert.</param>
         /// <param name="key2">The B value of the ItemPair to insert.</param>
-        public void Insert(int index, TKey1 key1, TKey2 key2) { Insert(index, new ItemPair<TKey1, TKey2>(key1, key2)); }
+        public void Insert(int index, TKey1 key1, TKey2 key2) => Insert(index, new ItemPair<TKey1, TKey2>(key1, key2));
 
         /// <summary>Checks whether the list contains an itempair or not.</summary>
         /// <param name="key1"></param>

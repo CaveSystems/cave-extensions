@@ -175,7 +175,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <inheritdoc />
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             lock (this)
             {
@@ -202,6 +202,7 @@ namespace Cave.Collections.Generic
         /// <returns>Returns true if the item was added, false otherwise.</returns>
         public bool TryAdd(TKey key, Func<TValue> constructor)
         {
+            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
             lock (this)
             {
                 if (dict.ContainsKey(key))
@@ -277,6 +278,7 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public TValue GetOrAdd(TKey key, Func<TValue> constructor)
         {
+            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
             lock (this)
             {
                 if (!dict.TryGetValue(key, out var result))
@@ -296,6 +298,7 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public TValue GetOrAddIgnoreNull(TKey key, Func<TValue> constructor)
         {
+            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
             lock (this)
             {
                 if (!dict.TryGetValue(key, out var result))
@@ -315,6 +318,7 @@ namespace Cave.Collections.Generic
         /// <param name="items">The items.</param>
         public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
+            if (items == null) throw new ArgumentNullException(nameof(items));
             lock (this)
             {
                 foreach (var item in items)
@@ -328,6 +332,7 @@ namespace Cave.Collections.Generic
         /// <param name="items">The items.</param>
         public void IncludeRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
+            if (items == null) throw new ArgumentNullException(nameof(items));
             lock (this)
             {
                 foreach (var item in items)

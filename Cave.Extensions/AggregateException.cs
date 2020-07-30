@@ -105,10 +105,7 @@ namespace System
         /// <param name="info">The SerializationInfo to populate with data. </param>
         /// <param name="context">The destination (see StreamingContext) for this serialization.</param>
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) => base.GetObjectData(info, context);
     }
 }
 #endif

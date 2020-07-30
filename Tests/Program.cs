@@ -7,13 +7,13 @@ namespace Test
 {
     class Program
     {
-        static int Main(string[] args)
+        static int Main()
         {
             var errors = 0;
             Console.WriteLine($"Running tests with framework {Environment.Version}");
             Console.WriteLine("---");
-            Type[] types = typeof(Program).Assembly.GetTypes();
-            foreach (Type type in types.OrderBy(t => t.Name))
+            var types = typeof(Program).Assembly.GetTypes();
+            foreach (var type in types.OrderBy(t => t.Name))
             {
                 if (!type.GetCustomAttributes(typeof(TestFixtureAttribute), false).Any())
                 {

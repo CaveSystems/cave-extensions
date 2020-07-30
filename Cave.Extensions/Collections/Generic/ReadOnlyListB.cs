@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -10,6 +11,7 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TValue1"></typeparam>
     /// <typeparam name="TValue2"></typeparam>
     [DebuggerDisplay("Count={Count}")]
+    [SuppressMessage("Naming", "CA1710")]
     public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     {
         readonly IItemSet<TValue1, TValue2> set;
@@ -29,11 +31,11 @@ namespace Cave.Collections.Generic
         /// <summary>Throws a ReadOnlyException.</summary>
         /// <param name="index"></param>
         /// <param name="item"></param>
-        public void Insert(int index, TValue2 item) { throw new ReadOnlyException(); }
+        public void Insert(int index, TValue2 item) => throw new ReadOnlyException();
 
         /// <summary>Throws a ReadOnlyException.</summary>
         /// <param name="index"></param>
-        public void RemoveAt(int index) { throw new ReadOnlyException(); }
+        public void RemoveAt(int index) => throw new ReadOnlyException();
 
         /// <summary>Gets the item at the specified index. Setter throws a ReadOnlyException.</summary>
         /// <param name="index"></param>
@@ -42,10 +44,10 @@ namespace Cave.Collections.Generic
 
         /// <summary>Throws a ReadOnlyException.</summary>
         /// <param name="item"></param>
-        public void Add(TValue2 item) { throw new ReadOnlyException(); }
+        public void Add(TValue2 item) => throw new ReadOnlyException();
 
         /// <summary>Throws a ReadOnlyException.</summary>
-        public void Clear() { throw new ReadOnlyException(); }
+        public void Clear() => throw new ReadOnlyException();
 
         /// <summary>Determines whether an element is part of the collection.</summary>
         /// <param name="item"></param>
@@ -105,7 +107,7 @@ namespace Cave.Collections.Generic
 
             public bool MoveNext() => ++index < set.Count;
 
-            public void Reset() { index = -1; }
+            public void Reset() => index = -1;
         }
     }
 }

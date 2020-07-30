@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections
 {
     /// <summary>Gets an <see cref="IEnumerable" /> implementation for simple integer counting.</summary>
+    [SuppressMessage("Naming", "CA1710")]
     public class Counter : IEnumerable<int>, IComparable, IEnumerable
     {
         long current;
@@ -276,7 +278,7 @@ namespace Cave.Collections
         }
 
         /// <summary>Resets the counter.</summary>
-        public void Reset() { current = Start - Step; }
+        public void Reset() => current = Start - Step;
 
         /// <summary>Checks another <see cref="Counter" /> for equality.</summary>
         /// <param name="obj">The <see cref="Counter" /> instance to check for equality.</param>

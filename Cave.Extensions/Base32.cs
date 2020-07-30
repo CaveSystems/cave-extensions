@@ -89,6 +89,7 @@ namespace Cave
         /// <param name="data">The data to encode.</param>
         public override string Encode(byte[] data)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
             var result = new List<char>(data.Length * 2);
             var value = 0;
             var bits = 0;

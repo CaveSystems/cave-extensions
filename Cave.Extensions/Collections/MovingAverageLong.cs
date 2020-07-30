@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections
 {
     /// <summary>Provides a simple moving average calculation.</summary>
     /// <seealso cref="IAverage{T}" />
+    [SuppressMessage("Naming", "CA1710")]
     public class MovingAverageLong : IAverage<long>
     {
         readonly LinkedList<long> items = new LinkedList<long>();
@@ -49,12 +51,10 @@ namespace Cave.Collections
             items.Clear();
         }
 
-        /// <summary>Returns an enumerator that iterates through the collection.</summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<long> GetEnumerator() => items.GetEnumerator();
 
-        /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
     }
 }

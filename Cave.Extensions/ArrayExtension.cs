@@ -93,7 +93,11 @@ namespace Cave
         /// <param name="data">Source array.</param>
         /// <param name="index">Element index.</param>
         /// <returns>Returns a new array instance.</returns>
-        public static T[] GetRange<T>(this IList<T> data, int index) => GetRange(data, index, data.Count - index);
+        public static T[] GetRange<T>(this IList<T> data, int index)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            return GetRange(data, index, data.Count - index);
+        }
 
         /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
         /// <typeparam name="T">Item type.</typeparam>
@@ -101,17 +105,14 @@ namespace Cave
         /// <param name="index">Element index.</param>
         /// <param name="count">Number of elements to copy.</param>
         /// <returns>Returns a new array instance.</returns>
-        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index, int count)
-        {
-            return data.Where((v, i) => (i >= index) && (i < (index + count)));
-        }
+        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index, int count) => data.Where((v, i) => (i >= index) && (i < (index + count)));
 
         /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
         /// <typeparam name="T">Item type.</typeparam>
         /// <param name="data">Source array.</param>
         /// <param name="index">Element index.</param>
         /// <returns>Returns a new array instance.</returns>
-        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index) { return data.Where((v, i) => i >= index); }
+        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index) => data.Where((v, i) => i >= index);
 
         /// <summary>Concatenates elements.</summary>
         /// <typeparam name="T">Item type.</typeparam>

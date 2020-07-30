@@ -3,9 +3,11 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
+    [SuppressMessage("Naming", "CA1710")]
     public class Lookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>, ILookup<TKey, TElement>
     {
         readonly IGrouping<TKey, TElement> defaultGroup;
@@ -47,6 +49,10 @@ namespace System.Linq
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException(nameof(resultSelector));
+            }
             if (defaultGroup != null)
             {
                 yield return resultSelector(defaultGroup.Key, defaultGroup);

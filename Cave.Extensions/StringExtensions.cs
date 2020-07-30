@@ -446,12 +446,10 @@ namespace Cave
             var result = new StringBuilder();
             if (timeSpan.Hours > 0)
             {
-                result.Append((timeSpan.Ticks / TimeSpan.TicksPerHour).ToString("00"));
-                result.Append(":");
+                result.Append($"{timeSpan.Ticks / TimeSpan.TicksPerHour:00}:");
             }
 
-            result.Append(timeSpan.Minutes.ToString("00"));
-            result.Append(":");
+            result.Append($"{timeSpan.Minutes:00}:");
             var seconds = timeSpan.Seconds;
             switch (millisecondDigits)
             {
@@ -461,22 +459,16 @@ namespace Cave
                         seconds++;
                     }
 
-                    result.Append(seconds.ToString("00"));
+                    result.Append($"{seconds:00}");
                     break;
                 case 1:
-                    result.Append(seconds.ToString("00"));
-                    result.Append(".");
-                    result.Append((timeSpan.Milliseconds / 100).ToString("0"));
+                    result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:0}");
                     break;
                 case 2:
-                    result.Append(seconds.ToString("00"));
-                    result.Append(".");
-                    result.Append((timeSpan.Milliseconds / 10).ToString("00"));
+                    result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:00}");
                     break;
                 case 3:
-                    result.Append(seconds.ToString("00"));
-                    result.Append(".");
-                    result.Append(timeSpan.Milliseconds.ToString("000"));
+                    result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:000}");
                     break;
                 default:
                     throw new NotSupportedException("Only 0-3 millisecond digits are supported!");
@@ -717,7 +709,7 @@ namespace Cave
                     return result;
                 }
             }
-            return DateTime.Parse(dateTime);
+            return DateTime.Parse(dateTime, CultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -747,6 +739,7 @@ namespace Cave
         /// <returns>The parsed point.</returns>
         public static Point ParsePoint(string point)
         {
+            if (point == null) throw new ArgumentNullException(nameof(point));
             var data = Unbox(point.Trim(), "{", "}");
             var parts = data.Split(',');
             if (parts.Length != 2)
@@ -764,8 +757,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
-            var x = int.Parse(parts[0].Trim().Substring(2));
-            var y = int.Parse(parts[1].Trim().Substring(2));
+            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
             return new Point(x, y);
         }
 
@@ -774,6 +767,7 @@ namespace Cave
         /// <returns>The parsed size.</returns>
         public static Size ParseSize(string size)
         {
+            if (size == null) throw new ArgumentNullException(nameof(size));
             var data = Unbox(size.Trim(), "{", "}");
             var parts = data.Split(',');
             if (parts.Length != 2)
@@ -791,8 +785,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
-            var w = int.Parse(parts[0].Trim().Substring(6));
-            var h = int.Parse(parts[1].Trim().Substring(7));
+            var w = int.Parse(parts[0].Trim().Substring(6), CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[1].Trim().Substring(7), CultureInfo.CurrentCulture);
             return new Size(w, h);
         }
 
@@ -828,10 +822,10 @@ namespace Cave
                 throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
-            var x = int.Parse(parts[0].Trim().Substring(2));
-            var y = int.Parse(parts[1].Trim().Substring(2));
-            var w = int.Parse(parts[2].Trim().Substring(6));
-            var h = int.Parse(parts[3].Trim().Substring(7));
+            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var w = int.Parse(parts[2].Trim().Substring(6), CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[3].Trim().Substring(7), CultureInfo.CurrentCulture);
             return new Rectangle(x, y, w, h);
         }
 
@@ -847,8 +841,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
-            var x = float.Parse(parts[0].Trim(' ', ','));
-            var y = float.Parse(parts[1].Trim(' ', ','));
+            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
             return new PointF(x, y);
         }
 
@@ -864,8 +858,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
-            var w = float.Parse(parts[0].Trim(' ', ','));
-            var h = float.Parse(parts[1].Trim(' ', ','));
+            var w = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var h = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
             return new SizeF(w, h);
         }
 
@@ -881,10 +875,10 @@ namespace Cave
                 throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
-            var x = float.Parse(parts[0].Trim(' ', ','));
-            var y = float.Parse(parts[1].Trim(' ', ','));
-            var w = float.Parse(parts[2].Trim(' ', ','));
-            var h = float.Parse(parts[3].Trim(' ', ','));
+            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var w = float.Parse(parts[2].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var h = float.Parse(parts[3].Trim(' ', ','), CultureInfo.CurrentCulture);
             return new RectangleF(x, y, w, h);
         }
 
@@ -1087,7 +1081,7 @@ namespace Cave
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>The converted string.</returns>
         /// <exception cref="ArgumentNullException">data.</exception>
-        public static string ToHexString(this byte[] data, bool upperCase = false) => ToHexString(data, BitConverter.IsLittleEndian, upperCase);
+        public static string ToHexString(this byte[] data, bool upperCase = false) => ToHexString(data, false, upperCase);
 
         /// <summary>Converts a byte array to a hexadecimal string.</summary>
         /// <param name="data">The data.</param>
@@ -1693,6 +1687,7 @@ namespace Cave
         /// <returns>The string array.</returns>
         public static string[] SplitCamelCase(this string text)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             var splits = new List<int>();
             var isUpper = true;
             for (var current = 1; current < text.Length; current++)
@@ -1719,6 +1714,8 @@ namespace Cave
         /// <returns>The string array.</returns>
         public static string[] SplitAt(this string text, IEnumerable<int> indices)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (indices == null) throw new ArgumentNullException(nameof(indices));
             var items = new List<string>();
             var start = 0;
             foreach (var i in indices)
@@ -1749,6 +1746,7 @@ namespace Cave
         /// <returns>The replaced string.</returns>
         public static string ReplacePart(this string text, char separator, int index, string newValue)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             var parts = text.Split(separator);
             parts[index] = newValue;
             return string.Join($"{separator}", parts);
@@ -1760,6 +1758,7 @@ namespace Cave
         /// <returns>Returns a new string.</returns>
         public static string ReplaceNewLine(this string text, string newLine)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             var strings = SplitNewLine(text);
             return string.Join(newLine, strings);
         }
@@ -1806,12 +1805,8 @@ namespace Cave
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceMaxLength(this string text, int maxLength)
         {
-            if (text.Length > maxLength)
-            {
-                return text.Substring(0, maxLength);
-            }
-
-            return text;
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            return text.Length > maxLength ? text.Substring(0, maxLength) : text;
         }
 
         /// <summary>Forces the maximum length.</summary>
@@ -1821,12 +1816,9 @@ namespace Cave
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceMaxLength(this string text, int maxLength, string endReplacer)
         {
-            if (text.Length > maxLength)
-            {
-                return text.Substring(0, maxLength - endReplacer.Length) + endReplacer;
-            }
-
-            return text;
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (endReplacer == null) throw new ArgumentNullException(nameof(endReplacer));
+            return text.Length > maxLength ? text.Substring(0, maxLength - endReplacer.Length) + endReplacer : text;
         }
 
         /// <summary>Enforces a specific string length (appends spaces and cuts to length).</summary>
@@ -1843,6 +1835,7 @@ namespace Cave
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
         public static string ForceLength(this string text, int maxLength, string prefix, string suffix)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             while (text.Length < maxLength)
             {
                 if (prefix != null)
@@ -1954,8 +1947,7 @@ namespace Cave
 
                 if ((c < ' ') || (c > (char) 127))
                 {
-                    sb.Append("\\u");
-                    sb.Append(((int) c).ToString("x4"));
+                    sb.Append($"\\u{(int)c:x4}");
                     continue;
                 }
 
@@ -2004,8 +1996,7 @@ namespace Cave
 
                 if (c < ' ')
                 {
-                    sb.Append("\\u");
-                    sb.Append(((int) c).ToString("x4"));
+                    sb.Append($"\\u{(int)c:x4}");
                     continue;
                 }
 
@@ -2530,7 +2521,7 @@ namespace Cave
         /// <returns>A camel case version of text.</returns>
         public static string GetCamelCaseName(this string text, string validChars, char splitter)
         {
-            text = text.ReplaceInvalidChars(validChars, splitter.ToString());
+            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
             var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
             return parts.ToArray().JoinCamelCase();
         }
@@ -2547,7 +2538,7 @@ namespace Cave
         /// <returns>A camel case version of text.</returns>
         public static string GetSnakeCaseName(this string text, string validChars, char splitter)
         {
-            text = text.ReplaceInvalidChars(validChars, splitter.ToString());
+            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
             var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
             return parts.ToArray().JoinSnakeCase();
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -173,9 +174,10 @@ namespace Cave
         /// <param name="connectionString">the string.</param>
         /// <param name="result">The parsed result.</param>
         /// <returns>Returns true on success, false otherwise.</returns>
+        [SuppressMessage("Design", "CA1031")]
         public static bool TryParse(string connectionString, out ConnectionString result)
         {
-            // TODO: Fixme
+            // TODO: Implement clean TryParse function
             try
             {
                 result = Parse(connectionString);
@@ -361,8 +363,7 @@ namespace Cave
                     result.Append(Server);
                     if (Port > 0)
                     {
-                        result.Append(":");
-                        result.Append(Port.ToString());
+                        result.Append($":{Port}");
                     }
                 }
             }

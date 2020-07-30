@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -76,6 +77,7 @@ namespace Cave
             return result;
         }
 
+        [SuppressMessage("Design", "CA1031")]
         void RecursiveSearch(DirectoryItem current)
         {
             try

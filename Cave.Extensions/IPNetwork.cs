@@ -12,6 +12,7 @@ namespace Cave
         /// <param name="subnet">Subnet.</param>
         public IPNetwork(IPAddress address, int subnet)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
             Address = address.AddressFamily == AddressFamily.InterNetwork ? address : throw new ArgumentOutOfRangeException(nameof(address));
             if ((subnet < 0) || (subnet > 32))
             {
@@ -28,8 +29,8 @@ namespace Cave
         /// <param name="mask">Subnet mask.</param>
         public IPNetwork(IPAddress address, IPAddress mask)
         {
-            Address = address;
-            Mask = mask;
+            Address = address ?? throw new ArgumentNullException(nameof(address));
+            Mask = mask ?? throw new ArgumentNullException(nameof(mask));
             var addressBytes = Address.GetAddressBytes();
             var maskBytes = Mask.GetAddressBytes();
             if (maskBytes.Length != addressBytes.Length)
@@ -101,6 +102,7 @@ namespace Cave
         /// <returns>Returns a new <see cref="IPNetwork" /> instance.</returns>
         public static IPNetwork Parse(string text)
         {
+            if (text == null) throw new ArgumentNullException(nameof(text));
             var parts = text.Trim().Split(new[] { ' ', '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 2)
             {
@@ -119,6 +121,6 @@ namespace Cave
 
         /// <summary>Gets a string {ipaddress}/{subnet} or {ipaddress}/{mask}. This can be parsed by <see cref="Parse(string)" />.</summary>
         /// <returns>Parsable string describing this instance.</returns>
-        public override string ToString() => $"{Address}/{(Subnet > -1 ? Subnet.ToString() : Mask.ToString())}";
+        public override string ToString() => $"{Address}/{(Subnet > -1 ? Subnet : (object)Mask)}";
     }
 }

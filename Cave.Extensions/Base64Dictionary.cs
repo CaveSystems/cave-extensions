@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Cave
@@ -32,11 +33,13 @@ namespace Cave
             }
         }
 
+
         /// <summary>Gets the value for the specified character.</summary>
         /// <param name="c">The <see cref="char" /> to look up.</param>
         /// <returns>Returns the value (index) for the char.</returns>
         /// <exception cref="ArgumentException">Thrown if the dictionary was not jet completed.</exception>
         /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found.</exception>
+        [SuppressMessage("Design", "CA1043")]
         public int this[char c]
         {
             get

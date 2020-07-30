@@ -24,7 +24,7 @@ namespace Cave
                 case PlatformType.BSD:
                 case PlatformType.Linux:
                 case PlatformType.UnknownUnix:
-                    FileName = fileName ?? AssemblyVersionInfo.Program.Product.ToLower(CultureInfo.InvariantCulture)
+                    FileName = fileName ?? AssemblyVersionInfo.Program.Product.ToLowerInvariant()
                        .ReplaceInvalidChars(ASCII.Strings.Letters + ASCII.Strings.Digits, "-");
                     break;
                 default:

@@ -19,7 +19,7 @@ namespace Test.FileFinder
             };
             //ff.EnableDebug = true;
             ff.Start();
-            int count = 0;
+            var count = 0;
             while (!ff.Completed)
             {
                 Thread.Sleep(1000);
@@ -42,7 +42,7 @@ namespace Test.FileFinder
             };
             //ff.EnableDebug = true;
             df.Start();
-            int count = 0;
+            var count = 0;
             while (!df.Completed)
             {
                 Thread.Sleep(1000);

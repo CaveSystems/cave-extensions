@@ -131,7 +131,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Clears all recorded values.</summary>
-        public void Clear() { items.Clear(); }
+        public void Clear() => items.Clear();
 
         /// <summary>Clears all values with a specified age or older.</summary>
         /// <param name="age">The maximum age for values to keep.</param>
