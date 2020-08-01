@@ -144,16 +144,28 @@ namespace Cave.Collections
                 return false;
             }
 
-            // is array ?
-            if (value1 is Array)
+            if (value1 is DateTime dt1)
             {
-                return ItemsEqual(value1 as Array, value2 as Array);
+                if (value2 is DateTime dt2)
+                {
+                    if (dt1.Kind == dt2.Kind) return dt1.Ticks == dt2.Ticks;
+                    if (dt1.Kind == DateTimeKind.Unspecified) return dt1.Ticks == dt2.ToLocalTime().Ticks;
+                    if (dt2.Kind == DateTimeKind.Unspecified) return dt2.Ticks == dt1.ToLocalTime().Ticks;
+                    return object.Equals(dt1.ToUniversalTime(), dt2.ToUniversalTime());
+                }
+                return false;
+            }
+
+            // is array ?
+            if (value1 is Array array1)
+            {
+                return value2 is Array array2 && ItemsEqual(array1, array2);
             }
 
             // is IEnumerable
-            if (value1 is IEnumerable)
+            if (value1 is IEnumerable ie1)
             {
-                return ItemsEqual(value1 as IEnumerable, value2 as IEnumerable);
+                return value2 is IEnumerable ie2 && ItemsEqual(ie1, ie2);
             }
 
             // check equals

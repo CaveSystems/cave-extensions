@@ -1,6 +1,10 @@
 ﻿using Cave.Collections;
 using NUnit.Framework;
 using System;
+using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Test.Collections
 {
@@ -8,7 +12,7 @@ namespace Test.Collections
     public class DefaultComparerTests
     {
         [Test]
-        public void Equals()
+        public void EqualsArray()
         {
             DateTime now = DateTime.Now;
             object[] array1 = new object[] { "string", 123, 123.5d, 45.67m, now, };
@@ -21,7 +25,7 @@ namespace Test.Collections
         }
 
         [Test]
-        public void Equals1()
+        public void EqualsStruct()
         {
             InteropTestStruct s1 = InteropTestStruct.Create(1);
             InteropTestStruct s2 = InteropTestStruct.Create(1);
@@ -35,6 +39,39 @@ namespace Test.Collections
             Assert.AreEqual(true, DefaultComparer.Equals(o1, o1));
             Assert.AreEqual(true, DefaultComparer.Equals(o2, o1));
             Assert.AreEqual(false, DefaultComparer.Equals(o3, o1));
+        }
+
+        [Test]
+        public void TestCultureEqual()
+        {
+            var savedCurrentCulture = CultureInfo.CurrentCulture;
+            var savedCurrentUICulture = CultureInfo.CurrentUICulture;
+            var rnd = new Random();
+            foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+            {
+                if (culture.IsNeutralCulture) continue;
+                Console.WriteLine(culture);
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    var dt1 = new DateTime(rnd.Next() + DateTime.Now.Ticks, DateTimeKind.Unspecified);
+                    var dt2 = new DateTime(dt1.Ticks, DateTimeKind.Local);
+
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt1, dt1));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt1, dt2));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt2, dt1));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt1, dt2.ToUniversalTime()));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToUniversalTime(), dt1));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt1, dt2.ToLocalTime()));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToLocalTime(), dt1));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToLocalTime(), dt2.ToUniversalTime()));
+                    Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToUniversalTime(), dt2.ToLocalTime()));
+                }
+            }
+            Thread.CurrentThread.CurrentCulture = savedCurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = savedCurrentUICulture;
         }
     }
 }

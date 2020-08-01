@@ -68,7 +68,7 @@ namespace Test.FileFinder
             }
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
             CheckFileFinder();
             CheckDirectoryFinder();
