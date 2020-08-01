@@ -97,6 +97,18 @@ namespace Cave.Security
             SetSalt(salt);
         }
 
+        /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class.</summary>
+        /// <param name="password">The password.</param>
+        /// <param name="salt">The salt.</param>
+        /// <param name="iterations">The iterations. This value is not checked and allows invalid values!</param>
+        /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512" />.</param>
+        public PBKDF2(string password, byte[] salt, int iterations, HMAC algorithm = null) : this(algorithm)
+        {
+            this.iterations = iterations;
+            SetPassword(password);
+            SetSalt(salt);
+        }
+
         void FillBuffer()
         {
             var i = ++hashNumber;
@@ -122,10 +134,6 @@ namespace Cave.Security
             u1.CopyTo(buffer, oldLength);
         }
 
-        /// <summary>Sets the password.</summary>
-        /// <param name="password">The password.</param>
-        public void SetPassword(string password) => SetPassword(Encoding.UTF8.GetBytes(password));
-
         /// <summary>Gets or sets the iteration count.</summary>
         /// <value>The iteration count.</value>
         /// <exception cref="Exception"></exception>
@@ -150,6 +158,11 @@ namespace Cave.Security
 
         /// <summary>Sets the salt.</summary>
         /// <param name="salt">The salt.</param>
+        public void SetSalt(string salt) => SetSalt(Encoding.UTF8.GetBytes(salt));
+
+
+        /// <summary>Sets the salt.</summary>
+        /// <param name="salt">The salt.</param>
         /// <exception cref="System.InvalidOperationException"></exception>
         /// <exception cref="System.ArgumentNullException">value</exception>
         /// <exception cref="System.ArgumentException">Salt &lt; 8 bytes;value</exception>
@@ -160,6 +173,10 @@ namespace Cave.Security
             if (salt.Length < 8) throw new ArgumentOutOfRangeException(nameof(salt), "Salt < 8 bytes");
             this.salt = (byte[])salt.Clone();
         }
+
+        /// <summary>Sets the password.</summary>
+        /// <param name="password">The password.</param>
+        public void SetPassword(string password) => SetPassword(Encoding.UTF8.GetBytes(password));
 
         /// <summary>Sets the password.</summary>
         /// <param name="password">The password.</param>
