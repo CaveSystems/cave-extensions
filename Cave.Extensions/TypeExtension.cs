@@ -323,12 +323,9 @@ namespace Cave
                         return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerDay));
                     }
 
-                    if (str.EndsWith("a", StringComparison.Ordinal))
-                    {
-                        return TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), format) * 365.25);
-                    }
-
-                    return new TimeSpan(long.Parse(str, format));
+                    return str.EndsWith("a", StringComparison.Ordinal)
+                        ? TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), format) * 365.25)
+                        : (object)new TimeSpan(long.Parse(str, format));
                 }
                 catch (Exception ex)
                 {

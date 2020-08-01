@@ -337,12 +337,7 @@ namespace Cave
         /// <returns>true if equal.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is AssemblyVersionInfo avi)
-            {
-                return Equals(avi);
-            }
-
-            return false;
+            return obj is AssemblyVersionInfo avi ? Equals(avi) : false;
         }
 
         /// <summary>Checks this instance for equality with another one.</summary>

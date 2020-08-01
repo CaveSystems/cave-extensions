@@ -32,12 +32,7 @@ namespace Cave
         /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is DateTimeStringResult)
-            {
-                return base.Equals((DateTimeStringResult) obj);
-            }
-
-            return false;
+            return obj is DateTimeStringResult ? base.Equals((DateTimeStringResult) obj) : false;
         }
 
         /// <summary>Determines whether the specified <see cref="DateTimeStringResult" />, is equal to this instance.</summary>

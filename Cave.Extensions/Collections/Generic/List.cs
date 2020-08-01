@@ -36,7 +36,7 @@ namespace Cave.Collections.Generic
 
         /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
         /// <param name="items">Items to be added to the list.</param>
-        public List(IEnumerable<ItemPair<TValue1, TValue2>> items) { AddRange(items); }
+        public List(IEnumerable<ItemPair<TValue1, TValue2>> items) => AddRange(items);
 
         #endregion
 

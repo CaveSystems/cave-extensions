@@ -67,15 +67,7 @@ namespace Cave
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(object other)
-        {
-            if (other is SemanticVersion)
-            {
-                return CompareTo((SemanticVersion) other);
-            }
-
-            return 1;
-        }
+        public int CompareTo(object other) => other is SemanticVersion ? CompareTo((SemanticVersion)other) : 1;
 
         /// <summary>
         ///     Compares the current instance with another object of the same type and returns an integer that indicates
@@ -86,12 +78,7 @@ namespace Cave
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(SemanticVersion other)
         {
-            if (other is null)
-            {
-                return 1;
-            }
-
-            return ToAbsolute().CompareTo(other.ToAbsolute());
+            return other is null ? 1 : ToAbsolute().CompareTo(other.ToAbsolute());
         }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
@@ -102,12 +89,7 @@ namespace Cave
         /// </returns>
         public bool Equals(SemanticVersion other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-
-            return (other.Major == Major) && (other.Minor == Minor) && (other.Patch == Patch) && (other.Meta == Meta);
+            return other is null ? false : (other.Major == Major) && (other.Minor == Minor) && (other.Patch == Patch) && (other.Meta == Meta);
         }
 
         /// <summary>Implements the operator &lt;.</summary>
@@ -317,31 +299,17 @@ namespace Cave
                 }
             }
 
-            if (Patch > -1)
-            {
-                return new Version(Major, Minor, Patch);
-            }
-
-            return new Version(Major, Minor);
+            return Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
         }
 
         /// <summary>Gets the normalized version.</summary>
         /// <returns>the normalized version.</returns>
-        public Version GetNormalizedVersion()
-        {
-            if (Patch > -1)
-            {
-                return new Version(Major, Minor, Patch);
-            }
-
-            return new Version(Major, Minor);
-        }
+        public Version GetNormalizedVersion() => Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
 
         /// <summary>Gets an absolute value for this version.</summary>
         /// <returns>an absolute value.</returns>
         public decimal ToAbsolute()
         {
-            var sb = new StringBuilder();
             decimal main = Major;
             main *= int.MaxValue;
             main += Minor;

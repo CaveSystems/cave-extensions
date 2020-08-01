@@ -14,13 +14,12 @@ namespace Cave
         /// <exception cref="ArgumentOutOfRangeException">Invalid dictionary length or bit count.</exception>
         protected BaseX(CharacterDictionary dictionary, int bitCount)
         {
-            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             if ((bitCount < 1) || (bitCount > 32))
             {
                 throw new ArgumentOutOfRangeException(nameof(bitCount), "BitCount in range 1..32 required!");
             }
 
-            CharacterDictionary = dictionary;
+            CharacterDictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
             BitsPerCharacter = bitCount;
             if (dictionary.Length != (1 << bitCount))
             {

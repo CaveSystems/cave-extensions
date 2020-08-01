@@ -14,7 +14,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static int BitwiseRotateLeft(this int value, int count) => value = (int) (((uint) value << count) | ((uint) value >> (32 - count)));
+        public static int BitwiseRotateLeft(this int value, int count) => (int) (((uint) value << count) | ((uint) value >> (32 - count)));
 
         /// <summary>
         ///     ROL rotates the bits within the destination operand to the left, where left is toward the most significant bit
@@ -24,7 +24,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static int BitwiseRotateLeft(this int value) => value = (int) (((uint) value << 1) | ((uint) value >> 31));
+        public static int BitwiseRotateLeft(this int value) =>  (int) (((uint) value << 1) | ((uint) value >> 31));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -35,7 +35,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static int BitwiseRotateRight(this int value, int count) => value = (int) (((uint) value >> count) | ((uint) value << (32 - count)));
+        public static int BitwiseRotateRight(this int value, int count) =>  (int) (((uint) value >> count) | ((uint) value << (32 - count)));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -45,7 +45,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static int BitwiseRotateRight(this int value) => value = (int) (((uint) value >> 1) | ((uint) value << 31));
+        public static int BitwiseRotateRight(this int value) =>  (int) (((uint) value >> 1) | ((uint) value << 31));
 
         #endregion
 
@@ -60,7 +60,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static uint BitwiseRotateLeft(this uint value, int count) => value = (value << count) | (value >> (32 - count));
+        public static uint BitwiseRotateLeft(this uint value, int count) => (value << count) | (value >> (32 - count));
 
         /// <summary>
         ///     ROL rotates the bits within the destination operand to the left, where left is toward the most significant bit
@@ -70,7 +70,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static uint BitwiseRotateLeft(this uint value) => value = (value << 1) | (value >> 31);
+        public static uint BitwiseRotateLeft(this uint value) => (value << 1) | (value >> 31);
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -81,7 +81,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static uint BitwiseRotateRight(this uint value, int count) => value = (value >> count) | (value << (32 - count));
+        public static uint BitwiseRotateRight(this uint value, int count) => (value >> count) | (value << (32 - count));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -91,7 +91,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static uint BitwiseRotateRight(this uint value) => value = (value >> 1) | (value << 31);
+        public static uint BitwiseRotateRight(this uint value) =>  (value >> 1) | (value << 31);
 
         #endregion
 
@@ -106,7 +106,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static long BitwiseRotateLeft(this long value, int count) => value = (long) (((ulong) value << count) | ((ulong) value >> (64 - count)));
+        public static long BitwiseRotateLeft(this long value, int count) => (long) (((ulong) value << count) | ((ulong) value >> (64 - count)));
 
         /// <summary>
         ///     ROL rotates the bits within the destination operand to the left, where left is toward the most significant bit
@@ -116,7 +116,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static long BitwiseRotateLeft(this long value) => value = (long) (((ulong) value << 1) | ((ulong) value >> 63));
+        public static long BitwiseRotateLeft(this long value) => (long) (((ulong) value << 1) | ((ulong) value >> 63));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -127,7 +127,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static long BitwiseRotateRight(this long value, int count) => value = (long) (((ulong) value >> count) | ((ulong) value << (64 - count)));
+        public static long BitwiseRotateRight(this long value, int count) => (long) (((ulong) value >> count) | ((ulong) value << (64 - count)));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -137,7 +137,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static long BitwiseRotateRight(this long value) => value = (long) (((ulong) value >> 1) | ((ulong) value << 63));
+        public static long BitwiseRotateRight(this long value) => (long) (((ulong) value >> 1) | ((ulong) value << 63));
 
         #endregion
 
@@ -152,7 +152,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static ulong BitwiseRotateLeft(this ulong value, int count) => value = (value << count) | (value >> (64 - count));
+        public static ulong BitwiseRotateLeft(this ulong value, int count) => (value << count) | (value >> (64 - count));
 
         /// <summary>
         ///     ROL rotates the bits within the destination operand to the left, where left is toward the most significant bit
@@ -162,7 +162,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static ulong BitwiseRotateLeft(this ulong value) => value = (value << 1) | (value >> 63);
+        public static ulong BitwiseRotateLeft(this ulong value) => (value << 1) | (value >> 63);
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -173,7 +173,7 @@
         /// <param name="value">The value to rotate.</param>
         /// <param name="count">The number of bits to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static ulong BitwiseRotateRight(this ulong value, int count) => value = (value >> count) | (value << (64 - count));
+        public static ulong BitwiseRotateRight(this ulong value, int count) => (value >> count) | (value << (64 - count));
 
         /// <summary>
         ///     ROR rotates the bits within the destination operand to the right, where right is toward the least significant
@@ -183,7 +183,7 @@
         /// </summary>
         /// <param name="value">The value to rotate.</param>
         /// <returns>The bitwise rotated value.</returns>
-        public static ulong BitwiseRotateRight(this ulong value) => value = (value >> 1) | (value << 63);
+        public static ulong BitwiseRotateRight(this ulong value) => (value >> 1) | (value << 63);
 
         #endregion
     }

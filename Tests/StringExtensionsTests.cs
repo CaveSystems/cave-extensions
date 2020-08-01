@@ -17,16 +17,16 @@ namespace Test.Extensions
         [Test]
         public void JoinNewLine()
         {
-            string result = StringExtensions.JoinNewLine(new int[] { 1, 2, 3 });
-            string expected = "1\r\n2\r\n3";
+            var result = StringExtensions.JoinNewLine(new int[] { 1, 2, 3 });
+            var expected = "1\r\n2\r\n3";
             Assert.AreEqual(expected, result);
         }
 
         [Test]
         public void JoinNewLine1()
         {
-            string result = StringExtensions.JoinNewLine(new string[] { "1", "2", null });
-            string expected = "1\r\n2\r\n<null>";
+            var result = StringExtensions.JoinNewLine(new string[] { "1", "2", null });
+            var expected = "1\r\n2\r\n<null>";
             Assert.AreEqual(expected, result);
         }
 
@@ -36,13 +36,13 @@ namespace Test.Extensions
             try { StringExtensions.Join(null, '-'); }
             catch (Exception ex) { Assert.IsInstanceOf<ArgumentNullException>(ex); }
             {
-                string result = StringExtensions.Join(new object[] { "1", 2, null }, ',');
-                string expected = "1,2,<null>";
+                var result = StringExtensions.Join(new object[] { "1", 2, null }, ',');
+                var expected = "1,2,<null>";
                 Assert.AreEqual(expected, result);
             }
             {
-                string result = StringExtensions.Join(new object[] { "1", 2, null }, "");
-                string expected = "12<null>";
+                var result = StringExtensions.Join(new object[] { "1", 2, null }, "");
+                var expected = "12<null>";
                 Assert.AreEqual(expected, result);
             }
         }
@@ -50,8 +50,8 @@ namespace Test.Extensions
         [Test]
         public void Join1()
         {
-            string result = StringExtensions.Join(new object[] { "1", 2, null }, "|");
-            string expected = "1|2|<null>";
+            var result = StringExtensions.Join(new object[] { "1", 2, null }, "|");
+            var expected = "1|2|<null>";
             Assert.AreEqual(expected, result);
         }
 
@@ -60,8 +60,8 @@ namespace Test.Extensions
         {
             try
             {
-                Exception inner = new Exception("Inner");
-                Exception ex = new Exception("Line1\nLine2\n\nEnd.", inner);
+                var inner = new Exception("Inner");
+                var ex = new Exception("Line1\nLine2\n\nEnd.", inner);
                 ex.Data.Add("TestData", "Some test data...");
                 throw ex;
             }
@@ -77,8 +77,8 @@ namespace Test.Extensions
         {
             try
             {
-                Exception inner = new Exception("Inner");
-                Exception ex = new Exception("Line1\nLine2\n\nEnd.", inner);
+                var inner = new Exception("Inner");
+                var ex = new Exception("Line1\nLine2\n\nEnd.", inner);
                 ex.Data.Add("TestData", "Some test data...");
                 throw ex;
             }
@@ -92,25 +92,25 @@ namespace Test.Extensions
         [Test]
         public void Format()
         {
-            string a = StringExtensions.Format("{0} {1} {3}", 1, 2, 3, 4);
+            var a = StringExtensions.Format("{0} {1} {3}", 1, 2, 3, 4);
             Assert.AreEqual("1 2 4", a);
-            string b = StringExtensions.Format("{0} {1} {3}", 1, 2, 3);
+            var b = StringExtensions.Format("{0} {1} {3}", 1, 2, 3);
             Assert.AreEqual("1 2 {3}", b);
-            string c = StringExtensions.Format("{0} {1}", 1, 2, 3);
+            var c = StringExtensions.Format("{0} {1}", 1, 2, 3);
             Assert.AreEqual("1 2", c);
-            string d = StringExtensions.Format("{0} {1}", 1);
+            var d = StringExtensions.Format("{0} {1}", 1);
             Assert.AreEqual("1 {1}", d);
-            string f = StringExtensions.Format("Test", null);
+            var f = StringExtensions.Format("Test", null);
             Assert.AreEqual("Test", f);
         }
 
         [Test]
         public void FormatTimeSpan()
         {
-            long ticks = DateTime.Now.Ticks;
+            var ticks = DateTime.Now.Ticks;
             while(ticks > TimeSpan.TicksPerMillisecond)
             {
-                string l_String = StringExtensions.FormatTime(TimeSpan.FromTicks(ticks));
+                StringExtensions.FormatTime(TimeSpan.FromTicks(ticks));
                 ticks /= 10;
             }
         }
@@ -120,14 +120,14 @@ namespace Test.Extensions
         {
             foreach (var culture in allCultures)
             {
-                double size = 1.234;
-                int i = 0;
+                var size = 1.234;
+                var i = 0;
                 while (size < long.MaxValue / 1000)
                 {
-                    string string1 = StringExtensions.FormatSize(size, culture);
-                    string string2 = StringExtensions.FormatSize((ulong)size, culture);
+                    var string1 = StringExtensions.FormatSize(size, culture);
+                    var string2 = StringExtensions.FormatSize((ulong)size, culture);
 
-                    string expected = 1.234d.ToString("0.000", culture);
+                    var expected = 1.234d.ToString("0.000", culture);
                     if (i > 0)
                     {
                         expected += " " + (SiUnit)i;
@@ -145,12 +145,12 @@ namespace Test.Extensions
         {
             foreach (var culture in allCultures)
             {
-                double size = 1.432;
-                for (int i = 0; i <= (int)SiUnit.Y; i++)
+                var size = 1.432;
+                for (var i = 0; i <= (int)SiUnit.Y; i++)
                 {
-                    string expected = 1.432d.ToString("0.000", culture);
+                    var expected = 1.432d.ToString("0.000", culture);
                     if (i > 0) expected += " " + (SiUnit)i;
-                    string string1 = StringExtensions.FormatSize(size, culture);
+                    var string1 = StringExtensions.FormatSize(size, culture);
                     Assert.AreEqual(expected, string1);
                     size *= 1000;
                 }
@@ -162,17 +162,17 @@ namespace Test.Extensions
         {
             foreach (var culture in allCultures)
             {
-                double size = 1.432;
-                for (int i = 0; i <= (int)IecUnit.YiB; i++)
+                var size = 1.432;
+                for (var i = 0; i <= (int)IecUnit.YiB; i++)
                 {
-                    string expected = 1.432d.ToString("0.000", culture) + " " + (IecUnit)i;
-                    string string1 = StringExtensions.FormatBinarySize(size, culture);
+                    var expected = 1.432d.ToString("0.000", culture) + " " + (IecUnit)i;
+                    var string1 = StringExtensions.FormatBinarySize(size, culture);
                     Assert.AreEqual(expected, string1);
 
                     if (size > 10 && size < long.MaxValue)
                     {
-                        string string2 = StringExtensions.FormatBinarySize((ulong)size, culture);
-                        string string3 = StringExtensions.FormatBinarySize((long)size, culture);
+                        var string2 = StringExtensions.FormatBinarySize((ulong)size, culture);
+                        var string3 = StringExtensions.FormatBinarySize((long)size, culture);
                         Assert.AreEqual(expected, string2);
                         Assert.AreEqual(expected, string3);
                     }
@@ -187,29 +187,29 @@ namespace Test.Extensions
             Assert.AreEqual("1", StringExtensions.ToString(1));
             Assert.AreEqual("1", StringExtensions.ToString(1.0d));
             Assert.AreEqual("<null>", StringExtensions.ToString(null));
-            int[] l_List = new int[] { 1, 2, 3, 4 };
+            var l_List = new int[] { 1, 2, 3, 4 };
             Assert.AreEqual("System.Int32[] {1,2,3,4}", StringExtensions.ToString(l_List));
         }
 
         [Test]
         public void ToStringArray()
         {
-            object[] array = new object[] { 1, null, "3" };
-            string[] l_Expected = new string[] { "1", "<null>", "3" };
+            var array = new object[] { 1, null, "3" };
+            var l_Expected = new string[] { "1", "<null>", "3" };
             CollectionAssert.AreEqual(l_Expected, StringExtensions.ToStringArray(array));
         }
 
         [Test]
         public void ParseDateTime()
         {
-            DateTime dateTimeLowPrec = new DateTime(2004, 12, 31, 12, 34, 56, DateTimeKind.Local);
+            var dateTimeLowPrec = new DateTime(2004, 12, 31, 12, 34, 56, DateTimeKind.Local);
 
-            DateTime dateTimeHighPrec = dateTimeLowPrec + TimeSpan.FromSeconds(0.1234567);
-            string s1 = dateTimeHighPrec.ToString(StringExtensions.InterOpDateTimeFormat);
+            var dateTimeHighPrec = dateTimeLowPrec + TimeSpan.FromSeconds(0.1234567);
+            var s1 = dateTimeHighPrec.ToString(StringExtensions.InterOpDateTimeFormat);
             Assert.AreEqual(dateTimeHighPrec, StringExtensions.ParseDateTime(s1));
 
-            string s2 = dateTimeLowPrec.ToString(StringExtensions.DisplayDateTimeFormat);
-            string s3 = dateTimeLowPrec.ToString();
+            var s2 = dateTimeLowPrec.ToString(StringExtensions.DisplayDateTimeFormat);
+            var s3 = dateTimeLowPrec.ToString();
             Assert.AreEqual(dateTimeLowPrec, StringExtensions.ParseDateTime(s2));
             Assert.AreEqual(dateTimeLowPrec, StringExtensions.ParseDateTime(s3));
         }
@@ -217,16 +217,15 @@ namespace Test.Extensions
         [Test]
         public void TryParseDateTime()
         {
-            DateTime check;
-            DateTime dateTimeLowPrec = new DateTime(2004, 12, 31, 12, 34, 56, DateTimeKind.Local);
+            var dateTimeLowPrec = new DateTime(2004, 12, 31, 12, 34, 56, DateTimeKind.Local);
 
-            DateTime dateTimeHighPrec = dateTimeLowPrec + TimeSpan.FromSeconds(0.1234567);
-            string s1 = dateTimeHighPrec.ToString(StringExtensions.InterOpDateTimeFormat);
-            Assert.IsTrue(StringExtensions.TryParseDateTime(s1, out check));
+            var dateTimeHighPrec = dateTimeLowPrec + TimeSpan.FromSeconds(0.1234567);
+            var s1 = dateTimeHighPrec.ToString(StringExtensions.InterOpDateTimeFormat);
+            Assert.IsTrue(StringExtensions.TryParseDateTime(s1, out var check));
             Assert.AreEqual(dateTimeHighPrec, check);
 
-            string s2 = dateTimeLowPrec.ToString(StringExtensions.DisplayDateTimeFormat);
-            string s3 = dateTimeLowPrec.ToString();
+            var s2 = dateTimeLowPrec.ToString(StringExtensions.DisplayDateTimeFormat);
+            var s3 = dateTimeLowPrec.ToString();
             Assert.IsTrue(StringExtensions.TryParseDateTime(s2, out check));
             Assert.AreEqual(dateTimeLowPrec, check);
             Assert.IsTrue(StringExtensions.TryParseDateTime(s3, out check));
@@ -236,12 +235,12 @@ namespace Test.Extensions
         [Test]
         public void ParsePointSizeRect()
         {
-            Point l_Point = new Point(123, 456);
-            PointF l_PointF = new PointF(123.456f, 456.789f);
-            Size size = new Size(321, 654);
-            SizeF sizeF = new SizeF(321.098f, 654.876f);
-            Rectangle l_Rect = new Rectangle(l_Point, size);
-            RectangleF l_RectF = new RectangleF(l_PointF, sizeF);
+            var l_Point = new Point(123, 456);
+            var l_PointF = new PointF(123.456f, 456.789f);
+            var size = new Size(321, 654);
+            var sizeF = new SizeF(321.098f, 654.876f);
+            var l_Rect = new Rectangle(l_Point, size);
+            var l_RectF = new RectangleF(l_PointF, sizeF);
 
             Assert.AreEqual(l_Point, StringExtensions.ParsePoint(l_Point.ToString()));
             Assert.AreEqual(l_PointF, StringExtensions.ParsePointF(l_PointF.ToString()));
@@ -254,19 +253,19 @@ namespace Test.Extensions
         [Test]
         public void GetString()
         {
-            string data = "iupz<IUFGiudgsfpUIGFEIPUEGT/fiouazgsdiupzfi_ugsfFUZTGI%dUPfGisd";
+            var data = "iupz<IUFGiudgsfpUIGFEIPUEGT/fiouazgsdiupzfi_ugsfFUZTGI%dUPfGisd";
             {
-                string start = "<IUF";
-                string l_End = "/fio";
-                string l_Expected = "GiudgsfpUIGFEIPUEGT";
-                string l_String = StringExtensions.GetString(data, -1, start, l_End);
+                var start = "<IUF";
+                var l_End = "/fio";
+                var l_Expected = "GiudgsfpUIGFEIPUEGT";
+                var l_String = StringExtensions.GetString(data, -1, start, l_End);
                 Assert.AreEqual(l_Expected, l_String);
             }
             {
-                char start = '<';
-                char l_End = '/';
-                string l_Expected = "IUFGiudgsfpUIGFEIPUEGT";
-                string l_String = StringExtensions.GetString(data, -1, start, l_End);
+                var start = '<';
+                var l_End = '/';
+                var l_Expected = "IUFGiudgsfpUIGFEIPUEGT";
+                var l_String = StringExtensions.GetString(data, -1, start, l_End);
                 Assert.AreEqual(l_Expected, l_String);
             }
         }
@@ -274,7 +273,7 @@ namespace Test.Extensions
         [Test]
         public void ToHexString()
         {
-            byte[] data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
+            var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
             Assert.AreEqual("123456789abcdef0", StringExtensions.ToHexString(data));
             Assert.AreEqual("123456789ABCDEF0", StringExtensions.ToHexString(data, true));
             CollectionAssert.AreEqual(data, StringExtensions.ParseHexString("123456789abcdef0"));
@@ -331,16 +330,16 @@ namespace Test.Extensions
         [Test]
         public void SplitKeepSeparators()
         {
-            string[] l_Expected = new string[] { "Test1", "|", "Test2", "|", "|", "Test3" };
-            string l_String = "Test1|Test2||Test3";
+            var l_Expected = new string[] { "Test1", "|", "Test2", "|", "|", "Test3" };
+            var l_String = "Test1|Test2||Test3";
             CollectionAssert.AreEqual(l_Expected, StringExtensions.SplitKeepSeparators(l_String, '|'));
         }
 
         [Test]
         public void SplitNewLine()
         {
-            string[] result = StringExtensions.SplitNewLine("Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End");
-            string[] l_Expected = new string[]
+            var result = StringExtensions.SplitNewLine("Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End");
+            var l_Expected = new string[]
             {
                 "Test1",
                 "Test2 Test3",
@@ -361,8 +360,8 @@ namespace Test.Extensions
         [Test]
         public void SplitNewLine1()
         {
-            string[] result = StringExtensions.SplitNewLine("Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End", StringSplitOptions.RemoveEmptyEntries);
-            string[] l_Expected = new string[]
+            var result = StringExtensions.SplitNewLine("Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End", StringSplitOptions.RemoveEmptyEntries);
+            var l_Expected = new string[]
             {
                 "Test1",
                 "Test2 Test3",
@@ -379,8 +378,8 @@ namespace Test.Extensions
         [Test]
         public void SplitNewLineAndLength()
         {
-            string[] result = StringExtensions.SplitNewLineAndLength("Test1\r\nTest2 Test3\tTestTestTest4", 6);
-            string[] l_Expected = new string[]
+            var result = StringExtensions.SplitNewLineAndLength("Test1\r\nTest2 Test3\tTestTestTest4", 6);
+            var l_Expected = new string[]
             {
                 "Test1",
                 "Test2 ",
@@ -497,8 +496,8 @@ namespace Test.Extensions
                 Test((ushort)rnd.Next(), culture);
                 Test(rnd.Next(), culture);
                 Test((uint)rnd.Next(), culture);
-                Test((long)rnd.Next() * rnd.Next() + rnd.Next(), culture);
-                Test((ulong)(rnd.Next() * rnd.Next() + rnd.Next()), culture);
+                Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
+                Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
                 Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
                 Test(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
 
@@ -511,8 +510,8 @@ namespace Test.Extensions
                 Test((ushort?)rnd.Next(), culture);
                 Test((int?)rnd.Next(), culture);
                 Test((uint?)rnd.Next(), culture);
-                Test((long?)((long)rnd.Next() * rnd.Next() + rnd.Next()), culture);
-                Test((ulong?)(rnd.Next() * rnd.Next() + rnd.Next()), culture);
+                Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
                 Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
                 Test((DateTime?)(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble())), culture);
 
@@ -549,7 +548,7 @@ namespace Test.Extensions
                 var check2 = str2.ParseValue<TimeSpan>();
                 Assert.AreEqual(timespan, check1);
                 // 1% precision
-                Assert.AreEqual(true, timespan.Ticks / 100 + 1 > Math.Abs(timespan.Ticks - check2.Ticks));
+                Assert.AreEqual(true, (timespan.Ticks / 100) + 1 > Math.Abs(timespan.Ticks - check2.Ticks));
             }
 
             var rnd = new Random();

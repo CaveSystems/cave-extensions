@@ -28,12 +28,7 @@ namespace Cave.Collections
         {
             get
             {
-                if (items.Count > 1)
-                {
-                    return items.Last.Value.DateTime - items.First.Value.DateTime;
-                }
-
-                return TimeSpan.Zero;
+                return items.Count > 1 ? items.Last.Value.DateTime - items.First.Value.DateTime : TimeSpan.Zero;
             }
         }
 

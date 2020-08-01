@@ -469,12 +469,7 @@ namespace Cave
         public static char GetHexChar(int value)
         {
             value &= 0xF;
-            if (value < 10)
-            {
-                return (char) (value + '0');
-            }
-
-            return (char) ((value - 10) + 'A');
+            return value < 10 ? (char) (value + '0') : (char) ((value - 10) + 'A');
         }
 
         /// <summary>

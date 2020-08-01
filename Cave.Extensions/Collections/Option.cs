@@ -23,12 +23,7 @@ namespace Cave.Collections
         {
             option = option.UnboxText(false);
             var optionID = GetPrefix(option);
-            if (optionID == null)
-            {
-                return option;
-            }
-
-            return option.Substring(optionID.Length);
+            return optionID == null ? option : option.Substring(optionID.Length);
         }
 
         /// <summary>Gets only the option prefix at the beginning null, "-", "--".</summary>
@@ -47,12 +42,7 @@ namespace Cave.Collections
                 return "--";
             }
 
-            if (result[0] == '-')
-            {
-                return "-";
-            }
-
-            return null;
+            return result[0] == '-' ? "-" : null;
         }
 
         /// <summary>
@@ -275,12 +265,7 @@ namespace Cave.Collections
         /// <returns></returns>
         public bool Equals(Option other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-
-            return (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
+            return other is null ? false : (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
         }
 
         #endregion

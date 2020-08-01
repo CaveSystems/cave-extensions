@@ -10,16 +10,13 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TValue">Type of value</typeparam>
     public sealed class CollectionDebuggerView<TKey, TValue>
     {
-        ICollection<KeyValuePair<TKey, TValue>> collection;
+        readonly ICollection<KeyValuePair<TKey, TValue>> collection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionDebuggerView{TKey, TValue}"/> class.
         /// </summary>
         /// <param name="collection"></param>
-        public CollectionDebuggerView(ICollection<KeyValuePair<TKey, TValue>> collection)
-        {
-            this.collection = collection;
-        }
+        public CollectionDebuggerView(ICollection<KeyValuePair<TKey, TValue>> collection) => this.collection = collection;
 
         /// <summary>
         /// Gets all items.

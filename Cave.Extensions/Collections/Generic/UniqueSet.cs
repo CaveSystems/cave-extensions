@@ -52,12 +52,7 @@ namespace Cave.Collections.Generic
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
         public int IndexOfA(TKey1 key1)
         {
-            if (!lookupA.ContainsKey(key1))
-            {
-                return -1;
-            }
-
-            return list.IndexOf(lookupA[key1]);
+            return !lookupA.ContainsKey(key1) ? -1 : list.IndexOf(lookupA[key1]);
         }
 
         /// <summary>Gets the index of the specified B object. This is an O(1) operation.</summary>
@@ -65,12 +60,7 @@ namespace Cave.Collections.Generic
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
         public int IndexOfB(TKey2 key2)
         {
-            if (!lookupB.ContainsKey(key2))
-            {
-                return -1;
-            }
-
-            return list.IndexOf(lookupB[key2]);
+            return !lookupB.ContainsKey(key2) ? -1 : list.IndexOf(lookupB[key2]);
         }
 
         /// <summary>Gets a read only indexed list for the A elements of the Set. This method is an O(1) operation;.</summary>

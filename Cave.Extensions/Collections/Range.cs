@@ -40,12 +40,7 @@ namespace Cave.Collections
                 return range2 is null;
             }
 
-            if (range2 is null)
-            {
-                return false;
-            }
-
-            return range1.AllValuesString == range2.AllValuesString;
+            return range2 is null ? false : range1.AllValuesString == range2.AllValuesString;
         }
 
         /// <summary>Implements the operator !=.</summary>
@@ -59,12 +54,7 @@ namespace Cave.Collections
                 return !(range2 is null);
             }
 
-            if (range2 is null)
-            {
-                return true;
-            }
-
-            return range1.AllValuesString != range2.AllValuesString;
+            return range2 is null ? true : range1.AllValuesString != range2.AllValuesString;
         }
 
         /// <summary>Adds two <see cref="Range" />s.</summary>

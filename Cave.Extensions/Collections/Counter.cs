@@ -91,12 +91,7 @@ namespace Cave.Collections
         public int CompareTo(object obj)
         {
             var other = obj as Counter;
-            if (other == null)
-            {
-                return -1;
-            }
-
-            return Start.CompareTo(other.Start);
+            return other == null ? -1 : Start.CompareTo(other.Start);
         }
 
         #endregion
@@ -128,12 +123,9 @@ namespace Cave.Collections
                 return counter2 is null;
             }
 
-            if (counter2 is null)
-            {
-                return false;
-            }
-
-            return (counter1.Count == counter2.Count) && (counter1.Start == counter2.Start) && (counter1.End == counter2.End) &&
+            return counter2 is null
+                ? false
+                : (counter1.Count == counter2.Count) && (counter1.Start == counter2.Start) && (counter1.End == counter2.End) &&
                 (counter1.Step == counter2.Step);
         }
 
@@ -148,12 +140,9 @@ namespace Cave.Collections
                 return !(counter2 is null);
             }
 
-            if (counter2 is null)
-            {
-                return true;
-            }
-
-            return (counter1.Count != counter2.Count) || (counter1.Start != counter2.Start) || (counter1.End != counter2.End) ||
+            return counter2 is null
+                ? true
+                : (counter1.Count != counter2.Count) || (counter1.Start != counter2.Start) || (counter1.End != counter2.End) ||
                 (counter1.Step != counter2.Step);
         }
 
@@ -168,12 +157,7 @@ namespace Cave.Collections
                 return true;
             }
 
-            if (counter2 is null)
-            {
-                return false;
-            }
-
-            return counter1.End < counter2.Start;
+            return counter2 is null ? false : counter1.End < counter2.Start;
         }
 
         /// <summary>Implements the operator &gt;.</summary>
@@ -187,12 +171,7 @@ namespace Cave.Collections
                 return true;
             }
 
-            if (counter1 is null)
-            {
-                return false;
-            }
-
-            return counter1.Start > counter2.End;
+            return counter1 is null ? false : counter1.Start > counter2.End;
         }
 
         /// <summary>Creates a new <see cref="Counter" /> from the specified start and end values.</summary>
@@ -218,12 +197,7 @@ namespace Cave.Collections
                 return false;
             }
 
-            if (value < Start)
-            {
-                return false;
-            }
-
-            return ((value - Start) % Step) == 0;
+            return value < Start ? false : ((value - Start) % Step) == 0;
         }
 
         /// <summary>Checks whether a specified <see cref="Counter" /> is part of the <see cref="Counter" /> or not.</summary>
@@ -256,12 +230,7 @@ namespace Cave.Collections
                 return false;
             }
 
-            if ((counter.Step % Step) > 0)
-            {
-                return false;
-            }
-
-            return true;
+            return (counter.Step % Step) <= 0;
         }
 
         /// <summary>Steps to the next value.</summary>
@@ -285,13 +254,7 @@ namespace Cave.Collections
         /// <returns>Returns true if the specified object equals this one.</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as Counter;
-            if (other is null)
-            {
-                return false;
-            }
-
-            return (other.Start == Start) && (other.End == End) && (other.Step == Step);
+            return !(obj is Counter other) ? false : (other.Start == Start) && (other.End == End) && (other.Step == Step);
         }
 
         /// <summary>Gets the counter properties as string.</summary>

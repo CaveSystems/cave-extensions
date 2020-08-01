@@ -384,12 +384,7 @@ namespace Cave
                 return (d / 365.25).ToString("0.00", culture) + "a";
             }
 
-            if (d > 9.99)
-            {
-                return d.ToString("0.0", culture) + "d";
-            }
-
-            return d.ToString("0.00", culture) + "d";
+            return d > 9.99 ? d.ToString("0.0", culture) + "d" : d.ToString("0.00", culture) + "d";
         }
 
         /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
@@ -646,12 +641,7 @@ namespace Cave
                 return formattable.ToString(null, format);
             }
 
-            if (value is ICollection collection)
-            {
-                return value + " {" + Join(collection, ",", format) + "}";
-            }
-
-            return value.ToString();
+            return value is ICollection collection ? value + " {" + Join(collection, ",", format) + "}" : value.ToString();
         }
 
         /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
@@ -726,12 +716,9 @@ namespace Cave
                 return true;
             }
 
-            if (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result))
-            {
-                return true;
-            }
-
-            return DateTime.TryParse(dateTime, out result);
+            return DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result)
+                ? true
+                : DateTime.TryParse(dateTime, out result);
         }
 
         /// <summary>Parses a Point.ToString() result.</summary>
@@ -1881,12 +1868,7 @@ namespace Cave
                 return "\n";
             }
 
-            if (text.IndexOf('\r') > -1)
-            {
-                return "\r";
-            }
-
-            return null;
+            return text.IndexOf('\r') > -1 ? "\r" : null;
         }
 
         /// <summary>Boxes the specified text with the given character.</summary>
@@ -2410,12 +2392,7 @@ namespace Cave
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
         public static bool ToBool(this string value, bool defaultValue = false)
         {
-            if (bool.TryParse(value, out var result))
-            {
-                return result;
-            }
-
-            return defaultValue;
+            return bool.TryParse(value, out var result) ? result : defaultValue;
         }
 
         /// <summary>Converts a string to an integer.</summary>
@@ -2424,12 +2401,7 @@ namespace Cave
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
         public static int ToInt32(this string value, int defaultValue = 0)
         {
-            if (int.TryParse(value, out var result))
-            {
-                return result;
-            }
-
-            return defaultValue;
+            return int.TryParse(value, out var result) ? result : defaultValue;
         }
 
         /// <summary>Converts a string to an integer.</summary>
@@ -2438,12 +2410,7 @@ namespace Cave
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
         public static uint ToUInt32(this string value, uint defaultValue = 0)
         {
-            if (uint.TryParse(value, out var result))
-            {
-                return result;
-            }
-
-            return defaultValue;
+            return uint.TryParse(value, out var result) ? result : defaultValue;
         }
 
         /// <summary>Converts a string to an integer.</summary>
@@ -2452,12 +2419,7 @@ namespace Cave
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
         public static long ToInt64(this string value, long defaultValue = 0)
         {
-            if (long.TryParse(value, out var result))
-            {
-                return result;
-            }
-
-            return defaultValue;
+            return long.TryParse(value, out var result) ? result : defaultValue;
         }
 
         /// <summary>Converts a string to an integer.</summary>
@@ -2466,12 +2428,7 @@ namespace Cave
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
         public static ulong ToInt64(this string value, ulong defaultValue = 0)
         {
-            if (ulong.TryParse(value, out var result))
-            {
-                return result;
-            }
-
-            return defaultValue;
+            return ulong.TryParse(value, out var result) ? result : defaultValue;
         }
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
@@ -2481,12 +2438,7 @@ namespace Cave
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
         public static bool IsBoxed(this string text, char start, char end)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
-            return (text[0] == start) && (text[text.Length - 1] == end);
+            return string.IsNullOrEmpty(text) ? false : (text[0] == start) && (text[text.Length - 1] == end);
         }
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>

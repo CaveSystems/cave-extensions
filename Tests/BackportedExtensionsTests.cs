@@ -10,15 +10,7 @@ namespace Test.Backports
     [TestFixture]
     public class BackportedExtensionsTests
     {
-        static string Select(string longest, string next)
-        {
-            if (longest == null) return next;
-            if (next.Length > longest.Length)
-            {
-                return next;
-            }
-            return longest;
-        }
+        static string Select(string longest, string next) => longest == null ? next : next.Length > longest.Length ? next : longest;
 
         [Test]
         public void CheckAggregate()

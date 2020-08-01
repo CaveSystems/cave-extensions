@@ -15,10 +15,7 @@ namespace Cave.Collections.Generic
         /// Initializes a new instance of the <see cref="CollectionDebuggerView{T}"/> class.
         /// </summary>
         /// <param name="collection"></param>
-        public CollectionDebuggerView(ICollection<T> collection)
-        {
-            this.collection = collection;
-        }
+        public CollectionDebuggerView(ICollection<T> collection) => this.collection = collection;
 
         /// <summary>
         /// Gets all items.

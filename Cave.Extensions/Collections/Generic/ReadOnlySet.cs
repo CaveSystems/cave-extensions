@@ -59,25 +59,7 @@ namespace Cave.Collections.Generic
         public object Clone() => this;
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((IItemSet<T>) obj);
-        }
+        public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
 
         /// <inheritdoc />
         public override int GetHashCode() => set != null ? set.GetHashCode() : 0;

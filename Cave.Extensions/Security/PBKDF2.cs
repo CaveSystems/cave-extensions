@@ -57,10 +57,7 @@ namespace Cave.Security
         HMAC algorithm;
         byte[] buffer;
 
-        PBKDF2(HMAC algorithm)
-        {
-            this.algorithm = algorithm ?? new HMACSHA512();
-        }
+        PBKDF2(HMAC algorithm) => this.algorithm = algorithm ?? new HMACSHA512();
 
         /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class using the default <see cref="HMACSHA512"/> algorithm.</summary>
         public PBKDF2() : this(null) { }

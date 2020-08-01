@@ -11,11 +11,11 @@ namespace Test.BaseX
         public void Base64Test()
         {
             var rnd = new Random();
-            foreach (Base64 b in new Base64[] { Base64.Default, Base64.NoPadding, Base64.UrlChars })
+            foreach (var b in new Base64[] { Base64.Default, Base64.NoPadding, Base64.UrlChars })
             {
-                for (int i = 0; i < 1000; i++)
+                for (var i = 0; i < 1000; i++)
                 {
-                    ulong value = (ulong)rnd.Next() * (ulong)rnd.Next() * (ulong)rnd.Next() + (ulong)rnd.Next();
+                    var value = ((ulong)rnd.Next() * (ulong)rnd.Next() * (ulong)rnd.Next()) + (ulong)rnd.Next();
                     var buf = new byte[(int)(value % 64)];
                     rnd.NextBytes(buf);
 
@@ -27,23 +27,17 @@ namespace Test.BaseX
         }
 
         [Test]
-        public void DecodeUtf8Test()
-        {
-            Assert.AreEqual("äöüÄÖÜ!", Base64.Default.DecodeUtf8("w6TDtsO8w4TDlsOcIQ=="));
-        }
+        public void DecodeUtf8Test() => Assert.AreEqual("äöüÄÖÜ!", Base64.Default.DecodeUtf8("w6TDtsO8w4TDlsOcIQ=="));
 
         [Test]
-        public void EncodeTest()
-        {
-            Assert.AreEqual("w6TDtsO8w4TDlsOcIQ==", Base64.Default.Encode("äöüÄÖÜ!"));
-        }
+        public void EncodeTest() => Assert.AreEqual("w6TDtsO8w4TDlsOcIQ==", Base64.Default.Encode("äöüÄÖÜ!"));
 
         [Test]
         public void ValueTest()
         {
-            int i = Base64.Default.DecodeInt32(Base64.Default.Encode(int.MinValue));
+            var i = Base64.Default.DecodeInt32(Base64.Default.Encode(int.MinValue));
             if (i != int.MinValue) throw new Exception();
-            for (int n = 1; n < 0x10000000; n <<= 1)
+            for (var n = 1; n < 0x10000000; n <<= 1)
             {
                 i = Base64.Default.DecodeInt32(Base64.Default.Encode(n));
                 Assert.AreEqual(n, i);
@@ -51,7 +45,7 @@ namespace Test.BaseX
                 Assert.AreEqual(-n, i);
             }
 
-            long l = Base64.Default.DecodeInt64(Base64.Default.Encode(long.MinValue));
+            var l = Base64.Default.DecodeInt64(Base64.Default.Encode(long.MinValue));
             if (l != long.MinValue) throw new Exception();
             for (long n = 1; n < 0x1000000000000000L; n <<= 1)
             {

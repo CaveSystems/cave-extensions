@@ -7,7 +7,7 @@ namespace Test.Collections
     {
         public static InteropTestStruct Create(int i)
         {
-            InteropTestStruct t = new InteropTestStruct()
+            var t = new InteropTestStruct()
             {
                 B = (byte)(i & 0xFF),
                 SB = (sbyte)(-i / 10),

@@ -18,40 +18,28 @@ namespace System
 
         /// <summary>Initializes a new instance of the <see cref="AggregateException"/> class.</summary>
         public AggregateException()
-            : base("One ore more exceptions occured.")
-        {
-            exceptions = new Exception[0];
-        }
+            : base("One ore more exceptions occured.") => exceptions = new Exception[0];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
         /// </summary>
         /// <param name="innerExceptions">The exceptions that are the cause of the current exception.</param>
         public AggregateException(params Exception[] innerExceptions)
-            : this("One ore more exceptions occured.", innerExceptions)
-        {
-            exceptions = innerExceptions;
-        }
+            : this("One ore more exceptions occured.", innerExceptions) => exceptions = innerExceptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
         /// </summary>
         /// <param name="innerExceptions">The exceptions that are the cause of the current exception.</param>
         public AggregateException(IEnumerable<Exception> innerExceptions)
-            : this("One ore more exceptions occured.", innerExceptions)
-        {
-            exceptions = innerExceptions.ToList();
-        }
+            : this("One ore more exceptions occured.", innerExceptions) => exceptions = innerExceptions.ToList();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
         /// </summary>
         /// <param name="msg">The error message that explains the reason for the exception.</param>
         public AggregateException(string msg)
-            : base(msg)
-        {
-            exceptions = new Exception[0];
-        }
+            : base(msg) => exceptions = new Exception[0];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
@@ -59,10 +47,7 @@ namespace System
         /// <param name="msg">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The inner exception.</param>
         public AggregateException(string msg, Exception innerException)
-            : base(msg)
-        {
-            exceptions = new Exception[] { innerException };
-        }
+            : base(msg) => exceptions = new Exception[] { innerException };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
@@ -70,10 +55,7 @@ namespace System
         /// <param name="msg">The error message that explains the reason for the exception.</param>
         /// <param name="innerExceptions">The exceptions that are the cause of the current exception.</param>
         public AggregateException(string msg, params Exception[] innerExceptions)
-            : base(msg, innerExceptions != null && innerExceptions.Length > 0 ? innerExceptions[0] : null)
-        {
-            exceptions = innerExceptions;
-        }
+            : base(msg, innerExceptions != null && innerExceptions.Length > 0 ? innerExceptions[0] : null) => exceptions = innerExceptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class.

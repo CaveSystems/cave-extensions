@@ -31,12 +31,7 @@ namespace Cave
         /// <returns>The connection string.</returns>
         public static implicit operator ConnectionString(string connectionString)
         {
-            if (connectionString == null)
-            {
-                return default;
-            }
-
-            return Parse(connectionString);
+            return connectionString == null ? default : Parse(connectionString);
         }
 
         /// <summary>converts a connection string to a string including credentials.</summary>
@@ -223,14 +218,7 @@ namespace Cave
                 password = null;
             }
 
-            if (string.IsNullOrEmpty(location))
-            {
-                location = null;
-            }
-            else
-            {
-                location = location.Replace('\\', '/');
-            }
+            location = string.IsNullOrEmpty(location) ? null : location.Replace('\\', '/');
 
             Protocol = protocol;
             Server = server;
@@ -265,12 +253,7 @@ namespace Cave
         /// <returns>The port.</returns>
         public int GetPort(int defaultPort)
         {
-            if (Port <= 0)
-            {
-                return defaultPort;
-            }
-
-            return Port;
+            return Port <= 0 ? defaultPort : Port;
         }
 
         /// <summary>Gets or sets the port.</summary>
@@ -288,15 +271,7 @@ namespace Cave
         public ConnectionString ChangePath(string relativePath)
         {
             var copy = this;
-            if (Path.IsPathRooted(relativePath) || (Location == null))
-            {
-                copy.Location = relativePath;
-            }
-            else
-            {
-                copy.Location = Path.Combine(Location, relativePath);
-            }
-
+            copy.Location = Path.IsPathRooted(relativePath) || (Location == null) ? relativePath : Path.Combine(Location, relativePath);
             return copy;
         }
 
@@ -403,12 +378,7 @@ namespace Cave
         /// <returns>True if the connection strings are equal.</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is ConnectionString))
-            {
-                return false;
-            }
-
-            return Equals((ConnectionString) obj);
+            return !(obj is ConnectionString) ? false : Equals((ConnectionString) obj);
         }
 
         /// <summary>Gets hash code for the connection string.</summary>

@@ -32,7 +32,7 @@ namespace Cave
             {
                 using (var enc = algorithm.CreateEncryptor())
                 {
-                    var encoded = new List<byte>(algorithm.Key.Length + algorithm.IV.Length + algorithm.BlockSize * 2 + data.Length);
+                    var encoded = new List<byte>(algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length);
                     // add key
                     encoded.Add((byte)algorithm.Key.Length);
                     encoded.AddRange(algorithm.Key);

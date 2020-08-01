@@ -164,7 +164,7 @@ namespace Cave.Collections.Generic
         /// <summary>Gets the index of the first option with the specified name.</summary>
         /// <param name="optionName">Name of the option.</param>
         /// <returns>Returns the index of the first option or -1 if no option with the specified name can be found.</returns>
-        int IndexOf(string optionName)
+        public int IndexOf(string optionName)
         {
             if (optionName == null)
             {
@@ -183,7 +183,7 @@ namespace Cave.Collections.Generic
         /// <param name="optionName">Name of the option.</param>
         /// <param name="start">Start index to begin search at.</param>
         /// <returns>Returns the index of the first option or -1 if no option with the specified name can be found.</returns>
-        int IndexOf(string optionName, int start)
+        public int IndexOf(string optionName, int start)
         {
             if (optionName == null)
             {

@@ -54,12 +54,7 @@ namespace Cave.Collections.Concurrent
                 return false;
             }
 
-            if (other.Count != Count)
-            {
-                return false;
-            }
-
-            return ContainsRange(other);
+            return other.Count != Count ? false : ContainsRange(other);
         }
 
         /// <summary>Copies the items stored in the set to a new array.</summary>
@@ -77,13 +72,7 @@ namespace Cave.Collections.Concurrent
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            var other = obj as IItemSet<T>;
-            if (other == null)
-            {
-                return false;
-            }
-
-            return Equals(other);
+            return !(obj is IItemSet<T> other) ? false : Equals(other);
         }
 
         /// <inheritdoc />
@@ -132,12 +121,7 @@ namespace Cave.Collections.Concurrent
                 return set2 is null;
             }
 
-            if (set2 is null)
-            {
-                return false;
-            }
-
-            return set1.Equals(set2);
+            return set2 is null ? false : set1.Equals(set2);
         }
 
         /// <summary>Checks two sets for inequality.</summary>
@@ -302,13 +286,13 @@ namespace Cave.Collections.Concurrent
         /// Initializes a new instance of the <see cref="ConcurrentSet{T}"/> class.
         /// </summary>
         /// <param name="items">Items to add to the set.</param>
-        public ConcurrentSet(params T[] items) { AddRange(items); }
+        public ConcurrentSet(params T[] items) => AddRange(items);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcurrentSet{T}"/> class.
         /// </summary>
         /// <param name="items">Items to add to the set.</param>
-        public ConcurrentSet(IEnumerable<T> items) { AddRange(items); }
+        public ConcurrentSet(IEnumerable<T> items) => AddRange(items);
 
         #endregion
 

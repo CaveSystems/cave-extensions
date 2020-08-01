@@ -17,12 +17,7 @@ namespace Cave
         {
             get
             {
-                if (defaultDateTime.HasValue)
-                {
-                    return defaultDateTime.Value;
-                }
-
-                return DateTime.UtcNow.Date;
+                return defaultDateTime.HasValue ? defaultDateTime.Value : DateTime.UtcNow.Date;
             }
             set => defaultDateTime = value;
         }
@@ -411,12 +406,7 @@ namespace Cave
                 year = $"{Default.Year}";
             }
 
-            if (ConvertDate(year, month, match.Groups["day"].Value, out date))
-            {
-                return new SubStringResult(text, match.Index, match.Length);
-            }
-
-            return default;
+            return ConvertDate(year, month, match.Groups["day"].Value, out date) ? new SubStringResult(text, match.Index, match.Length) : default;
         }
     }
 }

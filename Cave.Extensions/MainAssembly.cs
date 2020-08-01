@@ -47,12 +47,7 @@ namespace Cave
                     }
                 }
 
-                if (bestOnCreate != null)
-                {
-                    return bestOnCreate.Module.Assembly;
-                }
-
-                return first.Module.Assembly;
+                return bestOnCreate != null ? bestOnCreate.Module.Assembly : first.Module.Assembly;
             }
 
             Debug.WriteLine("GetEntryAssembly");

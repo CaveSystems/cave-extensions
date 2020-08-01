@@ -79,12 +79,7 @@ namespace Cave
         {
             get
             {
-                if (Subnet > 0)
-                {
-                    return Address.GetReverseLookupZone(Subnet);
-                }
-
-                return Address.GetReverseLookupZone(Mask);
+                return Subnet > 0 ? Address.GetReverseLookupZone(Subnet) : Address.GetReverseLookupZone(Mask);
             }
         }
 

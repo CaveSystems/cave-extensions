@@ -57,12 +57,7 @@ namespace Cave.Collections.Generic
                 return set2 is null;
             }
 
-            if (set2 is null)
-            {
-                return false;
-            }
-
-            return set1.Equals(set2);
+            return set2 is null ? false : set1.Equals(set2);
         }
 
         /// <summary>Checks two sets for inequality.</summary>
@@ -187,8 +182,7 @@ namespace Cave.Collections.Generic
             var counter = new Dictionary<T, int>();
             foreach (var item in set1)
             {
-                int count;
-                counter.TryGetValue(item, out count);
+                counter.TryGetValue(item, out var count);
                 counter[item] = ++count;
             }
             var result = new Set<T>();
@@ -447,6 +441,7 @@ namespace Cave.Collections.Generic
         public void Clear()
         {
 #if NET20
+            // cannot clear, recreate
             list = new Dictionary<T, byte>();
 #else
             list.Clear();
@@ -556,12 +551,19 @@ namespace Cave.Collections.Generic
         public override bool Equals(object obj)
         {
             var other = obj as Set<T>;
+
+/* Nicht gemergte Änderung aus Projekt "Cave.Extensions (net20)"
+Vor:
             if (other == null)
             {
                 return false;
             }
 
             return Equals(other);
+Nach:
+            if (other == null false Equals(other);
+*/
+            return other == null ? ? false : : Equals(other);
         }
 
 #if NET20
@@ -575,12 +577,7 @@ namespace Cave.Collections.Generic
                 return false;
             }
 
-            if (other.Count != Count)
-            {
-                return false;
-            }
-
-            return ContainsRange(other);
+            return other.Count != Count ? false : ContainsRange(other);
         }
 #else
         /// <summary>Checks another Set{T} instance for equality.</summary>
@@ -622,12 +619,7 @@ namespace Cave.Collections.Generic
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
         public int IndexOfA(TKey key)
         {
-            if (!lookupA.ContainsKey(key))
-            {
-                return -1;
-            }
-
-            return list.IndexOf(lookupA[key]);
+            return !lookupA.ContainsKey(key) ? -1 : list.IndexOf(lookupA[key]);
         }
 
         /// <summary>Not supported. Use UniqueSet instead.</summary>

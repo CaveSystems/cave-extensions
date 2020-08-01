@@ -8,7 +8,10 @@ namespace Cave
     {
         const int BitCount = 6;
 
-        char? p;
+        /// <summary>
+        /// Gets the padding character.
+        /// </summary>
+        public char? Padding { get; }
 
         /// <summary>Initializes a new instance of the <see cref="Base64" /> class.</summary>
         /// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
@@ -18,10 +21,10 @@ namespace Cave
         public Base64(CharacterDictionary dict, char? padding)
             : base(dict, BitCount)
         {
-            p = padding;
-            if (p != null)
+            Padding = padding;
+            if (Padding != null)
             {
-                int paddingChar = (char) p;
+                int paddingChar = (char) Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new ArgumentOutOfRangeException(nameof(padding));
@@ -36,9 +39,9 @@ namespace Cave
         public override byte[] Decode(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
-            if (p != null)
+            if (Padding != null)
             {
-                int paddingChar = (char) p;
+                int paddingChar = (char) Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new InvalidOperationException("Invalid padding character!");
@@ -51,7 +54,7 @@ namespace Cave
             var bits = 0;
             foreach (var b in data)
             {
-                if (b == p)
+                if (b == Padding)
                 {
                     break;
                 }
@@ -112,9 +115,9 @@ namespace Cave
                 bits -= BitCount;
             }
 
-            if (p != null)
+            if (Padding != null)
             {
-                var padding = (char) this.p;
+                var padding = (char) Padding;
                 while ((bits % 8) != 0)
                 {
                     result.Add(padding);

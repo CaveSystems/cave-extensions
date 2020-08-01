@@ -19,7 +19,7 @@ namespace System.Linq
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             var empty = true;
-            TAccumulate accu = seed;
+            var accu = seed;
             foreach (var item in source)
             {
                 empty = false;
@@ -147,12 +147,7 @@ namespace System.Linq
                 counter++;
             }
 
-            if (counter == 0)
-            {
-                return null;
-            }
-
-            return new TResult?(totalDivCount(total, counter));
+            return counter == 0 ? null : new TResult?(totalDivCount(total, counter));
         }
 
         [SuppressMessage("Design", "CA1062")]
@@ -309,12 +304,7 @@ namespace System.Linq
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value)
         {
-            if (source is ICollection<TSource> collection)
-            {
-                return collection.Contains(value);
-            }
-
-            return Contains(source, value, null);
+            return source is ICollection<TSource> collection ? collection.Contains(value) : Contains(source, value, null);
         }
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
@@ -717,14 +707,9 @@ namespace System.Linq
                 foreach (var element in outer)
                 {
                     var outerKey = outerKeySelector(element);
-                    if (outerKey != null && innerKeys.Contains(outerKey))
-                    {
-                        yield return resultSelector(element, innerKeys[outerKey]);
-                    }
-                    else
-                    {
-                        yield return resultSelector(element, Empty<TInner>());
-                    }
+                    yield return outerKey != null && innerKeys.Contains(outerKey)
+                        ? resultSelector(element, innerKeys[outerKey])
+                        : resultSelector(element, Empty<TInner>());
                 }
             }
 
@@ -868,12 +853,7 @@ namespace System.Linq
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source)
         {
-            if (source is Array array)
-            {
-                return array.LongLength;
-            }
-
-            return LongCount(source, null);
+            return source is Array array ? array.LongLength : LongCount(source, null);
         }
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -923,12 +903,7 @@ namespace System.Linq
                 }
             }
 
-            if (empty)
-            {
-                return defaultValue();
-            }
-
-            return max;
+            return empty ? defaultValue() : max;
         }
 
         [SuppressMessage("Design", "CA1062")]

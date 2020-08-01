@@ -35,12 +35,7 @@ namespace Cave
             }
 
             var index = text.IndexOf(value, stringComparison);
-            if (index < 0)
-            {
-                return default;
-            }
-
-            return new SubStringResult(text, index, value.Length);
+            return index < 0 ? default : new SubStringResult(text, index, value.Length);
         }
 
         /// <summary>Searches for a sub string at the specified string.</summary>

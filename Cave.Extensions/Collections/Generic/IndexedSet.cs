@@ -24,12 +24,7 @@ namespace Cave.Collections.Generic
                 return false;
             }
 
-            if (other.Count != Count)
-            {
-                return false;
-            }
-
-            return ContainsRange(other);
+            return other.Count != Count ? false : ContainsRange(other);
         }
 
         #region IEnumerable Member
@@ -70,12 +65,7 @@ namespace Cave.Collections.Generic
         public override bool Equals(object obj)
         {
             var other = obj as IndexedSet<T>;
-            if (other == null)
-            {
-                return false;
-            }
-
-            return Equals(other);
+            return other == null ? false : Equals(other);
         }
 
         /// <summary>Gets the hash code of the base list.</summary>
@@ -122,12 +112,7 @@ namespace Cave.Collections.Generic
                 return set2 is null;
             }
 
-            if (set2 is null)
-            {
-                return false;
-            }
-
-            return set1.Equals(set2);
+            return set2 is null ? false : set1.Equals(set2);
         }
 
         /// <summary>Checks two sets for inequality.</summary>
@@ -306,17 +291,11 @@ namespace Cave.Collections.Generic
 
         /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}" /> class.</summary>
         public IndexedSet(T item)
-            : this(256)
-        {
-            Add(item);
-        }
+            : this(256) => Add(item);
 
         /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}" /> class.</summary>
         public IndexedSet(IEnumerable<T> items)
-            : this()
-        {
-            AddRange(items);
-        }
+            : this() => AddRange(items);
 
         #endregion
 

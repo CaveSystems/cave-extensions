@@ -63,12 +63,7 @@ namespace Cave
             }
 
             var result = values[character];
-            if (result < 0)
-            {
-                return defaultValue;
-            }
-
-            return result;
+            return result < 0 ? defaultValue : result;
         }
 
         /// <summary>Gets the character for the specified value.</summary>

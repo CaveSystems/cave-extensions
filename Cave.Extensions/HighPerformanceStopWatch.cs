@@ -13,7 +13,7 @@ namespace Cave
         Stopwatch stopwatch;
 
         /// <summary>Initializes a new instance of the <see cref="HighPerformanceStopWatch" /> class.</summary>
-        public HighPerformanceStopWatch() { Reset(); }
+        public HighPerformanceStopWatch() => Reset();
 
         /// <summary>Starts the <see cref="IStopWatch" /> (to restart a <see cref="IStopWatch" /> use <see cref="Reset" /> first!).</summary>
         public void Start()
@@ -120,14 +120,9 @@ namespace Cave
         /// <returns>True if the stopwatches are equal.</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as IStopWatch;
-            if (ReferenceEquals(other, null))
-            {
-                return false;
-            }
-
-            return
-                (other.StartDateTime == StartDateTime) &&
+            return !(obj is IStopWatch other)
+                ? false
+                : (other.StartDateTime == StartDateTime) &&
                 (other.IsRunning == IsRunning);
         }
 

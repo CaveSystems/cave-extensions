@@ -68,12 +68,9 @@ namespace Cave
                 return Name;
             }
 
-            if (Offset > TimeSpan.Zero)
-            {
-                return $"{Name}+{Offset.Hours,2:00}:{Offset.Minutes,2:00}";
-            }
-
-            return $"{Name}-{Offset.Hours,2:00}:{Offset.Minutes,2:00}";
+            return Offset > TimeSpan.Zero
+                ? $"{Name}+{Offset.Hours,2:00}:{Offset.Minutes,2:00}"
+                : $"{Name}-{Offset.Hours,2:00}:{Offset.Minutes,2:00}";
         }
 
         /// <summary>Checks for equality with another object.</summary>
