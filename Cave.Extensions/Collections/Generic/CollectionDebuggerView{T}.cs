@@ -9,7 +9,7 @@ namespace Cave.Collections.Generic
     /// <typeparam name="T"></typeparam>
     public sealed class CollectionDebuggerView<T>
     {
-        ICollection<T> collection;
+        readonly ICollection<T> collection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionDebuggerView{T}"/> class.

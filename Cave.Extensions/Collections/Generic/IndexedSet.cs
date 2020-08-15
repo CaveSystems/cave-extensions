@@ -17,15 +17,7 @@ namespace Cave.Collections.Generic
         /// <summary>Checks another Set{T} instance for equality.</summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(IndexedSet<T> other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return other.Count != Count ? false : ContainsRange(other);
-        }
+        public bool Equals(IndexedSet<T> other) => other != null && other.Count == Count && ContainsRange(other);
 
         #region IEnumerable Member
 
@@ -65,7 +57,7 @@ namespace Cave.Collections.Generic
         public override bool Equals(object obj)
         {
             var other = obj as IndexedSet<T>;
-            return other == null ? false : Equals(other);
+            return other != null && Equals(other);
         }
 
         /// <summary>Gets the hash code of the base list.</summary>
@@ -105,15 +97,7 @@ namespace Cave.Collections.Generic
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>true if the sets equal each other.</returns>
-        public static bool operator ==(IndexedSet<T> set1, IndexedSet<T> set2)
-        {
-            if (set1 is null)
-            {
-                return set2 is null;
-            }
-
-            return set2 is null ? false : set1.Equals(set2);
-        }
+        public static bool operator ==(IndexedSet<T> set1, IndexedSet<T> set2) => set1 is null ? set2 is null : !(set2 is null) && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
@@ -354,8 +338,16 @@ namespace Cave.Collections.Generic
             }
 
             var index = items.Count;
-            items.Add(item);
-            lookup.Add(item, index);
+            try
+            {
+                items.Add(item);
+                lookup.Add(item, index);
+            }
+            catch
+            {
+                RebuildIndex();
+                throw;
+            }
         }
 
         /// <summary>Adds a range of objects to the set.</summary>
@@ -472,17 +464,25 @@ namespace Cave.Collections.Generic
                 throw new IndexOutOfRangeException();
             }
 
-            for (var i = index + 1; i < items.Count; i++)
+            try
             {
-                lookup[items[i]] = i - 1;
-            }
+                for (var i = index + 1; i < items.Count; i++)
+                {
+                    lookup[items[i]] = i - 1;
+                }
 
-            if (!lookup.Remove(items[index]))
+                if (!lookup.Remove(items[index]))
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                items.RemoveAt(index);
+            }
+            catch
             {
-                throw new IndexOutOfRangeException();
+                RebuildIndex();
+                throw;
             }
-
-            items.RemoveAt(index);
         }
 
         /// <summary>Gets or sets the element at the specified index.</summary>
@@ -493,14 +493,22 @@ namespace Cave.Collections.Generic
             get => items[index];
             set
             {
-                var oldKey = items[index];
-                if (!lookup.Remove(oldKey))
+                try
                 {
-                    throw new KeyNotFoundException();
-                }
+                    var oldKey = items[index];
+                    if (!lookup.Remove(oldKey))
+                    {
+                        throw new KeyNotFoundException();
+                    }
 
-                lookup.Add(value, index);
-                items[index] = value;
+                    lookup.Add(value, index);
+                    items[index] = value;
+                }
+                catch
+                {
+                    RebuildIndex();
+                    throw;
+                }
             }
         }
 

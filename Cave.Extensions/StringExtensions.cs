@@ -496,16 +496,7 @@ namespace Cave
                 unit++;
             }
 
-            string result;
-            if (Math.Truncate(calc) == calc)
-            {
-                result = calc.ToString(culture);
-            }
-            else
-            {
-                result = calc.ToString("0.000", culture);
-            }
-
+            var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
             if (result.Length > 5)
             {
                 result = result.Substring(0, 5);
@@ -709,17 +700,11 @@ namespace Cave
         /// <param name="dateTime">String value to parse.</param>
         /// <param name="result">The parsed datetime.</param>
         /// <returns>True if the value could be parsed.</returns>
-        public static bool TryParseDateTime(string dateTime, out DateTime result)
-        {
-            if (DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result))
-            {
-                return true;
-            }
-
-            return DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result)
-                ? true
-                : DateTime.TryParse(dateTime, out result);
-        }
+        public static bool TryParseDateTime(string dateTime, out DateTime result) =>
+            DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) ||
+            (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) ||
+            DateTime.TryParse(dateTime, out result));
+        
 
         /// <summary>Parses a Point.ToString() result.</summary>
         /// <param name="point">String value to parse.</param>
@@ -2195,12 +2180,7 @@ namespace Cave
                 }
             }
 
-            if (throwEx)
-            {
-                throw new FormatException($"Could not unbox {'"'} string {'"'}!");
-            }
-
-            return text;
+            return !throwEx ? text : throw new FormatException($"Could not unbox {'"'} string {'"'}!");
         }
 
         /// <summary>
@@ -2278,14 +2258,7 @@ namespace Cave
             var result = new char[value.Length];
             for (var i = 0; i < value.Length; i++)
             {
-                if ((rnd.Next() % 1) == 0)
-                {
-                    result[i] = char.ToUpperInvariant(value[i]);
-                }
-                else
-                {
-                    result[i] = char.ToLowerInvariant(value[i]);
-                }
+                result[i] = (rnd.Next() % 1) == 0 ? char.ToUpperInvariant(value[i]) : char.ToLowerInvariant(value[i]);
             }
 
             return new string(result);
@@ -2390,56 +2363,38 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static bool ToBool(this string value, bool defaultValue = false)
-        {
-            return bool.TryParse(value, out var result) ? result : defaultValue;
-        }
+        public static bool ToBool(this string value, bool defaultValue = false) => bool.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static int ToInt32(this string value, int defaultValue = 0)
-        {
-            return int.TryParse(value, out var result) ? result : defaultValue;
-        }
+        public static int ToInt32(this string value, int defaultValue = 0) => int.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static uint ToUInt32(this string value, uint defaultValue = 0)
-        {
-            return uint.TryParse(value, out var result) ? result : defaultValue;
-        }
+        public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static long ToInt64(this string value, long defaultValue = 0)
-        {
-            return long.TryParse(value, out var result) ? result : defaultValue;
-        }
+        public static long ToInt64(this string value, long defaultValue = 0) => long.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static ulong ToInt64(this string value, ulong defaultValue = 0)
-        {
-            return ulong.TryParse(value, out var result) ? result : defaultValue;
-        }
+        public static ulong ToInt64(this string value, ulong defaultValue = 0) => ulong.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>
         /// <param name="start">The start marker.</param>
         /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        public static bool IsBoxed(this string text, char start, char end)
-        {
-            return string.IsNullOrEmpty(text) ? false : (text[0] == start) && (text[text.Length - 1] == end);
-        }
+        public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[text.Length - 1] == end);
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>

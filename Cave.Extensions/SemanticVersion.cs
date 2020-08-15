@@ -67,7 +67,7 @@ namespace Cave
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(object other) => other is SemanticVersion ? CompareTo((SemanticVersion)other) : 1;
+        public int CompareTo(object other) => other is SemanticVersion version ? CompareTo(version) : 1;
 
         /// <summary>
         ///     Compares the current instance with another object of the same type and returns an integer that indicates
@@ -76,10 +76,7 @@ namespace Cave
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(SemanticVersion other)
-        {
-            return other is null ? 1 : ToAbsolute().CompareTo(other.ToAbsolute());
-        }
+        public int CompareTo(SemanticVersion other) => other is null ? 1 : ToAbsolute().CompareTo(other.ToAbsolute());
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -87,10 +84,7 @@ namespace Cave
         ///     true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise,
         ///     false.
         /// </returns>
-        public bool Equals(SemanticVersion other)
-        {
-            return other is null ? false : (other.Major == Major) && (other.Minor == Minor) && (other.Patch == Patch) && (other.Meta == Meta);
-        }
+        public bool Equals(SemanticVersion other) => !(other is null) && (other.Major == Major) && (other.Minor == Minor) && (other.Patch == Patch) && (other.Meta == Meta);
 
         /// <summary>Implements the operator &lt;.</summary>
         /// <param name="version1">The version1.</param>

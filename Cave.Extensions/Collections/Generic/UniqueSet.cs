@@ -50,18 +50,12 @@ namespace Cave.Collections.Generic
         /// <summary>Gets the index of the specified A object. This is an O(1) operation.</summary>
         /// <param name="key1">'A' object to be found.</param>
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
-        public int IndexOfA(TKey1 key1)
-        {
-            return !lookupA.ContainsKey(key1) ? -1 : list.IndexOf(lookupA[key1]);
-        }
+        public int IndexOfA(TKey1 key1) => !lookupA.ContainsKey(key1) ? -1 : list.IndexOf(lookupA[key1]);
 
         /// <summary>Gets the index of the specified B object. This is an O(1) operation.</summary>
         /// <param name="key2">'B' object to be found.</param>
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
-        public int IndexOfB(TKey2 key2)
-        {
-            return !lookupB.ContainsKey(key2) ? -1 : list.IndexOf(lookupB[key2]);
-        }
+        public int IndexOfB(TKey2 key2) => !lookupB.ContainsKey(key2) ? -1 : list.IndexOf(lookupB[key2]);
 
         /// <summary>Gets a read only indexed list for the A elements of the Set. This method is an O(1) operation;.</summary>
         public IList<TKey1> ItemsA => new ReadOnlyListA<TKey1, TKey2>(this);

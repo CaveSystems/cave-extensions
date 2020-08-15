@@ -47,15 +47,7 @@ namespace Cave.Collections.Concurrent
         #endregion
 
         /// <inheritdoc />
-        public bool Equals(IItemSet<T> other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return other.Count != Count ? false : ContainsRange(other);
-        }
+        public bool Equals(IItemSet<T> other) => other != null && (other.Count == Count && ContainsRange(other));
 
         /// <summary>Copies the items stored in the set to a new array.</summary>
         /// <returns>A new array containing a snapshot of all items.</returns>
@@ -70,10 +62,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            return !(obj is IItemSet<T> other) ? false : Equals(other);
-        }
+        public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
 
         /// <inheritdoc />
         public override int GetHashCode() => list.GetHashCode();
@@ -114,15 +103,7 @@ namespace Cave.Collections.Concurrent
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns></returns>
-        public static bool operator ==(ConcurrentSet<T> set1, ConcurrentSet<T> set2)
-        {
-            if (set1 is null)
-            {
-                return set2 is null;
-            }
-
-            return set2 is null ? false : set1.Equals(set2);
-        }
+        public static bool operator ==(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => set1 is null ? set2 is null : !(set2 is null) && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
@@ -424,7 +405,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool TryRemove(T item) => list.TryRemove(item, out var b);
+        public bool TryRemove(T item) => list.TryRemove(item, out _);
 
         /// <inheritdoc />
         public int TryRemoveRange(IEnumerable<T> items)

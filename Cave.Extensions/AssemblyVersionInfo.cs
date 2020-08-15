@@ -335,10 +335,7 @@ namespace Cave
         /// <summary>Checks this instance for equality with another one.</summary>
         /// <param name="obj">object to check for.</param>
         /// <returns>true if equal.</returns>
-        public override bool Equals(object obj)
-        {
-            return obj is AssemblyVersionInfo avi ? Equals(avi) : false;
-        }
+        public override bool Equals(object obj) => obj is AssemblyVersionInfo avi && Equals(avi);
 
         /// <summary>Checks this instance for equality with another one.</summary>
         /// <param name="other">Other version info to test.</param>

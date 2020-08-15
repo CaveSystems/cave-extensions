@@ -274,12 +274,7 @@ namespace Cave
         public static string GetFullPath(params string[] paths)
         {
             var result = Combine(out var pathType, Path.DirectorySeparatorChar, paths.Concat("."));
-            if (!pathType.HasFlag(PathType.Absolute))
-            {
-                throw new ArgumentException($"Cannot find root of {result}!");
-            }
-
-            return result;
+            return pathType.HasFlag(PathType.Absolute) ? result : throw new ArgumentException($"Cannot find root of {result}!");
         }
 
         /// <summary>Combines multiple paths starting with the current directory.</summary>
@@ -287,7 +282,7 @@ namespace Cave
         /// <param name="paths">The paths.</param>
         /// <returns>The combined paths.</returns>
         /// <remarks>This function supports long paths.</remarks>
-        public static string Combine(char pathSeparator, params string[] paths) => Combine(out var type, pathSeparator, paths);
+        public static string Combine(char pathSeparator, params string[] paths) => Combine(out _, pathSeparator, paths);
 
         /// <summary>Combines multiple paths starting with the current directory.</summary>
         /// <param name="type">Returns the detected path type.</param>
@@ -924,20 +919,11 @@ namespace Cave
         ///     A DateTime structure set to the date and time that the specified file or directory was last accessed. This
         ///     value is expressed in local time.
         /// </returns>
-        public static DateTime GetLastAccessTime(string filesystemEntry)
-        {
-            if (Directory.Exists(filesystemEntry))
-            {
-                return Directory.GetLastAccessTime(filesystemEntry);
-            }
-
-            if (File.Exists(filesystemEntry))
-            {
-                return File.GetLastAccessTime(filesystemEntry);
-            }
-
-            throw new FileNotFoundException();
-        }
+        public static DateTime GetLastAccessTime(string filesystemEntry) =>
+            Directory.Exists(filesystemEntry)
+            ? Directory.GetLastAccessTime(filesystemEntry)
+            : File.Exists(filesystemEntry) ? File.GetLastAccessTime(filesystemEntry) : throw new FileNotFoundException();
+        
 
         /// <summary>Returns the date and time the specified file or directory was last accessed.</summary>
         /// <param name="filesystemEntry">The file or directory for which to obtain creation date and time information.</param>
@@ -945,20 +931,10 @@ namespace Cave
         ///     A DateTime structure set to the date and time that the specified file or directory was last accessed. This
         ///     value is expressed in utc time.
         /// </returns>
-        public static DateTime GetLastAccessTimeUtc(string filesystemEntry)
-        {
-            if (Directory.Exists(filesystemEntry))
-            {
-                return Directory.GetLastAccessTimeUtc(filesystemEntry);
-            }
-
-            if (File.Exists(filesystemEntry))
-            {
-                return File.GetLastAccessTimeUtc(filesystemEntry);
-            }
-
-            throw new FileNotFoundException();
-        }
+        public static DateTime GetLastAccessTimeUtc(string filesystemEntry) =>
+            Directory.Exists(filesystemEntry)
+            ? Directory.GetLastAccessTimeUtc(filesystemEntry)
+            : File.Exists(filesystemEntry) ? File.GetLastAccessTimeUtc(filesystemEntry) : throw new FileNotFoundException();
 
         #region special paths
 

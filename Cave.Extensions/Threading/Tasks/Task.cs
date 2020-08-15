@@ -255,15 +255,13 @@ namespace System.Threading.Tasks
         {
             if (IsCompleted)
             {
-                if (IsFaulted) throw new AggregateException(Exception);
-                return true;
+                return !IsFaulted ? true : throw new AggregateException(Exception);
             }
 
             lock (this)
             {
                 var result = Monitor.Wait(this, mssTimeout);
-                if (IsFaulted) throw new AggregateException(Exception);
-                return result;
+                return !IsFaulted ? result : throw new AggregateException(Exception);
             }
         }
         #endregion

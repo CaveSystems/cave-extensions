@@ -15,10 +15,7 @@ namespace Cave
         /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
         public static DateTime Default
         {
-            get
-            {
-                return defaultDateTime.HasValue ? defaultDateTime.Value : DateTime.UtcNow.Date;
-            }
+            get => defaultDateTime ?? DateTime.UtcNow.Date;
             set => defaultDateTime = value;
         }
 
@@ -396,16 +393,7 @@ namespace Cave
                     break;
             }
 
-            string year;
-            if (!string.IsNullOrEmpty(match.Groups["year"].Value))
-            {
-                year = match.Groups["year"].Value;
-            }
-            else
-            {
-                year = $"{Default.Year}";
-            }
-
+            var year = !string.IsNullOrEmpty(match.Groups["year"].Value) ? match.Groups["year"].Value : $"{Default.Year}";
             return ConvertDate(year, month, match.Groups["day"].Value, out date) ? new SubStringResult(text, match.Index, match.Length) : default;
         }
     }

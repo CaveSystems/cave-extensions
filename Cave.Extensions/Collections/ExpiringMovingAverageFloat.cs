@@ -24,13 +24,7 @@ namespace Cave.Collections
 
         /// <summary>Gets the duration of the items.</summary>
         /// <value>The duration.</value>
-        public TimeSpan Duration
-        {
-            get
-            {
-                return items.Count > 1 ? items.Last.Value.DateTime - items.First.Value.DateTime : TimeSpan.Zero;
-            }
-        }
+        public TimeSpan Duration => items.Count > 1 ? items.Last.Value.DateTime - items.First.Value.DateTime : TimeSpan.Zero;
 
         /// <summary>Gets the average for the current items.</summary>
         /// <value>The average.</value>

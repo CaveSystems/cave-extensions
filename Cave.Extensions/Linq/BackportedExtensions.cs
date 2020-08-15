@@ -7,7 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
-    [SuppressMessage("Naming", "CA1720", Scope = "Member")]
+    [SuppressMessage("Naming", "CA1720")]
+    [SuppressMessage("Design", "CA1062")]
+    [SuppressMessage("Style", "IDE0046")]
     public static class BackportedExtensions
     {
         static TResult ThrowSequenceEmpty<TResult>() => throw new InvalidOperationException("The source sequence is empty.");
@@ -26,12 +28,7 @@ namespace System.Linq
                 accu = func(accu, item);
             }
 
-            if (empty)
-            {
-                throw new ArgumentException("Empty sequence!");
-            }
-
-            return resultSelector(accu);
+            return !empty ? resultSelector(accu) : throw new ArgumentException("Empty sequence!");
         }
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed,
@@ -54,12 +51,9 @@ namespace System.Linq
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            foreach (var item in source)
-            {
-                return true;
-            }
-
-            return false;
+            var enumerator = source.GetEnumerator();
+            enumerator.Reset();
+            return enumerator.MoveNext();
         }
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -108,23 +102,18 @@ namespace System.Linq
             return totalDivCount(total, counter);
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average(this IEnumerable<int> source)
             => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average(this IEnumerable<long> source)
             => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average(this IEnumerable<double> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Average(this IEnumerable<float> source)
             => CalcAverage<float, float, float>(source, (value, total) => value + total, (total, count) => total / count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Average(this IEnumerable<decimal> source)
             => CalcAverage<decimal, decimal, decimal>(source, (value, total) => value + total, (total, count) => total / count);
 
@@ -150,23 +139,18 @@ namespace System.Linq
             return counter == 0 ? null : new TResult?(totalDivCount(total, counter));
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average(this IEnumerable<int?> source)
             => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average(this IEnumerable<long?> source)
             => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average(this IEnumerable<double?> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Average(this IEnumerable<decimal?> source)
             => CalcAverage<decimal, decimal, decimal>(source, (value, total) => value + total, (total, count) => total / count);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Average(this IEnumerable<float?> source)
             => CalcAverage<float, float, float>(source, (value, total) => value + total, (total, count) => total / count);
 
@@ -202,51 +186,41 @@ namespace System.Linq
             return totalDivCount(total, counter);
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
             => CalcAverageWithSelector<TSource, long, int, double>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
             => CalcAverageWithSelector<TSource, long, int?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
             => CalcAverageWithSelector<TSource, long, long, double>(source, (total, value) => checked(total + value), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
             => CalcAverageWithSelector<TSource, long, long?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
             => CalcAverageWithSelector<TSource, double, double, double>(source, (total, value) => checked(total + value), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
             => CalcAverageWithSelector<TSource, double, double?, double?>(source, (total, value) => checked(total + value ?? 0),
                 (total, count) => total / count, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
             => CalcAverageWithSelector<TSource, float, float, float>(source, (total, value) => checked(total + value), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
             => CalcAverageWithSelector<TSource, float, float?, float?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
             => CalcAverageWithSelector<TSource, decimal, decimal, decimal>(source, (total, value) => checked(total + value), (total, count) => total / count,
                 selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
             => CalcAverageWithSelector<TSource, decimal, decimal?, decimal?>(source, (total, value) => checked(total + value ?? 0),
                 (total, count) => total / count, selector);
@@ -302,10 +276,7 @@ namespace System.Linq
 
         #region Contains
 
-        public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value)
-        {
-            return source is ICollection<TSource> collection ? collection.Contains(value) : Contains(source, value, null);
-        }
+        public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value) => source is ICollection<TSource> collection ? collection.Contains(value) : Contains(source, value, null);
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
         {
@@ -447,7 +418,6 @@ namespace System.Linq
             return defaultValue();
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, int index)
             => source.ElementAt(index, () => throw new ArgumentOutOfRangeException(nameof(index)));
 
@@ -455,7 +425,6 @@ namespace System.Linq
 
         #region ElementAtOrDefault
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource ElementAtOrDefault<TSource>(this IEnumerable<TSource> source, int index)
             => source.ElementAt(index, () => default);
 
@@ -519,11 +488,9 @@ namespace System.Linq
             return defaultValue();
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource First<TSource>(this IEnumerable<TSource> source)
             => First(source, null, ThrowSequenceEmpty<TSource>);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => First(source, predicate, ThrowSequenceEmpty<TSource>);
 
@@ -531,11 +498,9 @@ namespace System.Linq
 
         #region FirstOrDefault
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)
             => First(source, null, () => default);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => First(source, predicate, () => default);
 
@@ -831,11 +796,9 @@ namespace System.Linq
             return item;
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource Last<TSource>(this IEnumerable<TSource> source)
             => Last(source, null, ThrowSequenceEmpty<TSource>);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource Last<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => Last(source, predicate, ThrowSequenceEmpty<TSource>);
 
@@ -843,7 +806,6 @@ namespace System.Linq
 
         #region LastOrDefault
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => Last(source, predicate, default);
 
@@ -851,10 +813,7 @@ namespace System.Linq
 
         #region LongCount
 
-        public static long LongCount<TSource>(this IEnumerable<TSource> source)
-        {
-            return source is Array array ? array.LongLength : LongCount(source, null);
-        }
+        public static long LongCount<TSource>(this IEnumerable<TSource> source) => source is Array array ? array.LongLength : LongCount(source, null);
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
@@ -906,47 +865,36 @@ namespace System.Linq
             return empty ? defaultValue() : max;
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Max(this IEnumerable<int> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<int>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Max(this IEnumerable<long> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<long>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Max(this IEnumerable<decimal> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<decimal>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Max(this IEnumerable<double> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<double>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Max(this IEnumerable<float> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<float>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Max(this IEnumerable<long?> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int? Max(this IEnumerable<int?> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Max(this IEnumerable<decimal?> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Max(this IEnumerable<double?> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Max(this IEnumerable<float?> source)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TResult Max<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
@@ -964,43 +912,33 @@ namespace System.Linq
             throw new InvalidOperationException("IComparable or IComparable<TSource> required!");
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<long>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<int>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<decimal>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<double>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, ThrowSequenceEmpty<float>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
             => CalcMinOrMax(source, (element, max) => element > max ? element : max, () => null, selector);
 
@@ -1008,47 +946,36 @@ namespace System.Linq
 
         #region Min
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Min(this IEnumerable<int> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<int>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Min(this IEnumerable<long> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<long>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Min(this IEnumerable<decimal> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<decimal>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Min(this IEnumerable<double> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<double>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Min(this IEnumerable<float> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<float>, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Min(this IEnumerable<long?> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int? Min(this IEnumerable<int?> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Min(this IEnumerable<decimal?> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Min(this IEnumerable<double?> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Min(this IEnumerable<float?> source)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, (i) => i);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TResult Min<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
@@ -1066,43 +993,33 @@ namespace System.Linq
             throw new InvalidOperationException("IComparable or IComparable<TSource> required!");
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<long>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<int>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<decimal>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<double>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, ThrowSequenceEmpty<float>, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, selector);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
             => CalcMinOrMax(source, (element, max) => element < max ? element : max, () => null, selector);
 
@@ -1350,11 +1267,9 @@ namespace System.Linq
             return item;
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource Single<TSource>(this IEnumerable<TSource> source)
             => Single(source, (i) => true, ThrowSequenceEmpty<TSource>);
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource Single<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => Single(source, predicate, () => throw new InvalidOperationException("No element satisfies the condition in predicate."));
 
@@ -1362,12 +1277,10 @@ namespace System.Linq
 
         #region SingleOrDefault
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source)
             => Single(source, (i) => true, () => default);
 
 
-        [SuppressMessage("Design", "CA1062")]
         public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
             => Single(source, predicate, () => default);
 
@@ -1486,83 +1399,63 @@ namespace System.Linq
             return result;
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Sum(this IEnumerable<int> source)
             => CalcSum(source, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int? Sum(this IEnumerable<int?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static int Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
             => CalcSum(source, selector, (result, element) => result + element);
         
-        [SuppressMessage("Design", "CA1062")]
         public static int? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Sum(this IEnumerable<long> source)
             => CalcSum(source, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Sum(this IEnumerable<long?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
             => CalcSum(source, selector, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static long? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Sum(this IEnumerable<double> source)
             => CalcSum(source, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Sum(this IEnumerable<double?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
             => CalcSum(source, selector, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static double? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Sum(this IEnumerable<float> source)
             => CalcSum(source, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Sum(this IEnumerable<float?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
             => CalcSum(source, selector, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static float? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Sum(this IEnumerable<decimal> source)
             => CalcSum(source, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Sum(this IEnumerable<decimal?> source)
             => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
             => CalcSum(source, selector, (result, element) => result + element);
 
-        [SuppressMessage("Design", "CA1062")]
         public static decimal? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
@@ -1648,11 +1541,9 @@ namespace System.Linq
 
         #region ThenBy
 
-        [SuppressMessage("Design", "CA1062")]
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => ThenBy(source, keySelector, null);
 
-        [SuppressMessage("Design", "CA1062")]
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector,
             IComparer<TKey> comparer)
             => source.CreateOrderedEnumerable(keySelector, comparer, false);
@@ -1695,16 +1586,13 @@ namespace System.Linq
             return result;
         }
 
-        [SuppressMessage("Design", "CA1062")]
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector)
             => ToDictionary(source, keySelector, elementSelector, null);
 
-        [SuppressMessage("Design", "CA1062")]
         public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
             => ToDictionary(source, keySelector, null);
 
-        [SuppressMessage("Design", "CA1062")]
         public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer)
             => ToDictionary(source, keySelector, (i) => i, comparer);

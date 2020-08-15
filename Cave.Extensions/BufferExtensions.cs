@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace Cave
@@ -11,6 +12,7 @@ namespace Cave
         /// <param name="data">Byte buffer to obfuscate.</param>
         /// <param name="algorithm">Algorithm to use.</param>
         /// <returns>Returns the obfuscated byte buffer.</returns>
+        [SuppressMessage("Style", "IDE0028")]
         public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
         {
             if (data == null)
@@ -32,7 +34,8 @@ namespace Cave
             {
                 using (var enc = algorithm.CreateEncryptor())
                 {
-                    var encoded = new List<byte>(algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length);
+                    var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
+                    var encoded = new List<byte>(maxLength);
                     // add key
                     encoded.Add((byte)algorithm.Key.Length);
                     encoded.AddRange(algorithm.Key);
@@ -100,7 +103,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(data));
             }
 
-            var result = new byte[data.Length << 2];
+            var result = new byte[data.Length << 1];
             for (int i = 0, n = 0; i < data.Length; i++)
             {
                 result[n++] = (byte) (data[i] >> 4);

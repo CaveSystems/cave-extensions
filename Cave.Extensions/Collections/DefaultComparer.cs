@@ -148,9 +148,11 @@ namespace Cave.Collections
             {
                 if (value2 is DateTime dt2)
                 {
-                    if (dt1.Kind == dt2.Kind) return dt1.Ticks == dt2.Ticks;
-                    if (dt1.Kind == DateTimeKind.Unspecified) return dt1.Ticks == dt2.ToLocalTime().Ticks;
-                    return dt2.Kind == DateTimeKind.Unspecified
+                    return dt1.Kind == dt2.Kind
+                        ? dt1.Ticks == dt2.Ticks
+                        : dt1.Kind == DateTimeKind.Unspecified
+                        ? dt1.Ticks == dt2.ToLocalTime().Ticks
+                        : dt2.Kind == DateTimeKind.Unspecified
                         ? dt2.Ticks == dt1.ToLocalTime().Ticks
                         : object.Equals(dt1.ToUniversalTime(), dt2.ToUniversalTime());
                 }
@@ -189,7 +191,7 @@ namespace Cave.Collections
                 return array2 is null;
             }
 
-            return array2 is null ? false : ItemsEqual(array1, array2);
+            return !(array2 is null) && ItemsEqual(array1, array2);
         }
 
         /// <summary>Compares items of two arrays item by item without checking the type of the array.</summary>

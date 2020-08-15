@@ -50,15 +50,7 @@ namespace Cave.Collections.Generic
         /// <param name="set1"></param>
         /// <param name="set2"></param>
         /// <returns></returns>
-        public static bool operator ==(Set<T> set1, Set<T> set2)
-        {
-            if (set1 is null)
-            {
-                return set2 is null;
-            }
-
-            return set2 is null ? false : set1.Equals(set2);
-        }
+        public static bool operator ==(Set<T> set1, Set<T> set2) => set1 is null ? set2 is null : !(set2 is null) && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1"></param>
@@ -442,6 +434,7 @@ namespace Cave.Collections.Generic
         {
 #if NET20
             // cannot clear, recreate
+            list.Clear();
             list = new Dictionary<T, byte>();
 #else
             list.Clear();
@@ -545,44 +538,14 @@ namespace Cave.Collections.Generic
             return result;
         }
 
-        /// <summary>Checks another Set{T} instance for equality.</summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
-        {
-            var other = obj as Set<T>;
-
-/* Nicht gemergte Änderung aus Projekt "Cave.Extensions (net20)"
-Vor:
-            if (other == null)
-            {
-                return false;
-            }
-
-            return Equals(other);
-Nach:
-            if (other == null false Equals(other);
-*/
-            return other == null ? ? false : : Equals(other);
-        }
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => obj is IItemSet<T> s && Equals(s);
 
 #if NET20
-        /// <summary>Checks another Set{T} instance for equality.</summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(IItemSet<T> other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return other.Count != Count ? false : ContainsRange(other);
-        }
+        /// <inheritdoc/>
+        public bool Equals(IItemSet<T> other) => other != null && (other.Count == Count && ContainsRange(other)); 
 #else
-        /// <summary>Checks another Set{T} instance for equality.</summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public bool Equals(IItemSet<T> other) => list.SetEquals(other);
 #endif
 
@@ -617,10 +580,7 @@ Nach:
         /// <summary>Gets the index of the specified A object. This is an O(n) operation.</summary>
         /// <param name="key">'A' object to be found.</param>
         /// <returns>The index of item if found in the list; otherwise, -1.</returns>
-        public int IndexOfA(TKey key)
-        {
-            return !lookupA.ContainsKey(key) ? -1 : list.IndexOf(lookupA[key]);
-        }
+        public int IndexOfA(TKey key) => !lookupA.ContainsKey(key) ? -1 : list.IndexOf(lookupA[key]);
 
         /// <summary>Not supported. Use UniqueSet instead.</summary>
         /// <param name="value"></param>

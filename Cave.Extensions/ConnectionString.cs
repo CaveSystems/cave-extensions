@@ -29,10 +29,7 @@ namespace Cave
         /// <summary>converts a string to a connection string using <see cref="Parse(string)" />.</summary>
         /// <param name="connectionString">The String.</param>
         /// <returns>The connection string.</returns>
-        public static implicit operator ConnectionString(string connectionString)
-        {
-            return connectionString == null ? default : Parse(connectionString);
-        }
+        public static implicit operator ConnectionString(string connectionString) => connectionString == null ? default : Parse(connectionString);
 
         /// <summary>converts a connection string to a string including credentials.</summary>
         /// <param name="connectionString">The connection string.</param>
@@ -251,10 +248,7 @@ namespace Cave
         /// <summary>Gets or sets the port of the <see cref="ConnectionString" />.</summary>
         /// <param name="defaultPort">The default port.</param>
         /// <returns>The port.</returns>
-        public int GetPort(int defaultPort)
-        {
-            return Port <= 0 ? defaultPort : Port;
-        }
+        public int GetPort(int defaultPort) => Port <= 0 ? defaultPort : Port;
 
         /// <summary>Gets or sets the port.</summary>
         public ushort Port;
@@ -376,10 +370,7 @@ namespace Cave
         /// </summary>
         /// <param name="obj">The connection string.</param>
         /// <returns>True if the connection strings are equal.</returns>
-        public override bool Equals(object obj)
-        {
-            return !(obj is ConnectionString) ? false : Equals((ConnectionString) obj);
-        }
+        public override bool Equals(object obj) => obj is ConnectionString conStr && Equals(conStr);
 
         /// <summary>Gets hash code for the connection string.</summary>
         /// <returns>Returns a new hash code.</returns>
@@ -388,8 +379,7 @@ namespace Cave
         #region IEquatable<ConnectionString> Member
 
         /// <summary>
-        ///     Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" />
-        ///     .
+        /// Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" />.
         /// </summary>
         /// <param name="other">The object to compare with.</param>
         /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>

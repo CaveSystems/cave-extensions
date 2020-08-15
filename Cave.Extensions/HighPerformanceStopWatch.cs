@@ -118,13 +118,7 @@ namespace Cave
         /// <summary>Checks for equality with another stopwatch.</summary>
         /// <param name="obj">The other stopwatch.</param>
         /// <returns>True if the stopwatches are equal.</returns>
-        public override bool Equals(object obj)
-        {
-            return !(obj is IStopWatch other)
-                ? false
-                : (other.StartDateTime == StartDateTime) &&
-                (other.IsRunning == IsRunning);
-        }
+        public override bool Equals(object obj) => obj is IStopWatch other && (other.StartDateTime == StartDateTime) && (other.IsRunning == IsRunning);
 
         /// <summary>Gets the hashcode for this instance.</summary>
         /// <returns>The hash code.</returns>

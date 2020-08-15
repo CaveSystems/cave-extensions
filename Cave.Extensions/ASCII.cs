@@ -166,41 +166,22 @@ namespace Cave
         /// <param name="text">The string.</param>
         /// <param name="maxCharacterCode">The maximum allowed character code.</param>
         /// <returns>True if the string does not contain any character outside the valid range.</returns>
-        public static bool IsClean(string text, int maxCharacterCode = 127)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            return !text.Any(c => (c < 1) || (c > maxCharacterCode));
-        }
+        public static bool IsClean(string text, int maxCharacterCode = 127) => text != null ? !text.Any(c => (c < 1) || (c > maxCharacterCode)) : throw new ArgumentNullException(nameof(text));
 
         /// <summary>Gets whether the string contains non printable ASCII chars (&lt;32, &gt;<paramref name="maxCharacterCode" />).</summary>
         /// <param name="text">The string.</param>
         /// <param name="maxCharacterCode">The maximum allowed character code.</param>
         /// <returns>True if the string does not contain any character outside the valid range.</returns>
-        public static bool IsPrintable(this string text, int maxCharacterCode = 127)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            return !text.Any(c => (c < 32) || (c > maxCharacterCode));
-        }
+        public static bool IsPrintable(this string text, int maxCharacterCode = 127) => text != null ? !text.Any(c => (c < 32) || (c > maxCharacterCode)) : throw new ArgumentNullException(nameof(text));
 
         /// <summary>Gets whether the string contains characters not valid at connection strings.</summary>
         /// <param name="text">The string.</param>
         /// <returns>True if the string does not contain any character outside the valid range.</returns>
         public static bool IsValidForConnectionString(this string text)
         {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            return !text.Any(c => (c < 32) || (c > 127) || (c == ';') || (c == '\\'));
+            return text != null
+                ? !text.Any(c => (c < 32) || (c > 127) || (c == ';') || (c == '\\'))
+                : throw new ArgumentNullException(nameof(text));
         }
 
         /// <summary>Cleans a string from all non ascii and control characters by replacing invalid chars.</summary>
@@ -249,15 +230,7 @@ namespace Cave
         /// <returns>The byte array.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
-        public static byte[] GetBytes(string text, bool termination = false)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            return GetBytes(text, 0, -1, termination);
-        }
+        public static byte[] GetBytes(string text, bool termination = false) => text != null ? GetBytes(text, 0, -1, termination) : throw new ArgumentNullException(nameof(text));
 
         /// <summary>Gets the bytes for a specified 7Bit ASCII string.</summary>
         /// <param name="text">String to encode.</param>
@@ -308,30 +281,14 @@ namespace Cave
         /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
-        public static string GetString(byte[] bytes)
-        {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-
-            return GetString(bytes, 0, bytes.Length);
-        }
+        public static string GetString(byte[] bytes) => bytes != null ? GetString(bytes, 0, bytes.Length) : throw new ArgumentNullException(nameof(bytes));
 
         /// <summary>Gets the chars for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
         /// <returns>The string.</returns>
         /// <exception cref="ArgumentNullException">bytes.</exception>
         /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
-        public static char[] GetChars(byte[] bytes)
-        {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-
-            return GetChars(bytes, 0, bytes.Length);
-        }
+        public static char[] GetChars(byte[] bytes) => bytes != null ? GetChars(bytes, 0, bytes.Length) : throw new ArgumentNullException(nameof(bytes));
 
         /// <summary>Gets the chars for the specified 7Bit ASCII bytes.</summary>
         /// <param name="bytes">Bytes to decode.</param>
@@ -455,12 +412,7 @@ namespace Cave
             }
 
             var end = Array.IndexOf(data, endMark, start + 1);
-            if (end <= start)
-            {
-                throw new ArgumentOutOfRangeException(nameof(endMark));
-            }
-
-            return GetString(data, start + 1, end - start - 1);
+            return end <= start ? throw new ArgumentOutOfRangeException(nameof(endMark)) : GetString(data, start + 1, end - start - 1);
         }
 
         /// <summary>Gets the hexadecimal character for the lower nibble.</summary>
@@ -482,17 +434,11 @@ namespace Cave
         /// <exception cref="InvalidOperationException">Cannot escape character {0}!.</exception>
         public static char[] EscapeHex(char c, char escapeCharacter = '\\')
         {
-            if (c < 256)
-            {
-                return new[] { escapeCharacter, 'x', GetHexChar(c >> 4), GetHexChar(c) };
-            }
-
-            if (c < 65536)
-            {
-                return new[] { escapeCharacter, 'u', GetHexChar(c >> 12), GetHexChar(c >> 8), GetHexChar(c >> 4), GetHexChar(c) };
-            }
-
-            throw new InvalidOperationException("Cannot escape character {0}!");
+            return c < 256
+                ? (new[] { escapeCharacter, 'x', GetHexChar(c >> 4), GetHexChar(c) })
+                : c < 65536
+                ? (new[] { escapeCharacter, 'u', GetHexChar(c >> 12), GetHexChar(c >> 8), GetHexChar(c >> 4), GetHexChar(c) })
+                : throw new InvalidOperationException("Cannot escape character {0}!");
         }
 
         /// <summary>Escapes all invalid characters (newline, tab, ... and everything above us ascii 127).</summary>

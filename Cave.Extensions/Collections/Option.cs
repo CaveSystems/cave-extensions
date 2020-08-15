@@ -130,15 +130,7 @@ namespace Cave.Collections
                 prefix = GetPrefix(name);
             }
 
-            if (prefix == null)
-            {
-                name = name.Trim();
-            }
-            else
-            {
-                name = name.Substring(prefix.Length).Trim();
-            }
-
+            name = prefix == null ? name.Trim() : name.Substring(prefix.Length).Trim();
             return new Option(prefix, name, separator, value.Trim());
         }
 
@@ -263,10 +255,7 @@ namespace Cave.Collections
         /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(Option other)
-        {
-            return other is null ? false : (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
-        }
+        public bool Equals(Option other) => !(other is null) && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
 
         #endregion
 

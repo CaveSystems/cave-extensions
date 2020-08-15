@@ -62,23 +62,10 @@ namespace Cave.Collections
         public int Step { get; }
 
         /// <summary>Gets the current value.</summary>
-        public int Current
-        {
-            get
-            {
-                if (current < Start)
-                {
-                    throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
-                }
-
-                if (current > End)
-                {
-                    throw new InvalidOperationException("Invalid operation, moved out of range!");
-                }
-
-                return (int) current;
-            }
-        }
+        public int Current => 
+            current >= Start
+            ? current <= End ? (int)current : throw new InvalidOperationException("Invalid operation, moved out of range!")
+            : throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
 
         /// <summary>Gets a value indicating whether the counter was started already or not.</summary>
         public bool Started => current >= Start;
@@ -116,63 +103,36 @@ namespace Cave.Collections
         /// <param name="counter1">The c1.</param>
         /// <param name="counter2">The c2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(Counter counter1, Counter counter2)
-        {
-            if (counter1 is null)
-            {
-                return counter2 is null;
-            }
-
-            return counter2 is null
-                ? false
-                : (counter1.Count == counter2.Count) && (counter1.Start == counter2.Start) && (counter1.End == counter2.End) &&
-                (counter1.Step == counter2.Step);
-        }
+        public static bool operator ==(Counter counter1, Counter counter2) =>
+            counter1 is null
+            ? counter2 is null
+            : !(counter2 is null)
+&& (counter1.Count == counter2.Count) && (counter1.Start == counter2.Start) && (counter1.End == counter2.End) &&
+            (counter1.Step == counter2.Step);
+        
 
         /// <summary>Implements the operator !=.</summary>
         /// <param name="counter1">The c1.</param>
         /// <param name="counter2">The c2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Counter counter1, Counter counter2)
-        {
-            if (counter1 is null)
-            {
-                return !(counter2 is null);
-            }
-
-            return counter2 is null
-                ? true
-                : (counter1.Count != counter2.Count) || (counter1.Start != counter2.Start) || (counter1.End != counter2.End) ||
-                (counter1.Step != counter2.Step);
-        }
+        public static bool operator !=(Counter counter1, Counter counter2) =>
+            counter1 is null
+            ? !(counter2 is null)
+            : counter2 is null
+|| (counter1.Count != counter2.Count) || (counter1.Start != counter2.Start) || (counter1.End != counter2.End) ||
+            (counter1.Step != counter2.Step);
 
         /// <summary>Implements the operator &lt;.</summary>
         /// <param name="counter1">The c1.</param>
         /// <param name="counter2">The c2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator <(Counter counter1, Counter counter2)
-        {
-            if (counter1 is null)
-            {
-                return true;
-            }
-
-            return counter2 is null ? false : counter1.End < counter2.Start;
-        }
+        public static bool operator <(Counter counter1, Counter counter2) => counter1 is null || (!(counter2 is null) && counter1.End < counter2.Start);
 
         /// <summary>Implements the operator &gt;.</summary>
         /// <param name="counter1">The c1.</param>
         /// <param name="counter2">The c2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator >(Counter counter1, Counter counter2)
-        {
-            if (counter2 is null)
-            {
-                return true;
-            }
-
-            return counter1 is null ? false : counter1.Start > counter2.End;
-        }
+        public static bool operator >(Counter counter1, Counter counter2) => counter2 is null || (!(counter1 is null) && counter1.Start > counter2.End);
 
         /// <summary>Creates a new <see cref="Counter" /> from the specified start and end values.</summary>
         /// <param name="start">The first value.</param>
@@ -190,48 +150,15 @@ namespace Cave.Collections
         /// <summary>Checks whether a specified value is part of the <see cref="Counter" /> or not.</summary>
         /// <param name="value">The value to be checked.</param>
         /// <returns>Returns true if the value is part of the counter.</returns>
-        public bool Contains(int value)
-        {
-            if (value > End)
-            {
-                return false;
-            }
-
-            return value < Start ? false : ((value - Start) % Step) == 0;
-        }
+        public bool Contains(int value) => value <= End && (value >= Start && ((value - Start) % Step) == 0);
 
         /// <summary>Checks whether a specified <see cref="Counter" /> is part of the <see cref="Counter" /> or not.</summary>
         /// <param name="counter">The <see cref="Counter" /> whose values to be checked.</param>
         /// <returns>Returns true if the specified counter is part of the counter.</returns>
-        public bool Contains(Counter counter)
-        {
-            if (counter == null)
-            {
-                throw new ArgumentNullException(nameof(counter));
-            }
-
-            if (counter.Start < Start)
-            {
-                return false;
-            }
-
-            if (counter.Start > End)
-            {
-                return false;
-            }
-
-            if (counter.End > End)
-            {
-                return false;
-            }
-
-            if (counter.End < Start)
-            {
-                return false;
-            }
-
-            return (counter.Step % Step) <= 0;
-        }
+        public bool Contains(Counter counter) =>
+            counter == null
+            ? throw new ArgumentNullException(nameof(counter))
+            : counter.Start >= Start && counter.Start <= End && counter.End <= End && counter.End >= Start && (counter.Step % Step) <= 0;
 
         /// <summary>Steps to the next value.</summary>
         /// <returns>Returns true if the next value is part of the counter and can be retrieved.</returns>
@@ -252,10 +179,7 @@ namespace Cave.Collections
         /// <summary>Checks another <see cref="Counter" /> for equality.</summary>
         /// <param name="obj">The <see cref="Counter" /> instance to check for equality.</param>
         /// <returns>Returns true if the specified object equals this one.</returns>
-        public override bool Equals(object obj)
-        {
-            return !(obj is Counter other) ? false : (other.Start == Start) && (other.End == End) && (other.Step == Step);
-        }
+        public override bool Equals(object obj) => obj is Counter other && (other.Start == Start) && (other.End == End) && (other.Step == Step);
 
         /// <summary>Gets the counter properties as string.</summary>
         /// <returns>Returns a string representing this object.</returns>

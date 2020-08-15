@@ -66,7 +66,7 @@ namespace Cave
                 {
                     bits -= 8;
                     var l_Out = value >> bits;
-                    value = value & ~(0xFFFF << bits);
+                    value &= ~(0xFFFF << bits);
                     result.Add((byte) l_Out);
                 }
             }
@@ -94,7 +94,7 @@ namespace Cave
                 {
                     bits -= BitCount;
                     var outValue = value >> bits;
-                    value = value & ~(0xFFFF << bits);
+                    value &= ~(0xFFFF << bits);
                     result.Add(CharacterDictionary.GetCharacter(outValue));
                 }
             }
@@ -103,7 +103,7 @@ namespace Cave
             {
                 bits -= BitCount;
                 var outValue = value >> bits;
-                value = value & ~(0xFFFF << bits);
+                value &= ~(0xFFFF << bits);
                 result.Add(CharacterDictionary.GetCharacter(outValue));
             }
 
