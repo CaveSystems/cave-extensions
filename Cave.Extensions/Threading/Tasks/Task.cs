@@ -167,13 +167,11 @@ namespace System.Threading.Tasks
         readonly object state;
         readonly object action;
         readonly TaskCreationOptions creationOptions;
-        bool started = false;
+        bool started;
 
         [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
         {
-            var action = this.action;
-
             // spawn a new seperate thread for long running threads
             if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
             {
@@ -181,10 +179,11 @@ namespace System.Threading.Tasks
                 {
                     IsBackground = true,
                 };
-                thread.Start(action);
+                thread.Start(null);
                 return;
             }
 
+            var action = this.action;
             try
             {
                 if (started)
@@ -193,24 +192,24 @@ namespace System.Threading.Tasks
                 }
 
                 started = true;
+                if (action is Action actionTyp1)
                 {
-                    if (action is Action a)
-                    {
-                        a();
-                        return;
-                    }
+                    actionTyp1();
+                    return;
                 }
+                else if (action is Action<object> actionTyp2)
                 {
-                    if (action is Action<object> a)
-                    {
-                        a(state);
-                        return;
-                    }
+                    actionTyp2(state);
+                    return;
+                }
+                else
+                {
+                    throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {action}!");
                 }
             }
             catch (Exception ex)
             {
-                Exception = ex;
+                Exception = new AggregateException(ex);
             }
             lock (this)
             {
@@ -243,7 +242,7 @@ namespace System.Threading.Tasks
                     Monitor.Wait(this);
                 }
             }
-            if (IsFaulted) throw new AggregateException(Exception);
+            if (IsFaulted) throw Exception;
         }
 
         /// <summary>
@@ -255,13 +254,13 @@ namespace System.Threading.Tasks
         {
             if (IsCompleted)
             {
-                return !IsFaulted ? true : throw new AggregateException(Exception);
+                return !IsFaulted ? true : throw Exception;
             }
 
             lock (this)
             {
                 var result = Monitor.Wait(this, mssTimeout);
-                return !IsFaulted ? result : throw new AggregateException(Exception);
+                return !IsFaulted ? result : throw Exception;
             }
         }
         #endregion
