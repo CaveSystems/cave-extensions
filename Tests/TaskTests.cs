@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Test
@@ -27,6 +29,38 @@ namespace Test
             Assert.IsTrue(task.IsCompleted);
             Assert.AreEqual(typeof(AggregateException), task.Exception.GetType());
             Assert.AreEqual("TestException", task.Exception.InnerException.Message);
+        }
+
+        void TestSleep(object syncRoot, int number)
+        {
+            Thread.Sleep(1000 - number);
+            lock (syncRoot) Console.WriteLine($"{number} task completed");
+        }
+
+        [Test]
+        public void TaskStartWait()
+        {
+            object syncRoot = new object();
+            var list = new List<Task>();
+            for (int i = 0; i < 1000; i++)
+            {
+                var t = Task.Factory.StartNew((n) => TestSleep(syncRoot, (int)n), i);
+                list.Add(t);
+            }
+            Task.WaitAll(list.ToArray());
+        }
+
+        [Test]
+        public void TaskStartWait2()
+        {
+            object syncRoot = new object();
+            var list = new List<Task>();
+            for (int i = 0; i < 1000; i++)
+            {
+                var t = Task.Factory.StartNew((n) => TestSleep(syncRoot, (int)n), i);
+                list.Add(t);
+            }
+            foreach (var t in list) t.Wait();
         }
 
         private void TestWait(Task task)
