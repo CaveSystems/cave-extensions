@@ -1,5 +1,6 @@
 #if NETSTANDARD10
 #elif NET35 || NET20
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Threading.Tasks
@@ -123,6 +124,12 @@ namespace System.Threading.Tasks
         [SuppressMessage("Naming", "CA1034")]
         public static class Factory
         {
+            static Factory()
+            {
+                ThreadPool.SetMaxThreads(1000, 1000);
+                ThreadPool.SetMinThreads(100, 100);
+            }
+
             /// <summary>
             /// Creates and starts a task.
             /// </summary>
@@ -167,31 +174,23 @@ namespace System.Threading.Tasks
         readonly object state;
         readonly object action;
         readonly TaskCreationOptions creationOptions;
-        bool started;
 
         [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
         {
-            // spawn a new seperate thread for long running threads
-            if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
-            {
-                var thread = new Thread(Worker)
-                {
-                    IsBackground = true,
-                };
-                thread.Start(null);
-                return;
-            }
-
-            var action = this.action;
             try
             {
-                if (started)
+                // spawn a new seperate thread for long running threads
+                if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
                 {
-                    throw new InvalidOperationException("Already started!");
+                    var thread = new Thread(Worker)
+                    {
+                        IsBackground = true,
+                    };
+                    thread.Start(null);
+                    return;
                 }
 
-                started = true;
                 if (action is Action actionTyp1)
                 {
                     actionTyp1();
@@ -211,10 +210,13 @@ namespace System.Threading.Tasks
             {
                 Exception = new AggregateException(ex);
             }
-            lock (this)
+            finally
             {
-                IsCompleted = true;
-                Monitor.Pulse(this);
+                lock (this)
+                {
+                    IsCompleted = true;
+                    Monitor.PulseAll(this);
+                }
             }
         }
         #endregion
