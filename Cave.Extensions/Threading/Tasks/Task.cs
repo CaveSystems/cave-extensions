@@ -178,6 +178,15 @@ namespace System.Threading.Tasks
         [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
         {
+            void Exit()
+            {
+                lock (this)
+                {
+                    IsCompleted = true;
+                    Monitor.PulseAll(this);
+                }
+            }
+
             try
             {
                 // spawn a new seperate thread for long running threads
@@ -190,7 +199,16 @@ namespace System.Threading.Tasks
                     thread.Start(null);
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                Exception = new AggregateException(ex);
+                Exit();
+                return;
+            }
 
+            try
+            {
                 if (action is Action actionTyp1)
                 {
                     actionTyp1();
@@ -212,11 +230,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                lock (this)
-                {
-                    IsCompleted = true;
-                    Monitor.PulseAll(this);
-                }
+                Exit();
             }
         }
         #endregion
