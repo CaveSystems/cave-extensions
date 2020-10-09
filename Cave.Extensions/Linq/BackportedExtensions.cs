@@ -51,9 +51,12 @@ namespace System.Linq
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            var enumerator = source.GetEnumerator();
-            enumerator.Reset();
-            return enumerator.MoveNext();
+            foreach (var item in source)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
