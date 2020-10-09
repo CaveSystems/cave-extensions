@@ -30,6 +30,7 @@ namespace Test.Backports
             public int Age { get; set; }
         }
 
+        [Test]
         public void CheckAllAny()
         {
             // Create an array of Pets.
@@ -54,6 +55,13 @@ namespace Test.Backports
 
             Assert.AreEqual(false, pets1.Any(pet => pet.Name.StartsWith("C")));
             Assert.AreEqual(true, pets2.Any(pet => pet.Name.StartsWith("C")));
+        }
+
+        [Test]
+        public void CheckWhereAny()
+        {
+            Assert.True(typeof(BackportedExtensionsTests).GetMethods().Where(m => m.Name == nameof(CheckWhereAny)).Any());
+            Assert.AreEqual(1, typeof(BackportedExtensionsTests).GetMethods().Where(m => m.Name == nameof(CheckWhereAny)).Count());
         }
     }
 }
