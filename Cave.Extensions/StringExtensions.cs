@@ -1973,11 +1973,18 @@ namespace Cave
             return sb.ToString();
         }
 
-        /// <summary>Unescapes the specified text.</summary>
+        /// <summary>Unescapes the specified text and throws exceptions on invalid escape codes.</summary>
         /// <param name="text">The text (escaped ascii 7 bit string).</param>
         /// <returns>Returns the unescaped string.</returns>
         /// <exception cref="InvalidDataException">Invalid escape code.</exception>
-        public static string Unescape(this string text)
+        public static string Unescape(this string text) => Unescape(text, true);
+
+        /// <summary>Unescapes the specified text.</summary>
+        /// <param name="text">The text (escaped ascii 7 bit string).</param>
+        /// <param name="throwOnInvalid">Throw exception on invalid escape codes.</param>
+        /// <returns>Returns the unescaped string.</returns>
+        /// <exception cref="InvalidDataException">Invalid escape code.</exception>
+        public static string Unescape(this string text, bool throwOnInvalid)
         {
             var sb = new StringBuilder();
             var i = 0;
@@ -2011,10 +2018,30 @@ namespace Cave
                             sb.Append('\r');
                             continue;
                         case 'u':
-                            sb.Append((char) Convert.ToInt32(text.Substring(i, 4), 16));
-                            i += 4;
+                            try
+                            {
+                                var code = text.Substring(i, 4);
+                                sb.Append((char) Convert.ToInt32(code, 16));
+                                i += 4;
+                            }
+                            catch (Exception ex)
+                            {
+                                if (throwOnInvalid)
+                                    throw new InvalidDataException($"Invalid escape code at '{text.Substring(i - 2, Math.Min(6, text.Length - i))}'.", ex);
+                                sb.Append("\\u");
+                            }
                             continue;
-                        default: throw new InvalidDataException("Invalid escape code.");
+                        default:
+                            if (throwOnInvalid)
+                            {
+                                throw new InvalidDataException("Invalid escape code.");
+                            }
+                            else
+                            {
+                                sb.Append('\\');
+                                sb.Append(c2);
+                                continue;
+                            }
                     }
                 }
 
