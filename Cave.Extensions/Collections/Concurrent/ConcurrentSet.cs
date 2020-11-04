@@ -47,7 +47,7 @@ namespace Cave.Collections.Concurrent
         #endregion
 
         /// <inheritdoc />
-        public bool Equals(IItemSet<T> other) => other != null && (other.Count == Count && ContainsRange(other));
+        public bool Equals(IItemSet<T> other) => other != null && other.Count == Count && ContainsRange(other);
 
         /// <summary>Copies the items stored in the set to a new array.</summary>
         /// <returns>A new array containing a snapshot of all items.</returns>

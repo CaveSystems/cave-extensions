@@ -543,7 +543,7 @@ namespace Cave.Collections.Generic
 
 #if NET20
         /// <inheritdoc/>
-        public bool Equals(IItemSet<T> other) => other != null && (other.Count == Count && ContainsRange(other)); 
+        public bool Equals(IItemSet<T> other) => other != null && other.Count == Count && ContainsRange(other); 
 #else
         /// <inheritdoc/>
         public bool Equals(IItemSet<T> other) => list.SetEquals(other);

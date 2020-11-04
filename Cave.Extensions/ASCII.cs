@@ -435,9 +435,9 @@ namespace Cave
         public static char[] EscapeHex(char c, char escapeCharacter = '\\')
         {
             return c < 256
-                ? (new[] { escapeCharacter, 'x', GetHexChar(c >> 4), GetHexChar(c) })
+                ? new[] { escapeCharacter, 'x', GetHexChar(c >> 4), GetHexChar(c) }
                 : c < 65536
-                ? (new[] { escapeCharacter, 'u', GetHexChar(c >> 12), GetHexChar(c >> 8), GetHexChar(c >> 4), GetHexChar(c) })
+                ? new[] { escapeCharacter, 'u', GetHexChar(c >> 12), GetHexChar(c >> 8), GetHexChar(c >> 4), GetHexChar(c) }
                 : throw new InvalidOperationException("Cannot escape character {0}!");
         }
 

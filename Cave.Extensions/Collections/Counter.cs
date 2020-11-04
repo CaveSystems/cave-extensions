@@ -150,7 +150,7 @@ namespace Cave.Collections
         /// <summary>Checks whether a specified value is part of the <see cref="Counter" /> or not.</summary>
         /// <param name="value">The value to be checked.</param>
         /// <returns>Returns true if the value is part of the counter.</returns>
-        public bool Contains(int value) => value <= End && (value >= Start && ((value - Start) % Step) == 0);
+        public bool Contains(int value) => value <= End && value >= Start && ((value - Start) % Step) == 0;
 
         /// <summary>Checks whether a specified <see cref="Counter" /> is part of the <see cref="Counter" /> or not.</summary>
         /// <param name="counter">The <see cref="Counter" /> whose values to be checked.</param>

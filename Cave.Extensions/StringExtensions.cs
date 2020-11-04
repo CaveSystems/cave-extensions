@@ -701,9 +701,7 @@ namespace Cave
         /// <param name="result">The parsed datetime.</param>
         /// <returns>True if the value could be parsed.</returns>
         public static bool TryParseDateTime(string dateTime, out DateTime result) =>
-            DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) ||
-            (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) ||
-            DateTime.TryParse(dateTime, out result));
+            DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParse(dateTime, out result);
         
 
         /// <summary>Parses a Point.ToString() result.</summary>
