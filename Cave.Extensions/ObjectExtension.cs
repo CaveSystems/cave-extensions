@@ -1,12 +1,97 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 
 namespace Cave
 {
     /// <summary>Gets extensions on object instances.</summary>
     public static class ObjectExtension
     {
+        /// <summary>
+        /// Get a list of available properties.
+        /// </summary>
+        /// <param name="instance">Object instance to read.</param>
+        /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
+        /// <param name="withValue">List only sub-properties with values.</param>
+        /// <param name="noRecursion">Disable recursion.</param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false, bool noRecursion = false)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (bindingFlags == 0)
+            {
+                bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            }
+            if (withValue)
+            {
+                return new PropertyValueEnumerator(instance, bindingFlags, !noRecursion);
+            }
+            return new PropertyEnumerator(instance.GetType(), bindingFlags, !noRecursion);
+        }
+
+        /// <summary>
+        /// Gets the specified property value.
+        /// </summary>
+        /// <remarks>
+        /// See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/> or use <see cref="GetProperties"/>.
+        /// </remarks>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="noException">Ignore null value properties and missing fields.</param>
+        /// <returns>Returns the value of the specified property or default.</returns>
+        public static object GetPropertyValue(this object instance, string fullPath, bool noException = false)
+        {
+            if (instance == null)
+            {
+                if (noException) return default;
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            var path = fullPath?.Split(new char[] { '.', '/', }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+
+            object current = instance;
+            for (int i = 0; i < path.Length; i++)
+            {
+                var part = path[i];
+
+                if (current == null)
+                {
+                    if (noException) return default;
+                    throw new NullReferenceException($"Property path {path.Take(i).Join('/')} is null!");
+                }
+
+                var property = current.GetType().GetProperty(part, BindingFlags.Instance | BindingFlags.Public);
+                if (property == null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(fullPath),
+                        $"Property path {path.Take(i + 1).Join('/')} could not be found at specified instance!");
+                }
+
+                current = property.GetValue(current, null);
+            }
+
+            return current;
+        }
+
+        /// <summary>
+        /// Gets the specified property value and checks the return value type.
+        /// </summary>
+        /// <typeparam name="TValue">Value type.</typeparam>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="noException">Ignore null value properties and missing fields.</param>
+        /// <returns>Returns the value of the specified property or default.</returns>
+        public static TValue GetPropertyValue<TValue>(this object instance, string fullPath, bool noException = false)
+        {
+            var current = GetPropertyValue(instance, fullPath, noException);
+            if (current is TValue value) return value;
+            if (current == null || noException) return default;
+            throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {fullPath} is not of type {typeof(TValue)}!");
+        }
+
         /// <summary>Checks whether all properties equal.</summary>
         /// <typeparam name="TObject">The object type to get property definitions from.</typeparam>
         /// <param name="instance">Source instance to read properties from.</param>
