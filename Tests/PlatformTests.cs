@@ -1,7 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using Cave;
-using System.Net;
 
 namespace Test
 {
