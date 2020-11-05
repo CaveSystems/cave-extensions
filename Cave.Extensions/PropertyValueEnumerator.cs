@@ -62,9 +62,9 @@ namespace Cave
         public void Dispose() { stack = null; }
 
         /// <inheritdoc/>
-        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => this;
+        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive);
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => this;
+        IEnumerator IEnumerable.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive);
     }
 }

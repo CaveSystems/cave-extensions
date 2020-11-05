@@ -72,9 +72,9 @@ namespace Cave
         public void Dispose() { GC.SuppressFinalize(this); }
 
         /// <inheritdoc/>
-        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => this;
+        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive);
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => this;
+        IEnumerator IEnumerable.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive);
     }
 }
