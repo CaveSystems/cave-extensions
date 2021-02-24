@@ -116,25 +116,44 @@ namespace Test
             catch (Exception ex) { Assert.AreEqual(typeof(NullReferenceException), ex.GetType()); }
 
             Assert.AreEqual(root.EmptyIntermediate, root.GetPropertyValue("/EmptyIntermediate"));
-            Assert.AreEqual(root.EmptyIntermediate?.TestLong, root.GetPropertyValue("EmptyIntermediate.TestLong", noException: true));
-            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem, root.GetPropertyValue("EmptyIntermediate.EmptyItem", noException: true));
-            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem?.TestInt, root.GetPropertyValue(".EmptyIntermediate.EmptyItem.TestInt", noException: true));
+            
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue("EmptyIntermediate.TestLong", out long testLong));
+            Assert.AreEqual(root.EmptyIntermediate?.TestLong ?? default, testLong);
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue("EmptyIntermediate.EmptyItem", out object emptyItem));
+            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem ?? default, emptyItem);
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue("EmptyIntermediate.EmptyItem.TestInt", out int emptyItemTestInt));
+            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem?.TestInt ?? default, emptyItemTestInt);
+
             Assert.AreEqual(root.Intermediate, root.GetPropertyValue<Intermediate>("/Intermediate"));
             Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue("Intermediate.TestLong"));
             Assert.AreEqual(root.Intermediate.EmptyItem, root.GetPropertyValue("Intermediate.EmptyItem"));
-            Assert.AreEqual(root.Intermediate.EmptyItem?.TestInt, root.GetPropertyValue(".Intermediate.EmptyItem.TestInt", noException: true));
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue(".Intermediate.EmptyItem.TestInt", out int emptyItemTestInt2));
+            Assert.AreEqual(root.Intermediate.EmptyItem?.TestInt ?? default, emptyItemTestInt2);
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue(".Intermediate.EmptyItem.TestInt", out object emptyItemTestIntObject));
+            Assert.AreEqual(root.Intermediate.EmptyItem?.TestInt, emptyItemTestIntObject);
+
             Assert.AreEqual(root.TestRandom, root.GetPropertyValue("TestRandom"));
             Assert.AreEqual(root.TestItem, root.GetPropertyValue("TestItem"));
             Assert.AreEqual(root.TestItem.TestInt, root.GetPropertyValue("TestItem/TestInt"));
 
             Assert.AreEqual(root.EmptyIntermediate, root.GetPropertyValue<Intermediate>("/EmptyIntermediate"));
-            Assert.AreEqual(root.EmptyIntermediate?.TestLong ?? 0L, root.GetPropertyValue<long>("EmptyIntermediate.TestLong", noException: true));
-            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem, root.GetPropertyValue<Item>("EmptyIntermediate.EmptyItem", noException: true));
-            Assert.AreEqual(root.EmptyIntermediate?.EmptyItem?.TestInt ?? 0, root.GetPropertyValue<int>(".EmptyIntermediate.EmptyItem.TestInt", noException: true));
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue(".Intermediate.EmptyItem.TestLong", out long testLong2));
+            Assert.AreEqual(root.EmptyIntermediate?.TestLong ?? 0L, testLong2);
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue("EmptyIntermediate.EmptyItem", out object emptyItem2));
+            Assert.AreEqual(null, emptyItem2);
+
+            Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue(".EmptyIntermediate.EmptyItem.TestInt", out int testInt3));
+            Assert.AreEqual(0, testInt3);
+
             Assert.AreEqual(root.Intermediate, root.GetPropertyValue<Intermediate>("/Intermediate"));
             Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue<long>("Intermediate.TestLong"));
             Assert.AreEqual(root.Intermediate.EmptyItem, root.GetPropertyValue<Item>("Intermediate.EmptyItem"));
-            Assert.AreEqual(root.Intermediate.EmptyItem?.TestInt, root.GetPropertyValue<Item>(".Intermediate.EmptyItem.TestInt", noException: true));
+
             Assert.AreEqual(root.TestRandom, root.GetPropertyValue<object>("TestRandom"));
             Assert.AreEqual(root.TestItem, root.GetPropertyValue<Item>("TestItem"));
             Assert.AreEqual(root.TestItem.TestInt, root.GetPropertyValue<int>("TestItem/TestInt"));
