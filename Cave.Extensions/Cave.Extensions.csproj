@@ -9,6 +9,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
     <LangVersion>9.0</LangVersion>
+    <Version>2.0.10.1</Version>
     <!--project-->
     <RootNamespace>Cave</RootNamespace>
     <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>

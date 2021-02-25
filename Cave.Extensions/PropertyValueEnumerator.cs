@@ -51,10 +51,13 @@ namespace Cave
         #region IEnumerator<PropertyData> Members
 
         /// <inheritdoc />
-        public void Dispose() => stack = null;
+        object IEnumerator.Current => Current;
 
         /// <inheritdoc />
-        object IEnumerator.Current => Current;
+        public PropertyData Current { get; private set; }
+
+        /// <inheritdoc />
+        public void Dispose() => stack = null;
 
         /// <inheritdoc />
         public bool MoveNext()
@@ -80,10 +83,6 @@ namespace Cave
             stack = new Stack<PropertyData>();
             AddProperties(string.Empty, Root);
         }
-
-        /// <inheritdoc />
-        public PropertyData Current { get; private set; }
-
         #endregion
 
         #region Members
@@ -95,8 +94,16 @@ namespace Cave
                 return;
             }
 
-            foreach (var property in instance.GetType().GetProperties(BindingFlags))
+            if (instance is string)
             {
+                return;
+            }
+
+            var instanceType = instance.GetType();
+            foreach (var property in instanceType.GetProperties(BindingFlags))
+            {
+                // do not recurse into nested properties of sme type
+                if (property.PropertyType == instanceType) continue;
                 stack.Push(new PropertyData(rootPath, property, instance));
             }
         }
