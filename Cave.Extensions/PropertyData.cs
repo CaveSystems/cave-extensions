@@ -43,15 +43,28 @@ namespace Cave
         /// Gets the root path of the property.
         /// </summary>
         public string RootPath { get; }
+
         /// <summary>
         /// Gets the source object of this property.
         /// This is null at <see cref="PropertyEnumerator"/> and may be null at <see cref="PropertyValueEnumerator"/> if the property value or root property value is null.
         /// </summary>
         public object Source { get; }
+
         /// <summary>
-        /// Gets the current value of the property.
-        /// This is null at <see cref="PropertyEnumerator"/>.
+        /// Gets the current value of the property. This will result in exceptions if <see cref="CanGetValue"/> == false.
         /// </summary>
-        public object Value => !CanGetValue ? null : PropertyInfo.GetValue(Source, null);
+        public object Value => PropertyInfo.GetValue(Source, null);
+
+        /// <summary>
+        /// Gets the current property value of the specified object. The object has to match the PropertyInfo.DeclaringType.
+        /// </summary>
+        /// <param name="source">Source object to read from.</param>
+        /// <returns>Returns the property value.</returns>
+        public object GetValueOf(object source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (source.GetType() != PropertyInfo.DeclaringType) throw new ArgumentOutOfRangeException(nameof(source));
+            return PropertyInfo.GetValue(source, null);
+        }
     }
 }

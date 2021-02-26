@@ -70,7 +70,14 @@ namespace Cave
             var current = stack.Pop();
             if (Recursive)
             {
-                AddProperties(current.FullPath, current.Value);
+                if (current.CanGetValue)
+                {
+                    AddProperties(current.FullPath, current.Value);
+                }
+                else
+                {
+                    AddProperties(current.FullPath, null);
+                }
             }
 
             Current = current;
