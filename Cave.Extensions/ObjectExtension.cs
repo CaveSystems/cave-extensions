@@ -6,16 +6,19 @@ using System.Reflection;
 
 namespace Cave
 {
-    /// <summary>Gets extensions on object instances.</summary>
+    /// <summary>Provides extensions to object instances.</summary>
     public static class ObjectExtension
     {
+        #region Static
+
         /// <summary>Get a list of available properties.</summary>
         /// <param name="instance">Object instance to read.</param>
         /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
         /// <param name="withValue">List only sub-properties with values.</param>
         /// <param name="noRecursion">Disable recursion.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
-        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false, bool noRecursion = false)
+        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false,
+            bool noRecursion = false)
         {
             if (instance == null)
             {
@@ -30,6 +33,45 @@ namespace Cave
             return withValue
                 ? new PropertyValueEnumerator(instance, bindingFlags, !noRecursion)
                 : new PropertyEnumerator(instance.GetType(), bindingFlags, !noRecursion);
+        }
+
+        /// <summary>Gets the specified property value.</summary>
+        /// <remarks>
+        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
+        /// <see cref="GetProperties" />.
+        /// </remarks>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="noException">Ignore null value properties and missing fields.</param>
+        /// <returns>Returns the value of the specified property or default.</returns>
+        [Obsolete("Use TryGetPropertyValue instead!")]
+        public static object GetPropertyValue(this object instance, string fullPath, bool noException)
+        {
+            if (noException)
+            {
+                TryGetPropertyValue(instance, fullPath, out var value);
+                return value;
+            }
+
+            return GetPropertyValue(instance, fullPath);
+        }
+
+        /// <summary>Gets the specified property value and checks the return value type.</summary>
+        /// <typeparam name="TValue">Value type.</typeparam>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="noException">Ignore null value properties and missing fields.</param>
+        /// <returns>Returns the value of the specified property or default.</returns>
+        [Obsolete("Use TryGetPropertyValue instead!")]
+        public static TValue GetPropertyValue<TValue>(this object instance, string fullPath, bool noException)
+        {
+            if (noException)
+            {
+                TryGetPropertyValue<TValue>(instance, fullPath, out var value);
+                return value;
+            }
+
+            return GetPropertyValue<TValue>(instance, fullPath);
         }
 
         /// <summary>Gets the specified property value.</summary>
@@ -97,7 +139,7 @@ namespace Cave
             var targetType = typeof(TValue);
             if (targetType.IsInstanceOfType(current) || current is IConvertible)
             {
-                return (TValue)Convert.ChangeType(current, targetType);
+                return (TValue) Convert.ChangeType(current, targetType);
             }
 
             throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {fullPath} is not of type {typeof(TValue)}!");
@@ -112,7 +154,7 @@ namespace Cave
         /// <param name="fullPath">Full property path.</param>
         /// <param name="result">Returns the result value.</param>
         /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-        /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
+        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
         public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = 0)
         {
             if (instance == null)
@@ -159,7 +201,7 @@ namespace Cave
         /// <param name="fullPath">Full property path.</param>
         /// <param name="result">Returns the result value.</param>
         /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-        /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
+        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
         public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = 0)
         {
             var error = TryGetPropertyValue(instance, fullPath, out var obj);
@@ -218,10 +260,11 @@ namespace Cave
                 }
 
 #if NET20 || NET35 || NET40
-                if (ignoredByAttribute != null && property.GetCustomAttributes(true).Any(a => ignoredByAttribute.Contains(a.GetType())))
+                if ((ignoredByAttribute != null) && property.GetCustomAttributes(true).Any(a => ignoredByAttribute.Contains(a.GetType())))
                 {
                     continue;
                 }
+
                 var instanceValue = property.GetGetMethod().Invoke(instance, null);
                 var otherValue = property.GetGetMethod().Invoke(other, null);
 #else
@@ -249,5 +292,7 @@ namespace Cave
 
             return true;
         }
+
+        #endregion
     }
 }
