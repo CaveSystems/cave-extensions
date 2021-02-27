@@ -15,7 +15,7 @@ namespace System
     /// </para>
     /// </remarks>
     [ComVisible(false)]
-    [DebuggerDisplay("ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}")]
+    [DebuggerDisplay("IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}")]
     public class Lazy<T>
     {
         #region Private Fields
@@ -89,11 +89,7 @@ namespace System
         /// The <see cref="Lazy{T}"/> was initialized to use the default constructor of the type being lazily initialized, and permissions to access the
         /// constructor were missing.
         /// </exception>
-        /// <remarks>
-        /// If <see cref="IsValueCreated"/> is false, accessing <see cref="Value"/> will force initialization. Please <see
-        /// cref="System.Threading.LazyThreadSafetyMode"/> for more information on how <see cref="Lazy{T}"/> will behave if an exception is thrown from
-        /// initialization delegate.
-        /// </remarks>
+        /// <remarks>If <see cref="IsValueCreated"/> is false, accessing <see cref="Value"/> will force initialization.</remarks>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value
         {
