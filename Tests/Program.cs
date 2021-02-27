@@ -7,6 +7,8 @@ namespace Test
 {
     class Program
     {
+        #region Private Methods
+
         static int Main()
         {
             var errors = 0;
@@ -79,5 +81,7 @@ namespace Test
                 ;
             }
         }
+
+        #endregion Private Methods
     }
 }
