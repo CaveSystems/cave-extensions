@@ -75,15 +75,25 @@ namespace System
         /// The initialization of a <see cref="Lazy{T}"/> instance may result in either a value being produced or an exception being thrown. If an exception
         /// goes unhandled during initialization, <see cref="IsValueCreated"/> will return false.
         /// </remarks>
-        public bool IsValueCreated => factory == null;
+        public bool IsValueCreated => factory == null && createException == null;
 
-        /// <summary>Gets the lazily initialized value of the current <see cref="Lazy{T}"/>.</summary> <value>The lazily initialized value of the current <see
-        /// cref="Lazy{T}"/>.</value> <exception cref="MissingMemberException"> The <see cref="Lazy{T}"/> was initialized to use the default constructor of the
-        /// type being lazily initialized, and that type does not have a public, parameterless constructor. </exception> <exception
-        /// cref="MemberAccessException"> The <see cref="Lazy{T}"/> was initialized to use the default constructor of the type being lazily initialized, and
-        /// permissions to access the constructor were missing. </exception> <remarks> If <see cref="IsValueCreated"/> is false, accessing <see cref="Value"/>
-        /// will force initialization. Please <see cref="System.Threading.LazyThreadSafetyMode"> for more information on how <see cref="Lazy{T}"/> will behave
-        /// if an exception is thrown from initialization delegate. </remarks>
+        /// <summary>
+        /// Gets the lazily initialized value of the current <see cref="Lazy{T}"/>.
+        /// </summary>
+        /// <value>The lazily initialized value of the current <see cref="Lazy{T}"/>.</value>
+        /// <exception cref="MissingMemberException">
+        /// The <see cref="Lazy{T}"/> was initialized to use the default constructor of the type being lazily initialized, and that type does not have a public,
+        /// parameterless constructor.
+        /// </exception>
+        /// <exception cref="MemberAccessException">
+        /// The <see cref="Lazy{T}"/> was initialized to use the default constructor of the type being lazily initialized, and permissions to access the
+        /// constructor were missing.
+        /// </exception>
+        /// <remarks>
+        /// If <see cref="IsValueCreated"/> is false, accessing <see cref="Value"/> will force initialization. Please <see
+        /// cref="System.Threading.LazyThreadSafetyMode"/> for more information on how <see cref="Lazy{T}"/> will behave if an exception is thrown from
+        /// initialization delegate.
+        /// </remarks>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value
         {
