@@ -9,6 +9,32 @@ namespace Test
     [TestFixture]
     class TaskTests
     {
+        #region Private Methods
+
+        void TestSleep(object syncRoot, int number)
+        {
+            Thread.Sleep(1000 - number);
+        }
+
+        private void TestWait(Task task)
+        {
+            try
+            {
+                task.Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual(typeof(AggregateException), ex.GetType());
+                Assert.AreEqual("TestException", ex.InnerException.Message);
+                return;
+            }
+            Assert.Fail("No exception during wait!");
+        }
+
+        #endregion Private Methods
+
+        #region Public Methods
+
         [Test]
         public void TaskException()
         {
@@ -29,12 +55,6 @@ namespace Test
             Assert.IsTrue(task.IsCompleted);
             Assert.AreEqual(typeof(AggregateException), task.Exception.GetType());
             Assert.AreEqual("TestException", task.Exception.InnerException.Message);
-        }
-
-        void TestSleep(object syncRoot, int number)
-        {
-            Thread.Sleep(1000 - number);
-            lock (syncRoot) Console.WriteLine($"{number} task completed");
         }
 
         [Test]
@@ -63,19 +83,6 @@ namespace Test
             foreach (var t in list) t.Wait();
         }
 
-        private void TestWait(Task task)
-        {
-            try
-            {
-                task.Wait();
-            }
-            catch (Exception ex)
-            {
-                Assert.AreEqual(typeof(AggregateException), ex.GetType());
-                Assert.AreEqual("TestException", ex.InnerException.Message);
-                return;
-            }
-            Assert.Fail("No exception during wait!");
-        }
+        #endregion Public Methods
     }
 }
