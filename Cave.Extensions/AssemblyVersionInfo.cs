@@ -42,7 +42,7 @@ namespace Cave
                     programAssemblyVersionInfo = FromAssembly(a);
                 }
 
-                return (AssemblyVersionInfo) programAssemblyVersionInfo;
+                return (AssemblyVersionInfo)programAssemblyVersionInfo;
             }
         }
 
@@ -252,7 +252,7 @@ namespace Cave
         /// <summary>Gets or sets the Assemblies' CultureInfo.</summary>
         public CultureInfo Culture
         {
-            get => new CultureInfo(CultureID);
+            get => new(CultureID);
             set
             {
                 if (value == null)
@@ -287,7 +287,7 @@ namespace Cave
         /// <summary>Gets a latestversion instance for the current assembly (this populates only fields present at this instance).</summary>
         /// <returns>the latest version.</returns>
         public LatestVersion ToLatestVersion() =>
-            new LatestVersion
+            new()
             {
                 AssemblyVersion = AssemblyVersion,
                 FileVersion = FileVersion,

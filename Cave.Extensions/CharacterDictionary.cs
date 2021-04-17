@@ -6,6 +6,8 @@ namespace Cave
     /// <summary>Gets a ascii character dictionary (this is used for example at the <see cref="Base64" /> implementation).</summary>
     public sealed class CharacterDictionary
     {
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="CharacterDictionary" /> class.</summary>
         /// <param name="charset">Characters to use as charset.</param>
         public CharacterDictionary(string charset)
@@ -22,19 +24,36 @@ namespace Cave
 
             for (var i = 0; i < 128; i++)
             {
-                values[i] = -1;
+                Values[i] = -1;
             }
 
-            this.charset = charset.ToCharArray();
-            for (var i = 0; i < this.charset.Length; i++)
+            Charset = charset.ToCharArray();
+            for (var i = 0; i < Charset.Length; i++)
             {
-                values[this.charset[i]] = i;
+                Values[Charset[i]] = i;
             }
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>Gets the length.</summary>
         /// <value>The length.</value>
-        public int Length => charset.Length;
+        public int Length => Charset.Length;
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>Clones the <see cref="CharacterDictionary" />.</summary>
+        /// <returns>Returns a copy.</returns>
+        public CharacterDictionary Clone() => new(this);
+
+        /// <summary>Gets the character for the specified value.</summary>
+        /// <param name="value">The value to look up.</param>
+        /// <returns>Returns the character for the value.</returns>
+        public char GetCharacter(int value) => Charset[value];
 
         /// <summary>Gets the value for the specified character.</summary>
         /// <param name="character">The <see cref="char" /> to look up.</param>
@@ -42,7 +61,7 @@ namespace Cave
         /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found.</exception>
         public int GetValue(char character)
         {
-            var result = values[character];
+            var result = Values[character];
             if (result < 0)
             {
                 throw new KeyNotFoundException($"Invalid symbol '{character}'!");
@@ -57,35 +76,28 @@ namespace Cave
         /// <returns></returns>
         public int TryGetValue(char character, int defaultValue)
         {
-            if ((character < 0) || (character >= values.Length))
+            if ((character < 0) || (character >= Values.Length))
             {
                 return defaultValue;
             }
 
-            var result = values[character];
+            var result = Values[character];
             return result < 0 ? defaultValue : result;
         }
 
-        /// <summary>Gets the character for the specified value.</summary>
-        /// <param name="value">The value to look up.</param>
-        /// <returns>Returns the character for the value.</returns>
-        public char GetCharacter(int value) => charset[value];
-
-        /// <summary>Clones the <see cref="CharacterDictionary" />.</summary>
-        /// <returns>Returns a copy.</returns>
-        public CharacterDictionary Clone() => new CharacterDictionary(this);
+        #endregion Public Methods
 
         #region private implementation
 
-        readonly char[] charset;
-        readonly int[] values = new int[128];
+        readonly char[] Charset;
+        readonly int[] Values = new int[128];
 
         CharacterDictionary(CharacterDictionary cloneData)
         {
-            charset = (char[]) cloneData.charset.Clone();
-            values = (int[]) cloneData.values.Clone();
+            Charset = (char[])cloneData.Charset.Clone();
+            Values = (int[])cloneData.Values.Clone();
         }
 
-        #endregion
+        #endregion private implementation
     }
 }

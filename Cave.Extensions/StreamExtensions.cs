@@ -7,10 +7,9 @@ namespace Cave
     /// <summary>Gets extensions to <see cref="Stream" /> implementations.</summary>
     public static class StreamExtensions
     {
-        static int blockSize = 64 * 1024;
+        #region Static
 
-        /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.</summary>
-        public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
+        static int blockSize = 64 * 1024;
 
         /// <summary>Does a stream copy from source to destination.</summary>
         /// <param name="source">Source stream.</param>
@@ -49,7 +48,7 @@ namespace Cave
             var buffer = new byte[blockSize];
             while (written < length)
             {
-                var block = (int) Math.Min(buffer.Length, length - written);
+                var block = (int)Math.Min(buffer.Length, length - written);
                 if (block == 0)
                 {
                     break;
@@ -86,7 +85,11 @@ namespace Cave
         /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             if ((length <= 0) && source.CanSeek)
             {
                 length = source.Length - source.Position;
@@ -98,7 +101,7 @@ namespace Cave
                 var done = 0;
                 while (done < length)
                 {
-                    var read = source.Read(buffer, done, (int) length - done);
+                    var read = source.Read(buffer, done, (int)length - done);
                     var e = new ProgressEventArgs(userItem, done, read, length, true);
                     callback?.Invoke(source, e);
                     if ((read == -1) || e.Break)
@@ -184,5 +187,10 @@ namespace Cave
             var data = Encoding.UTF8.GetBytes(text);
             stream.Write(data, 0, data.Length);
         }
+
+        /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.</summary>
+        public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
+
+        #endregion
     }
 }

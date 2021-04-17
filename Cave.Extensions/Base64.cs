@@ -6,12 +6,13 @@ namespace Cave
     /// <summary>Gets Base64 en-/decoding.</summary>
     public class Base64 : BaseX
     {
+        #region Static
+
         const int BitCount = 6;
 
-        /// <summary>
-        /// Gets the padding character.
-        /// </summary>
-        public char? Padding { get; }
+        #endregion
+
+        #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="Base64" /> class.</summary>
         /// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
@@ -24,7 +25,7 @@ namespace Cave
             Padding = padding;
             if (Padding != null)
             {
-                int paddingChar = (char) Padding;
+                int paddingChar = (char)Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new ArgumentOutOfRangeException(nameof(padding));
@@ -32,16 +33,31 @@ namespace Cave
             }
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>Gets the padding character.</summary>
+        public char? Padding { get; }
+
+        #endregion
+
+        #region Overrides
+
         #region public decoder interface
 
         /// <summary>Decodes a base64 data array.</summary>
         /// <param name="data">The base64 data to decode.</param>
         public override byte[] Decode(byte[] data)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             if (Padding != null)
             {
-                int paddingChar = (char) Padding;
+                int paddingChar = (char)Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new InvalidOperationException("Invalid padding character!");
@@ -61,13 +77,13 @@ namespace Cave
 
                 value <<= BitCount;
                 bits += BitCount;
-                value |= CharacterDictionary.GetValue((char) b);
+                value |= CharacterDictionary.GetValue((char)b);
                 if (bits >= 8)
                 {
                     bits -= 8;
                     var l_Out = value >> bits;
                     value &= ~(0xFFFF << bits);
-                    result.Add((byte) l_Out);
+                    result.Add((byte)l_Out);
                 }
             }
 
@@ -82,7 +98,11 @@ namespace Cave
         /// <param name="data">The data to encode.</param>
         public override string Encode(byte[] data)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             var result = new List<char>(data.Length * 2);
             var value = 0;
             var bits = 0;
@@ -117,7 +137,7 @@ namespace Cave
 
             if (Padding != null)
             {
-                var padding = (char) Padding;
+                var padding = (char)Padding;
                 while ((bits % 8) != 0)
                 {
                     result.Add(padding);
@@ -130,16 +150,18 @@ namespace Cave
 
         #endregion
 
+        #endregion
+
         #region public static default instances
 
         /// <summary>Gets the default charset for base64 en-/decoding with padding.</summary>
-        public static Base64 Default => new Base64(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), '=');
+        public static Base64 Default => new(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), '=');
 
         /// <summary>Gets the default charset for base64 en-/decoding without padding.</summary>
-        public static Base64 NoPadding => new Base64(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), null);
+        public static Base64 NoPadding => new(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), null);
 
         /// <summary>Gets the url safe charset for base64 en-/decoding (no padding).</summary>
-        public static Base64 UrlChars => new Base64(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), null);
+        public static Base64 UrlChars => new(new CharacterDictionary("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), null);
 
         #endregion
     }

@@ -8,6 +8,8 @@ namespace Cave
     /// <summary>Gets a dictionary for <see cref="Base64" /> implementations.</summary>
     public sealed class Base64Dictionary
     {
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="Base64Dictionary" /> class.</summary>
         public Base64Dictionary(string charset)
         {
@@ -25,14 +27,29 @@ namespace Cave
             {
                 if ((c < 1) || (c > 127))
                 {
-                    throw new InvalidDataException($"Invalid character 0x{(int) c:x}!");
+                    throw new InvalidDataException($"Invalid character 0x{(int)c:x}!");
                 }
 
-                this.charset[count] = c;
-                values[c] = ++count;
+                Charset[Count] = c;
+                Values[c] = ++Count;
             }
         }
 
+        #endregion
+
+        #region Members
+
+        #region ICloneable Member
+
+        /// <summary>Clones the <see cref="Base64Dictionary" />.</summary>
+        /// <returns>Returns a copy.</returns>
+        public Base64Dictionary Clone() => new(this);
+
+        #endregion ICloneable Member
+
+        #endregion
+
+        #region Public Indexers
 
         /// <summary>Gets the value for the specified character.</summary>
         /// <param name="c">The <see cref="char" /> to look up.</param>
@@ -44,12 +61,12 @@ namespace Cave
         {
             get
             {
-                if (count != 64)
+                if (Count != 64)
                 {
                     throw new ArgumentException("Dictionary does not contain 64 key valid combinations!");
                 }
 
-                var result = values[c] - 1;
+                var result = Values[c] - 1;
                 if (result < 0)
                 {
                     throw new KeyNotFoundException($"Invalid symbol '{c}'!");
@@ -62,29 +79,23 @@ namespace Cave
         /// <summary>Gets the character for the specified value.</summary>
         /// <param name="value">The value to look up.</param>
         /// <returns>Returns the character for the value.</returns>
-        public char this[int value] => charset[value];
+        public char this[int value] => Charset[value];
 
-        #region ICloneable Member
-
-        /// <summary>Clones the <see cref="Base64Dictionary" />.</summary>
-        /// <returns>Returns a copy.</returns>
-        public Base64Dictionary Clone() => new Base64Dictionary(this);
-
-        #endregion
+        #endregion Public Indexers
 
         #region private implementation
 
-        readonly char[] charset = new char[64];
-        readonly int[] values = new int[128];
-        readonly int count;
+        readonly char[] Charset = new char[64];
+        readonly int Count;
+        readonly int[] Values = new int[128];
 
         Base64Dictionary(Base64Dictionary source)
         {
-            charset = (char[]) source.charset.Clone();
-            values = (int[]) source.values.Clone();
-            count = source.count;
+            Charset = (char[])source.Charset.Clone();
+            Values = (int[])source.Values.Clone();
+            Count = source.Count;
         }
 
-        #endregion
+        #endregion private implementation
     }
 }

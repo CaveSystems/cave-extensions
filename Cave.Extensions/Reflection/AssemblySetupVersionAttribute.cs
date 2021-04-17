@@ -6,6 +6,8 @@ namespace Cave.Reflection
     [AttributeUsage(AttributeTargets.Assembly)]
     public sealed class AssemblySetupVersionAttribute : Attribute
     {
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="AssemblySetupVersionAttribute" /> class.</summary>
         /// <param name="version">The version.</param>
         public AssemblySetupVersionAttribute(Version version) => SetupVersion = version;
@@ -17,7 +19,13 @@ namespace Cave.Reflection
         {
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>Gets the license number.</summary>
         public Version SetupVersion { get; }
+
+        #endregion
     }
 }

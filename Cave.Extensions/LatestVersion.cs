@@ -9,7 +9,7 @@ namespace Cave
 
         /// <summary>Gets a new empty version.</summary>
         public static LatestVersion Empty =>
-            new LatestVersion
+            new()
             {
                 AssemblyVersion = new Version(0, 0),
                 FileVersion = new Version(0, 0),
@@ -133,9 +133,8 @@ namespace Cave
         public override int GetHashCode() => ToString().GetHashCode();
 
         /// <summary>
-        ///     Compares the current instance with another object of the same type and returns an integer that indicates
-        ///     whether the current instance precedes, follows, or occurs in the same position in the sort order as the other
-        ///     object.
+        /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current
+        /// instance precedes, follows, or occurs in the same position in the sort order as the other object.
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>

@@ -6,7 +6,13 @@ namespace Cave
     /// <summary>Gets Base32 en-/decoding.</summary>
     public class Base32 : BaseX
     {
+        #region Static
+
         const int BitCount = 5;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="Base32" /> class.</summary>
         /// <param name="dictionary">The dictionary containing 64 ascii characters used for encoding.</param>
@@ -19,7 +25,7 @@ namespace Cave
             Padding = padding;
             if (Padding != null)
             {
-                int paddingChar = (char) Padding;
+                int paddingChar = (char)Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new ArgumentOutOfRangeException(nameof(padding));
@@ -27,8 +33,16 @@ namespace Cave
             }
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>Gets the used padding character or null.</summary>
         public char? Padding { get; }
+
+        #endregion
+
+        #region Overrides
 
         #region public decoder interface
 
@@ -48,7 +62,7 @@ namespace Cave
 
             if (Padding != null)
             {
-                int paddingChar = (char) Padding;
+                int paddingChar = (char)Padding;
                 if ((paddingChar < 0) || (paddingChar > 127))
                 {
                     throw new InvalidOperationException("Invalid padding character!");
@@ -68,13 +82,13 @@ namespace Cave
 
                 value <<= BitCount;
                 bits += BitCount;
-                value |= CharacterDictionary.GetValue((char) b);
+                value |= CharacterDictionary.GetValue((char)b);
                 if (bits >= 8)
                 {
                     bits -= 8;
                     var outValue = value >> bits;
                     value &= ~(0xFFFF << bits);
-                    result.Add((byte) outValue);
+                    result.Add((byte)outValue);
                 }
             }
 
@@ -89,7 +103,11 @@ namespace Cave
         /// <param name="data">The data to encode.</param>
         public override string Encode(byte[] data)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             var result = new List<char>(data.Length * 2);
             var value = 0;
             var bits = 0;
@@ -124,7 +142,7 @@ namespace Cave
 
             if (Padding != null)
             {
-                var padding = (char) Padding;
+                var padding = (char)Padding;
                 while ((bits % 8) != 0)
                 {
                     result.Add(padding);
@@ -137,19 +155,21 @@ namespace Cave
 
         #endregion
 
+        #endregion
+
         #region public static default instances
 
         /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
-        public static Base32 OTP => new Base32(new CharacterDictionary("abcdefghijklmnopqrstuvwxyz234567"), null);
+        public static Base32 OTP => new(new CharacterDictionary("abcdefghijklmnopqrstuvwxyz234567"), null);
 
         /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
-        public static Base32 Default => new Base32(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), '=');
+        public static Base32 Default => new(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), '=');
 
         /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
-        public static Base32 NoPadding => new Base32(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), null);
+        public static Base32 NoPadding => new(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), null);
 
         /// <summary>Gets the url safe dictatable (no i,l,v,0) charset for Base32 en-/decoding (no padding).</summary>
-        public static Base32 Safe => new Base32(new CharacterDictionary("abcdefghjkmnopqrstuwxyz123456789"), null);
+        public static Base32 Safe => new(new CharacterDictionary("abcdefghjkmnopqrstuwxyz123456789"), null);
 
         #endregion
     }

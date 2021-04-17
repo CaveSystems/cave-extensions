@@ -6,8 +6,6 @@ namespace Test
     [TestFixture]
     class PlatformTests
     {
-        #region Public Methods
-
         [Test]
         public void Platform()
         {
@@ -17,7 +15,5 @@ namespace Test
             Console.WriteLine($"Platform.Type: {Cave.Platform.Type}");
             Console.WriteLine($"Platform.SystemVersionString: {Cave.Platform.SystemVersionString}");
         }
-
-        #endregion Public Methods
     }
 }

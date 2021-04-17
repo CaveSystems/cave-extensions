@@ -6,63 +6,79 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>Provides a read only set.</summary>
+    /// <summary>Provides a read only Set.</summary>
     /// <typeparam name="T">Element type.</typeparam>
     /// <seealso cref="IItemSet{T}" />
     [SuppressMessage("Naming", "CA1710")]
     public sealed class ReadOnlySet<T> : IItemSet<T>
     {
-        readonly IItemSet<T> set;
+        readonly IItemSet<T> Set;
+
+        #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}" /> class.</summary>
-        /// <param name="set">The set.</param>
-        public ReadOnlySet(IItemSet<T> set) => this.set = set;
+        /// <param name="set">The Set.</param>
+        public ReadOnlySet(IItemSet<T> set) => this.Set = set;
+
+        #endregion
+
+        #region IItemSet<T> Members
 
         /// <inheritdoc />
-        public int Count => set.Count;
+        public void CopyTo(Array array, int arrayIndex) => Set.CopyTo(array, arrayIndex);
+
+        /// <inheritdoc />
+        public bool IsSynchronized => Set.IsSynchronized;
+
+        /// <inheritdoc />
+        public object SyncRoot => Set.SyncRoot;
+
+        /// <inheritdoc />
+        public bool Contains(T item) => Set.Contains(item);
+
+        /// <inheritdoc />
+        public void CopyTo(T[] array, int arrayIndex) => Set.CopyTo(array, arrayIndex);
 
         /// <inheritdoc />
         public bool IsReadOnly => true;
 
         /// <inheritdoc />
-        public bool IsEmpty => set.IsEmpty;
+        IEnumerator IEnumerable.GetEnumerator() => Set.GetEnumerator();
 
         /// <inheritdoc />
-        public bool IsSynchronized => set.IsSynchronized;
+        public IEnumerator<T> GetEnumerator() => Set.GetEnumerator();
 
         /// <inheritdoc />
-        public object SyncRoot => set.SyncRoot;
+        public bool Equals(IItemSet<T> other) => Set.Equals(other);
 
         /// <inheritdoc />
-        public bool Contains(T item) => set.Contains(item);
+        public bool ContainsRange(IEnumerable<T> items) => Set.ContainsRange(items);
 
         /// <inheritdoc />
-        public bool ContainsRange(IEnumerable<T> items) => set.ContainsRange(items);
+        public int Count => Set.Count;
 
         /// <inheritdoc />
-        public void CopyTo(T[] array, int arrayIndex) => set.CopyTo(array, arrayIndex);
+        public bool IsEmpty => Set.IsEmpty;
 
-        /// <inheritdoc />
-        public void CopyTo(Array array, int arrayIndex) => set.CopyTo(array, arrayIndex);
+        #endregion
 
-        /// <inheritdoc />
-        public IEnumerator<T> GetEnumerator() => set.GetEnumerator();
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => set.GetEnumerator();
-
-        /// <inheritdoc />
-        public bool Equals(IItemSet<T> other) => set.Equals(other);
-
-        /// <summary>Creates a new object that is a copy of the current instance.</summary>
-        /// <returns>A new object that is a copy of this instance.</returns>
-        public object Clone() => this;
+        #region Overrides
 
         /// <inheritdoc />
         public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
 
         /// <inheritdoc />
-        public override int GetHashCode() => set != null ? set.GetHashCode() : 0;
+        public override int GetHashCode() => Set != null ? Set.GetHashCode() : 0;
+
+        #endregion
+
+        #region Members
+
+        /// <summary>Creates a new object that is a copy of the current instance.</summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public object Clone() => this;
+
+        #endregion
 
         #region Functions with ReadOnlyExceptions
 

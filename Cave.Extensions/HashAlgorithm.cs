@@ -1,5 +1,4 @@
 ﻿#if NETSTANDARD10
-
 using System.IO;
 
 namespace System.Security.Cryptography

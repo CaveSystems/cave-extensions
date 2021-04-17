@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
@@ -93,7 +92,6 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="result">The result.</param>
         /// <returns>True if the value could be parsed.</returns>
-        [SuppressMessage("Design", "CA1031")]
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible
         {

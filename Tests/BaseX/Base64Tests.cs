@@ -1,6 +1,6 @@
-﻿using Cave;
+﻿using System;
+using Cave;
 using NUnit.Framework;
-using System;
 
 namespace Test.BaseX
 {
@@ -11,14 +11,18 @@ namespace Test.BaseX
         public void Base64Test()
         {
             var rnd = new Random();
-            foreach (var b in new Base64[] { Base64.Default, Base64.NoPadding, Base64.UrlChars })
+            foreach (var b in new[]
+            {
+                Base64.Default,
+                Base64.NoPadding,
+                Base64.UrlChars
+            })
             {
                 for (var i = 0; i < 1000; i++)
                 {
                     var value = ((ulong)rnd.Next() * (ulong)rnd.Next() * (ulong)rnd.Next()) + (ulong)rnd.Next();
                     var buf = new byte[(int)(value % 64)];
                     rnd.NextBytes(buf);
-
                     CollectionAssert.AreEqual(buf, b.Decode(b.Encode(buf)));
                     Assert.AreEqual(value.ToString(), b.DecodeUtf8(b.Encode(value.ToString())));
                     Assert.AreEqual(value, BitConverter.ToUInt64(b.Decode(b.Encode(BitConverter.GetBytes(value))), 0));
@@ -36,7 +40,11 @@ namespace Test.BaseX
         public void ValueTest()
         {
             var i = Base64.Default.DecodeInt32(Base64.Default.Encode(int.MinValue));
-            if (i != int.MinValue) throw new Exception();
+            if (i != int.MinValue)
+            {
+                throw new Exception();
+            }
+
             for (var n = 1; n < 0x10000000; n <<= 1)
             {
                 i = Base64.Default.DecodeInt32(Base64.Default.Encode(n));
@@ -46,7 +54,11 @@ namespace Test.BaseX
             }
 
             var l = Base64.Default.DecodeInt64(Base64.Default.Encode(long.MinValue));
-            if (l != long.MinValue) throw new Exception();
+            if (l != long.MinValue)
+            {
+                throw new Exception();
+            }
+
             for (long n = 1; n < 0x1000000000000000L; n <<= 1)
             {
                 l = Base64.Default.DecodeInt64(Base64.Default.Encode(n));

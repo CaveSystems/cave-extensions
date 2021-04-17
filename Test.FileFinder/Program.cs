@@ -1,45 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Cave;
 
 namespace Test.FileFinder
 {
     class Program
     {
-        static void CheckFileFinder()
-        {
-            var sw = StopWatch.StartNew();
-            var ff = new Cave.FileFinder
-            {
-                BaseDirectory = "/"
-            };
-            //ff.EnableDebug = true;
-            ff.Start();
-            var count = 0;
-            while (!ff.Completed)
-            {
-                Thread.Sleep(1000);
-                var files = ff.Get(true);
-                ShowProgress(ff.Progress, sw);
-                count += files.Count;
-            }
-            ff.Close();
-            Console.WriteLine(count + " files");
-            Console.WriteLine(sw.Elapsed.FormatTime());
-            Console.WriteLine(sw.Elapsed.ToString());
-        }
+        #region Static
+
+        static float lastProgress;
 
         static void CheckDirectoryFinder()
         {
             var sw = StopWatch.StartNew();
-            var df = new Cave.DirectoryFinder
-            {
-                BaseDirectory = "/"
-            };
+            var df = new DirectoryFinder { BaseDirectory = "/" };
             //ff.EnableDebug = true;
             df.Start();
             var count = 0;
@@ -50,13 +24,39 @@ namespace Test.FileFinder
                 ShowProgress(df.Progress, sw);
                 count += files.Count;
             }
+
             df.Close();
             Console.WriteLine(count + " files");
             Console.WriteLine(sw.Elapsed.FormatTime());
             Console.WriteLine(sw.Elapsed.ToString());
         }
 
-        static float lastProgress;
+        static void CheckFileFinder()
+        {
+            var sw = StopWatch.StartNew();
+            var ff = new Cave.FileFinder { BaseDirectory = "/" };
+            //ff.EnableDebug = true;
+            ff.Start();
+            var count = 0;
+            while (!ff.Completed)
+            {
+                Thread.Sleep(1000);
+                var files = ff.Get(true);
+                ShowProgress(ff.Progress, sw);
+                count += files.Count;
+            }
+
+            ff.Close();
+            Console.WriteLine(count + " files");
+            Console.WriteLine(sw.Elapsed.FormatTime());
+            Console.WriteLine(sw.Elapsed.ToString());
+        }
+
+        static void Main()
+        {
+            CheckFileFinder();
+            CheckDirectoryFinder();
+        }
 
         static void ShowProgress(float progress, IStopWatch sw)
         {
@@ -68,10 +68,6 @@ namespace Test.FileFinder
             }
         }
 
-        static void Main()
-        {
-            CheckFileFinder();
-            CheckDirectoryFinder();
-        }
+        #endregion
     }
 }

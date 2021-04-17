@@ -9,10 +9,14 @@ namespace Cave.Collections
     [SuppressMessage("Naming", "CA1716")]
     public sealed class Option : IEquatable<Option>
     {
+        #region Static
+
         /// <summary>Performs an implicit conversion from <see cref="string" /> to <see cref="Option" />.</summary>
         /// <param name="s">The string.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Option(string s) => Parse(s);
+
+        #endregion
 
         #region static functions
 
@@ -45,23 +49,15 @@ namespace Cave.Collections
             return result[0] == '-' ? "-" : null;
         }
 
-        /// <summary>
-        ///     Checks whether a string is an option string or not.
-        ///     <para>
-        ///         The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"]
-        ///         [...]name=['value'].
-        ///     </para>
+        /// <summary>Checks whether a string is an option string or not.
+        /// <para>The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].</para>
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
         public static bool IsOption(string option) => IsOption(option, true);
 
-        /// <summary>
-        ///     Checks whether a string is an option string or not.
-        ///     <para>
-        ///         The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"]
-        ///         [...]name=['value'].
-        ///     </para>
+        /// <summary>Checks whether a string is an option string or not.
+        /// <para>The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].</para>
         /// </summary>
         /// <param name="option"></param>
         /// <param name="allowMissingPrefix"></param>
@@ -109,7 +105,11 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(option));
             }
 
-            if (option.IndexOfAny(new[] { '\r', '\n' }) > -1)
+            if (option.IndexOfAny(new[]
+            {
+                '\r',
+                '\n'
+            }) > -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(option));
             }
@@ -137,8 +137,7 @@ namespace Cave.Collections
         /// <summary>Gets an <see cref="Option" /> from a <see cref="DictionaryEntry" />.</summary>
         /// <param name="dictionaryEntry"></param>
         /// <returns></returns>
-        public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) =>
-            new Option(null, dictionaryEntry.Key.ToString(), "=", dictionaryEntry.Value.ToString());
+        public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) => new(null, dictionaryEntry.Key.ToString(), "=", dictionaryEntry.Value.ToString());
 
         #endregion
 
@@ -261,10 +260,7 @@ namespace Cave.Collections
 
         #region overrides
 
-        /// <summary>
-        ///     Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string for the option or "&lt;Name&gt;" if value is null
-        ///     or empty.
-        /// </summary>
+        /// <summary>Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string for the option or "&lt;Name&gt;" if value is null or empty.</summary>
         /// <returns></returns>
         public override string ToString() => ToString(false);
 

@@ -6,22 +6,35 @@ namespace Cave.Collections.Generic
     /// <summary>Gets a basic moving average calculated with values based on a time axis (no continuous sampling needed).</summary>
     public class Proximation
     {
-        readonly LinkedList<ProximationValue> items = new LinkedList<ProximationValue>();
+        #region Nested type: ProximationValue
 
-        /// <summary>Gets the maximum value.</summary>
-        public long Maximum { get; private set; }
+        class ProximationValue
+        {
+            public readonly DateTime TimeStamp;
+            public readonly long Value;
 
-        /// <summary>Gets the minimum value.</summary>
-        public long Minimum { get; private set; }
+            #region Constructors
 
-        /// <summary>Gets the (local) datetime of the first recorded value.</summary>
-        public DateTime StartTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+            public ProximationValue(DateTime timeStamp, long value)
+            {
+                Value = value;
+                TimeStamp = timeStamp;
+            }
 
-        /// <summary>Gets the (local) datetime of the last recorded value.</summary>
-        public DateTime EndTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+            public ProximationValue(long value)
+            {
+                Value = value;
+                TimeStamp = DateTime.UtcNow;
+            }
 
-        /// <summary>Gets the duration between StartTime and EndTime.</summary>
-        public TimeSpan Duration => EndTime - StartTime;
+            #endregion
+        }
+
+        #endregion
+
+        readonly LinkedList<ProximationValue> items = new();
+
+        #region Properties
 
         /// <summary>Gets the current moving average.</summary>
         public long Average
@@ -43,30 +56,11 @@ namespace Cave.Collections.Generic
             }
         }
 
-        /// <summary>Gets the weighted average of the whole recorded timeline. Startweight is 0% and endweight is 100%.</summary>
-        public long WeightedAverage
-        {
-            get
-            {
-                if (items.Count == 0)
-                {
-                    return 0;
-                }
+        /// <summary>Gets the duration between StartTime and EndTime.</summary>
+        public TimeSpan Duration => EndTime - StartTime;
 
-                var duration = Duration.Ticks;
-                double result = 0;
-                double div = 0;
-                foreach (var i in items)
-                {
-                    var pos = (i.TimeStamp - StartTime).Ticks;
-                    var weight = duration / pos;
-                    result += i.Value * weight;
-                    div += weight;
-                }
-
-                return (long) (result / div);
-            }
-        }
+        /// <summary>Gets the (local) datetime of the last recorded value.</summary>
+        public DateTime EndTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
 
         /// <summary>Gets the reverse weighted average of the whole recorded timeline. Startweight is 100% and endweight is 0%.</summary>
         public long ReverseWeightedAverage
@@ -89,9 +83,47 @@ namespace Cave.Collections.Generic
                     div += weight;
                 }
 
-                return (long) (result / div);
+                return (long)(result / div);
             }
         }
+
+        /// <summary>Gets the (local) datetime of the first recorded value.</summary>
+        public DateTime StartTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+
+        /// <summary>Gets the weighted average of the whole recorded timeline. Startweight is 0% and endweight is 100%.</summary>
+        public long WeightedAverage
+        {
+            get
+            {
+                if (items.Count == 0)
+                {
+                    return 0;
+                }
+
+                var duration = Duration.Ticks;
+                double result = 0;
+                double div = 0;
+                foreach (var i in items)
+                {
+                    var pos = (i.TimeStamp - StartTime).Ticks;
+                    var weight = duration / pos;
+                    result += i.Value * weight;
+                    div += weight;
+                }
+
+                return (long)(result / div);
+            }
+        }
+
+        /// <summary>Gets the maximum value.</summary>
+        public long Maximum { get; private set; }
+
+        /// <summary>Gets the minimum value.</summary>
+        public long Minimum { get; private set; }
+
+        #endregion
+
+        #region Members
 
         /// <summary>Adds a value to the proximation.</summary>
         /// <param name="value">The value to add.</param>
@@ -144,22 +176,6 @@ namespace Cave.Collections.Generic
             }
         }
 
-        class ProximationValue
-        {
-            public readonly DateTime TimeStamp;
-            public readonly long Value;
-
-            public ProximationValue(DateTime timeStamp, long value)
-            {
-                Value = value;
-                TimeStamp = timeStamp;
-            }
-
-            public ProximationValue(long value)
-            {
-                Value = value;
-                TimeStamp = DateTime.UtcNow;
-            }
-        }
+        #endregion
     }
 }

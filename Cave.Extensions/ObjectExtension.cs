@@ -95,7 +95,11 @@ namespace Cave
                 bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             }
 
-            IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+            IList<string> path = fullPath?.Split(new[]
+            {
+                '.',
+                '/'
+            }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
             var current = instance;
             for (var i = 0; i < path.Count; i++)
             {
@@ -139,91 +143,10 @@ namespace Cave
             var targetType = typeof(TValue);
             if (targetType.IsInstanceOfType(current) || current is IConvertible)
             {
-                return (TValue) Convert.ChangeType(current, targetType);
+                return (TValue)Convert.ChangeType(current, targetType);
             }
 
             throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {fullPath} is not of type {typeof(TValue)}!");
-        }
-
-        /// <summary>Gets the specified property value.</summary>
-        /// <remarks>
-        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
-        /// </remarks>
-        /// <param name="instance">Instance to read from.</param>
-        /// <param name="fullPath">Full property path.</param>
-        /// <param name="result">Returns the result value.</param>
-        /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
-        public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = 0)
-        {
-            if (instance == null)
-            {
-                throw new ArgumentNullException(nameof(instance));
-            }
-
-            if (bindingFlags == 0)
-            {
-                bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-            }
-
-            IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-            var current = instance;
-            for (var i = 0; i < path.Count; i++)
-            {
-                var part = path[i];
-                if (current == null)
-                {
-                    result = null;
-                    return GetPropertyValueError.NullReference;
-                }
-
-                var property = current.GetType().GetProperty(part, bindingFlags);
-                if (property == null)
-                {
-                    result = null;
-                    return GetPropertyValueError.InvalidPath;
-                }
-
-                current = property.GetValue(current, null);
-            }
-
-            result = current;
-            return GetPropertyValueError.None;
-        }
-
-        /// <summary>Gets the specified property value.</summary>
-        /// <remarks>
-        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
-        /// </remarks>
-        /// <param name="instance">Instance to read from.</param>
-        /// <param name="fullPath">Full property path.</param>
-        /// <param name="result">Returns the result value.</param>
-        /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
-        public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = 0)
-        {
-            var error = TryGetPropertyValue(instance, fullPath, out var obj);
-            if (error != GetPropertyValueError.None)
-            {
-                // error during get
-                result = default;
-                return error;
-            }
-
-            if (obj is TValue v)
-            {
-                // no error, value type matches
-                result = v;
-                return GetPropertyValueError.None;
-            }
-
-            {
-                // (error = none) but type does not match
-                result = default;
-                return GetPropertyValueError.InvalidType;
-            }
         }
 
         /// <summary>Checks whether all properties equal.</summary>
@@ -233,8 +156,7 @@ namespace Cave
         /// <param name="ignoredByAttribute">If set all properties containing this attribute will be ignored.</param>
         /// <param name="ignoredByName">If set all properties with a name matching any entry will be ignored.</param>
         /// <returns>True if all properties equal, false otherwise.</returns>
-        public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type ignoredByAttribute = null, params string[] ignoredByName)
-            => PropertiesEqual(instance, other, new[] { ignoredByAttribute }, ignoredByName);
+        public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type ignoredByAttribute = null, params string[] ignoredByName) => PropertiesEqual(instance, other, new[] { ignoredByAttribute }, ignoredByName);
 
         /// <summary>Checks whether all properties equal.</summary>
         /// <typeparam name="TObject">The object type to get property definitions from.</typeparam>
@@ -291,6 +213,91 @@ namespace Cave
             }
 
             return true;
+        }
+
+        /// <summary>Gets the specified property value.</summary>
+        /// <remarks>
+        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
+        /// <see cref="GetProperties" />.
+        /// </remarks>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="result">Returns the result value.</param>
+        /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
+        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
+        public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = 0)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            if (bindingFlags == 0)
+            {
+                bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            }
+
+            IList<string> path = fullPath?.Split(new[]
+            {
+                '.',
+                '/'
+            }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+            var current = instance;
+            for (var i = 0; i < path.Count; i++)
+            {
+                var part = path[i];
+                if (current == null)
+                {
+                    result = null;
+                    return GetPropertyValueError.NullReference;
+                }
+
+                var property = current.GetType().GetProperty(part, bindingFlags);
+                if (property == null)
+                {
+                    result = null;
+                    return GetPropertyValueError.InvalidPath;
+                }
+
+                current = property.GetValue(current, null);
+            }
+
+            result = current;
+            return GetPropertyValueError.None;
+        }
+
+        /// <summary>Gets the specified property value.</summary>
+        /// <remarks>
+        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
+        /// <see cref="GetProperties" />.
+        /// </remarks>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="result">Returns the result value.</param>
+        /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
+        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
+        public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = 0)
+        {
+            var error = TryGetPropertyValue(instance, fullPath, out var obj);
+            if (error != GetPropertyValueError.None)
+            {
+                // error during get
+                result = default;
+                return error;
+            }
+
+            if (obj is TValue v)
+            {
+                // no error, value type matches
+                result = v;
+                return GetPropertyValueError.None;
+            }
+
+            {
+                // (error = none) but type does not match
+                result = default;
+                return GetPropertyValueError.InvalidType;
+            }
         }
 
         #endregion

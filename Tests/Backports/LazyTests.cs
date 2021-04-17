@@ -1,13 +1,11 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Test
+namespace Test.Backports
 {
     [TestFixture]
     class LazyTests
     {
-        #region Public Methods
-
         [Test]
         public void Lazy()
         {
@@ -22,11 +20,14 @@ namespace Test
         {
             var test = new Lazy<int>(() => throw new TimeoutException());
             Assert.IsFalse(test.IsValueCreated);
-            void GetValue() { if (test.Value != 0) { throw new Exception(); } }
+
+            void GetValue()
+            {
+                if (test.Value != 0) { throw new Exception(); }
+            }
+
             Assert.Throws<TimeoutException>(GetValue);
             Assert.IsFalse(test.IsValueCreated);
         }
-
-        #endregion Public Methods
     }
 }

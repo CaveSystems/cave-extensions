@@ -11,11 +11,62 @@ namespace Cave.Collections.Generic
     [DebuggerDisplay("Count={Count}")]
     public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
+        #region Nested type: Enumerator
+
+        class Enumerator : IEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            readonly IndexedDictionary<TKey, TValue> dictionary;
+            readonly IEnumerator<TKey> keyEnumerator;
+
+            #region Constructors
+
+            public Enumerator(IndexedDictionary<TKey, TValue> dictionary)
+            {
+                this.dictionary = dictionary;
+                keyEnumerator = this.dictionary.keys.GetEnumerator();
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    var key = keyEnumerator.Current;
+                    return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
+                }
+            }
+
+            public bool MoveNext() => keyEnumerator.MoveNext();
+
+            public void Reset() => keyEnumerator.Reset();
+
+            #endregion
+
+            #region IEnumerator<KeyValuePair<TKey,TValue>> Members
+
+            public void Dispose() => keyEnumerator.Dispose();
+
+            public KeyValuePair<TKey, TValue> Current
+            {
+                get
+                {
+                    var key = keyEnumerator.Current;
+                    return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         readonly Dictionary<TKey, TValue> dictionary;
         readonly List<TKey> keys;
 
-        /// <summary>Gets the number of elements in the dictionary.</summary>
-        public int Count => dictionary.Count;
+        #region IDictionary<TKey,TValue> Members
 
         /// <summary>Removes all elements from the dictionary.</summary>
         public void Clear()
@@ -24,6 +75,9 @@ namespace Cave.Collections.Generic
             keys.Clear();
         }
 
+        /// <summary>Gets the number of elements in the dictionary.</summary>
+        public int Count => dictionary.Count;
+
         /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
         public bool IsReadOnly => false;
 
@@ -31,24 +85,9 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
-        #region IList<T1> implementation
-
-        /// <summary>Returns the zero-based index of the first occurrence of the specified value.</summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public int IndexOf(TKey key) => keys.IndexOf(key);
-
         #endregion
 
-        /// <summary>Gets the value at the specified index.</summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public TValue GetValueAt(int index) => dictionary[keys[index]];
-
-        /// <summary>Sets the value at the specified index.</summary>
-        /// <param name="index"></param>
-        /// <param name="value"></param>
-        public void SetValueAt(int index, TValue value) => dictionary[keys[index]] = value;
+        #region Members
 
         /// <summary>Gets the key at the specified index.</summary>
         /// <param name="index">index to read.</param>
@@ -65,41 +104,26 @@ namespace Cave.Collections.Generic
             value = dictionary[key];
         }
 
-        class Enumerator : IEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>
-        {
-            readonly IndexedDictionary<TKey, TValue> dictionary;
-            readonly IEnumerator<TKey> keyEnumerator;
+        /// <summary>Gets the value at the specified index.</summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public TValue GetValueAt(int index) => dictionary[keys[index]];
 
-            public Enumerator(IndexedDictionary<TKey, TValue> dictionary)
-            {
-                this.dictionary = dictionary;
-                keyEnumerator = this.dictionary.keys.GetEnumerator();
-            }
+        #region IList<T1> implementation
 
-            object IEnumerator.Current
-            {
-                get
-                {
-                    var key = keyEnumerator.Current;
-                    return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
-                }
-            }
+        /// <summary>Returns the zero-based index of the first occurrence of the specified value.</summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int IndexOf(TKey key) => keys.IndexOf(key);
 
-            public bool MoveNext() => keyEnumerator.MoveNext();
+        #endregion
 
-            public void Reset() => keyEnumerator.Reset();
+        /// <summary>Sets the value at the specified index.</summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        public void SetValueAt(int index, TValue value) => dictionary[keys[index]] = value;
 
-            public KeyValuePair<TKey, TValue> Current
-            {
-                get
-                {
-                    var key = keyEnumerator.Current;
-                    return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
-                }
-            }
-
-            public void Dispose() => keyEnumerator.Dispose();
-        }
+        #endregion
 
         #region IDictionary<T1, T2> implementation
 

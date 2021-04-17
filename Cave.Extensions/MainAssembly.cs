@@ -8,6 +8,8 @@ namespace Cave
     /// <summary>Retrieves the main assembly of the running program.</summary>
     public static class MainAssembly
     {
+        #region Static
+
         static Assembly mainAssembly;
 
         /// <summary>Gets the MainAssembly.</summary>
@@ -88,5 +90,7 @@ namespace Cave
 
             return null;
         }
+
+        #endregion
     }
 }

@@ -11,6 +11,8 @@ namespace Cave.Collections
     [SuppressMessage("Naming", "CA1710")]
     public class Range : IEquatable<Range>, IEnumerable<int>, IEnumerable
     {
+        #region Static
+
         #region static functionality
 
         /// <summary>Parses a <see cref="Range" /> from a specified string.</summary>
@@ -27,6 +29,8 @@ namespace Cave.Collections
 
         #endregion
 
+        #endregion
+
         #region operators
 
         /// <summary>Implements the operator ==.</summary>
@@ -40,14 +44,14 @@ namespace Cave.Collections
                 return range2 is null;
             }
 
-            return !(range2 is null) && range1.AllValuesString == range2.AllValuesString;
+            return !(range2 is null) && (range1.AllValuesString == range2.AllValuesString);
         }
 
         /// <summary>Implements the operator !=.</summary>
         /// <param name="range1">The range1.</param>
         /// <param name="range2">The range2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Range range1, Range range2) => range1 is null ? !(range2 is null) : range2 is null || range1.AllValuesString != range2.AllValuesString;
+        public static bool operator !=(Range range1, Range range2) => range1 is null ? !(range2 is null) : range2 is null || (range1.AllValuesString != range2.AllValuesString);
 
         /// <summary>Adds two <see cref="Range" />s.</summary>
         /// <param name="range1"></param>
@@ -65,7 +69,11 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(range2));
             }
 
-            var result = new Range(Math.Min(range1.Minimum, range2.Minimum), Math.Max(range1.Maximum, range2.Maximum)) { range1, range2 };
+            var result = new Range(Math.Min(range1.Minimum, range2.Minimum), Math.Max(range1.Maximum, range2.Maximum))
+            {
+                range1,
+                range2
+            };
             return result;
         }
 
@@ -73,7 +81,7 @@ namespace Cave.Collections
 
         #region private functionality
 
-        readonly List<Counter> counters = new List<Counter>();
+        readonly List<Counter> Counters = new();
         string currentString;
         string allValuesString = "*";
         char rangeSeparator = '-';
@@ -111,7 +119,7 @@ namespace Cave.Collections
 
                     if (parts[0] == AllValuesString)
                     {
-                        return Counter.Create(minValue, maxValue, int.Parse(parts[1],CultureInfo.InvariantCulture));
+                        return Counter.Create(minValue, maxValue, int.Parse(parts[1], CultureInfo.InvariantCulture));
                     }
 
                     var start = int.Parse(parts[0], CultureInfo.InvariantCulture);
@@ -237,8 +245,12 @@ namespace Cave.Collections
         /// <param name="text"></param>
         public void Parse(string text)
         {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            this.counters.Clear();
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            this.Counters.Clear();
             var counters = ParseRange(text, Minimum, Maximum);
             foreach (var counter in counters)
             {
@@ -255,20 +267,20 @@ namespace Cave.Collections
                 return;
             }
 
-            counters.Add(new Counter(value, 1));
+            Counters.Add(new Counter(value, 1));
         }
 
         /// <summary>Adds a <see cref="Counter" /> to this <see cref="Range" />.</summary>
         /// <param name="counter"></param>
         public void Add(Counter counter)
         {
-            if ((counters.Count > 0) && Contains(counter))
+            if ((Counters.Count > 0) && Contains(counter))
             {
                 return;
             }
 
             currentString = null;
-            counters.Add(counter);
+            Counters.Add(counter);
         }
 
         /// <summary>Adds a <see cref="Range" /> to this <see cref="Range" />.</summary>
@@ -281,11 +293,11 @@ namespace Cave.Collections
             }
 
             currentString = null;
-            foreach (var c in range.counters)
+            foreach (var c in range.Counters)
             {
                 if (!Contains(c))
                 {
-                    counters.Add(c);
+                    Counters.Add(c);
                 }
             }
         }
@@ -295,12 +307,12 @@ namespace Cave.Collections
         /// <returns></returns>
         public bool Contains(int value)
         {
-            if (counters.Count == 0)
+            if (Counters.Count == 0)
             {
                 return (value >= Minimum) && (value <= Maximum);
             }
 
-            foreach (var counter in counters)
+            foreach (var counter in Counters)
             {
                 if (counter.Contains(value))
                 {
@@ -321,12 +333,12 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(counter));
             }
 
-            if (counters.Count == 0)
+            if (Counters.Count == 0)
             {
                 return Contains(counter.Start) && Contains(counter.End);
             }
 
-            foreach (var c in counters)
+            foreach (var c in Counters)
             {
                 if (counter.Contains(c))
                 {
@@ -354,14 +366,14 @@ namespace Cave.Collections
                 return currentString;
             }
 
-            if (counters.Count == 0)
+            if (Counters.Count == 0)
             {
                 return AllValuesString;
             }
 
-            counters.Sort();
+            Counters.Sort();
             var result = new StringBuilder();
-            foreach (var counter in counters)
+            foreach (var counter in Counters)
             {
                 if (result.Length > 0)
                 {
@@ -409,14 +421,18 @@ namespace Cave.Collections
 
         class RangeEnumerator : IEnumerator<int>, IEnumerator
         {
-            readonly Range range;
+            readonly Range Range;
             long current;
+
+            #region Constructors
 
             public RangeEnumerator(Range range)
             {
-                this.range = range;
+                this.Range = range;
                 Reset();
             }
+
+            #endregion
 
             #region IEnumerator Member
 
@@ -424,17 +440,17 @@ namespace Cave.Collections
             {
                 get
                 {
-                    if (current < range.Minimum)
+                    if (current < Range.Minimum)
                     {
                         throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
                     }
 
-                    if (current > range.Maximum)
+                    if (current > Range.Maximum)
                     {
-                        throw new InvalidOperationException("Invalid operation, moved out of range!");
+                        throw new InvalidOperationException("Invalid operation, moved out of Range!");
                     }
 
-                    return (int) current;
+                    return (int)current;
                 }
             }
 
@@ -444,14 +460,14 @@ namespace Cave.Collections
 
             public bool MoveNext()
             {
-                if (current > range.Maximum)
+                if (current > Range.Maximum)
                 {
                     throw new InvalidOperationException("Invalid operation, use Reset() first!");
                 }
 
-                while (!range.Contains((int) ++current))
+                while (!Range.Contains((int)++current))
                 {
-                    if (current > range.Maximum)
+                    if (current > Range.Maximum)
                     {
                         return false;
                     }
@@ -460,7 +476,7 @@ namespace Cave.Collections
                 return true;
             }
 
-            public void Reset() => current = range.Minimum - 1L;
+            public void Reset() => current = Range.Minimum - 1L;
 
             #endregion
         }

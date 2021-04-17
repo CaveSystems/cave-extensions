@@ -34,10 +34,7 @@ namespace Cave
 
         /// <summary>Determines whether the specified <see cref="DateTimeStringResult" />, is equal to this instance.</summary>
         /// <param name="other">The <see cref="DateTimeStringResult" /> to compare with this instance.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified <see cref="DateTimeStringResult" /> is equal to this instance; otherwise,
-        ///     <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if the specified <see cref="DateTimeStringResult" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public bool Equals(DateTimeStringResult other) => (other.Time == Time) && (other.Date == Date);
     }
 }

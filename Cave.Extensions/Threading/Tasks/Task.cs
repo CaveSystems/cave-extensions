@@ -171,9 +171,9 @@ namespace System.Threading.Tasks
         #endregion
 
         #region private functionality
-        readonly object state;
-        readonly object action;
-        readonly TaskCreationOptions creationOptions;
+        readonly object State;
+        readonly object Action;
+        readonly TaskCreationOptions CreationOptions;
 
         [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
@@ -190,7 +190,7 @@ namespace System.Threading.Tasks
             try
             {
                 // spawn a new seperate thread for long running threads
-                if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
+                if ((CreationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
                 {
                     var thread = new Thread(Worker)
                     {
@@ -209,19 +209,19 @@ namespace System.Threading.Tasks
 
             try
             {
-                if (action is Action actionTyp1)
+                if (Action is Action actionTyp1)
                 {
                     actionTyp1();
                     return;
                 }
-                else if (action is Action<object> actionTyp2)
+                else if (Action is Action<object> actionTyp2)
                 {
-                    actionTyp2(state);
+                    actionTyp2(State);
                     return;
                 }
                 else
                 {
-                    throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {action}!");
+                    throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {Action}!");
                 }
             }
             catch (Exception ex)
@@ -238,9 +238,9 @@ namespace System.Threading.Tasks
         #region constructor
         private Task(TaskCreationOptions creationOptions, object action, object state)
         {
-            this.creationOptions = creationOptions;
-            this.action = action;
-            this.state = state;
+            this.CreationOptions = creationOptions;
+            this.Action = action;
+            this.State = state;
         }
         #endregion
 
@@ -258,7 +258,10 @@ namespace System.Threading.Tasks
                     Monitor.Wait(this);
                 }
             }
-            if (IsFaulted) throw Exception;
+            if (IsFaulted)
+            {
+                throw Exception;
+            }
         }
 
         /// <summary>

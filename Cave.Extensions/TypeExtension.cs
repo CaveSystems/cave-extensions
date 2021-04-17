@@ -34,41 +34,35 @@ namespace Cave
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
         public static bool HasAttribute<T>(this Type type, bool inherit = false)
-            where T : Attribute
-            => HasAttribute(type, typeof(T), inherit);
+            where T : Attribute =>
+            HasAttribute(type, typeof(T), inherit);
 
         /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
         /// <param name="type">The type to check.</param>
         /// <param name="attributeType">The attribute type to check for.</param>
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
-        public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false)
-            => type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
-             ?? throw new ArgumentNullException(nameof(type));
+        public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false) =>
+            type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
+         ?? throw new ArgumentNullException(nameof(type));
 
-        /// <summary>
-        ///     Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is
-        ///     returned.
-        /// </summary>
+        /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
         /// <typeparam name="T">The attribute type to check for.</typeparam>
         /// <param name="type">The type to check.</param>
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns the attribute found or null.</returns>
         public static T GetAttribute<T>(this Type type, bool inherit = false)
-            where T : Attribute
-            => (T) GetAttribute(type, typeof(T), inherit);
+            where T : Attribute =>
+            (T)GetAttribute(type, typeof(T), inherit);
 
-        /// <summary>
-        ///     Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is
-        ///     returned.
-        /// </summary>
+        /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
         /// <param name="type">The type to check.</param>
         /// <param name="attributeType">The attribute type to check for.</param>
         /// <param name="inherit">Inherit attributes from parents.</param>
         /// <returns>Returns the attribute found or null.</returns>
-        public static object GetAttribute(this Type type, Type attributeType, bool inherit = false)
-            => type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
-             ?? throw new ArgumentNullException(nameof(type));
+        public static object GetAttribute(this Type type, Type attributeType, bool inherit = false) =>
+            type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
+         ?? throw new ArgumentNullException(nameof(type));
 
         /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
         /// <param name="type">Type to search for the product attribute.</param>
@@ -80,7 +74,6 @@ namespace Cave
             type?.Assembly.GetProductName();
 #endif
 
-
         /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
         /// <param name="type">Type to search for the product attribute.</param>
         /// <returns>The company name.</returns>
@@ -91,10 +84,9 @@ namespace Cave
             type?.Assembly.GetCompanyName();
 #endif
 
-
         /// <summary>
-        ///     Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp;
-        ///     !type.IsPrimitive &amp;&amp; !type.IsEnum.
+        /// Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp;
+        /// !type.IsEnum.
         /// </summary>
         /// <param name="type">The type to check.</param>
         /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
@@ -124,20 +116,20 @@ namespace Cave
         /// <summary>Converts a value to the desired field value.</summary>
         /// <param name="toType">Type to convert to.</param>
         /// <param name="value">Value to convert.</param>
-        /// <param name="format">The culture to use during formatting.</param>
+        /// <param name="culture">The culture to use during formatting.</param>
         /// <returns>Returns a new instance of the specified type.</returns>
-        public static object ConvertValue(this Type toType, object value, IFormatProvider format)
+        public static object ConvertValue(this Type toType, object value, CultureInfo culture)
         {
             if (toType == null)
             {
                 throw new ArgumentNullException(nameof(toType));
             }
 
-            if (format == null)
+            if (culture == null)
             {
-                format = CultureInfo.InvariantCulture;
+                culture = CultureInfo.InvariantCulture;
             }
-            else if (format is CultureInfo culture && !(culture.Calendar is GregorianCalendar))
+            else if (!(culture.Calendar is GregorianCalendar))
             {
                 throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
             }
@@ -184,12 +176,12 @@ namespace Cave
             if (toType.IsPrimitive)
 #endif
             {
-                return ConvertPrimitive(toType, value, format);
+                return ConvertPrimitive(toType, value, culture);
             }
 
             if (toType.IsAssignableFrom(value.GetType()))
             {
-                return ConvertPrimitive(toType, value, format);
+                return ConvertPrimitive(toType, value, culture);
             }
 
 #if NETSTANDARD13
@@ -223,7 +215,7 @@ namespace Cave
                     {
                         try
                         {
-                            str = (string) method.Invoke(value, new object[] { format });
+                            str = (string)method.Invoke(value, new object[] { culture });
                         }
                         catch (TargetInvocationException ex)
                         {
@@ -258,7 +250,7 @@ namespace Cave
                 var array = Array.CreateInstance(elementType, parts.Length);
                 for (var i = 0; i < parts.Length; i++)
                 {
-                    array.SetValue(ConvertValue(elementType, parts[i], format), i);
+                    array.SetValue(ConvertValue(elementType, parts[i], culture), i);
                 }
 
                 return array;
@@ -271,13 +263,7 @@ namespace Cave
                     return new DateTime(ticks, DateTimeKind.Unspecified);
                 }
 
-                if (DateTime.TryParseExact(str, StringExtensions.InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal,
-                        out var dt) ||
-                    DateTime.TryParse(str, format, DateTimeStyles.AssumeLocal, out dt) ||
-                    DateTimeParser.TryParseDateTime(str, out dt))
-                {
-                    return dt;
-                }
+                return StringExtensions.ParseDateTime(str, culture);
             }
 
             if (toType == typeof(TimeSpan))
@@ -289,43 +275,43 @@ namespace Cave
 #if NET20 || NET35
                         return TimeSpan.Parse(str);
 #else
-                        return TimeSpan.Parse(str, format);
+                        return TimeSpan.Parse(str, culture);
 #endif
                     }
 
                     if (str.EndsWith("ns", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-2), format) * (TimeSpan.TicksPerMillisecond / 1000)));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), culture) * (TimeSpan.TicksPerMillisecond / 1000)));
                     }
 
                     if (str.EndsWith("ms", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-2), format) * TimeSpan.TicksPerMillisecond));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), culture) * TimeSpan.TicksPerMillisecond));
                     }
 
                     if (str.EndsWith("s", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerSecond));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), culture) * TimeSpan.TicksPerSecond));
                     }
 
                     if (str.EndsWith("min", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-3), format) * TimeSpan.TicksPerMinute));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), culture) * TimeSpan.TicksPerMinute));
                     }
 
                     if (str.EndsWith("h", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerHour));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), culture) * TimeSpan.TicksPerHour));
                     }
 
                     if (str.EndsWith("d", StringComparison.Ordinal))
                     {
-                        return new TimeSpan((long) Math.Round(double.Parse(str.SubstringEnd(-1), format) * TimeSpan.TicksPerDay));
+                        return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), culture) * TimeSpan.TicksPerDay));
                     }
 
                     return str.EndsWith("a", StringComparison.Ordinal)
-                        ? TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), format) * 365.25)
-                        : (object)new TimeSpan(long.Parse(str, format));
+                        ? TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), culture) * 365.25)
+                        : (object)new TimeSpan(long.Parse(str, culture));
                 }
                 catch (Exception ex)
                 {
@@ -342,14 +328,22 @@ namespace Cave
                 var methodParams = method.GetParameters();
                 if (method.ReturnType == toType && methodParams.Length == 2 && methodParams[0].ParameterType == typeof(string) && methodParams[1].ParameterType == typeof(IFormatProvider))
 #else
-                var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string), typeof(IFormatProvider) },
+                var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[]
+                    {
+                        typeof(string),
+                        typeof(IFormatProvider)
+                    },
                     null);
                 if (method != null)
 #endif
                 {
                     try
                     {
-                        return method.Invoke(null, new object[] { str, format });
+                        return method.Invoke(null, new object[]
+                        {
+                            str,
+                            culture
+                        });
                     }
                     catch (TargetInvocationException ex)
                     {

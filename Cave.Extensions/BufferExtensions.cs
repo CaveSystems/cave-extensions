@@ -8,50 +8,7 @@ namespace Cave
     /// <summary>Gets extensions to byte buffers.</summary>
     public static class BufferExtensions
     {
-        /// <summary>Obfuscates a byte buffer with a random key. This is not an encryption.</summary>
-        /// <param name="data">Byte buffer to obfuscate.</param>
-        /// <param name="algorithm">Algorithm to use.</param>
-        /// <returns>Returns the obfuscated byte buffer.</returns>
-        [SuppressMessage("Style", "IDE0028")]
-        public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
-        {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            IDisposable disposable = null;
-            if (algorithm == null)
-            {
-#if NET20
-                disposable = algorithm = Rijndael.Create();
-#else
-                disposable = algorithm = Aes.Create();
-#endif
-            }
-
-            try
-            {
-                using (var enc = algorithm.CreateEncryptor())
-                {
-                    var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
-                    var encoded = new List<byte>(maxLength);
-                    // add key
-                    encoded.Add((byte)algorithm.Key.Length);
-                    encoded.AddRange(algorithm.Key);
-                    // add iv
-                    encoded.Add((byte)algorithm.IV.Length);
-                    encoded.AddRange(algorithm.IV);
-                    // add data
-                    encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
-                    return encoded.ToArray();
-                }
-            }
-            finally
-            {
-                disposable?.Dispose();
-            }
-        }
+        #region Static
 
         /// <summary>Deobfuscates a byte buffer.</summary>
         /// <param name="data">Byte buffer to deobfuscate.</param>
@@ -106,11 +63,58 @@ namespace Cave
             var result = new byte[data.Length << 1];
             for (int i = 0, n = 0; i < data.Length; i++)
             {
-                result[n++] = (byte) (data[i] >> 4);
-                result[n++] = (byte) (data[i] & 0xF);
+                result[n++] = (byte)(data[i] >> 4);
+                result[n++] = (byte)(data[i] & 0xF);
             }
 
             return result;
         }
+
+        /// <summary>Obfuscates a byte buffer with a random key. This is not an encryption.</summary>
+        /// <param name="data">Byte buffer to obfuscate.</param>
+        /// <param name="algorithm">Algorithm to use.</param>
+        /// <returns>Returns the obfuscated byte buffer.</returns>
+        [SuppressMessage("Style", "IDE0028")]
+        public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            IDisposable disposable = null;
+            if (algorithm == null)
+            {
+#if NET20
+                disposable = algorithm = Rijndael.Create();
+#else
+                disposable = algorithm = Aes.Create();
+#endif
+            }
+
+            try
+            {
+                using (var enc = algorithm.CreateEncryptor())
+                {
+                    var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
+                    var encoded = new List<byte>(maxLength);
+                    // add key
+                    encoded.Add((byte)algorithm.Key.Length);
+                    encoded.AddRange(algorithm.Key);
+                    // add iv
+                    encoded.Add((byte)algorithm.IV.Length);
+                    encoded.AddRange(algorithm.IV);
+                    // add data
+                    encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
+                    return encoded.ToArray();
+                }
+            }
+            finally
+            {
+                disposable?.Dispose();
+            }
+        }
+
+        #endregion
     }
 }

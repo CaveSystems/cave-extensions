@@ -8,111 +8,7 @@ namespace Cave
     /// <summary>Gets extensions to byte[], array and IEnumerable instances.</summary>
     public static class ArrayExtension
     {
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <param name="count">Number of elements to copy.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static T[] GetRange<T>(this T[] data, int index, int count)
-        {
-            var result = new T[count];
-            Array.Copy(data, index, result, 0, count);
-            return result;
-        }
-
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static T[] GetRange<T>(this T[] data, int index)
-        {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            var result = new T[data.Length - index];
-            Array.Copy(data, index, result, 0, result.Length);
-            return result;
-        }
-
-        /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="items">The items to shuffle.</param>
-        /// <param name="seed">The seed.</param>
-        /// <returns>List of shuffled items.</returns>
-        public static List<T> Shuffle<T>(this IEnumerable<T> items, int seed = 0)
-        {
-            unchecked
-            {
-                if (seed == 0)
-                {
-                    seed = (int) DateTime.UtcNow.Ticks;
-                }
-
-                var result = items.ToList();
-                var count = result.Count;
-                for (var i = 0; i < count; i++)
-                {
-                    var n = Math.Abs((i ^ seed).GetHashCode()) % count;
-                    var t = result[i];
-                    result[i] = result[n];
-                    result[n] = t;
-                }
-
-                return result;
-            }
-        }
-
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <param name="count">Number of elements to copy.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static T[] GetRange<T>(this IList<T> data, int index, int count)
-        {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            var result = new T[count];
-            for (var i = 0; i < count; i++)
-            {
-                result[i] = data[index++];
-            }
-
-            return result;
-        }
-
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static T[] GetRange<T>(this IList<T> data, int index)
-        {
-            if (data == null) throw new ArgumentNullException(nameof(data));
-            return GetRange(data, index, data.Count - index);
-        }
-
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <param name="count">Number of elements to copy.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index, int count) => data.Where((v, i) => (i >= index) && (i < (index + count)));
-
-        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
-        /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="data">Source array.</param>
-        /// <param name="index">Element index.</param>
-        /// <returns>Returns a new array instance.</returns>
-        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index) => data.Where((v, i) => i >= index);
+        #region Static
 
         /// <summary>Concatenates elements.</summary>
         /// <typeparam name="T">Item type.</typeparam>
@@ -172,96 +68,71 @@ namespace Cave
             return result;
         }
 
-        /// <summary>Checks whether a range of bytes matches the comparand.</summary>
-        /// <param name="bytes">The bytes.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="count">The count.</param>
-        /// <param name="comparand">The comparand.</param>
-        /// <returns>True if the range matches.</returns>
-        public static bool RangeEquals(this byte[] bytes, int offset, int count, byte[] comparand)
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static T[] GetRange<T>(this T[] data, int index, int count)
         {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-
-            if (comparand == null)
-            {
-                throw new ArgumentNullException(nameof(comparand));
-            }
-
-            if ((offset < 0) || (count < 0) || (bytes.Length < (offset + count)))
-            {
-                return false;
-            }
-
-            for (int i = 0, j = offset; i < count; i++, j++)
-            {
-                if (bytes[j] != comparand[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            var result = new T[count];
+            Array.Copy(data, index, result, 0, count);
+            return result;
         }
 
-        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
-        /// <param name="data">The data.</param>
-        /// <param name="pattern">The pattern.</param>
-        /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8" />).</param>
-        /// <returns>True if data starts with the pattern.</returns>
-        public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static T[] GetRange<T>(this T[] data, int index)
         {
             if (data == null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            if (pattern == null)
-            {
-                throw new ArgumentNullException(nameof(pattern));
-            }
-
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            var bytes = encoding.GetBytes(pattern);
-            return StartsWith(data, bytes);
+            var result = new T[data.Length - index];
+            Array.Copy(data, index, result, 0, result.Length);
+            return result;
         }
 
-        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
-        /// <param name="data">The data.</param>
-        /// <param name="pattern">The pattern.</param>
-        /// <returns>True if data starts with the pattern.</returns>
-        public static bool StartsWith(this byte[] data, byte[] pattern)
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static T[] GetRange<T>(this IList<T> data, int index, int count)
         {
             if (data == null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            if (pattern == null)
+            var result = new T[count];
+            for (var i = 0; i < count; i++)
             {
-                throw new ArgumentNullException(nameof(pattern));
+                result[i] = data[index++];
             }
 
-            if (pattern.Length > data.Length)
+            return result;
+        }
+
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static T[] GetRange<T>(this IList<T> data, int index)
+        {
+            if (data == null)
             {
-                return false;
+                throw new ArgumentNullException(nameof(data));
             }
 
-            for (var i = 0; i < pattern.Length; i++)
-            {
-                if (pattern[i] != data[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return GetRange(data, index, data.Count - index);
         }
 
         /// <summary>Finds the startindex of the first occurence of the specified pattern.</summary>
@@ -300,6 +171,55 @@ namespace Cave
             }
 
             return -1;
+        }
+
+        /// <summary>Performs an <see cref="Array.IndexOf{T}(T[], T)" /> call and returns the result.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="array">The one-dimensional, zero-based array to search.</param>
+        /// <param name="value">The object to locate in array.</param>
+        /// <returns>The zero-based index of the first occurrence of value in the entire array, if found; otherwise, –1.</returns>
+        public static int IndexOf<T>(this T[] array, T value)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            return Array.IndexOf(array, value);
+        }
+
+        /// <summary>Checks whether a range of bytes matches the comparand.</summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparand">The comparand.</param>
+        /// <returns>True if the range matches.</returns>
+        public static bool RangeEquals(this byte[] bytes, int offset, int count, byte[] comparand)
+        {
+            if (bytes == null)
+            {
+                throw new ArgumentNullException(nameof(bytes));
+            }
+
+            if (comparand == null)
+            {
+                throw new ArgumentNullException(nameof(comparand));
+            }
+
+            if ((offset < 0) || (count < 0) || (bytes.Length < (offset + count)))
+            {
+                return false;
+            }
+
+            for (int i = 0, j = offset; i < count; i++, j++)
+            {
+                if (bytes[j] != comparand[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>Replaces the specified pattern.</summary>
@@ -386,19 +306,107 @@ namespace Cave
             return result;
         }
 
-        /// <summary>Performs an <see cref="Array.IndexOf{T}(T[], T)" /> call and returns the result.</summary>
+        /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
         /// <typeparam name="T">Item type.</typeparam>
-        /// <param name="array">The one-dimensional, zero-based array to search.</param>
-        /// <param name="value">The object to locate in array.</param>
-        /// <returns>The zero-based index of the first occurrence of value in the entire array, if found; otherwise, –1.</returns>
-        public static int IndexOf<T>(this T[] array, T value)
+        /// <param name="items">The items to shuffle.</param>
+        /// <param name="seed">The seed.</param>
+        /// <returns>List of shuffled items.</returns>
+        public static List<T> Shuffle<T>(this IEnumerable<T> items, int seed = 0)
         {
-            if (array == null)
+            unchecked
             {
-                throw new ArgumentNullException(nameof(array));
+                if (seed == 0)
+                {
+                    seed = (int)DateTime.UtcNow.Ticks;
+                }
+
+                var result = items.ToList();
+                var count = result.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    var n = Math.Abs((i ^ seed).GetHashCode()) % count;
+                    var t = result[i];
+                    result[i] = result[n];
+                    result[n] = t;
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
+        /// <param name="data">The data.</param>
+        /// <param name="pattern">The pattern.</param>
+        /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8" />).</param>
+        /// <returns>True if data starts with the pattern.</returns>
+        public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
             }
 
-            return Array.IndexOf(array, value);
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            var bytes = encoding.GetBytes(pattern);
+            return StartsWith(data, bytes);
         }
+
+        /// <summary>Checks whether data starts with the specified pattern or not.</summary>
+        /// <param name="data">The data.</param>
+        /// <param name="pattern">The pattern.</param>
+        /// <returns>True if data starts with the pattern.</returns>
+        public static bool StartsWith(this byte[] data, byte[] pattern)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (pattern == null)
+            {
+                throw new ArgumentNullException(nameof(pattern));
+            }
+
+            if (pattern.Length > data.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < pattern.Length; i++)
+            {
+                if (pattern[i] != data[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="count">Number of elements to copy.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index, int count) => data.Where((v, i) => (i >= index) && (i < (index + count)));
+
+        /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="data">Source array.</param>
+        /// <param name="index">Element index.</param>
+        /// <returns>Returns a new array instance.</returns>
+        public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index) => data.Where((v, i) => i >= index);
+
+        #endregion
     }
 }

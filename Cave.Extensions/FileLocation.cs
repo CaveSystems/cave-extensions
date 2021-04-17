@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 
 namespace Cave
@@ -7,6 +6,15 @@ namespace Cave
     /// <summary>Gets access to a file location.</summary>
     public class FileLocation
     {
+        #region Static
+
+        /// <summary>Gets the program directory.</summary>
+        static string ProgramDirectory => Path.GetDirectoryName(MainAssembly.Get().GetAssemblyFilePath());
+
+        #endregion
+
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="FileLocation" /> class.</summary>
         /// <param name="root">The root folder. Is unset, this will be set to roaming user.</param>
         /// <param name="companyName">Name of the company. If unset, this will be set to the assemblies company name.</param>
@@ -34,28 +42,9 @@ namespace Cave
             }
         }
 
-        /// <summary>Gets the program directory.</summary>
-        static string ProgramDirectory => Path.GetDirectoryName(MainAssembly.Get().GetAssemblyFilePath());
+        #endregion
 
-        /// <summary>Gets or sets the root.</summary>
-        /// <value>The root.</value>
-        public RootLocation Root { get; set; }
-
-        /// <summary>Gets or sets the name of the company.</summary>
-        /// <value>The name of the company.</value>
-        public string CompanyName { get; set; }
-
-        /// <summary>Gets or sets the name of the file.</summary>
-        /// <value>The name of the file.</value>
-        public string FileName { get; set; }
-
-        /// <summary>Gets or sets the extension.</summary>
-        /// <value>The extension.</value>
-        public string Extension { get; set; }
-
-        /// <summary>Gets or sets the sub folder to use.</summary>
-        /// <value>The sub folder.</value>
-        public string SubFolder { get; set; }
+        #region Properties
 
         /// <summary>Gets the folder.</summary>
         /// <value>The folder.</value>
@@ -64,12 +53,40 @@ namespace Cave
                 ? FileSystem.Combine(GetRoot(), SubFolder)
                 : FileSystem.Combine(GetRoot(), CompanyName, SubFolder);
 
+        /// <summary>Gets or sets the name of the company.</summary>
+        /// <value>The name of the company.</value>
+        public string CompanyName { get; set; }
+
+        /// <summary>Gets or sets the extension.</summary>
+        /// <value>The extension.</value>
+        public string Extension { get; set; }
+
+        /// <summary>Gets or sets the name of the file.</summary>
+        /// <value>The name of the file.</value>
+        public string FileName { get; set; }
+
+        /// <summary>Gets or sets the root.</summary>
+        /// <value>The root.</value>
+        public RootLocation Root { get; set; }
+
+        /// <summary>Gets or sets the sub folder to use.</summary>
+        /// <value>The sub folder.</value>
+        public string SubFolder { get; set; }
+
+        #endregion
+
+        #region Overrides
+
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString() =>
             Root == RootLocation.Program
                 ? FileSystem.Combine(GetRoot(), SubFolder, FileName + Extension)
                 : FileSystem.Combine(GetRoot(), CompanyName, SubFolder, FileName + Extension);
+
+        #endregion
+
+        #region Members
 
         string GetRoot()
         {
@@ -82,6 +99,8 @@ namespace Cave
                 default: return GetRootUnix(Root);
             }
         }
+
+        #endregion
 
         #region static functions
 

@@ -1,13 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Test.Collections
+namespace Test
 {
     [StructLayout(LayoutKind.Sequential, Pack = 8, CharSet = CharSet.Ansi)]
     public struct InteropTestStruct
     {
         public static InteropTestStruct Create(int i)
         {
-            var t = new InteropTestStruct()
+            var t = new InteropTestStruct
             {
                 B = (byte)(i & 0xFF),
                 SB = (sbyte)(-i / 10),
@@ -18,11 +18,10 @@ namespace Test.Collections
                 D = (500 - i) * 0.5d,
                 S = (short)(i - 500),
                 UI = (uint)i,
-                Text = i.ToString(),
+                Text = i.ToString()
             };
             return t;
         }
-        
 
         public long ID;
 

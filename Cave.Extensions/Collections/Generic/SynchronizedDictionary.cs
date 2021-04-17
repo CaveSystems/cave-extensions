@@ -5,16 +5,15 @@ using System.Linq;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>
-    ///     Gets a thread safe dictionary. This is much faster than ConcurrentDictionary if you got only two threads
-    ///     accessing values.
-    /// </summary>
+    /// <summary>Gets a thread safe dictionary. This is much faster than ConcurrentDictionary if you got only two threads accessing values.</summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <seealso cref="System.Collections.Generic.IDictionary{TKey, TValue}" />
     public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         readonly IDictionary<TKey, TValue> dict;
+
+        #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="SynchronizedDictionary{TKey, TValue}" /> class.</summary>
         public SynchronizedDictionary() => dict = new Dictionary<TKey, TValue>();
@@ -23,25 +22,43 @@ namespace Cave.Collections.Generic
         /// <param name="dictionary">The dictionary.</param>
         public SynchronizedDictionary(IDictionary<TKey, TValue> dictionary) => dict = dictionary;
 
-        /// <summary>Gets or sets the value with the specified key.</summary>
-        /// <value>The value.</value>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public TValue this[TKey key]
+        #endregion
+
+        #region IDictionary<TKey,TValue> Members
+
+        /// <inheritdoc />
+        public void Add(KeyValuePair<TKey, TValue> item)
         {
-            get
+            lock (this)
             {
-                lock (this)
-                {
-                    return dict[key];
-                }
+                dict.Add(item);
             }
-            set
+        }
+
+        /// <inheritdoc />
+        public void Clear()
+        {
+            lock (this)
             {
-                lock (this)
-                {
-                    dict[key] = value;
-                }
+                dict.Clear();
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            lock (this)
+            {
+                return dict.Contains(item);
+            }
+        }
+
+        /// <inheritdoc />
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            lock (this)
+            {
+                dict.CopyTo(array, arrayIndex);
             }
         }
 
@@ -70,35 +87,11 @@ namespace Cave.Collections.Generic
         }
 
         /// <inheritdoc />
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                lock (this)
-                {
-                    return dict.Keys.ToArray();
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                lock (this)
-                {
-                    return dict.Values.ToArray();
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public void Add(KeyValuePair<TKey, TValue> item)
+        public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             lock (this)
             {
-                dict.Add(item);
+                return dict.Remove(item);
             }
         }
 
@@ -112,24 +105,6 @@ namespace Cave.Collections.Generic
         }
 
         /// <inheritdoc />
-        public void Clear()
-        {
-            lock (this)
-            {
-                dict.Clear();
-            }
-        }
-
-        /// <inheritdoc />
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            lock (this)
-            {
-                return dict.Contains(item);
-            }
-        }
-
-        /// <inheritdoc />
         public bool ContainsKey(TKey key)
         {
             lock (this)
@@ -138,21 +113,37 @@ namespace Cave.Collections.Generic
             }
         }
 
-        /// <inheritdoc />
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        /// <summary>Gets or sets the value with the specified key.</summary>
+        /// <value>The value.</value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public TValue this[TKey key]
         {
-            lock (this)
+            get
             {
-                dict.CopyTo(array, arrayIndex);
+                lock (this)
+                {
+                    return dict[key];
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    dict[key] = value;
+                }
             }
         }
 
         /// <inheritdoc />
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public ICollection<TKey> Keys
         {
-            lock (this)
+            get
             {
-                return dict.Remove(item);
+                lock (this)
+                {
+                    return dict.Keys.ToArray();
+                }
             }
         }
 
@@ -175,13 +166,14 @@ namespace Cave.Collections.Generic
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        public ICollection<TValue> Values
         {
-            lock (this)
+            get
             {
-                var items = new KeyValuePair<TKey, TValue>[dict.Count];
-                CopyTo(items, 0);
-                return ((IEnumerable<KeyValuePair<TKey, TValue>>) items).GetEnumerator();
+                lock (this)
+                {
+                    return dict.Values.ToArray();
+                }
             }
         }
 
@@ -196,13 +188,118 @@ namespace Cave.Collections.Generic
             }
         }
 
+        /// <inheritdoc />
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            lock (this)
+            {
+                var items = new KeyValuePair<TKey, TValue>[dict.Count];
+                CopyTo(items, 0);
+                return ((IEnumerable<KeyValuePair<TKey, TValue>>)items).GetEnumerator();
+            }
+        }
+
+        #endregion
+
+        #region Members
+
+        /// <summary>Adds a range of items to the dictionary.</summary>
+        /// <param name="items">The items.</param>
+        public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            lock (this)
+            {
+                foreach (var item in items)
+                {
+                    dict.Add(item);
+                }
+            }
+        }
+
+        /// <summary>Adds a key/value pair to the Dictionary by using the specified function, if the key does not already exist.</summary>
+        /// <param name="key">The key.</param>
+        /// <param name="constructor">The constructor.</param>
+        /// <returns></returns>
+        public TValue GetOrAdd(TKey key, Func<TValue> constructor)
+        {
+            if (constructor == null)
+            {
+                throw new ArgumentNullException(nameof(constructor));
+            }
+
+            lock (this)
+            {
+                if (!dict.TryGetValue(key, out var result))
+                {
+                    result = constructor();
+                    dict[key] = result;
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>Adds a key/value pair to the Dictionary by using the specified function, if the key does not already exist.</summary>
+        /// <remarks>If the constructor for the item returns null, the item is not added.</remarks>
+        /// <param name="key">The key.</param>
+        /// <param name="constructor">The constructor.</param>
+        /// <returns></returns>
+        public TValue GetOrAddIgnoreNull(TKey key, Func<TValue> constructor)
+        {
+            if (constructor == null)
+            {
+                throw new ArgumentNullException(nameof(constructor));
+            }
+
+            lock (this)
+            {
+                if (!dict.TryGetValue(key, out var result))
+                {
+                    result = constructor();
+                    if (result != null)
+                    {
+                        dict[key] = result;
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>Includes a range of items (replaces) at the dictionary.</summary>
+        /// <param name="items">The items.</param>
+        public void IncludeRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            lock (this)
+            {
+                foreach (var item in items)
+                {
+                    dict[item.Key] = item.Value;
+                }
+            }
+        }
+
         /// <summary>Tries to add a new item to the dictionary.</summary>
         /// <param name="key">The key.</param>
         /// <param name="constructor">The constructor.</param>
         /// <returns>Returns true if the item was added, false otherwise.</returns>
         public bool TryAdd(TKey key, Func<TValue> constructor)
         {
-            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
+            if (constructor == null)
+            {
+                throw new ArgumentNullException(nameof(constructor));
+            }
+
             lock (this)
             {
                 if (dict.ContainsKey(key))
@@ -272,74 +369,6 @@ namespace Cave.Collections.Generic
             return removed;
         }
 
-        /// <summary>Adds a key/value pair to the Dictionary by using the specified function, if the key does not already exist.</summary>
-        /// <param name="key">The key.</param>
-        /// <param name="constructor">The constructor.</param>
-        /// <returns></returns>
-        public TValue GetOrAdd(TKey key, Func<TValue> constructor)
-        {
-            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
-            lock (this)
-            {
-                if (!dict.TryGetValue(key, out var result))
-                {
-                    result = constructor();
-                    dict[key] = result;
-                }
-
-                return result;
-            }
-        }
-
-        /// <summary>Adds a key/value pair to the Dictionary by using the specified function, if the key does not already exist.</summary>
-        /// <remarks>If the constructor for the item returns null, the item is not added.</remarks>
-        /// <param name="key">The key.</param>
-        /// <param name="constructor">The constructor.</param>
-        /// <returns></returns>
-        public TValue GetOrAddIgnoreNull(TKey key, Func<TValue> constructor)
-        {
-            if (constructor == null) throw new ArgumentNullException(nameof(constructor));
-            lock (this)
-            {
-                if (!dict.TryGetValue(key, out var result))
-                {
-                    result = constructor();
-                    if (result != null)
-                    {
-                        dict[key] = result;
-                    }
-                }
-
-                return result;
-            }
-        }
-
-        /// <summary>Adds a range of items to the dictionary.</summary>
-        /// <param name="items">The items.</param>
-        public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
-        {
-            if (items == null) throw new ArgumentNullException(nameof(items));
-            lock (this)
-            {
-                foreach (var item in items)
-                {
-                    dict.Add(item);
-                }
-            }
-        }
-
-        /// <summary>Includes a range of items (replaces) at the dictionary.</summary>
-        /// <param name="items">The items.</param>
-        public void IncludeRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
-        {
-            if (items == null) throw new ArgumentNullException(nameof(items));
-            lock (this)
-            {
-                foreach (var item in items)
-                {
-                    dict[item.Key] = item.Value;
-                }
-            }
-        }
+        #endregion
     }
 }

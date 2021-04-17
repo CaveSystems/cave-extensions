@@ -10,6 +10,8 @@ namespace Cave
     /// <summary>Gets extensions on <see cref="IPAddress" /> instances.</summary>
     public static class IPAddressExtension
     {
+        #region Static
+
         /// <summary>The ipv4 multicast address.</summary>
         public static readonly IPAddress IPv4MulticastAddress = IPAddress.Parse("224.0.0.0");
 
@@ -19,10 +21,8 @@ namespace Cave
         /// <summary>Returns a new address with the specified netmask.</summary>
         /// <param name="address">The address.</param>
         /// <param name="netmask">The netmask.</param>
-        /// <returns>Returns an <see cref="IPAddress"/> instance.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// address or netmask.
-        /// </exception>
+        /// <returns>Returns an <see cref="IPAddress" /> instance.</returns>
+        /// <exception cref="ArgumentNullException">address or netmask.</exception>
         /// <exception cref="ArgumentOutOfRangeException">AddressFamily of address and netmask do not match.</exception>
         public static IPAddress GetAddress(this IPAddress address, IPAddress netmask)
         {
@@ -41,34 +41,60 @@ namespace Cave
                 throw new ArgumentOutOfRangeException(nameof(netmask), "AddressFamily of address and netmask do not match");
             }
 
-            byte[] result = address.GetAddressBytes();
-            byte[] addr = address.GetAddressBytes();
-            byte[] mask = netmask.GetAddressBytes();
-            for (int i = 0; i < mask.Length; i++)
+            var result = address.GetAddressBytes();
+            var addr = address.GetAddressBytes();
+            var mask = netmask.GetAddressBytes();
+            for (var i = 0; i < mask.Length; i++)
             {
                 result[i] = (byte)(addr[i] & mask[i]);
             }
+
             return new IPAddress(result);
         }
 
-        /// <summary>Modifies an <see cref="IPAddress" />.</summary>
-        /// <param name="address">The base address.</param>
-        /// <param name="modifier">The modifier function.</param>
-        /// <returns>Returns the modified address.</returns>
-        public static IPAddress Modify(this IPAddress address, Action<byte[]> modifier)
-        {
-            if (address == null) throw new ArgumentNullException(nameof(address));
-            if (modifier == null) throw new ArgumentNullException(nameof(modifier));
-            var bytes = address.GetAddressBytes();
-            modifier(bytes);
-            return new IPAddress(bytes);
-        }
+        /// <summary>Gets the local broadcast address for the specified <paramref name="address" /> and <paramref name="subnet" /> size combination.</summary>
+        /// <param name="address">Address information.</param>
+        /// <param name="subnet">The subnet size.</param>
+        /// <returns>Returns a local broadcast address.</returns>
+        public static IPAddress GetBroadcastAddress(this IPAddress address, int subnet) => GetSubnet(address, subnet).Broadcast;
 
-        /// <summary>Gets the ipv4 <see cref="IPNetwork" /> instance for the specified address and subnet.</summary>
-        /// <param name="address">The address within the subnet.</param>
-        /// <param name="subnet">The subnet.</param>
-        /// <returns>A new <see cref="IPNetwork" /> instance.</returns>
-        public static IPNetwork GetSubnet(this IPAddress address, int subnet) => new IPNetwork(address, subnet);
+        /// <summary>Gets the local broadcast address for the specified <paramref name="address" /> and <paramref name="netmask" /> combination.</summary>
+        /// <param name="address">Address information.</param>
+        /// <param name="netmask">Netmask.</param>
+        /// <returns>Returns a local broadcast address.</returns>
+        public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress netmask) => new IPNetwork(address, netmask).Broadcast;
+
+        /// <summary>Gets the local broadcast address for the specified <see cref="UnicastIPAddressInformation" />.</summary>
+        /// <param name="address">Address information.</param>
+        /// <param name="subnet">Subnet length. (Required for ipv6 on framework &lt;= 4.0).</param>
+        /// <returns>Returns a local broadcast address.</returns>
+        public static IPAddress GetBroadcastAddress(this UnicastIPAddressInformation address, int subnet = -1)
+        {
+            if (address.Address.AddressFamily == AddressFamily.InterNetwork)
+            {
+                if (subnet > -1)
+                {
+                    return GetBroadcastAddress(address.Address, subnet);
+                }
+
+                return GetBroadcastAddress(address.Address, address.IPv4Mask);
+            }
+
+            if (address.Address.AddressFamily == AddressFamily.InterNetworkV6)
+            {
+                if (subnet > -1)
+                {
+                    return GetBroadcastAddress(address.Address, subnet);
+                }
+#if NET20 || NET35 || NET40
+                throw new NotSupportedException("Prefixlength unknown, subnet length is required! (Use >= net 4.5, netstandard 2.0)");
+#else
+                return GetBroadcastAddress(address.Address, address.PrefixLength);
+#endif
+            }
+
+            throw new NotSupportedException($"AddressFamily {address.Address.AddressFamily} is not supported!");
+        }
 
         /// <summary>Gets the name of the reverse lookup zone of an ipv4 or ipv6 address.</summary>
         /// <param name="address">The address.</param>
@@ -76,7 +102,11 @@ namespace Cave
         /// <returns>Returns the reverse lookup zone name.</returns>
         public static string GetReverseLookupZone(this IPAddress address, int subnet = -1)
         {
-            if (address == null) throw new ArgumentNullException(nameof(address));
+            if (address == null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
                 var sb = new StringBuilder();
@@ -117,7 +147,12 @@ namespace Cave
 
                     sb.Append($"{nibble:x}.");
                 }
-                if (sb.Length == 0) return "0.ip6.arpa.";
+
+                if (sb.Length == 0)
+                {
+                    return "0.ip6.arpa.";
+                }
+
                 sb.Append("ip6.arpa.");
                 return sb.ToString();
             }
@@ -131,12 +166,22 @@ namespace Cave
         /// <returns>Returns the reverse lookup zone name.</returns>
         public static string GetReverseLookupZone(this IPAddress address, IPAddress mask) => GetReverseLookupZone(address, mask.GetSubnetBits());
 
+        /// <summary>Gets the ipv4 <see cref="IPNetwork" /> instance for the specified address and subnet.</summary>
+        /// <param name="address">The address within the subnet.</param>
+        /// <param name="subnet">The subnet.</param>
+        /// <returns>A new <see cref="IPNetwork" /> instance.</returns>
+        public static IPNetwork GetSubnet(this IPAddress address, int subnet) => new(address, subnet);
+
         /// <summary>Gets the number of continious bits within the subnet (counted from the lsb).</summary>
         /// <param name="mask">The address mask.</param>
         /// <returns>The number of continious bits.</returns>
         public static int GetSubnetBits(this IPAddress mask)
         {
-            if (mask == null) throw new ArgumentNullException(nameof(mask));
+            if (mask == null)
+            {
+                throw new ArgumentNullException(nameof(mask));
+            }
+
             if (mask.AddressFamily == AddressFamily.InterNetwork)
             {
                 var maskBits = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);
@@ -180,50 +225,7 @@ namespace Cave
             throw new NotImplementedException($"AddressFamily {mask.AddressFamily} is not implemented!");
         }
 
-        /// <summary>
-        /// Gets the local broadcast address for the specified <paramref name="address"/> and <paramref name="subnet"/> size combination.
-        /// </summary>
-        /// <param name="address">Address information.</param>
-        /// <param name="subnet">The subnet size.</param>
-        /// <returns>Returns a local broadcast address.</returns>
-        public static IPAddress GetBroadcastAddress(this IPAddress address, int subnet) => GetSubnet(address, subnet).Broadcast;
-
-        /// <summary>
-        /// Gets the local broadcast address for the specified <paramref name="address"/> and <paramref name="netmask"/> combination.
-        /// </summary>
-        /// <param name="address">Address information.</param>
-        /// <param name="netmask">Netmask.</param>
-        /// <returns>Returns a local broadcast address.</returns>
-        public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress netmask) => new IPNetwork(address, netmask).Broadcast;
-
-        /// <summary>
-        /// Gets the local broadcast address for the specified <see cref="UnicastIPAddressInformation"/>.
-        /// </summary>
-        /// <param name="address">Address information.</param>
-        /// <param name="subnet">Subnet length. (Required for ipv6 on framework &lt;= 4.0).</param>
-        /// <returns>Returns a local broadcast address.</returns>
-        public static IPAddress GetBroadcastAddress(this UnicastIPAddressInformation address, int subnet = -1)
-        {
-            if (address.Address.AddressFamily == AddressFamily.InterNetwork)
-            {
-                if (subnet > -1) return GetBroadcastAddress(address.Address, subnet);
-                return GetBroadcastAddress(address.Address, address.IPv4Mask);
-            }
-            if (address.Address.AddressFamily == AddressFamily.InterNetworkV6)
-            {
-                if (subnet > -1) return GetBroadcastAddress(address.Address, subnet);
-#if NET20 || NET35 || NET40
-                throw new NotSupportedException("Prefixlength unknown, subnet length is required! (Use >= net 4.5, netstandard 2.0)");
-#else
-                return GetBroadcastAddress(address.Address, address.PrefixLength);
-#endif
-            }
-            throw new NotSupportedException($"AddressFamily {address.Address.AddressFamily} is not supported!");
-        }
-
-        /// <summary>
-        /// Returns a value indicating whether a ip address is a multicast address.
-        /// </summary>
+        /// <summary>Returns a value indicating whether a ip address is a multicast address.</summary>
         /// <param name="address"> Instance of the IPAddress, that should be used. </param>
         /// <returns> true, if the given address is a multicast address; otherwise, false. </returns>
         public static bool IsMulticast(this IPAddress address)
@@ -237,15 +239,36 @@ namespace Cave
             {
                 return address.GetSubnet(4).Address.Equals(IPv4MulticastAddress);
             }
-            else if (address.AddressFamily == AddressFamily.InterNetworkV6)
+
+            if (address.AddressFamily == AddressFamily.InterNetworkV6)
             {
                 return address.GetSubnet(8).Address.Equals(IPv6MulticastAddress);
             }
-            else
-            {
-                throw new ArgumentException("Invalid AddressFamily!", nameof(address));
-            }
+
+            throw new ArgumentException("Invalid AddressFamily!", nameof(address));
         }
 
+        /// <summary>Modifies an <see cref="IPAddress" />.</summary>
+        /// <param name="address">The base address.</param>
+        /// <param name="modifier">The modifier function.</param>
+        /// <returns>Returns the modified address.</returns>
+        public static IPAddress Modify(this IPAddress address, Action<byte[]> modifier)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            if (modifier == null)
+            {
+                throw new ArgumentNullException(nameof(modifier));
+            }
+
+            var bytes = address.GetAddressBytes();
+            modifier(bytes);
+            return new IPAddress(bytes);
+        }
+
+        #endregion
     }
 }

@@ -11,6 +11,8 @@ namespace Cave
     /// <summary>Shell extensions.</summary>
     public static class Shell
     {
+        #region Static
+
         /// <summary>Runs a process with redirected output and error stream.</summary>
         /// <param name="filename">Filename to start.</param>
         /// <param name="arguments">Arguments.</param>
@@ -72,6 +74,7 @@ namespace Cave
                     Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
                     return process.ExitCode;
                 }
+
                 try
                 {
                     process.Kill();
@@ -80,6 +83,7 @@ namespace Cave
                 {
                     Debug.WriteLine($"Error killing process {filename}");
                 }
+
                 throw new TimeoutException($"Process {filename} timed out.");
             }
         }
@@ -109,5 +113,7 @@ namespace Cave
 
             return result;
         }
+
+        #endregion
     }
 }

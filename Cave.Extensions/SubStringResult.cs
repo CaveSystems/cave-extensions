@@ -65,7 +65,7 @@ namespace Cave
         /// <param name="startIndex">start index.</param>
         /// <param name="endIndex">end index.</param>
         /// <returns>The substringResult.</returns>
-        public static SubStringResult FromIndices(string text, int startIndex, int endIndex) => new SubStringResult(text, startIndex, endIndex - startIndex);
+        public static SubStringResult FromIndices(string text, int startIndex, int endIndex) => new(text, startIndex, endIndex - startIndex);
 
         /// <summary>Initializes a new instance of the <see cref="SubStringResult" /> struct.</summary>
         /// <param name="text">The String contining the Substring.</param>

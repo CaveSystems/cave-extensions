@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.IO;
 using System.Text;
 
@@ -8,6 +7,8 @@ namespace Cave
     /// <summary>Gets abstract functions for all fixed base (32, 64, ...) conversions.</summary>
     public abstract class BaseX
     {
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="BaseX" /> class.</summary>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="bitCount">The bit count.</param>
@@ -27,6 +28,10 @@ namespace Cave
             }
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>Gets the bits per character.</summary>
         /// <value>The bits per character.</value>
         public int BitsPerCharacter { get; }
@@ -35,31 +40,33 @@ namespace Cave
         /// <value>The character dictionary.</value>
         public CharacterDictionary CharacterDictionary { get; }
 
+        #endregion
+
         #region decoder interface
 
         /// <summary>Decodes the u int8.</summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public byte DecodeUInt8(string value) => unchecked((byte) DecodeUInt32(value));
+        public byte DecodeUInt8(string value) => unchecked((byte)DecodeUInt32(value));
 
         /// <summary>Decodes the int8.</summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public sbyte DecodeInt8(string value) => unchecked((sbyte) DecodeUInt32(value));
+        public sbyte DecodeInt8(string value) => unchecked((sbyte)DecodeUInt32(value));
 
         /// <summary>Decodes the u int16.</summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public ushort DecodeUInt16(string value) => unchecked((ushort) DecodeUInt32(value));
+        public ushort DecodeUInt16(string value) => unchecked((ushort)DecodeUInt32(value));
 
         /// <summary>Decodes the int16.</summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public short DecodeInt16(string value) => unchecked((short) DecodeUInt32(value));
+        public short DecodeInt16(string value) => unchecked((short)DecodeUInt32(value));
 
         /// <summary>Decodes the u int32.</summary>
         /// <param name="value">The value.</param>
@@ -67,12 +74,16 @@ namespace Cave
         /// <exception cref="InvalidDataException"></exception>
         public uint DecodeUInt32(string value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             uint result = 0;
             var bitPosition = 0;
             foreach (var character in value)
             {
-                var bits = (uint) DecodeCharacter(character);
+                var bits = (uint)DecodeCharacter(character);
                 bits <<= bitPosition;
                 result |= bits;
                 bitPosition += BitsPerCharacter;
@@ -85,7 +96,7 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public int DecodeInt32(string value) => unchecked((int) DecodeUInt32(value));
+        public int DecodeInt32(string value) => unchecked((int)DecodeUInt32(value));
 
         /// <summary>Decodes the u int64.</summary>
         /// <param name="value">The value.</param>
@@ -93,12 +104,16 @@ namespace Cave
         /// <exception cref="InvalidDataException"></exception>
         public ulong DecodeUInt64(string value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             ulong result = 0;
             var bitPosition = 0;
             foreach (var character in value)
             {
-                var bits = (ulong) DecodeCharacter(character);
+                var bits = (ulong)DecodeCharacter(character);
                 bits <<= bitPosition;
                 result |= bits;
                 bitPosition += BitsPerCharacter;
@@ -111,7 +126,7 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
-        public long DecodeInt64(string value) => unchecked((long) DecodeUInt64(value));
+        public long DecodeInt64(string value) => unchecked((long)DecodeUInt64(value));
 
         /// <summary>Decodes a data string and converts the result to utf8.</summary>
         /// <param name="value">The data to decode.</param>
@@ -142,27 +157,27 @@ namespace Cave
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(byte value) => Encode((uint) value);
+        public string Encode(byte value) => Encode((uint)value);
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(sbyte value) => unchecked(Encode((uint) value));
+        public string Encode(sbyte value) => unchecked(Encode((uint)value));
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(ushort value) => Encode((uint) value);
+        public string Encode(ushort value) => Encode((uint)value);
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(short value) => unchecked(Encode((uint) value));
+        public string Encode(short value) => unchecked(Encode((uint)value));
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(int value) => unchecked(Encode((uint) value));
+        public string Encode(int value) => unchecked(Encode((uint)value));
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
@@ -175,7 +190,7 @@ namespace Cave
             while (value > 0)
             {
                 var character = value & mask;
-                result.Append(EncodeCharacter((char) character));
+                result.Append(EncodeCharacter((char)character));
                 value >>= bits;
             }
 
@@ -185,7 +200,7 @@ namespace Cave
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
         /// <returns>Returns the BaseX encoded string.</returns>
-        public string Encode(long value) => unchecked(Encode((ulong) value));
+        public string Encode(long value) => unchecked(Encode((ulong)value));
 
         /// <summary>Encodes the specified value.</summary>
         /// <param name="value">The value.</param>
@@ -198,7 +213,7 @@ namespace Cave
             while (value > 0)
             {
                 var character = value & mask;
-                result.Append(EncodeCharacter((char) character));
+                result.Append(EncodeCharacter((char)character));
                 value >>= bits;
             }
 

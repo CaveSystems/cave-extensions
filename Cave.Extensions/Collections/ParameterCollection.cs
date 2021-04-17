@@ -13,15 +13,15 @@ namespace Cave.Collections.Generic
     {
         readonly string[] items;
 
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="ParameterCollection" /> class.</summary>
         /// <param name="items"></param>
         public ParameterCollection(params string[] items) => this.items = items;
 
-        /// <inheritdoc />
-        public int Count => items.Length;
+        #endregion
 
-        /// <inheritdoc />
-        public bool IsReadOnly => true;
+        #region Properties
 
         /// <summary>Gets or sets the <see cref="string" /> at the specified index.</summary>
         /// <value>The <see cref="string" />.</value>
@@ -29,11 +29,41 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public string this[int index] => items[index];
 
+        #endregion
+
+        #region ICollection<string> Members
+
+        void ICollection<string>.Add(string item) => throw new ReadOnlyException();
+
+        void ICollection<string>.Clear() => throw new ReadOnlyException();
+
         /// <inheritdoc />
-        public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>) items).GetEnumerator();
+        public bool Contains(string item) => IndexOf(item) > -1;
+
+        /// <inheritdoc />
+        public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
+
+        /// <inheritdoc />
+        public int Count => items.Length;
+
+        /// <inheritdoc />
+        public bool IsReadOnly => true;
+
+        bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
+
+        #endregion
+
+        #region IEnumerable<string> Members
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
+
+        /// <inheritdoc />
+        public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>)items).GetEnumerator();
+
+        #endregion
+
+        #region IEquatable<ParameterCollection> Members
 
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <param name="other"></param>
@@ -61,14 +91,15 @@ namespace Cave.Collections.Generic
             return true;
         }
 
-        /// <inheritdoc />
-        public int IndexOf(string item) => Array.IndexOf(items, item);
+        #endregion
+
+        #region Overrides
 
         /// <inheritdoc />
-        public bool Contains(string item) => IndexOf(item) > -1;
+        public override bool Equals(object obj) => Equals(obj as ParameterCollection);
 
         /// <inheritdoc />
-        public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
+        public override int GetHashCode() => ToString().GetHashCode();
 
         /// <summary>Gets a string containing all parameters.</summary>
         /// <returns></returns>
@@ -98,16 +129,13 @@ namespace Cave.Collections.Generic
             return result.ToString();
         }
 
-        void ICollection<string>.Add(string item) => throw new ReadOnlyException();
+        #endregion
 
-        void ICollection<string>.Clear() => throw new ReadOnlyException();
-
-        bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
+        #region Members
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => Equals(obj as ParameterCollection);
+        public int IndexOf(string item) => Array.IndexOf(items, item);
 
-        /// <inheritdoc />
-        public override int GetHashCode() => ToString().GetHashCode();
+        #endregion
     }
 }

@@ -8,6 +8,8 @@ namespace Cave
     [DebuggerDisplay("{FullPath}")]
     public sealed class FileItem
     {
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="FileItem" /> class.</summary>
         /// <param name="baseDirectory">The base directory.</param>
         /// <param name="subDirectoryAndName">The subdirectory and name of the file.</param>
@@ -18,22 +20,12 @@ namespace Cave
             FullPath = FileSystem.GetFullPath(FileSystem.Combine(BaseDirectory, Relative));
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>Gets the base directory (used when searching for this file).</summary>
         public string BaseDirectory { get; }
-
-        /// <summary>Gets the relative path.</summary>
-        public string Relative { get; }
-
-        /// <summary>Gets the full path of the file.</summary>
-        public string FullPath { get; }
-
-        /// <summary>Gets the extension.</summary>
-        /// <value>The extension.</value>
-        public string Extension => Path.GetExtension(FullPath);
-
-        /// <summary>Gets the file name with extension.</summary>
-        /// <value>The file name with extension.</value>
-        public string Name => Path.GetFileName(FullPath);
 
         /// <summary>Gets the directory.</summary>
         /// <value>The directory.</value>
@@ -41,10 +33,30 @@ namespace Cave
         {
             get
             {
-                var i = FullPath.LastIndexOfAny(new[] { '\\', '/' });
+                var i = FullPath.LastIndexOfAny(new[]
+                {
+                    '\\',
+                    '/'
+                });
                 return FullPath.Substring(0, i);
             }
         }
+
+        /// <summary>Gets the extension.</summary>
+        /// <value>The extension.</value>
+        public string Extension => Path.GetExtension(FullPath);
+
+        /// <summary>Gets the full path of the file.</summary>
+        public string FullPath { get; }
+
+        /// <summary>Gets the file name with extension.</summary>
+        /// <value>The file name with extension.</value>
+        public string Name => Path.GetFileName(FullPath);
+
+        /// <summary>Gets the relative path.</summary>
+        public string Relative { get; }
+
+        #endregion
 
         #region static functionality
 
@@ -64,7 +76,11 @@ namespace Cave
                 throw new ArgumentNullException(nameof(basePath));
             }
 
-            var chars = new[] { '\\', '/' };
+            var chars = new[]
+            {
+                '\\',
+                '/'
+            };
             var relative = fullPath.Split(chars, StringSplitOptions.RemoveEmptyEntries);
             var baseCheck = basePath.Split(chars, StringSplitOptions.RemoveEmptyEntries);
             var comparison = Platform.IsMicrosoft ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture;
@@ -80,10 +96,7 @@ namespace Cave
                 string.Join($"{Path.DirectorySeparatorChar}", relative, baseCheck.Length, relative.Length - baseCheck.Length);
         }
 
-        /// <summary>
-        ///     Creates a new file instance from a specified base path and the full path to the file. (The subdirectories will
-        ///     be extracted.)
-        /// </summary>
+        /// <summary>Creates a new file instance from a specified base path and the full path to the file. (The subdirectories will be extracted.)</summary>
         /// <param name="baseDirectory">The base file.</param>
         /// <param name="fullFilePath">The full path of the file.</param>
         /// <returns>A new file item.</returns>

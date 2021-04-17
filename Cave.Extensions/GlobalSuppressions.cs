@@ -13,4 +13,3 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Performance", "CA1825", Justification = "Array.Empty<> is not available at most frameworks")]
 [assembly: SuppressMessage("Usage", "CA2225", Justification = "No named operator overloading")]
 [assembly: SuppressMessage("Naming", "CA1716", Justification = "Required for usage compatibility to framework")]
-

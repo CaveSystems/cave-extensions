@@ -9,6 +9,8 @@ namespace Cave.Collections
     {
         readonly Counter counter;
 
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="CountEnumerator" /> class.</summary>
         /// <param name="counter">The <see cref="Counter" /> used to create values to be enumerated.</param>
         public CountEnumerator(Counter counter) => this.counter = counter;
@@ -28,10 +30,16 @@ namespace Cave.Collections
         {
         }
 
+        #endregion
+
+        #region IEnumerator<int> Members
+
         #region IEnumerator<T> Member
 
         /// <summary>Gets the the curent value.</summary>
         public int Current => counter.Current;
+
+        #endregion
 
         #endregion
 
@@ -52,10 +60,7 @@ namespace Cave.Collections
         #region IDisposable Member
 
         /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
-        /// <param name="disposing">
-        ///     true to release both managed and unmanaged resources; false to release only unmanaged
-        ///     resources.
-        /// </param>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing) { }
 
         /// <summary>Frees all used resources.</summary>

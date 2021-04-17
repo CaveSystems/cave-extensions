@@ -21,7 +21,16 @@ namespace Cave.Collections.Concurrent
     {
         #region private Member
 
-        readonly ConcurrentDictionary<T, byte> list = new ConcurrentDictionary<T, byte>();
+        readonly ConcurrentDictionary<T, byte> list = new();
+
+        #endregion
+
+        #region IItemSet<T> Members
+
+        #region ICollection<T> Member
+
+        /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
+        public bool IsReadOnly => false;
 
         #endregion
 
@@ -29,13 +38,6 @@ namespace Cave.Collections.Concurrent
 
         /// <inheritdoc />
         public IEnumerator GetEnumerator() => list.Keys.GetEnumerator();
-
-        #endregion
-
-        #region ICollection<T> Member
-
-        /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
-        public bool IsReadOnly => false;
 
         #endregion
 
@@ -47,7 +49,21 @@ namespace Cave.Collections.Concurrent
         #endregion
 
         /// <inheritdoc />
-        public bool Equals(IItemSet<T> other) => other != null && other.Count == Count && ContainsRange(other);
+        public bool Equals(IItemSet<T> other) => (other != null) && (other.Count == Count) && ContainsRange(other);
+
+        #endregion
+
+        #region Overrides
+
+        /// <inheritdoc />
+        public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
+
+        /// <inheritdoc />
+        public override int GetHashCode() => list.GetHashCode();
+
+        #endregion
+
+        #region Members
 
         /// <summary>Copies the items stored in the set to a new array.</summary>
         /// <returns>A new array containing a snapshot of all items.</returns>
@@ -61,11 +77,7 @@ namespace Cave.Collections.Concurrent
             }
         }
 
-        /// <inheritdoc />
-        public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
-
-        /// <inheritdoc />
-        public override int GetHashCode() => list.GetHashCode();
+        #endregion
 
         #region operators
 
@@ -82,18 +94,15 @@ namespace Cave.Collections.Concurrent
         public static ConcurrentSet<T> operator &(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => BitwiseAnd(set1, set2);
 
         /// <summary>
-        ///     Gets a <see cref="ConcurrentSet{T}" /> containing all objects part of the first set after removing all objects
-        ///     present at the second set.
+        /// Gets a <see cref="ConcurrentSet{T}" /> containing all objects part of the first set after removing all objects present at the
+        /// second set.
         /// </summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
         public static ConcurrentSet<T> operator -(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => Subtract(set1, set2);
 
-        /// <summary>
-        ///     Builds a new <see cref="ConcurrentSet{T}" /> containing only the items found exclusivly in one of both
-        ///     specified sets.
-        /// </summary>
+        /// <summary>Builds a new <see cref="ConcurrentSet{T}" /> containing only the items found exclusivly in one of both specified sets.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
@@ -185,8 +194,8 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <summary>
-        ///     Subtracts the specified <see cref="ConcurrentSet{T}" /> from this one and returns a new
-        ///     <see cref="ConcurrentSet{T}" /> containing the result.
+        /// Subtracts the specified <see cref="ConcurrentSet{T}" /> from this one and returns a new <see cref="ConcurrentSet{T}" /> containing
+        /// the result.
         /// </summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
@@ -258,20 +267,14 @@ namespace Cave.Collections.Concurrent
 
         #region constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConcurrentSet{T}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
         public ConcurrentSet() { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConcurrentSet{T}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
         /// <param name="items">Items to add to the set.</param>
         public ConcurrentSet(params T[] items) => AddRange(items);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConcurrentSet{T}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
         /// <param name="items">Items to add to the set.</param>
         public ConcurrentSet(IEnumerable<T> items) => AddRange(items);
 
@@ -279,18 +282,12 @@ namespace Cave.Collections.Concurrent
 
         #region public Member
 
-        /// <summary>
-        ///     Builds the union of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the
-        ///     result.
-        /// </summary>
+        /// <summary>Builds the union of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the result.</summary>
         /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
         public ConcurrentSet<T> Union(ConcurrentSet<T> items) => BitwiseOr(this, items);
 
-        /// <summary>
-        ///     Builds the intersection of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with
-        ///     the result.
-        /// </summary>
+        /// <summary>Builds the intersection of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the result.</summary>
         /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
         public ConcurrentSet<T> Intersect(ConcurrentSet<T> items) => BitwiseAnd(this, items);
@@ -300,10 +297,7 @@ namespace Cave.Collections.Concurrent
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
         public ConcurrentSet<T> Subtract(ConcurrentSet<T> items) => Subtract(this, items);
 
-        /// <summary>
-        ///     Builds a new <see cref="ConcurrentSet{T}" /> containing only items found exclusivly in one of both specified
-        ///     sets.
-        /// </summary>
+        /// <summary>Builds a new <see cref="ConcurrentSet{T}" /> containing only items found exclusivly in one of both specified sets.</summary>
         /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
         /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
         public ConcurrentSet<T> ExclusiveOr(ConcurrentSet<T> items) => Xor(this, items);
@@ -341,7 +335,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public void AddRange(T[] items) => AddRange((IEnumerable<T>) items);
+        public void AddRange(T[] items) => AddRange((IEnumerable<T>)items);
 
         /// <inheritdoc />
         public void AddRange(IEnumerable<T> items)
@@ -361,7 +355,7 @@ namespace Cave.Collections.Concurrent
         public bool Include(T obj) => list.TryAdd(obj, 0);
 
         /// <inheritdoc />
-        public int IncludeRange(T[] items) => IncludeRange((IEnumerable<T>) items);
+        public int IncludeRange(T[] items) => IncludeRange((IEnumerable<T>)items);
 
         /// <inheritdoc />
         public int IncludeRange(IEnumerable<T> items)

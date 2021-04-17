@@ -7,60 +7,44 @@ using System.Text;
 
 namespace Cave
 {
-    /// <summary>
-    /// Provides thread safe hashing.
-    /// </summary>
+    /// <summary>Provides thread safe hashing.</summary>
     public static class Hash
     {
-        /// <summary>
-        /// Available hash types.
-        /// </summary>
+        #region Type enum
+
+        /// <summary>Available hash types.</summary>
         public enum Type
         {
-            /// <summary>
-            /// The none
-            /// </summary>
+            /// <summary>The none</summary>
             None,
 
-            /// <summary>
-            /// The crc32 hash algorithm
-            /// </summary>
+            /// <summary>The crc32 hash algorithm</summary>
             CRC32,
 
-            /// <summary>
-            /// The crc64 hash algorithm
-            /// </summary>
+            /// <summary>The crc64 hash algorithm</summary>
             CRC64,
 
-            /// <summary>
-            /// The md5 hash algorithm
-            /// </summary>
+            /// <summary>The md5 hash algorithm</summary>
             MD5,
 
-            /// <summary>
-            /// The sha1 hash algorithm
-            /// </summary>
+            /// <summary>The sha1 hash algorithm</summary>
             SHA1,
 
-            /// <summary>
-            /// The sha256 hash algorithm
-            /// </summary>
+            /// <summary>The sha256 hash algorithm</summary>
             SHA256,
 
-            /// <summary>
-            /// The sha384 hash algorithm
-            /// </summary>
+            /// <summary>The sha384 hash algorithm</summary>
             SHA384,
 
-            /// <summary>
-            /// The sha512 hash algorithm
-            /// </summary>
-            SHA512,
+            /// <summary>The sha512 hash algorithm</summary>
+            SHA512
         }
 
-        /// <summary>
-        /// Creates a hash of the specified type.
-        /// </summary>
+        #endregion
+
+        #region Static
+
+        /// <summary>Creates a hash of the specified type.</summary>
         /// <param name="type">The type.</param>
         /// <returns>Returns a new HashAlgorithm instance.</returns>
         /// <exception cref="NotImplementedException">Throws an exeption if hash type is unknown.</exception>
@@ -79,9 +63,7 @@ namespace Cave
             }
         }
 
-        /// <summary>
-        /// Obtains the hash code for a specified data array.
-        /// </summary>
+        /// <summary>Obtains the hash code for a specified data array.</summary>
         /// <param name="type">The type.</param>
         /// <param name="data">The bytes to hash.</param>
         /// <returns>A new byte[] containing the hash for the specified data.</returns>
@@ -93,16 +75,14 @@ namespace Cave
                 throw new ArgumentNullException("data");
             }
 
-            using (HashAlgorithm algorithm = Create(type))
+            using (var algorithm = Create(type))
             {
                 algorithm.Initialize();
                 return algorithm.ComputeHash(data);
             }
         }
 
-        /// <summary>
-        /// Obtains the hash code for a specified data array.
-        /// </summary>
+        /// <summary>Obtains the hash code for a specified data array.</summary>
         /// <param name="type">The type.</param>
         /// <param name="data">The byte array to hash.</param>
         /// <param name="index">The start index.</param>
@@ -116,15 +96,31 @@ namespace Cave
                 throw new ArgumentNullException("data");
             }
 
-            using (HashAlgorithm algorithm = Create(type))
+            using (var algorithm = Create(type))
             {
                 return algorithm.ComputeHash(data, index, count);
             }
         }
 
-        /// <summary>
-        /// Obtains the hash code for a specified data string (using UTF-8 encoding).
-        /// </summary>
+        /// <summary>Obtains the hash code for a specified <see cref="Stream" /> string at the current position and reading to the end of the stream.</summary>
+        /// <param name="type">The type.</param>
+        /// <param name="stream">The stream to hash.</param>
+        /// <returns>A new byte[] containing the hash for the specified data.</returns>
+        /// <exception cref="ArgumentNullException">stream.</exception>
+        public static byte[] FromStream(Type type, Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            using (var algorithm = Create(type))
+            {
+                return algorithm.ComputeHash(stream);
+            }
+        }
+
+        /// <summary>Obtains the hash code for a specified data string (using UTF-8 encoding).</summary>
         /// <param name="type">The type.</param>
         /// <param name="data">The string to hash.</param>
         /// <param name="index">The start index.</param>
@@ -141,9 +137,7 @@ namespace Cave
             return FromArray(type, Encoding.UTF8.GetBytes(data.Substring(index, count)));
         }
 
-        /// <summary>
-        /// Obtains the hash code for a specified data string (using UTF-8 encoding).
-        /// </summary>
+        /// <summary>Obtains the hash code for a specified data string (using UTF-8 encoding).</summary>
         /// <param name="type">The type.</param>
         /// <param name="data">The string to hash.</param>
         /// <returns>A new byte[] containing the hash for the specified data.</returns>
@@ -158,25 +152,7 @@ namespace Cave
             return FromArray(type, Encoding.UTF8.GetBytes(data));
         }
 
-        /// <summary>
-        /// Obtains the hash code for a specified <see cref="Stream"/> string at the current position and reading to the end of the stream.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="stream">The stream to hash.</param>
-        /// <returns>A new byte[] containing the hash for the specified data.</returns>
-        /// <exception cref="ArgumentNullException">stream.</exception>
-        public static byte[] FromStream(Type type, Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
-
-            using (HashAlgorithm algorithm = Create(type))
-            {
-                return algorithm.ComputeHash(stream);
-            }
-        }
+        #endregion
     }
 }
 

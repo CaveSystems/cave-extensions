@@ -15,14 +15,20 @@ namespace Cave
     /// <summary>Gets string functions.</summary>
     public static class StringExtensions
     {
-        /// <summary>Gets the default date time string used when formatting date time variables for interop.</summary>
-        public const string InterOpDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK ";
+        #region Static
 
         /// <summary>Gets the default date time string used when formatting date time variables for display.</summary>
         public const string DisplayDateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff";
 
         /// <summary>Gets the default date time string used when formatting date time variables for display.</summary>
+        [Obsolete]
         public const string DisplayDateTimeWithTimeZoneFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff K";
+
+        /// <summary>Gets the default date time string used when formatting date time variables for file names.</summary>
+        public const string FileNameDateTimeFormat = "yyyy'-'MM'-'dd' 'HHmmss";
+
+        /// <summary>Gets the default date time string used when formatting date time variables for interop.</summary>
+        public const string InterOpDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff";
 
         /// <summary>Gets the default date string used when formatting date time variables for interop.</summary>
         public const string ShortDateFormat = "yyyy'-'MM'-'dd";
@@ -30,273 +36,320 @@ namespace Cave
         /// <summary>Gets the default time string used when formatting date time variables for interop.</summary>
         public const string ShortTimeFormat = "HH':'mm':'ss'.'fff";
 
-        /// <summary>Gets the default date time string used when formatting date time variables for file names.</summary>
-        public const string FileNameDateTimeFormat = "yyyy'-'MM'-'dd' 'HHmmss";
-
-        /// <summary>Joins a collection to a string with newlines for all systems.</summary>
-        /// <param name="texts">The string collection.</param>
-        /// <returns>Returns a new string.</returns>
-        public static string JoinNewLine(this string[] texts) => Join(texts, "\r\n");
-
-        /// <summary>Joins a collection to a string with newlines for all systems.</summary>
-        /// <param name="array">The string array.</param>
-        /// <returns>Returns a new string.</returns>
-        public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n");
-
-        /// <summary>Joins a collection to a string.</summary>
-        /// <param name="array">The string array.</param>
-        /// <param name="separator">The seperator.</param>
-        /// <param name="cultureInfo">The culture info.</param>
-        /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, string separator, IFormatProvider cultureInfo = null)
+        /// <summary>Returns the string after the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="character">The character to search for.</param>
+        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+        public static string AfterFirst(this string value, char character)
         {
-            if (cultureInfo == null)
-            {
-                cultureInfo = CultureInfo.CurrentCulture;
-            }
-
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (separator == null)
-            {
-                throw new ArgumentNullException(nameof(separator));
-            }
-
-            var result = new StringBuilder();
-            foreach (var obj in array)
-            {
-                if (result.Length != 0)
-                {
-                    result.Append(separator);
-                }
-
-                result.Append(ToString(obj, cultureInfo));
-            }
-
-            return result.ToString();
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
         }
 
-        /// <summary>Joins a collection to a string.</summary>
-        /// <param name="array">The string array.</param>
-        /// <param name="separator">The seperator.</param>
-        /// <param name="cultureInfo">The culture info.</param>
-        /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, char separator, IFormatProvider cultureInfo = null)
+        /// <summary>Returns the string after the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="pattern">The character to search for.</param>
+        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+        public static string AfterFirst(this string value, string pattern)
         {
-            if (cultureInfo == null)
+            if (pattern == null)
             {
-                cultureInfo = CultureInfo.CurrentCulture;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            var result = new StringBuilder();
-            foreach (var obj in array)
-            {
-                if (result.Length != 0)
-                {
-                    result.Append(separator);
-                }
-
-                result.Append(ToString(obj, cultureInfo));
-            }
-
-            return result.ToString();
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
         }
 
-        /// <summary>Joins the camel case.</summary>
-        /// <param name="parts">The parts.</param>
-        /// <param name="culture">The culture info.</param>
-        /// <returns>The joned string.</returns>
-        public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
+        /// <summary>Returns the string after the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="character">The pattern to search for.</param>
+        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+        public static string AfterLast(this string value, char character)
         {
-            if (parts == null)
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + 1);
+        }
+
+        /// <summary>Returns the string after the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="pattern">The pattern to search for.</param>
+        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+        public static string AfterLast(this string value, string pattern)
+        {
+            if (pattern == null)
             {
-                throw new ArgumentNullException(nameof(parts));
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            if (culture == null)
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
+        }
+
+        /// <summary>Returns the string before the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="character">The pattern to search for.</param>
+        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+        public static string BeforeFirst(this string value, char character)
+        {
+            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
+        }
+
+        /// <summary>Returns the string before the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="pattern">The character to search for.</param>
+        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+        public static string BeforeFirst(this string value, string pattern)
+        {
+            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
+        }
+
+        /// <summary>Returns the string before the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="character">The character to search for.</param>
+        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+        public static string BeforeLast(this string value, char character)
+        {
+            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
+        }
+
+        /// <summary>Returns the string before the specified pattern.</summary>
+        /// <param name="value">The string value.</param>
+        /// <param name="pattern">The pattern to search for.</param>
+        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+        public static string BeforeLast(this string value, string pattern)
+        {
+            if (pattern == null)
             {
-                culture = CultureInfo.CurrentCulture;
+                throw new ArgumentNullException(nameof(pattern));
             }
 
-            var result = new StringBuilder();
-            foreach (var part in parts)
+            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
+            return i < 0 ? value : value.Substring(0, i);
+        }
+
+        /// <summary>Boxes the specified text with the given character.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="c">The character to pre and append.</param>
+        /// <returns>Returns a string starting and ending with the specified character.</returns>
+        public static string Box(this string text, char c) => c + text + c;
+
+        /// <summary>Boxes the specified text with the given string.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="s">The string to pre and append.</param>
+        /// <returns>Returns a string starting and ending with the specified string.</returns>
+        public static string Box(this string text, string s) => s + text + s;
+
+        /// <summary>Boxes the specified text with the given string.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
+        /// <returns>Returns a string starting and ending with the specified string.</returns>
+        public static string Box(this string text, string start, string end) => start + text + end;
+
+        /// <summary>Tries to detect the used newline chars in the specified string.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
+        public static string DetectNewLine(this string text)
+        {
+            if (text == null)
             {
-                var t = part.Trim();
-                if (t.Length < 1)
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (text.IndexOf("\r\n") > -1)
+            {
+                return "\r\n";
+            }
+
+            if (text.IndexOf('\n') > -1)
+            {
+                return "\n";
+            }
+
+            return text.IndexOf('\r') > -1 ? "\r" : null;
+        }
+
+        /// <summary>Escapes all characters at the specified string below ascii 32 and above ascii 127.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>Returns an escaped ascii 7 bit string.</returns>
+        public static string Escape(this string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+            foreach (var c in text)
+            {
+                switch (c)
                 {
+                    case '\\':
+                    case '"':
+                        sb.Append('\\');
+                        sb.Append(c);
+                        continue;
+                    case '\b':
+                        sb.Append("\\b");
+                        continue;
+                    case '\t':
+                        sb.Append("\\t");
+                        continue;
+                    case '\n':
+                        sb.Append("\\n");
+                        continue;
+                    case '\f':
+                        sb.Append("\\f");
+                        continue;
+                    case '\r':
+                        sb.Append("\\r");
+                        continue;
+                }
+
+                if ((c < ' ') || (c > (char)127))
+                {
+                    sb.Append($"\\u{(int)c:x4}");
                     continue;
                 }
 
-                result.Append(char.ToUpper(t[0], culture));
-                if (t.Length > 1)
-                {
-                    result.Append(t.Substring(1).ToLower(culture));
-                }
+                sb.Append(c);
             }
 
-            return result.ToString();
+            return sb.ToString();
         }
 
-        /// <summary>Joins the camel case.</summary>
-        /// <param name="parts">The parts.</param>
-        /// <param name="culture">The culture info.</param>
-        /// <returns>The joned string.</returns>
-        public static string JoinSnakeCase(this string[] parts, CultureInfo culture = null)
+        /// <summary>Escapes all characters at the specified string below ascii 32.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>Returns an escaped utf8 string.</returns>
+        public static string EscapeUtf8(this string text)
         {
-            if (parts == null)
+            if (string.IsNullOrEmpty(text))
             {
-                throw new ArgumentNullException(nameof(parts));
+                return string.Empty;
             }
 
-            if (culture == null)
+            var sb = new StringBuilder();
+            foreach (var c in text)
             {
-                culture = CultureInfo.CurrentCulture;
-            }
-
-            var result = new StringBuilder();
-            foreach (var part in parts)
-            {
-                var t = part.Trim();
-                if (t.Length < 1)
+                switch (c)
                 {
+                    case '\\':
+                    case '"':
+                        sb.Append('\\');
+                        sb.Append(c);
+                        continue;
+                    case '\b':
+                        sb.Append("\\b");
+                        continue;
+                    case '\t':
+                        sb.Append("\\t");
+                        continue;
+                    case '\n':
+                        sb.Append("\\n");
+                        continue;
+                    case '\f':
+                        sb.Append("\\f");
+                        continue;
+                    case '\r':
+                        sb.Append("\\r");
+                        continue;
+                }
+
+                if (c < ' ')
+                {
+                    sb.Append($"\\u{(int)c:x4}");
                     continue;
                 }
 
-                if (result.Length > 0)
-                {
-                    result.Append("_");
-                }
-
-                result.Append(t.ToLower(culture));
+                sb.Append(c);
             }
 
-            return result.ToString();
+            return sb.ToString();
         }
 
-        /// <summary>Converts a exception to a simple text message.</summary>
-        /// <param name="ex">The <see cref="Exception" />.</param>
-        /// <param name="debug">Include debug information (stacktrace, data).</param>
-        /// <returns>The text.</returns>
-        public static string ToText(this Exception ex, bool debug = false) => string.Join(Environment.NewLine, ToStrings(ex, debug));
+        /// <summary>Enforces a specific string length (appends spaces and cuts to length).</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
+        public static string ForceLength(this string text, int maxLength) => ForceLength(text, maxLength, string.Empty, " ");
 
-        /// <summary>Converts a exception to a string array.</summary>
-        /// <param name="ex">The <see cref="Exception" />.</param>
-        /// <param name="debug">Include debug information (stacktrace, data).</param>
-        /// <returns>The string array.</returns>
-        public static string[] ToStrings(this Exception ex, bool debug = false)
+        /// <summary>Enforces a specific string length.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <param name="prefix">The prefix to add.</param>
+        /// <param name="suffix">The suffix to add.</param>
+        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
+        public static string ForceLength(this string text, int maxLength, string prefix, string suffix)
         {
-            // ignore AggregateException
-            if (ex is AggregateException)
+            if (text == null)
             {
-                return ToStrings(ex.InnerException, debug);
+                throw new ArgumentNullException(nameof(text));
             }
 
-            if (ex == null)
+            while (text.Length < maxLength)
             {
-                return new string[0];
-            }
-
-            var strings = new List<string>();
-            if (debug)
-            {
-                strings.Add("Message:");
-            }
-
-            foreach (var s in SplitNewLine(ex.Message))
-            {
-                if (s.Trim().Length == 0)
+                if (prefix != null)
                 {
-                    continue;
-                }
-
-                if (debug)
-                {
-                    strings.Add("  " + s);
-                }
-                else
-                {
-                    strings.Add(s);
-                }
-            }
-
-            if (debug)
-            {
-                if (!string.IsNullOrEmpty(ex.Source))
-                {
-                    strings.Add("Source:");
-                    foreach (var s in SplitNewLine(ex.Source))
+                    text = prefix + text;
+                    if (text.Length == maxLength)
                     {
-                        if ((s.Trim().Length == 0) || !ASCII.IsClean(s))
-                        {
-                            continue;
-                        }
-
-                        strings.Add("  " + s);
+                        break;
                     }
                 }
 
-                if (ex.Data.Count > 0)
+                if (suffix != null)
                 {
-                    strings.Add("Data:");
-                    foreach (var key in ex.Data.Keys)
-                    {
-                        strings.Add($"  {key}: {ex.Data[key]}");
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(ex.StackTrace))
-                {
-                    strings.Add("StackTrace:");
-                    foreach (var s in SplitNewLine(ex.StackTrace))
-                    {
-                        if ((s.Trim().Length == 0) || !ASCII.IsClean(s))
-                        {
-                            continue;
-                        }
-
-                        strings.Add("  " + s);
-                    }
+                    text += suffix;
                 }
             }
 
-            if (ex.InnerException != null)
+            if (text.Length > maxLength)
             {
-                if (debug)
-                {
-                    strings.Add("---");
-                }
-
-                strings.AddRange(ToStrings(ex.InnerException, debug));
+                text = text.Substring(0, maxLength);
             }
 
-            if (ex is ReflectionTypeLoadException reflectionTypeLoadException)
-            {
-                foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
-                {
-                    if (debug)
-                    {
-                        strings.Add("---");
-                    }
-
-                    strings.AddRange(ToStrings(inner, debug));
-                }
-            }
-
-            return strings.ToArray();
+            return text;
         }
 
-        /// <summary>
-        ///     Gets a fail save version of string.Format not supporting extended format options (simply replacing {index}
-        ///     with the arguments.
-        /// </summary>
+        /// <summary>Forces the maximum length.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
+        public static string ForceMaxLength(this string text, int maxLength)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            return text.Length > maxLength ? text.Substring(0, maxLength) : text;
+        }
+
+        /// <summary>Forces the maximum length.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <param name="endReplacer">The end replacer. (String appended to the end when cutting the text. Sample: "..").</param>
+        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
+        public static string ForceMaxLength(this string text, int maxLength, string endReplacer)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (endReplacer == null)
+            {
+                throw new ArgumentNullException(nameof(endReplacer));
+            }
+
+            return text.Length > maxLength ? text.Substring(0, maxLength - endReplacer.Length) + endReplacer : text;
+        }
+
+        /// <summary>Gets a fail save version of string.Format not supporting extended format options (simply replacing {index} with the arguments.</summary>
         /// <param name="text">The format string.</param>
         /// <param name="args">The parameters.</param>
         /// <returns>The formatted string.</returns>
@@ -316,6 +369,115 @@ namespace Cave
 
             return result;
         }
+
+        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatBinarySize(this float size, IFormatProvider culture = null)
+        {
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+
+            var negative = size < 0;
+            IecUnit unit = 0;
+            while (size >= 1024)
+            {
+                size /= 1024;
+                unit++;
+            }
+
+            var result = size.ToString("0.000", culture);
+            if (result.Length > 5)
+            {
+                result = result.Substring(0, 5);
+            }
+
+            return (negative ? "-" : string.Empty) + result + " " + unit;
+        }
+
+        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The formatted string.</returns>
+        public static string FormatBinarySize(this double value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+
+        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The formatted string.</returns>
+        public static string FormatBinarySize(this decimal value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+
+        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The formatted string.</returns>
+        public static string FormatBinarySize(this ulong value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+
+        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The formatted string.</returns>
+        public static string FormatBinarySize(this long value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+
+        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatSize(this float size, IFormatProvider culture = null)
+        {
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            if (size < 0)
+            {
+                return "-" + FormatSize(-size);
+            }
+
+            var calc = size;
+            SiUnit unit = 0;
+            while (calc >= 1000)
+            {
+                calc /= 1000;
+                unit++;
+            }
+
+            var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
+            if (result.Length > 5)
+            {
+                result = result.Substring(0, 5);
+            }
+
+            return result + (unit == 0 ? string.Empty : " " + unit);
+        }
+
+        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+        /// <param name="size">The size.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+        public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float)size, culture);
 
         /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
         /// <param name="timeSpan">TimeSpan to format.</param>
@@ -340,7 +502,7 @@ namespace Cave
 
             if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
             {
-                var nano = timeSpan.Ticks / (double) (TimeSpan.TicksPerMillisecond / 1000);
+                var nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
                 return nano > 9.99 ? nano.ToString("0.0", culture) + "ns" : nano.ToString("0.00", culture) + "ns";
             }
 
@@ -410,7 +572,7 @@ namespace Cave
 
             if (seconds >= 0.1)
             {
-                return FormatTime(TimeSpan.FromTicks((long) (seconds * TimeSpan.TicksPerSecond)));
+                return FormatTime(TimeSpan.FromTicks((long)(seconds * TimeSpan.TicksPerSecond)));
             }
 
             var part = seconds;
@@ -472,414 +634,39 @@ namespace Cave
             return result.ToString();
         }
 
-        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this float size, IFormatProvider culture = null)
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="validChars">Valid characters.</param>
+        /// <param name="splitter">Character used to split parts.</param>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        public static string GetCamelCaseName(this string text, string validChars, char splitter)
         {
-            if (culture == null)
-            {
-                culture = CultureInfo.CurrentCulture;
-            }
-
-            if (size < 0)
-            {
-                return "-" + FormatSize(-size);
-            }
-
-            var calc = size;
-            SiUnit unit = 0;
-            while (calc >= 1000)
-            {
-                calc /= 1000;
-                unit++;
-            }
-
-            var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
-            if (result.Length > 5)
-            {
-                result = result.Substring(0, 5);
-            }
-
-            return result + (unit == 0 ? string.Empty : " " + unit);
+            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
+            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
+            return parts.ToArray().JoinCamelCase();
         }
 
-        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float) size, culture);
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
 
-        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float) size, culture);
-
-        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float) size, culture);
-
-        /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float) size, culture);
-
-        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
-        /// <param name="size">The size.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        public static string FormatBinarySize(this float size, IFormatProvider culture = null)
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="validChars">Valid characters.</param>
+        /// <param name="splitter">Character used to split parts.</param>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        public static string GetSnakeCaseName(this string text, string validChars, char splitter)
         {
-            if (culture == null)
-            {
-                culture = CultureInfo.InvariantCulture;
-            }
-
-            var negative = size < 0;
-            IecUnit unit = 0;
-            while (size >= 1024)
-            {
-                size /= 1024;
-                unit++;
-            }
-
-            var result = size.ToString("0.000", culture);
-            if (result.Length > 5)
-            {
-                result = result.Substring(0, 5);
-            }
-
-            return (negative ? "-" : string.Empty) + result + " " + unit;
+            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
+            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
+            return parts.ToArray().JoinSnakeCase();
         }
 
-        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
-        /// <param name="value">Value to format.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this double value, IFormatProvider culture = null) => FormatBinarySize((float) value, culture);
-
-        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
-        /// <param name="value">Value to format.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this decimal value, IFormatProvider culture = null) => FormatBinarySize((float) value, culture);
-
-        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
-        /// <param name="value">Value to format.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this ulong value, IFormatProvider culture = null) => FormatBinarySize((float) value, culture);
-
-        /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
-        /// <param name="value">Value to format.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>The formatted string.</returns>
-        public static string FormatBinarySize(this long value, IFormatProvider culture = null) => FormatBinarySize((float) value, culture);
-
-        /// <summary>
-        ///     Converts a string to the specified target type using the
-        ///     <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)" /> method.
-        /// </summary>
-        /// <typeparam name="T">Type to convert to.</typeparam>
-        /// <param name="value">String value to convert.</param>
-        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-        /// <returns>Returns a new value instance.</returns>
-        public static T ParseValue<T>(this string value, IFormatProvider culture = null) => (T) typeof(T).ConvertValue(value, culture);
-
-        /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
-        /// <param name="value">Value to format.</param>
-        /// <param name="format">An object that supplies culture-specific formatting information.</param>
-        /// <returns>The string.</returns>
-        public static string ToString(object value, IFormatProvider format)
-        {
-            if (value == null)
-            {
-                return "<null>";
-            }
-
-            if (format == null)
-            {
-                format = CultureInfo.InvariantCulture;
-            }
-            else if (format is CultureInfo culture && !(culture.Calendar is GregorianCalendar))
-            {
-                throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
-            }
-
-            // special handling for roundtrip types
-            if (value is double d)
-            {
-                return d.ToString("R", format);
-            }
-
-            if (value is float f)
-            {
-                return f.ToString("R", format);
-            }
-
-            if (value is DateTime dt)
-            {
-                return dt.ToString(InterOpDateTimeFormat, format);
-            }
-
-            if (value is IFormattable formattable)
-            {
-                return formattable.ToString(null, format);
-            }
-
-            return value is ICollection collection ? value + " {" + Join(collection, ",", format) + "}" : value.ToString();
-        }
-
-        /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
-        /// <param name="value">Value to format.</param>
-        /// <returns>The string.</returns>
-        public static string ToString(object value) => ToString(value, null);
-
-        /// <summary>Returns an array of strings using the element objects ToString() method with invariant culture.</summary>
-        /// <param name="enumerable">The array ob objects.</param>
-        /// <returns>The string array.</returns>
-        public static string[] ToStringArray(this IEnumerable enumerable) => ToStringArray(enumerable, CultureInfo.InvariantCulture);
-
-        /// <summary>Returns an array of strings using the element objects ToString() method.</summary>
-        /// <param name="enumerable">The array ob objects.</param>
-        /// <param name="cultureInfo">The culture to use during formatting.</param>
-        /// <returns>The string array.</returns>
-        public static string[] ToStringArray(this IEnumerable enumerable, CultureInfo cultureInfo)
-        {
-            if (enumerable == null)
-            {
-                throw new ArgumentNullException(nameof(enumerable));
-            }
-
-            if (cultureInfo == null)
-            {
-                throw new ArgumentNullException(nameof(cultureInfo));
-            }
-
-            var result = new List<string>();
-            foreach (var obj in enumerable)
-            {
-                result.Add(ToString(obj, cultureInfo));
-            }
-
-            return result.ToArray();
-        }
-
-        /// <summary>
-        ///     Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat" />,
-        ///     <see cref="DisplayDateTimeFormat" />, default).
-        /// </summary>
-        /// <param name="dateTime">String value to parse.</param>
-        /// <returns>The parsed datetime.</returns>
-        public static DateTime ParseDateTime(string dateTime)
-        {
-            {
-                if (DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var result))
-                {
-                    return result;
-                }
-            }
-            {
-                if (DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var result))
-                {
-                    return result;
-                }
-            }
-            return DateTime.Parse(dateTime, CultureInfo.CurrentCulture);
-        }
-
-        /// <summary>
-        ///     Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat" />,
-        ///     <see cref="DisplayDateTimeFormat" />, default).
-        /// </summary>
-        /// <param name="dateTime">String value to parse.</param>
-        /// <param name="result">The parsed datetime.</param>
-        /// <returns>True if the value could be parsed.</returns>
-        public static bool TryParseDateTime(string dateTime, out DateTime result) =>
-            DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParse(dateTime, out result);
-        
-
-        /// <summary>Parses a Point.ToString() result.</summary>
-        /// <param name="point">String value to parse.</param>
-        /// <returns>The parsed point.</returns>
-        public static Point ParsePoint(string point)
-        {
-            if (point == null) throw new ArgumentNullException(nameof(point));
-            var data = Unbox(point.Trim(), "{", "}");
-            var parts = data.Split(',');
-            if (parts.Length != 2)
-            {
-                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
-            }
-
-            if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
-            {
-                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
-            }
-
-            if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
-            {
-                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
-            }
-
-            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
-            return new Point(x, y);
-        }
-
-        /// <summary>Parses a Size.ToString() result.</summary>
-        /// <param name="size">String value to parse.</param>
-        /// <returns>The parsed size.</returns>
-        public static Size ParseSize(string size)
-        {
-            if (size == null) throw new ArgumentNullException(nameof(size));
-            var data = Unbox(size.Trim(), "{", "}");
-            var parts = data.Split(',');
-            if (parts.Length != 2)
-            {
-                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
-            }
-
-            if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH="))
-            {
-                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
-            }
-
-            if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
-            {
-                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
-            }
-
-            var w = int.Parse(parts[0].Trim().Substring(6), CultureInfo.CurrentCulture);
-            var h = int.Parse(parts[1].Trim().Substring(7), CultureInfo.CurrentCulture);
-            return new Size(w, h);
-        }
-
-        /// <summary>Parses a Rectangle.ToString() result.</summary>
-        /// <param name="rect">String value to parse.</param>
-        /// <returns>The parsed rectangle.</returns>
-        public static Rectangle ParseRectangle(string rect)
-        {
-            var data = Unbox(rect, "{", "}");
-            var parts = data.Split(',');
-            if (parts.Length != 4)
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH="))
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var w = int.Parse(parts[2].Trim().Substring(6), CultureInfo.CurrentCulture);
-            var h = int.Parse(parts[3].Trim().Substring(7), CultureInfo.CurrentCulture);
-            return new Rectangle(x, y, w, h);
-        }
-
-        /// <summary>Parses a PointF.ToString() result.</summary>
-        /// <param name="point">String value to parse.</param>
-        /// <returns>The parsed float point.</returns>
-        public static PointF ParsePointF(string point)
-        {
-            var data = Unbox(point, "{", "}");
-            var parts = data.ToUpperInvariant().Split(new[] { "X=", "Y=" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
-            {
-                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
-            }
-
-            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
-            return new PointF(x, y);
-        }
-
-        /// <summary>Parses a SizeF.ToString() result.</summary>
-        /// <param name="size">String value to parse.</param>
-        /// <returns>The parsed float size.</returns>
-        public static SizeF ParseSizeF(string size)
-        {
-            var data = Unbox(size, "{", "}");
-            var parts = data.ToUpperInvariant().Split(new[] { "WIDTH=", "HEIGHT=" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
-            {
-                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
-            }
-
-            var w = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-            var h = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
-            return new SizeF(w, h);
-        }
-
-        /// <summary>Parses a RectangleF.ToString() result.</summary>
-        /// <param name="rect">String value to parse.</param>
-        /// <returns>The parsed float rectangle.</returns>
-        public static RectangleF ParseRectangleF(string rect)
-        {
-            var data = Unbox(rect, "{", "}");
-            var parts = data.ToUpperInvariant().Split(new[] { "X=", "Y=", "WIDTH=", "HEIGHT=" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 4)
-            {
-                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
-            }
-
-            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
-            var w = float.Parse(parts[2].Trim(' ', ','), CultureInfo.CurrentCulture);
-            var h = float.Parse(parts[3].Trim(' ', ','), CultureInfo.CurrentCulture);
-            return new RectangleF(x, y, w, h);
-        }
-
-        /// <summary>
-        ///     Gets a substring from the end of the specified string. Positive values retrieve the number of characters from
-        ///     end. Negative values retrieve everything in front of the specified len - count.
-        /// </summary>
-        /// <param name="text">The string.</param>
-        /// <param name="count">The number of characters at the end to be retrieved.</param>
-        /// <returns>The substring.</returns>
-        public static string SubstringEnd(this string text, int count)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            var len = text.Length;
-            if ((count > len) || (count == 0) || (-count > len))
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), "Count needs to be in range -len..-1 or 1..len");
-            }
-
-            if (count > 0)
-            {
-                return text.Substring(len - count);
-            }
-
-            // if count < 0
-            return text.Substring(0, len + count);
-        }
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
 
         /// <summary>Gets a part of a string.</summary>
         /// <param name="data">Data to parse.</param>
@@ -1004,81 +791,381 @@ namespace Cave
             return data.Substring(start, end - start);
         }
 
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this double value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this float value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this int value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this uint value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this long value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a value to a hexadecimal string.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>Returns the hexadecimal representation of the value.</returns>
-        public static string ToHexString(this ulong value, bool upperCase = false) =>
-            ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
-
-        /// <summary>Converts a byte array to a hexadecimal string.</summary>
-        /// <param name="data">The data.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>The converted string.</returns>
-        /// <exception cref="ArgumentNullException">data.</exception>
-        public static string ToHexString(this byte[] data, bool upperCase = false) => ToHexString(data, false, upperCase);
-
-        /// <summary>Converts a byte array to a hexadecimal string.</summary>
-        /// <param name="data">The data.</param>
-        /// <param name="isLittleEndian">Defines whether the specified data has little endian byte order or not.</param>
-        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
-        /// <returns>The converted string.</returns>
-        /// <exception cref="ArgumentNullException">data.</exception>
-        public static string ToHexString(this byte[] data, bool isLittleEndian, bool upperCase = false)
+        /// <summary>Retrieves only validated chars from a string.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns a new string with valid chars.</returns>
+        public static string GetValidChars(this string text, string validChars)
         {
-            if (data == null)
+            if (text == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                throw new ArgumentNullException(nameof(text));
             }
 
-            if (isLittleEndian)
+            if (string.IsNullOrEmpty(validChars))
             {
-                Array.Reverse(data);
+                return string.Empty;
             }
 
-            var stringBuilder = new StringBuilder(data.Length * 2);
-            var format = upperCase ? "X2" : "x2";
-            for (var i = 0; i < data.Length; i++)
+            var result = new StringBuilder(text.Length);
+            foreach (var c in text)
             {
-                stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
+                if (validChars.IndexOf(c) > -1)
+                {
+                    result.Append(c);
+                }
             }
 
-            return stringBuilder.ToString();
+            return result.ToString();
+        }
+
+        /// <summary>Gets whether the specified string contains invalid chars or not.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns true if the text contains invalid chars.</returns>
+        public static bool HasInvalidChars(this string text, string validChars)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (string.IsNullOrEmpty(validChars))
+            {
+                return !string.IsNullOrEmpty(text);
+            }
+
+            foreach (var c in text)
+            {
+                if (validChars.IndexOf(c) < 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Gets the index of the first invalid char or -1 if all chars are valid.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns the index or -1.</returns>
+        public static int IndexOfInvalidChar(this string text, string validChars)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (string.IsNullOrEmpty(validChars))
+            {
+                return 0;
+            }
+
+            for (var i = 0; i < text.Length; i++)
+            {
+                if (validChars.IndexOf(text[i]) < 0)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>Gets the index of the first invalid char or -1 if all chars are valid.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <param name="start">The start index.</param>
+        /// <returns>Returns the index or -1.</returns>
+        public static int IndexOfInvalidChar(this string text, string validChars, int start)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (string.IsNullOrEmpty(validChars))
+            {
+                return 0;
+            }
+
+            for (var i = start; i < text.Length; i++)
+            {
+                if (validChars.IndexOf(text[i]) < 0)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
+        /// <param name="text">The text to check.</param>
+        /// <param name="start">The start marker.</param>
+        /// <param name="end">The end marker.</param>
+        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
+        public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[text.Length - 1] == end);
+
+        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
+        /// <param name="text">The text to check.</param>
+        /// <param name="start">The start marker.</param>
+        /// <param name="end">The end marker.</param>
+        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
+        public static bool IsBoxed(this string text, string start, string end)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+
+            if (end == null)
+            {
+                throw new ArgumentNullException(nameof(end));
+            }
+
+            return text.StartsWith(start) && text.EndsWith(end);
+        }
+
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The seperator.</param>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo = null)
+        {
+            if (cultureInfo == null)
+            {
+                cultureInfo = CultureInfo.CurrentCulture;
+            }
+
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (separator == null)
+            {
+                throw new ArgumentNullException(nameof(separator));
+            }
+
+            var result = new StringBuilder();
+            foreach (var obj in array)
+            {
+                if (result.Length != 0)
+                {
+                    result.Append(separator);
+                }
+
+                result.Append(ToString(obj, cultureInfo));
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo = null)
+        {
+            if (cultureInfo == null)
+            {
+                cultureInfo = CultureInfo.CurrentCulture;
+            }
+
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            var result = new StringBuilder();
+            foreach (var obj in array)
+            {
+                if (result.Length != 0)
+                {
+                    result.Append(separator);
+                }
+
+                result.Append(ToString(obj, cultureInfo));
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins the camel case.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
+        {
+            if (parts == null)
+            {
+                throw new ArgumentNullException(nameof(parts));
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = part.Trim();
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                result.Append(char.ToUpper(t[0], culture));
+                if (t.Length > 1)
+                {
+                    result.Append(t.Substring(1).ToLower(culture));
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins a collection to a string with newlines for all systems.</summary>
+        /// <param name="texts">The string collection.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string JoinNewLine(this string[] texts) => Join(texts, "\r\n");
+
+        /// <summary>Joins a collection to a string with newlines for all systems.</summary>
+        /// <param name="array">The string array.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n");
+
+        /// <summary>Joins the camel case.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        public static string JoinSnakeCase(this string[] parts, CultureInfo culture = null)
+        {
+            if (parts == null)
+            {
+                throw new ArgumentNullException(nameof(parts));
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = part.Trim();
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                if (result.Length > 0)
+                {
+                    result.Append("_");
+                }
+
+                result.Append(t.ToLower(culture));
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)" /> or
+        /// <see cref="FormatBinarySize(double, IFormatProvider)" />.
+        /// </summary>
+        /// <param name="value">The value string.</param>
+        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)" />.</returns>
+        /// <exception cref="ArgumentNullException">value.</exception>
+        /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
+        public static double ParseBinarySize(string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var parts = value.Split(' ');
+            var error = parts.Length != 2;
+            error &= double.TryParse(parts[0], out var size);
+            if (!error)
+            {
+                if (parts[1] == "B")
+                {
+                    return size;
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
+                {
+                    if (parts[1] == (unit + "Bit"))
+                    {
+                        return size * Math.Pow(1000, (int)unit);
+                    }
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
+                {
+                    if (parts[1] == (unit + "it"))
+                    {
+                        return size * Math.Pow(1024, (int)unit);
+                    }
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
+                {
+                    if (parts[1] == (unit + "B"))
+                    {
+                        return size * Math.Pow(1000, (int)unit);
+                    }
+                }
+
+                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
+                {
+                    if (parts[1] == unit.ToString())
+                    {
+                        return size * Math.Pow(1024, (int)unit);
+                    }
+                }
+            }
+
+            throw new ArgumentException($"Invalid format in binary size. Expected '<value> <unit>'. Example '15 MB'. Got '{value}'.");
+        }
+
+        /// <summary>Parses a DateTime.</summary>
+        /// <param name="dateTimeString">String value to parse.</param>
+        /// <returns>The parsed datetime.</returns>
+        public static DateTime ParseDateTime(string dateTimeString) => ParseDateTime(dateTimeString, null);
+
+        /// <summary>Parses a DateTime.</summary>
+        /// <param name="dateTimeString">String value to parse.</param>
+        /// <param name="culture">Culture used to check for the full date time pattern.</param>
+        /// <returns>The parsed datetime.</returns>
+        public static DateTime ParseDateTime(string dateTimeString, CultureInfo culture)
+        {
+            if ((culture != null) && DateTime.TryParseExact(dateTimeString, culture.DateTimeFormat.FullDateTimePattern, culture, default, out var dateTime0))
+            {
+                return dateTime0;
+            }
+            if (DateTime.TryParse(dateTimeString, culture, default, out var dateTime1))
+            {
+                return dateTime1;
+            }
+            if (DateTimeParser.TryParseDateTime(dateTimeString, out var dateTime2, out var offset))
+            {
+                return dateTime2;
+            }
+            return DateTime.Parse(dateTimeString, CultureInfo.InvariantCulture);
         }
 
         /// <summary>Converts a hex string to a byte array.</summary>
@@ -1105,6 +1192,246 @@ namespace Cave
             {
                 throw new ArgumentException($"Invalid hex string {hex}");
             }
+        }
+
+        /// <summary>Parses a Point.ToString() result.</summary>
+        /// <param name="point">String value to parse.</param>
+        /// <returns>The parsed point.</returns>
+        public static Point ParsePoint(string point)
+        {
+            if (point == null)
+            {
+                throw new ArgumentNullException(nameof(point));
+            }
+
+            var data = Unbox(point.Trim(), "{", "}");
+            var parts = data.Split(',');
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+            }
+
+            if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
+            {
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+            }
+
+            if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
+            {
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+            }
+
+            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
+            return new Point(x, y);
+        }
+
+        /// <summary>Parses a PointF.ToString() result.</summary>
+        /// <param name="point">String value to parse.</param>
+        /// <returns>The parsed float point.</returns>
+        public static PointF ParsePointF(string point)
+        {
+            var data = Unbox(point, "{", "}");
+            var parts = data.ToUpperInvariant().Split(new[]
+            {
+                "X=",
+                "Y="
+            }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+            }
+
+            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+            return new PointF(x, y);
+        }
+
+        /// <summary>Parses a Rectangle.ToString() result.</summary>
+        /// <param name="rect">String value to parse.</param>
+        /// <returns>The parsed rectangle.</returns>
+        public static Rectangle ParseRectangle(string rect)
+        {
+            var data = Unbox(rect, "{", "}");
+            var parts = data.Split(',');
+            if (parts.Length != 4)
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH="))
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var w = int.Parse(parts[2].Trim().Substring(6), CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[3].Trim().Substring(7), CultureInfo.CurrentCulture);
+            return new Rectangle(x, y, w, h);
+        }
+
+        /// <summary>Parses a RectangleF.ToString() result.</summary>
+        /// <param name="rect">String value to parse.</param>
+        /// <returns>The parsed float rectangle.</returns>
+        public static RectangleF ParseRectangleF(string rect)
+        {
+            var data = Unbox(rect, "{", "}");
+            var parts = data.ToUpperInvariant().Split(new[]
+            {
+                "X=",
+                "Y=",
+                "WIDTH=",
+                "HEIGHT="
+            }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 4)
+            {
+                throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+            }
+
+            var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var w = float.Parse(parts[2].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var h = float.Parse(parts[3].Trim(' ', ','), CultureInfo.CurrentCulture);
+            return new RectangleF(x, y, w, h);
+        }
+
+        /// <summary>Parses a Size.ToString() result.</summary>
+        /// <param name="size">String value to parse.</param>
+        /// <returns>The parsed size.</returns>
+        public static Size ParseSize(string size)
+        {
+            if (size == null)
+            {
+                throw new ArgumentNullException(nameof(size));
+            }
+
+            var data = Unbox(size.Trim(), "{", "}");
+            var parts = data.Split(',');
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+            }
+
+            if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH="))
+            {
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+            }
+
+            if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
+            {
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+            }
+
+            var w = int.Parse(parts[0].Trim().Substring(6), CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[1].Trim().Substring(7), CultureInfo.CurrentCulture);
+            return new Size(w, h);
+        }
+
+        /// <summary>Parses a SizeF.ToString() result.</summary>
+        /// <param name="size">String value to parse.</param>
+        /// <returns>The parsed float size.</returns>
+        public static SizeF ParseSizeF(string size)
+        {
+            var data = Unbox(size, "{", "}");
+            var parts = data.ToUpperInvariant().Split(new[]
+            {
+                "WIDTH=",
+                "HEIGHT="
+            }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+            }
+
+            var w = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
+            var h = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+            return new SizeF(w, h);
+        }
+
+        /// <summary>
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue" />
+        /// method.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to.</typeparam>
+        /// <param name="value">String value to convert.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a new value instance.</returns>
+        public static T ParseValue<T>(this string value, CultureInfo culture = null) => (T)typeof(T).ConvertValue(value, culture);
+
+        /// <summary>Randomizes the character casing.</summary>
+        /// <param name="value">The string.</param>
+        /// <returns>Returns a new string with random case.</returns>
+        public static string RandomCase(this string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var rnd = new Random(Environment.TickCount);
+            var result = new char[value.Length];
+            for (var i = 0; i < value.Length; i++)
+            {
+                result[i] = (rnd.Next() % 1) == 0 ? char.ToUpperInvariant(value[i]) : char.ToLowerInvariant(value[i]);
+            }
+
+            return new string(result);
+        }
+
+        /// <summary>Removes any newline markings.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>Returns a string without any newline characters.</returns>
+        public static string RemoveNewLine(this string text)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            var result = new StringBuilder(text.Length);
+            var newLineChars = new[]
+            {
+                '\r',
+                '\n'
+            };
+            var pos = 0;
+            var index = text.IndexOfAny(newLineChars);
+            while (index > -1)
+            {
+                var size = index - pos;
+                if (size > 0)
+                {
+                    result.Append(text.Substring(pos, size));
+                }
+
+                pos = index + 1;
+                index = text.IndexOfAny(newLineChars, pos);
+            }
+
+            {
+                var size = text.Length - pos;
+                if (size > 0)
+                {
+                    result.Append(text.Substring(pos, size));
+                }
+            }
+            return result.ToString();
         }
 
         /// <summary>A fast pattern replacement function for large strings.</summary>
@@ -1170,116 +1497,6 @@ namespace Cave
             }
 
             return new string(chars, 0, count);
-        }
-
-        /// <summary>Gets whether the specified string contains invalid chars or not.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="validChars">The string with the valid chars.</param>
-        /// <returns>Returns true if the text contains invalid chars.</returns>
-        public static bool HasInvalidChars(this string text, string validChars)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (string.IsNullOrEmpty(validChars))
-            {
-                return !string.IsNullOrEmpty(text);
-            }
-
-            foreach (var c in text)
-            {
-                if (validChars.IndexOf(c) < 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>Retrieves only validated chars from a string.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="validChars">The string with the valid chars.</param>
-        /// <returns>Returns a new string with valid chars.</returns>
-        public static string GetValidChars(this string text, string validChars)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (string.IsNullOrEmpty(validChars))
-            {
-                return string.Empty;
-            }
-
-            var result = new StringBuilder(text.Length);
-            foreach (var c in text)
-            {
-                if (validChars.IndexOf(c) > -1)
-                {
-                    result.Append(c);
-                }
-            }
-
-            return result.ToString();
-        }
-
-        /// <summary>Gets the index of the first invalid char or -1 if all chars are valid.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="validChars">The string with the valid chars.</param>
-        /// <returns>Returns the index or -1.</returns>
-        public static int IndexOfInvalidChar(this string text, string validChars)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (string.IsNullOrEmpty(validChars))
-            {
-                return 0;
-            }
-
-            for (var i = 0; i < text.Length; i++)
-            {
-                if (validChars.IndexOf(text[i]) < 0)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>Gets the index of the first invalid char or -1 if all chars are valid.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="validChars">The string with the valid chars.</param>
-        /// <param name="start">The start index.</param>
-        /// <returns>Returns the index or -1.</returns>
-        public static int IndexOfInvalidChar(this string text, string validChars, int start)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (string.IsNullOrEmpty(validChars))
-            {
-                return 0;
-            }
-
-            for (var i = start; i < text.Length; i++)
-            {
-                if (validChars.IndexOf(text[i]) < 0)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
         }
 
         /// <summary>Retrieves all specified chars with a string.</summary>
@@ -1434,6 +1651,107 @@ namespace Cave
             return sb.ToString();
         }
 
+        /// <summary>Replaces newline markings.</summary>
+        /// <param name="text">the text.</param>
+        /// <param name="newLine">The new newline markings.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string ReplaceNewLine(this string text, string newLine)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            var strings = SplitNewLine(text);
+            return string.Join(newLine, strings);
+        }
+
+        /// <summary>Replaces the specified part of a string by splitting, replacing and joining.</summary>
+        /// <param name="text">The full text.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="index">The index of the part to replace.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <returns>The replaced string.</returns>
+        public static string ReplacePart(this string text, char separator, int index, string newValue)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            var parts = text.Split(separator);
+            parts[index] = newValue;
+            return string.Join($"{separator}", parts);
+        }
+
+        /// <summary>Splits a string at the specified indices.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="indices">The indices.</param>
+        /// <returns>The string array.</returns>
+        public static string[] SplitAt(this string text, IEnumerable<int> indices)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (indices == null)
+            {
+                throw new ArgumentNullException(nameof(indices));
+            }
+
+            var items = new List<string>();
+            var start = 0;
+            foreach (var i in indices)
+            {
+                items.Add(text.Substring(start, i - start));
+                start = i;
+            }
+
+            if (start < text.Length)
+            {
+                items.Add(text.Substring(start));
+            }
+
+            return items.ToArray();
+        }
+
+        /// <summary>Splits a string at the specified indices.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="indices">The indices.</param>
+        /// <returns>The string array.</returns>
+        public static string[] SplitAt(this string text, params int[] indices) => SplitAt(text, (IEnumerable<int>)indices);
+
+        /// <summary>Splits a string at character casing.</summary>
+        /// <param name="text">The text.</param>
+        /// <returns>The string array.</returns>
+        public static string[] SplitCamelCase(this string text)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            var splits = new List<int>();
+            var isUpper = true;
+            for (var current = 1; current < text.Length; current++)
+            {
+                var lastWasUpper = isUpper;
+                isUpper = char.IsUpper(text[current]);
+
+                // is not upper and last was upper, split before last
+                if (isUpper && !lastWasUpper)
+                {
+                    if (current > 1)
+                    {
+                        splits.Add(current);
+                    }
+                }
+            }
+
+            return SplitAt(text, splits);
+        }
+
         /// <summary>Splits a string at the specified separators and allows to keep the separators in the list.</summary>
         /// <param name="text">The text.</param>
         /// <param name="separators">The arrays of chars used to seperate the text.</param>
@@ -1573,16 +1891,16 @@ namespace Cave
         }
 
         /// <summary>
-        ///     Splits a string at platform independent newline markings (CR, LF, CRLF, #0). Empty entries will be kept. (This
-        ///     equals <see cref="SplitNewLine(string, StringSplitOptions)" /> with <see cref="StringSplitOptions.None" />).
+        /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0). Empty entries will be kept. (This equals
+        /// <see cref="SplitNewLine(string, StringSplitOptions)" /> with <see cref="StringSplitOptions.None" />).
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>The string array.</returns>
         public static string[] SplitNewLine(this string text) => SplitNewLine(text, StringSplitOptions.None);
 
         /// <summary>
-        ///     Splits a string at newline markings and after a specified length. Trys to split only at space and newline, but
-        ///     will split anywhere else if its not possible.
+        /// Splits a string at newline markings and after a specified length. Trys to split only at space and newline, but will split anywhere
+        /// else if its not possible.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length of the new strings.</param>
@@ -1652,402 +1970,336 @@ namespace Cave
             return array.ToArray();
         }
 
-        /// <summary>Splits a string at character casing.</summary>
-        /// <param name="text">The text.</param>
-        /// <returns>The string array.</returns>
-        public static string[] SplitCamelCase(this string text)
-        {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            var splits = new List<int>();
-            var isUpper = true;
-            for (var current = 1; current < text.Length; current++)
-            {
-                var lastWasUpper = isUpper;
-                isUpper = char.IsUpper(text[current]);
-
-                // is not upper and last was upper, split before last
-                if (isUpper && !lastWasUpper)
-                {
-                    if (current > 1)
-                    {
-                        splits.Add(current);
-                    }
-                }
-            }
-
-            return SplitAt(text, splits);
-        }
-
-        /// <summary>Splits a string at the specified indices.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="indices">The indices.</param>
-        /// <returns>The string array.</returns>
-        public static string[] SplitAt(this string text, IEnumerable<int> indices)
-        {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            if (indices == null) throw new ArgumentNullException(nameof(indices));
-            var items = new List<string>();
-            var start = 0;
-            foreach (var i in indices)
-            {
-                items.Add(text.Substring(start, i - start));
-                start = i;
-            }
-
-            if (start < text.Length)
-            {
-                items.Add(text.Substring(start));
-            }
-
-            return items.ToArray();
-        }
-
-        /// <summary>Splits a string at the specified indices.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="indices">The indices.</param>
-        /// <returns>The string array.</returns>
-        public static string[] SplitAt(this string text, params int[] indices) => SplitAt(text, (IEnumerable<int>) indices);
-
-        /// <summary>Replaces the specified part of a string by splitting, replacing and joining.</summary>
-        /// <param name="text">The full text.</param>
-        /// <param name="separator">The separator.</param>
-        /// <param name="index">The index of the part to replace.</param>
-        /// <param name="newValue">The new value.</param>
-        /// <returns>The replaced string.</returns>
-        public static string ReplacePart(this string text, char separator, int index, string newValue)
-        {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            var parts = text.Split(separator);
-            parts[index] = newValue;
-            return string.Join($"{separator}", parts);
-        }
-
-        /// <summary>Replaces newline markings.</summary>
-        /// <param name="text">the text.</param>
-        /// <param name="newLine">The new newline markings.</param>
-        /// <returns>Returns a new string.</returns>
-        public static string ReplaceNewLine(this string text, string newLine)
-        {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            var strings = SplitNewLine(text);
-            return string.Join(newLine, strings);
-        }
-
-        /// <summary>Removes any newline markings.</summary>
-        /// <param name="text">The text.</param>
-        /// <returns>Returns a string without any newline characters.</returns>
-        public static string RemoveNewLine(this string text)
+        /// <summary>
+        /// Gets a substring from the end of the specified string. Positive values retrieve the number of characters from end. Negative values
+        /// retrieve everything in front of the specified len - count.
+        /// </summary>
+        /// <param name="text">The string.</param>
+        /// <param name="count">The number of characters at the end to be retrieved.</param>
+        /// <returns>The substring.</returns>
+        public static string SubstringEnd(this string text, int count)
         {
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
             }
 
-            var result = new StringBuilder(text.Length);
-            var newLineChars = new[] { '\r', '\n' };
-            var pos = 0;
-            var index = text.IndexOfAny(newLineChars);
-            while (index > -1)
+            var len = text.Length;
+            if ((count > len) || (count == 0) || (-count > len))
             {
-                var size = index - pos;
-                if (size > 0)
-                {
-                    result.Append(text.Substring(pos, size));
-                }
-
-                pos = index + 1;
-                index = text.IndexOfAny(newLineChars, pos);
+                throw new ArgumentOutOfRangeException(nameof(count), "Count needs to be in range -len..-1 or 1..len");
             }
 
+            if (count > 0)
             {
-                var size = text.Length - pos;
-                if (size > 0)
-                {
-                    result.Append(text.Substring(pos, size));
-                }
+                return text.Substring(len - count);
             }
-            return result.ToString();
+
+            // if count < 0
+            return text.Substring(0, len + count);
         }
 
-        /// <summary>Forces the maximum length.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceMaxLength(this string text, int maxLength)
+        /// <summary>Converts a string to a bool.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
+        public static bool ToBool(this string value, bool defaultValue = false) => bool.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this double value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this float value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this int value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this uint value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this long value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a value to a hexadecimal string.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>Returns the hexadecimal representation of the value.</returns>
+        public static string ToHexString(this ulong value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
+
+        /// <summary>Converts a byte array to a hexadecimal string.</summary>
+        /// <param name="data">The data.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>The converted string.</returns>
+        /// <exception cref="ArgumentNullException">data.</exception>
+        public static string ToHexString(this byte[] data, bool upperCase = false) => ToHexString(data, false, upperCase);
+
+        /// <summary>Converts a byte array to a hexadecimal string.</summary>
+        /// <param name="data">The data.</param>
+        /// <param name="isLittleEndian">Defines whether the specified data has little endian byte order or not.</param>
+        /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
+        /// <returns>The converted string.</returns>
+        /// <exception cref="ArgumentNullException">data.</exception>
+        public static string ToHexString(this byte[] data, bool isLittleEndian, bool upperCase = false)
         {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            return text.Length > maxLength ? text.Substring(0, maxLength) : text;
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (isLittleEndian)
+            {
+                Array.Reverse(data);
+            }
+
+            var stringBuilder = new StringBuilder(data.Length * 2);
+            var format = upperCase ? "X2" : "x2";
+            for (var i = 0; i < data.Length; i++)
+            {
+                stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
+            }
+
+            return stringBuilder.ToString();
         }
 
-        /// <summary>Forces the maximum length.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <param name="endReplacer">The end replacer. (String appended to the end when cutting the text. Sample: "..").</param>
-        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceMaxLength(this string text, int maxLength, string endReplacer)
+        /// <summary>Converts a string to an integer.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
+        public static int ToInt32(this string value, int defaultValue = 0) => int.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>Converts a string to an integer.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
+        public static long ToInt64(this string value, long defaultValue = 0) => long.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>Converts a string to an integer.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
+        public static ulong ToInt64(this string value, ulong defaultValue = 0) => ulong.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The string.</returns>
+        public static string ToString(object value, CultureInfo culture)
         {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            if (endReplacer == null) throw new ArgumentNullException(nameof(endReplacer));
-            return text.Length > maxLength ? text.Substring(0, maxLength - endReplacer.Length) + endReplacer : text;
+            if (value == null)
+            {
+                return "<null>";
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+            else if (!(culture.Calendar is GregorianCalendar))
+            {
+                throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
+            }
+
+            // special handling for roundtrip types
+            if (value is double d)
+            {
+                return d.ToString("R", culture);
+            }
+
+            if (value is float f)
+            {
+                return f.ToString("R", culture);
+            }
+
+            if (value is DateTime dt)
+            {
+                return dt.Kind switch
+                {
+                    DateTimeKind.Local or DateTimeKind.Unspecified => dt.ToString(culture.DateTimeFormat.FullDateTimePattern, culture),
+                    _ => dt.ToString(InterOpDateTimeFormat, culture),
+                };
+            }
+
+            if (value is IFormattable formattable)
+            {
+                return formattable.ToString(null, culture);
+            }
+
+            return value is ICollection collection ? value + " {" + Join(collection, ",", culture) + "}" : value.ToString();
         }
 
-        /// <summary>Enforces a specific string length (appends spaces and cuts to length).</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceLength(this string text, int maxLength) => ForceLength(text, maxLength, string.Empty, " ");
+        /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
+        /// <param name="value">Value to format.</param>
+        /// <returns>The string.</returns>
+        public static string ToString(object value) => ToString(value, null);
 
-        /// <summary>Enforces a specific string length.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <param name="prefix">The prefix to add.</param>
-        /// <param name="suffix">The suffix to add.</param>
-        /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        public static string ForceLength(this string text, int maxLength, string prefix, string suffix)
+        /// <summary>Returns an array of strings using the element objects ToString() method with invariant culture.</summary>
+        /// <param name="enumerable">The array ob objects.</param>
+        /// <returns>The string array.</returns>
+        public static string[] ToStringArray(this IEnumerable enumerable) => ToStringArray(enumerable, CultureInfo.InvariantCulture);
+
+        /// <summary>Returns an array of strings using the element objects ToString() method.</summary>
+        /// <param name="enumerable">The array ob objects.</param>
+        /// <param name="cultureInfo">The culture to use during formatting.</param>
+        /// <returns>The string array.</returns>
+        public static string[] ToStringArray(this IEnumerable enumerable, CultureInfo cultureInfo)
         {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            while (text.Length < maxLength)
+            if (enumerable == null)
             {
-                if (prefix != null)
-                {
-                    text = prefix + text;
-                    if (text.Length == maxLength)
-                    {
-                        break;
-                    }
-                }
-
-                if (suffix != null)
-                {
-                    text += suffix;
-                }
+                throw new ArgumentNullException(nameof(enumerable));
             }
 
-            if (text.Length > maxLength)
+            if (cultureInfo == null)
             {
-                text = text.Substring(0, maxLength);
+                throw new ArgumentNullException(nameof(cultureInfo));
             }
 
-            return text;
+            var result = new List<string>();
+            foreach (var obj in enumerable)
+            {
+                result.Add(ToString(obj, cultureInfo));
+            }
+
+            return result.ToArray();
         }
 
-        /// <summary>Tries to detect the used newline chars in the specified string.</summary>
-        /// <param name="text">The text.</param>
-        /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
-        public static string DetectNewLine(this string text)
+        /// <summary>Converts a exception to a string array.</summary>
+        /// <param name="ex">The <see cref="Exception" />.</param>
+        /// <param name="debug">Include debug information (stacktrace, data).</param>
+        /// <returns>The string array.</returns>
+        public static string[] ToStrings(this Exception ex, bool debug = false)
         {
-            if (text == null)
+            // ignore AggregateException
+            if (ex is AggregateException)
             {
-                throw new ArgumentNullException(nameof(text));
+                return ToStrings(ex.InnerException, debug);
             }
 
-            if (text.IndexOf("\r\n") > -1)
+            if (ex == null)
             {
-                return "\r\n";
+                return new string[0];
             }
 
-            if (text.IndexOf('\n') > -1)
+            var strings = new List<string>();
+            if (debug)
             {
-                return "\n";
+                strings.Add("Message:");
             }
 
-            return text.IndexOf('\r') > -1 ? "\r" : null;
-        }
-
-        /// <summary>Boxes the specified text with the given character.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="c">The character to pre and append.</param>
-        /// <returns>Returns a string starting and ending with the specified character.</returns>
-        public static string Box(this string text, char c) => c + text + c;
-
-        /// <summary>Boxes the specified text with the given string.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="s">The string to pre and append.</param>
-        /// <returns>Returns a string starting and ending with the specified string.</returns>
-        public static string Box(this string text, string s) => s + text + s;
-
-        /// <summary>Boxes the specified text with the given string.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="start">The start.</param>
-        /// <param name="end">The end.</param>
-        /// <returns>Returns a string starting and ending with the specified string.</returns>
-        public static string Box(this string text, string start, string end) => start + text + end;
-
-        /// <summary>Escapes all characters at the specified string below ascii 32 and above ascii 127.</summary>
-        /// <param name="text">The text.</param>
-        /// <returns>Returns an escaped ascii 7 bit string.</returns>
-        public static string Escape(this string text)
-        {
-            if (string.IsNullOrEmpty(text))
+            foreach (var s in SplitNewLine(ex.Message))
             {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-            foreach (var c in text)
-            {
-                switch (c)
+                if (s.Trim().Length == 0)
                 {
-                    case '\\':
-                    case '"':
-                        sb.Append('\\');
-                        sb.Append(c);
-                        continue;
-                    case '\b':
-                        sb.Append("\\b");
-                        continue;
-                    case '\t':
-                        sb.Append("\\t");
-                        continue;
-                    case '\n':
-                        sb.Append("\\n");
-                        continue;
-                    case '\f':
-                        sb.Append("\\f");
-                        continue;
-                    case '\r':
-                        sb.Append("\\r");
-                        continue;
-                }
-
-                if ((c < ' ') || (c > (char) 127))
-                {
-                    sb.Append($"\\u{(int)c:x4}");
                     continue;
                 }
 
-                sb.Append(c);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>Escapes all characters at the specified string below ascii 32.</summary>
-        /// <param name="text">The text.</param>
-        /// <returns>Returns an escaped utf8 string.</returns>
-        public static string EscapeUtf8(this string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-            foreach (var c in text)
-            {
-                switch (c)
+                if (debug)
                 {
-                    case '\\':
-                    case '"':
-                        sb.Append('\\');
-                        sb.Append(c);
-                        continue;
-                    case '\b':
-                        sb.Append("\\b");
-                        continue;
-                    case '\t':
-                        sb.Append("\\t");
-                        continue;
-                    case '\n':
-                        sb.Append("\\n");
-                        continue;
-                    case '\f':
-                        sb.Append("\\f");
-                        continue;
-                    case '\r':
-                        sb.Append("\\r");
-                        continue;
+                    strings.Add("  " + s);
                 }
-
-                if (c < ' ')
+                else
                 {
-                    sb.Append($"\\u{(int)c:x4}");
-                    continue;
+                    strings.Add(s);
                 }
-
-                sb.Append(c);
             }
 
-            return sb.ToString();
-        }
-
-        /// <summary>Unescapes the specified text and throws exceptions on invalid escape codes.</summary>
-        /// <param name="text">The text (escaped ascii 7 bit string).</param>
-        /// <returns>Returns the unescaped string.</returns>
-        /// <exception cref="InvalidDataException">Invalid escape code.</exception>
-        public static string Unescape(this string text) => Unescape(text, true);
-
-        /// <summary>Unescapes the specified text.</summary>
-        /// <param name="text">The text (escaped ascii 7 bit string).</param>
-        /// <param name="throwOnInvalid">Throw exception on invalid escape codes.</param>
-        /// <returns>Returns the unescaped string.</returns>
-        /// <exception cref="InvalidDataException">Invalid escape code.</exception>
-        public static string Unescape(this string text, bool throwOnInvalid)
-        {
-            var sb = new StringBuilder();
-            var i = 0;
-            while (i < text.Length)
+            if (debug)
             {
-                var c = text[i++];
-                if (c == '\\')
+                if (!string.IsNullOrEmpty(ex.Source))
                 {
-                    var c2 = text[i++];
-                    switch (c2)
+                    strings.Add("Source:");
+                    foreach (var s in SplitNewLine(ex.Source))
                     {
-                        case '"':
-                            sb.Append('"');
+                        if ((s.Trim().Length == 0) || !ASCII.IsClean(s))
+                        {
                             continue;
-                        case '\\':
-                            sb.Append('\\');
-                            continue;
-                        case 'b':
-                            sb.Append('\b');
-                            continue;
-                        case 't':
-                            sb.Append('\t');
-                            continue;
-                        case 'n':
-                            sb.Append('\n');
-                            continue;
-                        case 'f':
-                            sb.Append('\f');
-                            continue;
-                        case 'r':
-                            sb.Append('\r');
-                            continue;
-                        case 'u':
-                            try
-                            {
-                                var code = text.Substring(i, 4);
-                                sb.Append((char) Convert.ToInt32(code, 16));
-                                i += 4;
-                            }
-                            catch (Exception ex)
-                            {
-                                if (throwOnInvalid)
-                                    throw new InvalidDataException($"Invalid escape code at '{text.Substring(i - 2, Math.Min(6, text.Length - i))}'.", ex);
-                                sb.Append("\\u");
-                            }
-                            continue;
-                        default:
-                            if (throwOnInvalid)
-                            {
-                                throw new InvalidDataException("Invalid escape code.");
-                            }
-                            else
-                            {
-                                sb.Append('\\');
-                                sb.Append(c2);
-                                continue;
-                            }
+                        }
+
+                        strings.Add("  " + s);
                     }
                 }
 
-                sb.Append(c);
+                if (ex.Data.Count > 0)
+                {
+                    strings.Add("Data:");
+                    foreach (var key in ex.Data.Keys)
+                    {
+                        strings.Add($"  {key}: {ex.Data[key]}");
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(ex.StackTrace))
+                {
+                    strings.Add("StackTrace:");
+                    foreach (var s in SplitNewLine(ex.StackTrace))
+                    {
+                        if ((s.Trim().Length == 0) || !ASCII.IsClean(s))
+                        {
+                            continue;
+                        }
+
+                        strings.Add("  " + s);
+                    }
+                }
             }
 
-            return sb.ToString();
+            if (ex.InnerException != null)
+            {
+                if (debug)
+                {
+                    strings.Add("---");
+                }
+
+                strings.AddRange(ToStrings(ex.InnerException, debug));
+            }
+
+            if (ex is ReflectionTypeLoadException reflectionTypeLoadException)
+            {
+                foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
+                {
+                    if (debug)
+                    {
+                        strings.Add("---");
+                    }
+
+                    strings.AddRange(ToStrings(inner, debug));
+                }
+            }
+
+            return strings.ToArray();
         }
+
+        /// <summary>Converts a exception to a simple text message.</summary>
+        /// <param name="ex">The <see cref="Exception" />.</param>
+        /// <param name="debug">Include debug information (stacktrace, data).</param>
+        /// <returns>The text.</returns>
+        public static string ToText(this Exception ex, bool debug = false) => string.Join(Environment.NewLine, ToStrings(ex, debug));
+
+        /// <summary>Converts a string to an integer.</summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
+        public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
+
+        /// <summary>Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat" />, <see cref="DisplayDateTimeFormat" />, default).</summary>
+        /// <param name="dateTime">String value to parse.</param>
+        /// <param name="result">The parsed datetime.</param>
+        /// <returns>True if the value could be parsed.</returns>
+        public static bool TryParseDateTime(string dateTime, out DateTime result) => DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParse(dateTime, out result);
 
         /// <summary>Unboxes a string (removes strings from start end end).</summary>
         /// <param name="text">The string to be unboxed.</param>
@@ -2144,38 +2396,6 @@ namespace Cave
             return text;
         }
 
-        /// <summary>Unboxes a string (removes enclosing "" and '').</summary>
-        /// <param name="text">The string to be unboxed.</param>
-        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
-        /// <returns>Returns the content between the start and end marks.</returns>
-        public static string UnboxText(this string text, bool throwEx = true)
-        {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            if (text.Length > 1)
-            {
-                if (text.StartsWith("'") && text.EndsWith("'"))
-                {
-                    return text.Substring(1, text.Length - 2);
-                }
-
-                if (text.StartsWith("\"") && text.EndsWith("\""))
-                {
-                    return text.Substring(1, text.Length - 2);
-                }
-            }
-
-            if (throwEx)
-            {
-                throw new FormatException($"Could not unbox {'"'} string {'"'}'!");
-            }
-
-            return text;
-        }
-
         /// <summary>Unboxes a string (removes enclosing [], {} and ()).</summary>
         /// <param name="text">The string to be unboxed.</param>
         /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
@@ -2208,277 +2428,121 @@ namespace Cave
             return !throwEx ? text : throw new FormatException($"Could not unbox {'"'} string {'"'}!");
         }
 
-        /// <summary>
-        ///     Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)" /> or
-        ///     <see cref="FormatBinarySize(double, IFormatProvider)" />.
-        /// </summary>
-        /// <param name="value">The value string.</param>
-        /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)" />.</returns>
-        /// <exception cref="ArgumentNullException">value.</exception>
-        /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
-        public static double ParseBinarySize(string value)
+        /// <summary>Unboxes a string (removes enclosing "" and '').</summary>
+        /// <param name="text">The string to be unboxed.</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
+        /// <returns>Returns the content between the start and end marks.</returns>
+        public static string UnboxText(this string text, bool throwEx = true)
         {
-            if (value == null)
+            if (text == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(text));
             }
 
-            var parts = value.Split(' ');
-            var error = parts.Length != 2;
-            error &= double.TryParse(parts[0], out var size);
-            if (!error)
+            if (text.Length > 1)
             {
-                if (parts[1] == "B")
+                if (text.StartsWith("'") && text.EndsWith("'"))
                 {
-                    return size;
+                    return text.Substring(1, text.Length - 2);
                 }
 
-                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
+                if (text.StartsWith("\"") && text.EndsWith("\""))
                 {
-                    if (parts[1] == (unit + "Bit"))
+                    return text.Substring(1, text.Length - 2);
+                }
+            }
+
+            if (throwEx)
+            {
+                throw new FormatException($"Could not unbox {'"'} string {'"'}'!");
+            }
+
+            return text;
+        }
+
+        /// <summary>Unescapes the specified text and throws exceptions on invalid escape codes.</summary>
+        /// <param name="text">The text (escaped ascii 7 bit string).</param>
+        /// <returns>Returns the unescaped string.</returns>
+        /// <exception cref="InvalidDataException">Invalid escape code.</exception>
+        public static string Unescape(this string text) => Unescape(text, true);
+
+        /// <summary>Unescapes the specified text.</summary>
+        /// <param name="text">The text (escaped ascii 7 bit string).</param>
+        /// <param name="throwOnInvalid">Throw exception on invalid escape codes.</param>
+        /// <returns>Returns the unescaped string.</returns>
+        /// <exception cref="InvalidDataException">Invalid escape code.</exception>
+        public static string Unescape(this string text, bool throwOnInvalid)
+        {
+            var sb = new StringBuilder();
+            var i = 0;
+            while (i < text.Length)
+            {
+                var c = text[i++];
+                if (c == '\\')
+                {
+                    var c2 = text[i++];
+                    switch (c2)
                     {
-                        return size * Math.Pow(1000, (int) unit);
+                        case '"':
+                            sb.Append('"');
+                            continue;
+                        case '\\':
+                            sb.Append('\\');
+                            continue;
+                        case 'b':
+                            sb.Append('\b');
+                            continue;
+                        case 't':
+                            sb.Append('\t');
+                            continue;
+                        case 'n':
+                            sb.Append('\n');
+                            continue;
+                        case 'f':
+                            sb.Append('\f');
+                            continue;
+                        case 'r':
+                            sb.Append('\r');
+                            continue;
+                        case 'u':
+                            try
+                            {
+                                var code = text.Substring(i, 4);
+                                sb.Append((char)Convert.ToInt32(code, 16));
+                                i += 4;
+                            }
+                            catch (Exception ex)
+                            {
+                                if (throwOnInvalid)
+                                {
+                                    throw new InvalidDataException($"Invalid escape code at '{text.Substring(i - 2, Math.Min(6, text.Length - i))}'.", ex);
+                                }
+
+                                sb.Append("\\u");
+                            }
+
+                            continue;
+                        default:
+                            if (throwOnInvalid)
+                            {
+                                throw new InvalidDataException("Invalid escape code.");
+                            }
+                            else
+                            {
+                                sb.Append('\\');
+                                sb.Append(c2);
+                                continue;
+                            }
                     }
                 }
 
-                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
-                {
-                    if (parts[1] == (unit + "it"))
-                    {
-                        return size * Math.Pow(1024, (int) unit);
-                    }
-                }
-
-                foreach (var unit in Enum.GetValues(typeof(SiUnit)))
-                {
-                    if (parts[1] == (unit + "B"))
-                    {
-                        return size * Math.Pow(1000, (int) unit);
-                    }
-                }
-
-                foreach (var unit in Enum.GetValues(typeof(IecUnit)))
-                {
-                    if (parts[1] == unit.ToString())
-                    {
-                        return size * Math.Pow(1024, (int) unit);
-                    }
-                }
+                sb.Append(c);
             }
 
-            throw new ArgumentException($"Invalid format in binary size. Expected '<value> <unit>'. Example '15 MB'. Got '{value}'.");
+            return sb.ToString();
         }
 
-        /// <summary>Randomizes the character casing.</summary>
-        /// <param name="value">The string.</param>
-        /// <returns>Returns a new string with random case.</returns>
-        public static string RandomCase(this string value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            var rnd = new Random(Environment.TickCount);
-            var result = new char[value.Length];
-            for (var i = 0; i < value.Length; i++)
-            {
-                result[i] = (rnd.Next() % 1) == 0 ? char.ToUpperInvariant(value[i]) : char.ToLowerInvariant(value[i]);
-            }
-
-            return new string(result);
-        }
-
-        /// <summary>Returns the string after the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="character">The character to search for.</param>
-        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        public static string AfterFirst(this string value, char character)
-        {
-            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + 1);
-        }
-
-        /// <summary>Returns the string after the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="pattern">The character to search for.</param>
-        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        public static string AfterFirst(this string value, string pattern)
-        {
-            if (pattern == null)
-            {
-                throw new ArgumentNullException(nameof(pattern));
-            }
-
-            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
-        }
-
-        /// <summary>Returns the string before the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="character">The pattern to search for.</param>
-        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        public static string BeforeFirst(this string value, char character)
-        {
-            var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? value : value.Substring(0, i);
-        }
-
-        /// <summary>Returns the string before the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="pattern">The character to search for.</param>
-        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        public static string BeforeFirst(this string value, string pattern)
-        {
-            var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? value : value.Substring(0, i);
-        }
-
-        /// <summary>Returns the string after the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="character">The pattern to search for.</param>
-        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        public static string AfterLast(this string value, char character)
-        {
-            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + 1);
-        }
-
-        /// <summary>Returns the string after the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="pattern">The pattern to search for.</param>
-        /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        public static string AfterLast(this string value, string pattern)
-        {
-            if (pattern == null)
-            {
-                throw new ArgumentNullException(nameof(pattern));
-            }
-
-            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
-        }
-
-        /// <summary>Returns the string before the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="character">The character to search for.</param>
-        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        public static string BeforeLast(this string value, char character)
-        {
-            var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? value : value.Substring(0, i);
-        }
-
-        /// <summary>Returns the string before the specified pattern.</summary>
-        /// <param name="value">The string value.</param>
-        /// <param name="pattern">The pattern to search for.</param>
-        /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        public static string BeforeLast(this string value, string pattern)
-        {
-            if (pattern == null)
-            {
-                throw new ArgumentNullException(nameof(pattern));
-            }
-
-            var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? value : value.Substring(0, i);
-        }
-
-        /// <summary>Converts a string to a bool.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static bool ToBool(this string value, bool defaultValue = false) => bool.TryParse(value, out var result) ? result : defaultValue;
-
-        /// <summary>Converts a string to an integer.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static int ToInt32(this string value, int defaultValue = 0) => int.TryParse(value, out var result) ? result : defaultValue;
-
-        /// <summary>Converts a string to an integer.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
-
-        /// <summary>Converts a string to an integer.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static long ToInt64(this string value, long defaultValue = 0) => long.TryParse(value, out var result) ? result : defaultValue;
-
-        /// <summary>Converts a string to an integer.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        public static ulong ToInt64(this string value, ulong defaultValue = 0) => ulong.TryParse(value, out var result) ? result : defaultValue;
-
-        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
-        /// <param name="text">The text to check.</param>
-        /// <param name="start">The start marker.</param>
-        /// <param name="end">The end marker.</param>
-        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[text.Length - 1] == end);
-
-        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
-        /// <param name="text">The text to check.</param>
-        /// <param name="start">The start marker.</param>
-        /// <param name="end">The end marker.</param>
-        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        public static bool IsBoxed(this string text, string start, string end)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
-            if (start == null)
-            {
-                throw new ArgumentNullException(nameof(start));
-            }
-
-            if (end == null)
-            {
-                throw new ArgumentNullException(nameof(end));
-            }
-
-            return text.StartsWith(start) && text.EndsWith(end);
-        }
-
-        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
-        /// <param name="validChars">Valid characters.</param>
-        /// <param name="splitter">Character used to split parts.</param>
-        /// <param name="text">The text to use.</param>
-        /// <returns>A camel case version of text.</returns>
-        public static string GetCamelCaseName(this string text, string validChars, char splitter)
-        {
-            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
-            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
-            return parts.ToArray().JoinCamelCase();
-        }
-
-        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
-        /// <param name="text">The text to use.</param>
-        /// <returns>A camel case version of text.</returns>
-        public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
-
-        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
-        /// <param name="validChars">Valid characters.</param>
-        /// <param name="splitter">Character used to split parts.</param>
-        /// <param name="text">The text to use.</param>
-        /// <returns>A camel case version of text.</returns>
-        public static string GetSnakeCaseName(this string text, string validChars, char splitter)
-        {
-            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
-            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
-            return parts.ToArray().JoinSnakeCase();
-        }
-
-        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
-        /// <param name="text">The text to use.</param>
-        /// <returns>A camel case version of text.</returns>
-        public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+        #endregion
     }
 }
 

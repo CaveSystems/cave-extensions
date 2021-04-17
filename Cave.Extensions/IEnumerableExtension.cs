@@ -6,6 +6,8 @@ namespace Cave
     /// <summary>Some additional linq extensions.</summary>
     public static class IEnumerableExtension
     {
+        #region Static
+
         /// <summary>Calculates the hash for all properties of the specified items.</summary>
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="items">The items.</param>
@@ -34,6 +36,8 @@ namespace Cave
 
             return result;
         }
+
+        #endregion
 
         #region long, predicate
 

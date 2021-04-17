@@ -11,42 +11,43 @@ namespace Cave.Collections
     [SuppressMessage("Naming", "CA1710")]
     public class ExpiringMovingAverageFloat : IAverage<float>
     {
-        readonly LinkedList<Item> items = new LinkedList<Item>();
+        #region Nested type: Item
+
+        class Item
+        {
+            public DateTime DateTime;
+            public float Float;
+        }
+
+        #endregion
+
+        readonly LinkedList<Item> items = new();
         float total;
 
-        /// <summary>Gets or sets the maximum age of the items.</summary>
-        /// <value>The maximum age.</value>
-        /// <remarks>
-        ///     Setting this to zero or negative values disables the maximum age. An update is done after next call to
-        ///     <see cref="Add(float)" />.
-        /// </remarks>
-        public TimeSpan MaximumAge { get; set; }
+        #region Properties
 
         /// <summary>Gets the duration of the items.</summary>
         /// <value>The duration.</value>
         public TimeSpan Duration => items.Count > 1 ? items.Last.Value.DateTime - items.First.Value.DateTime : TimeSpan.Zero;
 
-        /// <summary>Gets the average for the current items.</summary>
-        /// <value>The average.</value>
-        public float Average => total / items.Count;
+        /// <summary>Gets or sets the maximum age of the items.</summary>
+        /// <value>The maximum age.</value>
+        /// <remarks>Setting this to zero or negative values disables the maximum age. An update is done after next call to <see cref="Add(float)" />.</remarks>
+        public TimeSpan MaximumAge { get; set; }
 
-        /// <summary>Gets or sets the maximum item count.</summary>
-        /// <value>The maximum count.</value>
-        /// <remarks>
-        ///     Setting this to zero or negative values disables the maximum item count. An update is done after next call to
-        ///     <see cref="Add(float)" />.
-        /// </remarks>
-        public int MaximumCount { get; set; }
+        #endregion
 
-        /// <summary>Gets the current item count.</summary>
-        /// <value>The item count.</value>
-        public int Count => items.Count;
+        #region IAverage<float> Members
 
         /// <summary>Adds the specified item.</summary>
         /// <param name="item">The item.</param>
         public void Add(float item)
         {
-            items.AddLast(new Item { DateTime = DateTime.UtcNow, Float = item });
+            items.AddLast(new Item
+            {
+                DateTime = DateTime.UtcNow,
+                Float = item
+            });
             total += item;
             if (MaximumCount > 0)
             {
@@ -68,6 +69,10 @@ namespace Cave.Collections
             }
         }
 
+        /// <summary>Gets the average for the current items.</summary>
+        /// <value>The average.</value>
+        public float Average => total / items.Count;
+
         /// <summary>Clears this instance.</summary>
         public void Clear()
         {
@@ -75,17 +80,25 @@ namespace Cave.Collections
             total = 0;
         }
 
-        /// <summary>Returns an enumerator that iterates through the collection.</summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<float> GetEnumerator() => items.Select(i => i.Float).GetEnumerator();
+        /// <summary>Gets the current item count.</summary>
+        /// <value>The item count.</value>
+        public int Count => items.Count;
+
+        /// <summary>Gets or sets the maximum item count.</summary>
+        /// <value>The maximum count.</value>
+        /// <remarks>
+        /// Setting this to zero or negative values disables the maximum item count. An update is done after next call to
+        /// <see cref="Add(float)" />.
+        /// </remarks>
+        public int MaximumCount { get; set; }
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => items.Select(i => i.Float).GetEnumerator();
 
-        class Item
-        {
-            public DateTime DateTime;
-            public float Float;
-        }
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<float> GetEnumerator() => items.Select(i => i.Float).GetEnumerator();
+
+        #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Cave;
 using NUnit.Framework;
 
-namespace Test
+namespace Test.Strings
 {
     [TestFixture]
     public class ConnectionStringTests
@@ -15,6 +15,18 @@ namespace Test
             Assert.AreEqual("pass", c.Password);
             Assert.AreEqual("server", c.Server);
             Assert.AreEqual("path", c.Location);
+        }
+
+        [Test]
+        public void Parse10()
+        {
+            ConnectionString.TryParse("memory://user:pass@server:123", out var c);
+            Assert.AreEqual("memory", c.Protocol);
+            Assert.AreEqual("user", c.UserName);
+            Assert.AreEqual("pass", c.Password);
+            Assert.AreEqual("server", c.Server);
+            Assert.AreEqual(123, c.Port);
+            Assert.AreEqual(null, c.Location);
         }
 
         [Test]
@@ -47,7 +59,7 @@ namespace Test
             Assert.AreEqual(null, c.UserName);
             Assert.AreEqual(null, c.Password);
             Assert.AreEqual("server", c.Server);
-            Assert.AreEqual((ushort)123, c.Port);
+            Assert.AreEqual(123, c.Port);
             Assert.AreEqual(null, c.Location);
         }
 
@@ -59,7 +71,7 @@ namespace Test
             Assert.AreEqual("user", c.UserName);
             Assert.AreEqual("pass", c.Password);
             Assert.AreEqual("server", c.Server);
-            Assert.AreEqual((ushort)123, c.Port);
+            Assert.AreEqual(123, c.Port);
             Assert.AreEqual(null, c.Location);
         }
 
@@ -104,20 +116,18 @@ namespace Test
             Assert.AreEqual(null, c.UserName);
             Assert.AreEqual(null, c.Password);
             Assert.AreEqual("server", c.Server);
-            Assert.AreEqual((ushort)123, c.Port);
+            Assert.AreEqual(123, c.Port);
             Assert.AreEqual(null, c.Location);
         }
 
         [Test]
-        public void Parse10()
+        public void Path()
         {
-            ConnectionString.TryParse("memory://user:pass@server:123", out var c);
-            Assert.AreEqual("memory", c.Protocol);
-            Assert.AreEqual("user", c.UserName);
-            Assert.AreEqual("pass", c.Password);
-            Assert.AreEqual("server", c.Server);
-            Assert.AreEqual((ushort)123, c.Port);
-            Assert.AreEqual(null, c.Location);
+            var text = @"c:\test";
+            var string1 = new ConnectionString(null, null, null, null, 0, @"c:\test");
+            var string2 = ConnectionString.Parse(text);
+            Assert.AreEqual(string1, string2);
+            Assert.AreEqual(@"c:/test", string1.ToString(ConnectionStringPart.All));
         }
 
         [Test]
@@ -168,18 +178,6 @@ namespace Test
             var string2 = ConnectionString.Parse(text);
             Assert.AreEqual(string1, string2);
             Assert.AreEqual(text, string1.ToString(ConnectionStringPart.All));
-        }
-
-
-        [Test]
-        public void Path()
-        {
-            var text = @"c:\test";
-
-            var string1 = new ConnectionString(null, null, null, null, 0, @"c:\test");
-            var string2 = ConnectionString.Parse(text);
-            Assert.AreEqual(string1, string2);
-            Assert.AreEqual(@"c:/test", string1.ToString(ConnectionStringPart.All));
         }
 
         [Test]

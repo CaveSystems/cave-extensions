@@ -3,23 +3,23 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>
-    /// Provides a debug view for collections.
-    /// </summary>
+    /// <summary>Provides a debug view for collections.</summary>
     /// <typeparam name="T"></typeparam>
     public sealed class CollectionDebuggerView<T>
     {
         readonly ICollection<T> collection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionDebuggerView{T}"/> class.
-        /// </summary>
+        #region Constructors
+
+        /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{T}" /> class.</summary>
         /// <param name="collection"></param>
         public CollectionDebuggerView(ICollection<T> collection) => this.collection = collection;
 
-        /// <summary>
-        /// Gets all items.
-        /// </summary>
+        #endregion
+
+        #region Properties
+
+        /// <summary>Gets all items.</summary>
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public IList<T> Items
         {
@@ -30,5 +30,7 @@ namespace Cave.Collections.Generic
                 return result;
             }
         }
+
+        #endregion
     }
 }

@@ -7,6 +7,8 @@ namespace Cave
     {
         bool doBreak;
 
+        #region Constructors
+
         /// <summary>Initializes a new instance of the <see cref="ProgressEventArgs" /> class.</summary>
         /// <param name="userItem">The user item.</param>
         /// <param name="position">The position.</param>
@@ -22,17 +24,24 @@ namespace Cave
             Part = part;
         }
 
-        /// <summary>Gets user item used at parent function.</summary>
-        public object UserItem { get; }
+        #endregion
 
-        /// <summary>Gets current Position.</summary>
-        public long Position { get; }
+        #region Properties
+
+        /// <summary>Gets a value indicating whether breaking the current operation is possible or not.</summary>
+        public bool CanBreak { get; }
+
+        /// <summary>Gets overall count.</summary>
+        public long Count { get; }
 
         /// <summary>Gets part done between last callback and current.</summary>
         public int Part { get; }
 
-        /// <summary>Gets overall count.</summary>
-        public long Count { get; }
+        /// <summary>Gets current Position.</summary>
+        public long Position { get; }
+
+        /// <summary>Gets user item used at parent function.</summary>
+        public object UserItem { get; }
 
         /// <summary>Gets or sets a value indicating whether the current process should break.</summary>
         public bool Break
@@ -54,7 +63,6 @@ namespace Cave
             }
         }
 
-        /// <summary>Gets a value indicating whether breaking the current operation is possible or not.</summary>
-        public bool CanBreak { get; }
+        #endregion
     }
 }

@@ -1,22 +1,17 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
-namespace Test
+namespace Test.Backports
 {
     [TestFixture]
     class TaskTests
     {
-        #region Private Methods
+        void TestSleep(object syncRoot, int number) => Thread.Sleep(1000 - number);
 
-        void TestSleep(object syncRoot, int number)
-        {
-            Thread.Sleep(1000 - number);
-        }
-
-        private void TestWait(Task task)
+        void TestWait(Task task)
         {
             try
             {
@@ -28,12 +23,9 @@ namespace Test
                 Assert.AreEqual("TestException", ex.InnerException.Message);
                 return;
             }
+
             Assert.Fail("No exception during wait!");
         }
-
-        #endregion Private Methods
-
-        #region Public Methods
 
         [Test]
         public void TaskException()
@@ -60,29 +52,32 @@ namespace Test
         [Test]
         public void TaskStartWait()
         {
-            object syncRoot = new object();
+            var syncRoot = new object();
             var list = new List<Task>();
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
-                var t = Task.Factory.StartNew((n) => TestSleep(syncRoot, (int)n), i);
+                var t = Task.Factory.StartNew(n => TestSleep(syncRoot, (int)n), i);
                 list.Add(t);
             }
+
             Task.WaitAll(list.ToArray());
         }
 
         [Test]
         public void TaskStartWait2()
         {
-            object syncRoot = new object();
+            var syncRoot = new object();
             var list = new List<Task>();
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
-                var t = Task.Factory.StartNew((n) => TestSleep(syncRoot, (int)n), i);
+                var t = Task.Factory.StartNew(n => TestSleep(syncRoot, (int)n), i);
                 list.Add(t);
             }
-            foreach (var t in list) t.Wait();
-        }
 
-        #endregion Public Methods
+            foreach (var t in list)
+            {
+                t.Wait();
+            }
+        }
     }
 }

@@ -7,8 +7,8 @@ using System.Text;
 namespace Cave
 {
     /// <summary>
-    ///     Gets a connection string parser. The following string will be parsed:
-    ///     [protocol://][user[:password]@]server[:port][/path/to/somewhere].
+    /// Gets a connection string parser. The following string will be parsed:
+    /// [protocol://][user[:password]@]server[:port][/path/to/somewhere].
     /// </summary>
     public struct ConnectionString : IEquatable<ConnectionString>
     {
@@ -40,17 +40,14 @@ namespace Cave
 
         #region static parsers
 
-        /// <summary>
-        ///     Parses a specified connection string of the form
-        ///     [protocol://][user[:password]@]server[:port][/path/to/somewhere].
-        /// </summary>
+        /// <summary>Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].</summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns>Returns a new ConnectionString instance.</returns>
         public static ConnectionString Parse(string connectionString) => Parse(connectionString, null, null, null, null, null, null, null);
 
         /// <summary>
-        ///     Parses a specified connection string of the form
-        ///     [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[&amp;option=value]]].
+        /// Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere[?option=value[
+        /// &amp;option=value]]].
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="defaultProtocol">The protocol.</param>
@@ -70,7 +67,7 @@ namespace Cave
             }
 
             connectionString = connectionString.Replace('\\', '/');
-            var port = defaultPort != null ? (ushort) defaultPort : (ushort) 0;
+            var port = defaultPort != null ? (ushort)defaultPort : (ushort)0;
             var protocol = defaultProtocol;
             var username = defaultUserName;
             var password = defaultPassword;
@@ -159,10 +156,7 @@ namespace Cave
             return new ConnectionString(protocol, username, password, server, port, path, options);
         }
 
-        /// <summary>
-        ///     Parses a specified connection string of the form
-        ///     [protocol://][user[:password]@]server[:port][/path/to/somewhere].
-        /// </summary>
+        /// <summary>Parses a specified connection string of the form [protocol://][user[:password]@]server[:port][/path/to/somewhere].</summary>
         /// <param name="connectionString">the string.</param>
         /// <param name="result">The parsed result.</param>
         /// <returns>Returns true on success, false otherwise.</returns>
@@ -216,7 +210,6 @@ namespace Cave
             }
 
             location = string.IsNullOrEmpty(location) ? null : location.Replace('\\', '/');
-
             Protocol = protocol;
             Server = server;
             Port = port;
@@ -271,22 +264,22 @@ namespace Cave
 
         /// <summary>Gets <see cref="NetworkCredential" />s.</summary>
         /// <returns>The network credentials.</returns>
-        public NetworkCredential GetCredentials() => new NetworkCredential(UserName, Password);
+        public NetworkCredential GetCredentials() => new(UserName, Password);
 
         /// <summary>
-        ///     Gets an <see cref="Uri" /> for the <see cref="ConnectionString" />. Only <see cref="ConnectionString" />s with
-        ///     the Protocol file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri" />!.
+        /// Gets an <see cref="Uri" /> for the <see cref="ConnectionString" />. Only <see cref="ConnectionString" />s with the Protocol file,
+        /// ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri" />!.
         /// </summary>
         /// <param name="items">The connection string parts.</param>
         /// <returns>The uri.</returns>
-        public Uri ToUri(ConnectionStringPart items) => new Uri(ToString(items));
+        public Uri ToUri(ConnectionStringPart items) => new(ToString(items));
 
         /// <summary>
-        ///     Gets an <see cref="Uri" /> for the <see cref="ConnectionString" />. Only <see cref="ConnectionString" />s with
-        ///     the Protocol file, ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri" />!.
+        /// Gets an <see cref="Uri" /> for the <see cref="ConnectionString" />. Only <see cref="ConnectionString" />s with the Protocol file,
+        /// ftp, http, https, mailto, news and nntp may be converted to an <see cref="Uri" />!.
         /// </summary>
         /// <returns>the uri.</returns>
-        public Uri ToUri() => new Uri(ToString());
+        public Uri ToUri() => new(ToString());
 
         /// <summary>Gets a connection string with (if known) or without the password.</summary>
         /// <param name="items">The connection string parts.</param>
@@ -358,16 +351,13 @@ namespace Cave
         }
 
         /// <summary>
-        ///     Gets the connection string with credentials (username and password). If you want to strip some parts of the
-        ///     connection string use <see cref="ToString(ConnectionStringPart)" />.
+        /// Gets the connection string with credentials (username and password). If you want to strip some parts of the connection string use
+        /// <see cref="ToString(ConnectionStringPart)" />.
         /// </summary>
         /// <returns>Returns a new string.</returns>
         public override string ToString() => ToString(ConnectionStringPart.All);
 
-        /// <summary>
-        ///     Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" />
-        ///     .
-        /// </summary>
+        /// <summary>Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" /> .</summary>
         /// <param name="obj">The connection string.</param>
         /// <returns>True if the connection strings are equal.</returns>
         public override bool Equals(object obj) => obj is ConnectionString conStr && Equals(conStr);
@@ -378,9 +368,7 @@ namespace Cave
 
         #region IEquatable<ConnectionString> Member
 
-        /// <summary>
-        /// Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" />.
-        /// </summary>
+        /// <summary>Compares the ConnectionString to another <see cref="ConnectionString" /> or (connection) <see cref="string" />.</summary>
         /// <param name="other">The object to compare with.</param>
         /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ConnectionString other) =>

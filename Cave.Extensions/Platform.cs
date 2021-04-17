@@ -27,7 +27,7 @@ namespace Cave
         /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
         public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
 
-        static readonly Dictionary<string, object> CachedValues = new Dictionary<string, object>();
+        static readonly Dictionary<string, object> CachedValues = new();
 
         static T GetCached<T>(string name, Func<T> getter)
         {
@@ -37,13 +37,12 @@ namespace Cave
                 CachedValues[name] = value;
             }
 
-            return (T) value;
+            return (T)value;
         }
 
-        [SuppressMessage("Design", "CA1031")]
         static PlatformType GetPlatformType()
         {
-            switch ((int) Environment.OSVersion.Platform)
+            switch ((int)Environment.OSVersion.Platform)
             {
                 case 0: /*Win32S*/
                 case 1: /*Win32NT*/
@@ -137,7 +136,9 @@ namespace Cave
                 {
                     var process = Process.Start(new ProcessStartInfo("uname", "-a")
                     {
-                        CreateNoWindow = true, UseShellExecute = false, RedirectStandardOutput = true
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true
                     });
                     versionString = process.StandardOutput.ReadToEnd();
                 });
@@ -152,7 +153,7 @@ namespace Cave
 
         static bool GetIsMicrosoft()
         {
-            switch ((int) Environment.OSVersion.Platform)
+            switch ((int)Environment.OSVersion.Platform)
             {
                 case 0: /*Win32S*/
                 case 1: /*Win32NT*/
