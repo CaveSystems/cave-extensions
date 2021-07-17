@@ -1000,6 +1000,31 @@ namespace Cave
             return result.ToString();
         }
 
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, CultureInfo cultureInfo = null)
+        {
+            if (cultureInfo == null)
+            {
+                cultureInfo = CultureInfo.CurrentCulture;
+            }
+
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            var result = new StringBuilder();
+            foreach (var obj in array)
+            {
+                result.Append(ToString(obj, cultureInfo));
+            }
+
+            return result.ToString();
+        }
+
         /// <summary>Joins the camel case.</summary>
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
@@ -1785,6 +1810,37 @@ namespace Cave
                 result.Add(text.Substring(last));
             }
 
+            return result.ToArray();
+        }
+
+        /// <summary>Splits a string at the specified separators and allows to keep the separators in the list.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="isSeparator">A function to determine whether the char is a seperator.</param>
+        /// <returns>The array of seperated strings.</returns>
+        public static string[] SplitKeepSeparators(this string text, Func<char, bool> isSeparator)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return new string[0];
+            }
+
+            var result = new List<string>();
+            var start = 0;
+            for(var i = 1; i < text.Length; i++)
+            {
+                if (isSeparator(text[i]))
+                {
+                    var count = i - start - 1;
+                    var part = text.Substring(start, count);
+                    if (part.Length > 0) result.Add(part);
+                    result.Add(text[i].ToString());
+                    start = i + 1;
+                    continue;
+                }
+            }
+            
+            var remainder = text.Substring(start);
+            if (remainder.Length > 0) result.Add(remainder);
             return result.ToArray();
         }
 

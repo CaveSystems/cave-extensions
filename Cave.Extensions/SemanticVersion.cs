@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Cave
@@ -49,73 +50,55 @@ namespace Cave
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var result = true;
-            var parts = value.Split(new[] { '.' }, 3);
-            int major = 1, minor = 0, patch = 0;
-            string meta = null;
-            if ((parts.Length > 0) && !int.TryParse(parts[0], out major))
+            version = null;
+            var parts = value.SplitKeepSeparators('.', '-', '+');
+            var itemsCount = (parts.Length + 1) / 2;
+            
+            //get major version
+            if (itemsCount < 2 || !int.TryParse(parts[0], out int major))
             {
                 if (throwEx)
                 {
-                    throw new InvalidDataException($"Invalid major version {parts[0]}!");
+                    throw new InvalidDataException($"Invalid major version at {value}!");
                 }
-
-                result = false;
+                return false;
             }
-
-            if ((parts.Length > 1) && !int.TryParse(parts[1], out minor))
+            // get minor version
+            if (!int.TryParse(parts[2], out int minor))
             {
                 if (throwEx)
                 {
-                    throw new InvalidDataException($"Invalid minor version {parts[1]}!");
+                    throw new InvalidDataException($"Invalid minor version number {parts[2]}!");
                 }
-
-                result = false;
+                return false;
             }
 
-            if (parts.Length > 2)
+            if (itemsCount < 3)
             {
-                var i = parts[2].IndexOfAny(new[]
+                if (parts[1] == ".")
                 {
-                    '-',
-                    '+',
-                    '.'
-                });
-                string spatch;
-                if (i == -1)
-                {
-                    spatch = parts[2];
+                    version = new SemanticVersion(major, minor);
+                    return true;
                 }
-                else
+                if (throwEx)
                 {
-                    spatch = parts[2].Substring(0, i);
-                    meta = parts[2].Substring(i);
+                    throw new InvalidDataException($"Invalid minor version delimeter at {version}!");
                 }
-
-                if (!int.TryParse(spatch, out patch))
-                {
-                    if (throwEx)
-                    {
-                        throw new InvalidDataException($"Invalid patch version {spatch}!");
-                    }
-
-                    result = false;
-                }
-
-                if ((meta != null) && meta.HasInvalidChars(ValidChars))
-                {
-                    if (throwEx)
-                    {
-                        throw new InvalidDataException($"Invalid meta data {meta}!");
-                    }
-
-                    meta = meta.ToLowerInvariant().GetValidChars(ValidChars);
-                    result = false;
-                }
+                return false;
             }
 
-            version = new SemanticVersion(major, minor, patch, meta);
-            return result;
+            string meta;
+            if (!int.TryParse(parts[4], out var patch) || parts[3] != ".")
+            {
+                meta = parts.Skip(3).Join();
+                version = new SemanticVersion(major, minor, meta: meta);
+            }
+            else
+            {
+                meta = parts.Skip(5).Join();
+                version = new SemanticVersion(major, minor, patch, meta);
+            }
+            return true;
         }
 
         /// <summary>Implements the operator ==.</summary>
@@ -228,20 +211,21 @@ namespace Cave
                 throw new ArgumentOutOfRangeException(nameof(minor));
             }
 
-            if ((meta != null) && meta.HasInvalidChars(ValidChars))
-            {
-                throw new ArgumentOutOfRangeException(nameof(meta));
-            }
-
             Major = major;
             Minor = minor;
             Patch = patch.GetValueOrDefault(-1);
-            Meta = meta;
+            Meta = string.IsNullOrEmpty(meta) ? null : meta;
+            IsMetaValid = Meta == null || (!meta.HasInvalidChars(ValidChars) && meta.First() is '-' or '+');
         }
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether the meta data contains only valid chars or not.
+        /// </summary>
+        public bool IsMetaValid { get; }
 
         /// <summary>Gets the major version number.</summary>
         /// <value>The major.</value>
@@ -326,16 +310,6 @@ namespace Cave
 
             if (Meta != null)
             {
-                if (Meta.IndexOfAny(new[]
-                {
-                    '.',
-                    '-',
-                    '+'
-                }) != 0)
-                {
-                    sb.Append('-');
-                }
-
                 sb.Append(Meta);
             }
 
@@ -348,32 +322,7 @@ namespace Cave
 
         /// <summary>Gets the classic version (calculates a build number based on the characters).</summary>
         /// <returns>the classic version.</returns>
-        public Version GetClassicVersion()
-        {
-            if (Meta != null)
-            {
-                var mul = ValidChars.Length + 1;
-                double value = 0;
-                foreach (var c in Meta.ToLowerInvariant())
-                {
-                    value *= mul;
-                    value += ValidChars.IndexOf(c);
-                }
-
-                if (value > 0)
-                {
-                    while (value > short.MaxValue)
-                    {
-                        value = Math.Sqrt(value);
-                    }
-
-                    var build = (int)Math.Round(value);
-                    return new Version(Major, Minor, Patch > 0 ? Patch : 0, build);
-                }
-            }
-
-            return Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
-        }
+        public Version GetClassicVersion() => Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
 
         /// <summary>Gets the normalized version.</summary>
         /// <returns>the normalized version.</returns>
