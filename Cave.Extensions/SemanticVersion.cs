@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -259,13 +260,31 @@ namespace Cave
 
         #region IComparable<SemanticVersion> Members
 
+        static Comparer<int> comparer = Comparer<int>.Default;
+        static StringComparer metaComparer = StringComparer.Ordinal;
+
         /// <summary>
         /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current
         /// instance precedes, follows, or occurs in the same position in the sort order as the other object.
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(SemanticVersion other) => other is null ? 1 : ToAbsolute().CompareTo(other.ToAbsolute());
+        public int CompareTo(SemanticVersion other)
+        {
+            if (Major != other.Major)
+            {
+                return comparer.Compare(Major, other.Major);
+            }
+            if (Minor != other.Minor)
+            {
+                return comparer.Compare(Minor, other.Minor);
+            }
+            if (Patch != other.Patch)
+            {
+                return comparer.Compare(Patch, other.Patch);
+            }
+            return metaComparer.Compare(Meta ?? string.Empty, other.Meta ?? string.Empty);
+        }
 
         #endregion
 
@@ -329,23 +348,26 @@ namespace Cave
         public Version GetNormalizedVersion() => Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
 
         /// <summary>Gets an absolute value for this version.</summary>
-        /// <returns>an absolute value.</returns>
+        /// <returns>Returns an absolute value.</returns>
+        [Obsolete("This only works for very short us ascii meta information.")]
         public decimal ToAbsolute()
         {
             decimal main = Major;
-            main *= int.MaxValue;
+            main *= ushort.MaxValue;
             main += Minor;
-            main *= int.MaxValue;
+            main *= ushort.MaxValue;
             main += Patch;
             decimal fraction = 0;
             decimal max = 1;
-            foreach (var c in Meta)
+            if (Meta != null)
             {
-                fraction *= 256;
-                fraction += c;
-                max *= 256;
+                foreach (var c in Meta)
+                {
+                    fraction *= 256;
+                    fraction += c;
+                    max *= 256;
+                }
             }
-
             return main + (fraction / max);
         }
 
