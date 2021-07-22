@@ -1397,7 +1397,7 @@ namespace Cave
         }
 
         /// <summary>
-        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue" />
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)" />
         /// method.
         /// </summary>
         /// <typeparam name="T">Type to convert to.</typeparam>
@@ -1405,6 +1405,16 @@ namespace Cave
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a new value instance.</returns>
         public static T ParseValue<T>(this string value, CultureInfo culture = null) => (T)typeof(T).ConvertValue(value, culture);
+
+        /// <summary>
+        /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)" />
+        /// method.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to.</typeparam>
+        /// <param name="value">String value to convert.</param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>Returns a new value instance.</returns>
+        public static T ParseValue<T>(this string value, IFormatProvider formatProvider) => (T)typeof(T).ConvertValue(value, formatProvider);
 
         /// <summary>Randomizes the character casing.</summary>
         /// <param name="value">The string.</param>
