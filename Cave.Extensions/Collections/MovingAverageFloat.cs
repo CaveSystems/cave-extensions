@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections
 {
     /// <summary>Provides a simple moving average calculation.</summary>
     /// <seealso cref="IAverage{T}" />
-    [SuppressMessage("Naming", "CA1710")]
     public class MovingAverageFloat : IAverage<float>
     {
         readonly LinkedList<float> items = new();

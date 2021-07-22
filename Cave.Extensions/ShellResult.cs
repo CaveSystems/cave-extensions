@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Cave
 {
-#pragma warning disable CA2227
     /// <summary>A process result.</summary>
     public class ShellResult
     {
@@ -23,5 +22,4 @@ namespace Cave
 
         #endregion
     }
-#pragma warning restore CA2227
 }

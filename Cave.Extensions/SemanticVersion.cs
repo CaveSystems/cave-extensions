@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +9,6 @@ namespace Cave
     /// <summary>Gets semantic version numbers.</summary>
     /// <seealso cref="IEquatable{T}" />
     /// <seealso cref="IComparable{SemanticVersion}" />
-    [SuppressMessage("Globalization", "CA1308")]
     public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<SemanticVersion>, IComparable
     {
         #region Static
@@ -54,9 +52,9 @@ namespace Cave
             version = null;
             var parts = value.SplitKeepSeparators('.', '-', '+');
             var itemsCount = (parts.Length + 1) / 2;
-            
+
             //get major version
-            if (itemsCount < 2 || !int.TryParse(parts[0], out int major))
+            if (itemsCount < 2 || !int.TryParse(parts[0], out var major))
             {
                 if (throwEx)
                 {
@@ -65,7 +63,7 @@ namespace Cave
                 return false;
             }
             // get minor version
-            if (!int.TryParse(parts[2], out int minor))
+            if (!int.TryParse(parts[2], out var minor))
             {
                 if (throwEx)
                 {
@@ -124,7 +122,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(version2));
             }
 
-            return version1.ToAbsolute() > version2.ToAbsolute();
+            return version1.CompareTo(version2) > 0;
         }
 
         /// <summary>Implements the operator &gt;=.</summary>
@@ -143,7 +141,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(version2));
             }
 
-            return version1.ToAbsolute() >= version2.ToAbsolute();
+            return version1.CompareTo(version2) >= 0;
         }
 
         /// <summary>Implements the operator !=.</summary>
@@ -168,7 +166,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(version2));
             }
 
-            return version1.ToAbsolute() < version2.ToAbsolute();
+            return version1.CompareTo(version2) < 0;
         }
 
         /// <summary>Implements the operator &lt;=.</summary>
@@ -187,7 +185,7 @@ namespace Cave
                 throw new ArgumentNullException(nameof(version2));
             }
 
-            return version1.ToAbsolute() <= version2.ToAbsolute();
+            return version1.CompareTo(version2) <= 0;
         }
 
         #endregion
@@ -260,8 +258,8 @@ namespace Cave
 
         #region IComparable<SemanticVersion> Members
 
-        static Comparer<int> comparer = Comparer<int>.Default;
-        static StringComparer metaComparer = StringComparer.Ordinal;
+        static readonly Comparer<int> comparer = Comparer<int>.Default;
+        static readonly StringComparer metaComparer = StringComparer.Ordinal;
 
         /// <summary>
         /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current
@@ -358,17 +356,14 @@ namespace Cave
             main *= ushort.MaxValue;
             main += Patch;
             decimal fraction = 0;
-            decimal max = 1;
             if (Meta != null)
             {
                 foreach (var c in Meta)
                 {
-                    fraction *= 256;
-                    fraction += c;
-                    max *= 256;
+                    fraction += c / 256m;
                 }
             }
-            return main + (fraction / max);
+            return main + fraction;
         }
 
         #endregion

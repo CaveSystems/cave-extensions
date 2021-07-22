@@ -8,7 +8,7 @@ namespace Cave
     /// <summary>Gets a task list for organizing waits.</summary>
     public class TaskList
     {
-        readonly Dictionary<Task, object> Tasks = new();
+        readonly Dictionary<Task, object> tasks = new();
 
         /// <summary>The maximum concurrent threads.</summary>
         public int MaximumConcurrentThreads = Environment.ProcessorCount * 2;
@@ -17,7 +17,7 @@ namespace Cave
 
         /// <summary>Gets the task count.</summary>
         /// <value>The task count.</value>
-        public int Count => Tasks.Count;
+        public int Count => tasks.Count;
 
         #endregion
 
@@ -25,14 +25,14 @@ namespace Cave
 
         /// <summary>Adds the specified task.</summary>
         /// <param name="task">The task.</param>
-        public void Add(Task task) => Tasks.TryAdd(task, null);
+        public void Add(Task task) => tasks.TryAdd(task, null);
 
         /// <summary>Retrieves all tasks as array.</summary>
         /// <returns>Returns an array of Tasks.</returns>
         public Task[] ToArray()
         {
             Cleanup();
-            return Tasks.Keys.ToArray();
+            return tasks.Keys.ToArray();
         }
 
         /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
@@ -114,13 +114,13 @@ namespace Cave
 
         void Cleanup()
         {
-            foreach (var task in Tasks.Keys.ToArray())
+            foreach (var task in tasks.Keys.ToArray())
             {
                 if (task.IsCompleted)
                 {
-                    lock (Tasks)
+                    lock (tasks)
                     {
-                        Tasks.Remove(task);
+                        tasks.Remove(task);
                     }
 
                     if (task is IDisposable disposable)

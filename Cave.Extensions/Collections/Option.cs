@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Cave.Collections
 {
     /// <summary>Gets string based option handling of the form "option=long value text".</summary>
-    [SuppressMessage("Naming", "CA1716")]
     public sealed class Option : IEquatable<Option>
     {
         #region Static
@@ -237,9 +235,9 @@ namespace Cave.Collections
                 {
                     if (value.IndexOf(' ') >= 0)
                     {
-                        result.Append("'");
+                        result.Append('\'');
                         result.Append(value.Replace("'", "''"));
-                        result.Append("'");
+                        result.Append('\'');
                     }
                     else
                     {

@@ -83,5 +83,56 @@ namespace Test
             Assert.AreEqual("+metadata-test-123 INVALID!", ver.Meta);
             Assert.AreEqual(false, ver.IsMetaValid);
         }
+
+        [Test]
+        public void CompareTests()
+        {
+            var version1 = SemanticVersion.Parse("1.2.54-test+version-12");
+            var version2 = SemanticVersion.Parse("1.2.55");
+            var version3 = SemanticVersion.Parse("1.2.55-test+version-12");
+            var version4 = SemanticVersion.Parse("1.2.56-test+version-12");
+            var version5 = SemanticVersion.Parse("1.2.56-test+version-12a");
+            var version6 = SemanticVersion.Parse("1.3");
+
+            var versions = new[] { version1, version2, version3, version4, version5, version6 };
+            for (var y = 0; y < versions.Length; y++)
+            {
+                for (var x = 0; x < versions.Length; x++)
+                {
+                    var verX = versions[x];
+                    var verY = versions[y];
+                    if (x == y)
+                    {
+                        Assert.IsTrue(verX == verY);
+                        Assert.IsTrue(verX >= verY);
+                        Assert.IsTrue(verX <= verY);
+                        Assert.IsFalse(verX > verY);
+                        Assert.IsFalse(verX < verY);
+                        Assert.IsFalse(verX != verY);
+                        Assert.AreEqual(0, verX.CompareTo(verY));
+                    }
+                    else if (x > y)
+                    {
+                        Assert.IsTrue(verX != verY);
+                        Assert.IsFalse(verX == verY);
+                        Assert.IsTrue(verX > verY);
+                        Assert.IsTrue(verX >= verY);
+                        Assert.IsFalse(verX < verY);
+                        Assert.IsFalse(verX <= verY);
+                        Assert.IsTrue(verX.CompareTo(verY) > 0);
+                    }
+                    else // x < y
+                    {
+                        Assert.IsTrue(verX != verY);
+                        Assert.IsFalse(verX == verY);
+                        Assert.IsTrue(verX < verY);
+                        Assert.IsTrue(verX <= verY);
+                        Assert.IsFalse(verX > verY);
+                        Assert.IsFalse(verX >= verY);
+                        Assert.IsTrue(verX.CompareTo(verY) < 0);
+                    }
+                }
+            }
+        }
     }
 }

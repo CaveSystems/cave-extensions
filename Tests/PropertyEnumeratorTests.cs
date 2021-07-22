@@ -14,7 +14,7 @@ namespace Test
             #region Properties
 
             public Item EmptyItem { get; }
-            public long TestLong { get; } = Rnd.Next() * (long)Rnd.Next();
+            public long TestLong { get; } = rnd.Next() * (long)rnd.Next();
 
             #endregion
         }
@@ -23,7 +23,7 @@ namespace Test
         {
             #region Properties
 
-            public int TestInt { get; } = Rnd.Next();
+            public int TestInt { get; } = rnd.Next();
 
             #endregion
         }
@@ -37,12 +37,12 @@ namespace Test
             public Intermediate Intermediate { get; } = new Intermediate();
 
             public Item TestItem { get; } = new Item();
-            public object TestRandom { get; } = Rnd;
+            public object TestRandom { get; } = rnd;
 
             #endregion
         }
 
-        static readonly Random Rnd = new Random();
+        static readonly Random rnd = new Random();
 
         void TestRoot(Root root)
         {

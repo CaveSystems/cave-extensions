@@ -315,8 +315,8 @@ namespace Cave.Security
         /// </summary>
         public void Dispose()
         {
-	        Dispose(true);
-	        GC.SuppressFinalize(this);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 #else
 #error NETXX not defined!

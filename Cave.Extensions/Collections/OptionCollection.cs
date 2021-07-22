@@ -189,7 +189,7 @@ namespace Cave.Collections.Generic
                 var optionString = option.ToString();
                 if (result.Length > 0)
                 {
-                    result.Append(" ");
+                    result.Append(' ');
                 }
 
                 var containsSpace = optionString.IndexOf(' ') > -1;

@@ -251,7 +251,7 @@ namespace Cave
                 return data;
             }
 
-            var result = new byte[(data.Length - pattern.Length) + replacer.Length];
+            var result = new byte[data.Length - pattern.Length + replacer.Length];
             Buffer.BlockCopy(data, 0, result, 0, i);
             Buffer.BlockCopy(replacer, 0, result, i, replacer.Length);
             var offs = i + pattern.Length + 1;
@@ -289,7 +289,7 @@ namespace Cave
             }
 
             var replacersLength = replacers.Select(r => r.Length).Sum();
-            var result = new byte[(data.Length - pattern.Length) + replacersLength];
+            var result = new byte[data.Length - pattern.Length + replacersLength];
             Buffer.BlockCopy(data, 0, result, 0, i);
             {
                 var offs = i;

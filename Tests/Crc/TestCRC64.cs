@@ -7,7 +7,7 @@ namespace Test.Crc
     [TestFixture]
     public class TestCRC64
     {
-        readonly ulong[] Ecma182 =
+        readonly ulong[] ecma182 =
         {
             0x0000000000000000,
             0x42F0E1EBA9EA3693,
@@ -267,8 +267,8 @@ namespace Test.Crc
             0x9AFCE626CE85B507
         };
 
-        readonly byte[] Test0 = Encoding.ASCII.GetBytes("123456789");
-        readonly byte[] Test1 = Encoding.ASCII.GetBytes("This is a test of the emergency broadcast system.");
+        readonly byte[] test0 = Encoding.ASCII.GetBytes("123456789");
+        readonly byte[] test1 = Encoding.ASCII.GetBytes("This is a test of the emergency broadcast system.");
 
         void Check(IChecksum<ulong> crc, byte[] data, ulong value)
         {
@@ -289,30 +289,30 @@ namespace Test.Crc
                 var crc64 = CRC64.XZ;
                 //check crc test value
                 Check(crc64, new byte[0], 0x0);
-                Check(crc64, Test0, 0x995dc9bbdf1939fa);
-                Check(crc64, Test1, 0x27db187fc15bbc72);
+                Check(crc64, test0, 0x995dc9bbdf1939fa);
+                Check(crc64, test1, 0x27db187fc15bbc72);
             }
 
             //width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=false refout=false xorout=0xffffffffffffffff check=0x62ec59e3f1a4f00a name="CRC-64/WE"
             {
                 var crc64 = CRC64.WE;
                 //check expected table against calculated table
-                CollectionAssert.AreEqual(Ecma182, crc64.Table);
+                CollectionAssert.AreEqual(ecma182, crc64.Table);
                 //check crc test value
                 Check(crc64, new byte[0], 0x0);
-                Check(crc64, Test0, 0x62ec59e3f1a4f00a);
-                Check(crc64, Test1, 0x85cc6e9690d5a474);
+                Check(crc64, test0, 0x62ec59e3f1a4f00a);
+                Check(crc64, test1, 0x85cc6e9690d5a474);
             }
 
             //width=64 poly=0x42f0e1eba9ea3693 init=0x0000000000000000 refin=false refout=false xorout=0x0000000000000000 check=0x6c40df5f0b497347 name="CRC-64"
             {
                 var crc64 = CRC64.ECMA182;
                 //check expected table against calculated table
-                CollectionAssert.AreEqual(Ecma182, crc64.Table);
+                CollectionAssert.AreEqual(ecma182, crc64.Table);
                 //check crc test value
                 Check(crc64, new byte[0], 0x0);
-                Check(crc64, Test0, 0x6c40df5f0b497347);
-                Check(crc64, Test1, 0x344fe1d09c983d13);
+                Check(crc64, test0, 0x6c40df5f0b497347);
+                Check(crc64, test1, 0x344fe1d09c983d13);
             }
         }
     }

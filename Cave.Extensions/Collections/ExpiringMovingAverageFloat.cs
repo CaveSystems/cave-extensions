@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Cave.Collections
 {
     /// <summary>Gets a simple moving average calculation.</summary>
     /// <seealso cref="IAverage{T}" />
-    [SuppressMessage("Naming", "CA1710")]
     public class ExpiringMovingAverageFloat : IAverage<float>
     {
         #region Nested type: Item

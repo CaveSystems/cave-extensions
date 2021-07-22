@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections
 {
     /// <summary>Gets an <see cref="IEnumerable" /> implementation for simple integer counting.</summary>
-    [SuppressMessage("Naming", "CA1710")]
     public class Counter : IEnumerable<int>, IComparable, IEnumerable
     {
         #region Static
@@ -15,48 +13,60 @@ namespace Cave.Collections
         /// <param name="start">The first value.</param>
         /// <param name="end">The last value to be part of the counter.</param>
         /// <returns>Returns a new <see cref="Counter" /> instance.</returns>
-        public static Counter Create(int start, int end) => new(start, (end - start) + 1);
+        public static Counter Create(int start, int end) => new(start, end - start + 1);
 
         /// <summary>Creates a new <see cref="Counter" /> from the specified start and end values.</summary>
         /// <param name="start">The first value.</param>
         /// <param name="end">The last value.</param>
         /// <param name="step">The step between two values.</param>
         /// <returns>Returns a new <see cref="Counter" /> instance.</returns>
-        public static Counter Create(int start, int end, int step) => new(start, (end - start) + 1, step);
+        public static Counter Create(int start, int end, int step) => new(start, end - start + 1, step);
 
         /// <summary>Implements the operator ==.</summary>
-        /// <param name="counter1">The c1.</param>
-        /// <param name="counter2">The c2.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(Counter counter1, Counter counter2) =>
-            counter1 is null
-                ? counter2 is null
-                : !(counter2 is null)
-             && (counter1.Count == counter2.Count) && (counter1.Start == counter2.Start) && (counter1.End == counter2.End) &&
-                (counter1.Step == counter2.Step);
+        public static bool operator ==(Counter left, Counter right) =>
+            left is null
+                ? right is null
+                : !(right is null)
+             && (left.Count == right.Count) && (left.Start == right.Start) && (left.End == right.End) &&
+                (left.Step == right.Step);
 
         /// <summary>Implements the operator &gt;.</summary>
-        /// <param name="counter1">The c1.</param>
-        /// <param name="counter2">The c2.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator >(Counter counter1, Counter counter2) => counter2 is null || (!(counter1 is null) && (counter1.Start > counter2.End));
+        public static bool operator >(Counter left, Counter right) => right is null || (!(left is null) && (left.Start > right.End));
 
         /// <summary>Implements the operator !=.</summary>
-        /// <param name="counter1">The c1.</param>
-        /// <param name="counter2">The c2.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Counter counter1, Counter counter2) =>
-            counter1 is null
-                ? !(counter2 is null)
-                : counter2 is null
-             || (counter1.Count != counter2.Count) || (counter1.Start != counter2.Start) || (counter1.End != counter2.End) ||
-                (counter1.Step != counter2.Step);
+        public static bool operator !=(Counter left, Counter right) =>
+            left is null
+                ? !(right is null)
+                : right is null
+             || (left.Count != right.Count) || (left.Start != right.Start) || (left.End != right.End) ||
+                (left.Step != right.Step);
 
         /// <summary>Implements the operator &lt;.</summary>
-        /// <param name="counter1">The c1.</param>
-        /// <param name="counter2">The c2.</param>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator <(Counter counter1, Counter counter2) => counter1 is null || (!(counter2 is null) && (counter1.End < counter2.Start));
+        public static bool operator <(Counter left, Counter right) => left is null || (!(right is null) && (left.End < right.Start));
+
+        /// <summary>Implements the operator &lt;=.</summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(Counter left, Counter right) => left == right || left < right;
+
+        /// <summary>Implements the operator &gt;=.</summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(Counter left, Counter right) => left == right || left > right;
 
         #endregion
 
@@ -87,7 +97,7 @@ namespace Cave.Collections
         {
             Start = start;
             Count = count;
-            End = (Start + Count) - 1;
+            End = Start + Count - 1;
             Step = step;
             if (Count < 0)
             {

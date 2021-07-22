@@ -71,7 +71,7 @@ namespace System
         /// Gets a read-only collection of the <see cref="Exception"/> instances that caused the
         /// current exception.
         /// </summary>
-        public ReadOnlyCollection<Exception> InnerExceptions => new ReadOnlyCollection<Exception>(exceptions);
+        public ReadOnlyCollection<Exception> InnerExceptions => new(exceptions);
 
         /// <summary>Initializes a new instance of the <see cref="AggregateException"/> class.</summary>
         /// <param name="info">The SerializationInfo.</param>

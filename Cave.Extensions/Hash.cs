@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-
-#pragma warning disable SA1204 // StaticElementsMustAppearBeforeInstanceElements
 
 namespace Cave
 {
@@ -48,19 +47,21 @@ namespace Cave
         /// <param name="type">The type.</param>
         /// <returns>Returns a new HashAlgorithm instance.</returns>
         /// <exception cref="NotImplementedException">Throws an exeption if hash type is unknown.</exception>
+        [SuppressMessage("Security", "CA5351:Do not use weak cryptos.")]
+        [SuppressMessage("Security", "CA5350:Do not use weak cryptos.")]
         public static HashAlgorithm Create(Type type)
         {
-            switch (type)
+            return type switch
             {
-                case Type.CRC32: return new CRC32();
-                case Type.CRC64: return new CRC64();
-                case Type.MD5: return MD5.Create();
-                case Type.SHA1: return SHA1.Create();
-                case Type.SHA256: return SHA256.Create();
-                case Type.SHA384: return SHA384.Create();
-                case Type.SHA512: return SHA512.Create();
-                default: throw new NotImplementedException();
-            }
+                Type.CRC32 => new CRC32(),
+                Type.CRC64 => new CRC64(),
+                Type.MD5 => MD5.Create(),
+                Type.SHA1 => SHA1.Create(),
+                Type.SHA256 => SHA256.Create(),
+                Type.SHA384 => SHA384.Create(),
+                Type.SHA512 => SHA512.Create(),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         /// <summary>Obtains the hash code for a specified data array.</summary>
@@ -72,14 +73,12 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
-            using (var algorithm = Create(type))
-            {
-                algorithm.Initialize();
-                return algorithm.ComputeHash(data);
-            }
+            using var algorithm = Create(type);
+            algorithm.Initialize();
+            return algorithm.ComputeHash(data);
         }
 
         /// <summary>Obtains the hash code for a specified data array.</summary>
@@ -93,13 +92,11 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
-            using (var algorithm = Create(type))
-            {
-                return algorithm.ComputeHash(data, index, count);
-            }
+            using var algorithm = Create(type);
+            return algorithm.ComputeHash(data, index, count);
         }
 
         /// <summary>Obtains the hash code for a specified <see cref="Stream" /> string at the current position and reading to the end of the stream.</summary>
@@ -111,13 +108,11 @@ namespace Cave
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            using (var algorithm = Create(type))
-            {
-                return algorithm.ComputeHash(stream);
-            }
+            using var algorithm = Create(type);
+            return algorithm.ComputeHash(stream);
         }
 
         /// <summary>Obtains the hash code for a specified data string (using UTF-8 encoding).</summary>
@@ -131,7 +126,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             return FromArray(type, Encoding.UTF8.GetBytes(data.Substring(index, count)));
@@ -146,7 +141,7 @@ namespace Cave
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             return FromArray(type, Encoding.UTF8.GetBytes(data));
@@ -155,5 +150,3 @@ namespace Cave
         #endregion
     }
 }
-
-#pragma warning restore SA1204 // StaticElementsMustAppearBeforeInstanceElements

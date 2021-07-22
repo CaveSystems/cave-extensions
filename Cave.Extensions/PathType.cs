@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave
 {
     /// <summary>Gets available path types.</summary>
     [Flags]
-    [SuppressMessage("Naming", "CA1714")]
     public enum PathType
     {
         /// <summary>Unknown, relative or invalid path.</summary>

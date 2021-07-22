@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -11,7 +10,6 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TValue1">The type of the first object.</typeparam>
     /// <typeparam name="TValue2">The type of the second object.</typeparam>
     [DebuggerDisplay("Count={Count}")]
-    [SuppressMessage("Naming", "CA1710")]
     public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     {
         readonly List<TValue1> listA;

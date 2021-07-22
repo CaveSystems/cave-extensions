@@ -9,7 +9,7 @@ namespace Test.Backports
     [TestFixture]
     class TaskTests
     {
-        void TestSleep(object syncRoot, int number) => Thread.Sleep(1000 - number);
+        void TestSleep(int number) => Thread.Sleep(1000 - number);
 
         void TestWait(Task task)
         {
@@ -52,11 +52,12 @@ namespace Test.Backports
         [Test]
         public void TaskStartWait()
         {
+            ThreadPool.SetMinThreads(100, 100);
             var syncRoot = new object();
             var list = new List<Task>();
             for (var i = 0; i < 1000; i++)
             {
-                var t = Task.Factory.StartNew(n => TestSleep(syncRoot, (int)n), i);
+                var t = Task.Factory.StartNew(n => TestSleep((int)n), i);
                 list.Add(t);
             }
 
@@ -66,11 +67,12 @@ namespace Test.Backports
         [Test]
         public void TaskStartWait2()
         {
+            ThreadPool.SetMinThreads(100, 100);
             var syncRoot = new object();
             var list = new List<Task>();
             for (var i = 0; i < 1000; i++)
             {
-                var t = Task.Factory.StartNew(n => TestSleep(syncRoot, (int)n), i);
+                var t = Task.Factory.StartNew(n => TestSleep((int)n), i);
                 list.Add(t);
             }
 

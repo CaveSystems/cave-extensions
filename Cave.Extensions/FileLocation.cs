@@ -90,14 +90,12 @@ namespace Cave
 
         string GetRoot()
         {
-            switch (Platform.Type)
+            return Platform.Type switch
             {
-                case PlatformType.Android: return GetRootAndroid(Root);
-                case PlatformType.Windows:
-                case PlatformType.Xbox:
-                case PlatformType.CompactFramework: return GetRootWindows(Root);
-                default: return GetRootUnix(Root);
-            }
+                PlatformType.Android => GetRootAndroid(Root),
+                PlatformType.Windows or PlatformType.Xbox or PlatformType.CompactFramework => GetRootWindows(Root),
+                _ => GetRootUnix(Root),
+            };
         }
 
         #endregion
@@ -136,32 +134,27 @@ namespace Cave
 
         static string GetRootWindows(RootLocation root)
         {
-            switch (root)
+            return root switch
             {
-                case RootLocation.AllUserConfig:
-                case RootLocation.AllUsersData: return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-                case RootLocation.LocalUserConfig:
-                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                case RootLocation.RoamingUserConfig:
-                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                case RootLocation.Program: return ProgramDirectory;
-                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
-            }
+                RootLocation.AllUserConfig or RootLocation.AllUsersData => Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                RootLocation.LocalUserConfig or RootLocation.LocalUserData => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                RootLocation.RoamingUserConfig or RootLocation.RoamingUserData => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                RootLocation.Program => ProgramDirectory,
+                _ => throw new ArgumentOutOfRangeException($"RootLocation {root} unknown"),
+            };
         }
 
         static string GetRootUnix(RootLocation root)
         {
-            switch (root)
+            return root switch
             {
-                case RootLocation.AllUserConfig: return "/etc";
-                case RootLocation.AllUsersData: return "/var/lib";
-                case RootLocation.LocalUserConfig:
-                case RootLocation.LocalUserData: return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                case RootLocation.RoamingUserConfig:
-                case RootLocation.RoamingUserData: return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                case RootLocation.Program: return ProgramDirectory;
-                default: throw new ArgumentOutOfRangeException($"RootLocation {root} unknown");
-            }
+                RootLocation.AllUserConfig => "/etc",
+                RootLocation.AllUsersData => "/var/lib",
+                RootLocation.LocalUserConfig or RootLocation.LocalUserData => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                RootLocation.RoamingUserConfig or RootLocation.RoamingUserData => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                RootLocation.Program => ProgramDirectory,
+                _ => throw new ArgumentOutOfRangeException($"RootLocation {root} unknown"),
+            };
         }
 
         #endregion

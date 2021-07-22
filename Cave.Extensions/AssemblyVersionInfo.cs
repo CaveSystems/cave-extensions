@@ -239,10 +239,8 @@ namespace Cave
         /// <summary>The Assemblies' PublicKeyToken.</summary>
         public string PublicKeyToken;
 
-#pragma warning disable CA1720
         /// <summary>The Assemblies' Guid.</summary>
         public Guid Guid;
-#pragma warning restore CA1720
 
         /// <summary>The Assemblies' Update URI.</summary>
         public Uri UpdateURI;
@@ -264,7 +262,6 @@ namespace Cave
             }
         }
 
-#pragma warning disable CA1031
         /// <summary>Gets the release date.</summary>
         /// <value>The release date.</value>
         public DateTime ReleaseDate
@@ -282,7 +279,6 @@ namespace Cave
                 }
             }
         }
-#pragma warning restore CA1031
 
         /// <summary>Gets a latestversion instance for the current assembly (this populates only fields present at this instance).</summary>
         /// <returns>the latest version.</returns>

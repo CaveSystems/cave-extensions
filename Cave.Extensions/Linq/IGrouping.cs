@@ -1,12 +1,11 @@
-﻿#if NET20
-#pragma warning disable CS1591 // we will not document back ports
+﻿#pragma warning disable IDE0079
+#pragma warning disable CS1591, IDE0055 // we will not document back ports
+#if NET20
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
-    [SuppressMessage("Naming", "CA1710")]
     public interface IGrouping<TKey, TElement> : IEnumerable<TElement>
 
     {
@@ -14,5 +13,5 @@ namespace System.Linq
     }
 }
 
-#pragma warning restore CS1591
 #endif
+#pragma warning restore CS1591, IDE0055, IDE0079

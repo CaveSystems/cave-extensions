@@ -35,7 +35,7 @@ namespace Cave.Collections.Generic
         /// <returns>Returns true if the other instance equals this one, false otherwise.</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is ItemPair<T1, T2>))
+            if (obj is not ItemPair<T1, T2>)
             {
                 return false;
             }

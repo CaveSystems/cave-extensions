@@ -33,13 +33,13 @@ namespace Cave
                 MethodInfo first = null;
                 foreach (var frame in new StackTrace().GetFrames())
                 {
-                    if (!(frame.GetMethod() is MethodInfo method))
+                    if (frame.GetMethod() is not MethodInfo method)
                     {
                         continue;
                     }
 
                     var asmName = method.Module?.Assembly?.GetName().Name;
-                    if ((asmName != null) && (asmName != "mscorlib") && (asmName != "Mono.Android"))
+                    if (asmName is not null and not "mscorlib" and not "Mono.Android")
                     {
                         first = method;
                         if (method.Name == "OnCreate")
@@ -63,7 +63,7 @@ namespace Cave
             MethodInfo bestStatic = null;
             foreach (var frame in new StackTrace().GetFrames())
             {
-                if (!(frame.GetMethod() is MethodInfo method))
+                if (frame.GetMethod() is not MethodInfo method)
                 {
                     continue;
                 }

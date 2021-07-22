@@ -13,7 +13,7 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public static List<T> AsList<T>(this IEnumerable<T> items)
         {
-            if (!(items is List<T> result))
+            if (items is not List<T> result)
             {
                 result = items.ToList();
             }
@@ -26,7 +26,7 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public static IItemSet<T> AsSet<T>(this IEnumerable<T> items)
         {
-            if (!(items is IItemSet<T> result))
+            if (items is not IItemSet<T> result)
             {
                 result = new Set<T>(items);
             }

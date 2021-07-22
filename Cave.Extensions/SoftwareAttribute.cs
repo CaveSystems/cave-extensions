@@ -1,5 +1,7 @@
 using System;
+#if !NET20 && !NETSTANDARD13
 using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Cave
 {
@@ -18,3 +20,4 @@ namespace Cave
         #endregion
     }
 }
+

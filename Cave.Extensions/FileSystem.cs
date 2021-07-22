@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,9 +12,11 @@ namespace Cave
     {
         #region Static
 
-        const string InvalidCharsString = "\"&<>|:*?";
+        /// <summary>Gets the invalid chars</summary>
+        public const string InvalidCharsString = "\"&<>|:*?";
 
-        const string PathSeparatorCharsString = "/\\";
+        /// <summary>Gets path separator chars</summary>
+        public const string PathSeparatorCharsString = "/\\";
 
         /// <summary>Gets the windows long path prefix.</summary>
         public const string WindowsLongPathPrefix = @"\\?\";
@@ -243,7 +244,7 @@ namespace Cave
                 result = result.Substring(WindowsLongPathPrefix.Length);
             }
 
-            if ((path[0] == '\\') || (path[0] == '/'))
+            if (path[0] is '\\' or '/')
             {
                 // UNC name ?
                 if ((path.Length > 1) && ((path[1] == '\\') || (path[1] == '/')))
@@ -504,7 +505,7 @@ namespace Cave
                     }
                     case '?':
                     {
-                        sb.Append(".");
+                        sb.Append('.');
                         continue;
                     }
                     case ' ':
@@ -849,7 +850,7 @@ namespace Cave
                         if (!Platform.IsMicrosoft || (root.Length > 1))
                         {
                             root += "//";
-                            while ((parts[i] == "/") || (parts[i] == "\\"))
+                            while (parts[i] is "/" or "\\")
                             {
                                 ++i;
                             }
@@ -857,7 +858,7 @@ namespace Cave
                         else if (Platform.IsMicrosoft)
                         {
                             root += "\\";
-                            while ((parts[i] == "/") || (parts[i] == "\\"))
+                            while (parts[i] is "/" or "\\")
                             {
                                 ++i;
                             }
@@ -868,7 +869,7 @@ namespace Cave
                     continue;
                 }
 
-                if ((parts[i] == "\\") || (parts[i] == "/"))
+                if (parts[i] is "\\" or "/")
                 {
                     continue;
                 }
@@ -896,7 +897,6 @@ namespace Cave
         /// <param name="path">The name of the file / directory to remove.</param>
         /// <param name="recursive">Remove all subdirectories or files.</param>
         /// <returns>Returns true on success.</returns>
-        [SuppressMessage("Design", "CA1031")]
         public static bool TryDeleteDirectory(string path, bool recursive = false)
         {
             if (File.Exists(path))
@@ -1012,21 +1012,12 @@ namespace Cave
         {
             get
             {
-                switch (Platform.Type)
+                return Platform.Type switch
                 {
-                    default:
-                    case PlatformType.BSD:
-                    case PlatformType.Linux:
-                    case PlatformType.Solaris:
-                    case PlatformType.UnknownUnix:
-                        return "/etc/";
-                    case PlatformType.Android:
-                        return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    case PlatformType.Windows:
-                    case PlatformType.CompactFramework:
-                    case PlatformType.Xbox:
-                        return LocalMachineAppData;
-                }
+                    PlatformType.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                    PlatformType.Windows or PlatformType.CompactFramework or PlatformType.Xbox => LocalMachineAppData,
+                    _ => "/etc/",
+                };
             }
         }
 

@@ -8,7 +8,7 @@ namespace Cave
     {
         #region Static
 
-        const int BitCount = 6;
+        const int bitCount = 6;
 
         #endregion
 
@@ -20,13 +20,13 @@ namespace Cave
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="ArgumentException">Invalid padding character.</exception>
         public Base64(CharacterDictionary dict, char? padding)
-            : base(dict, BitCount)
+            : base(dict, bitCount)
         {
             Padding = padding;
             if (Padding != null)
             {
                 int paddingChar = (char)Padding;
-                if ((paddingChar < 0) || (paddingChar > 127))
+                if (paddingChar is < 0 or > 127)
                 {
                     throw new ArgumentOutOfRangeException(nameof(padding));
                 }
@@ -58,7 +58,7 @@ namespace Cave
             if (Padding != null)
             {
                 int paddingChar = (char)Padding;
-                if ((paddingChar < 0) || (paddingChar > 127))
+                if (paddingChar is < 0 or > 127)
                 {
                     throw new InvalidOperationException("Invalid padding character!");
                 }
@@ -75,8 +75,8 @@ namespace Cave
                     break;
                 }
 
-                value <<= BitCount;
-                bits += BitCount;
+                value <<= bitCount;
+                bits += bitCount;
                 value |= CharacterDictionary.GetValue((char)b);
                 if (bits >= 8)
                 {
@@ -110,18 +110,18 @@ namespace Cave
             {
                 value = (value << 8) | b;
                 bits += 8;
-                while (bits >= BitCount)
+                while (bits >= bitCount)
                 {
-                    bits -= BitCount;
+                    bits -= bitCount;
                     var outValue = value >> bits;
                     value &= ~(0xFFFF << bits);
                     result.Add(CharacterDictionary.GetCharacter(outValue));
                 }
             }
 
-            if (bits > BitCount)
+            if (bits > bitCount)
             {
-                bits -= BitCount;
+                bits -= bitCount;
                 var outValue = value >> bits;
                 value &= ~(0xFFFF << bits);
                 result.Add(CharacterDictionary.GetCharacter(outValue));
@@ -129,10 +129,10 @@ namespace Cave
 
             if (bits > 0)
             {
-                var shift = BitCount - bits;
+                var shift = bitCount - bits;
                 var outValue = value << shift;
                 result.Add(CharacterDictionary.GetCharacter(outValue));
-                bits -= BitCount;
+                bits -= bitCount;
             }
 
             if (Padding != null)
@@ -141,7 +141,7 @@ namespace Cave
                 while ((bits % 8) != 0)
                 {
                     result.Add(padding);
-                    bits -= BitCount;
+                    bits -= bitCount;
                 }
             }
 

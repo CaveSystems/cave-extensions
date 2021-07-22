@@ -1,4 +1,5 @@
-﻿#if NET20 || NET35 || NETSTANDARD10
+﻿#pragma warning disable IDE0055 // we will not document back ports
+#if NET20 || NET35 || NETSTANDARD10
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -40,7 +41,7 @@ namespace System
         /// <param name="isThreadSafe">
         /// true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.
         /// </param>
-        public Lazy(bool isThreadSafe) { }
+        public Lazy(bool isThreadSafe) => IsThreadSafe = isThreadSafe;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lazy{T}"/> class that uses a specified initialization function and a specified thread-safety mode.
@@ -50,10 +51,7 @@ namespace System
         /// true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.
         /// </param>
         /// <exception cref="System.ArgumentNullException"><paramref name="valueFactory"/> is a null reference (Nothing in Visual Basic).</exception>
-        public Lazy(Func<T> valueFactory, bool isThreadSafe)
-            : this(valueFactory)
-        {
-        }
+        public Lazy(Func<T> valueFactory, bool isThreadSafe) : this(valueFactory) => IsThreadSafe = isThreadSafe;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lazy{T}"/> class that uses a specified initialization function.
@@ -66,6 +64,11 @@ namespace System
         #endregion Public Constructors
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is usable concurrently by multiple threads; false otherwise.
+        /// </summary>
+        public bool IsThreadSafe { get; }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="Lazy{T}"/> has been initialized.
@@ -143,3 +146,4 @@ namespace System
     }
 }
 #endif
+#pragma warning restore IDE0055 // we will not document back ports

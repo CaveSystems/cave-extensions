@@ -1,6 +1,6 @@
-﻿#if NET20 || NET35 || NETSTANDARD10
+﻿#pragma warning disable IDE0055 // we will not document back ports
+#if NET20 || NET35 || NETSTANDARD10
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace System.Threading.Tasks
 {
@@ -19,17 +19,14 @@ namespace System.Threading.Tasks
         /// <param name="action">The delegate that is invoked once per iteration.</param>
         public static void For(int fromInclusive, int toExclusive, Action<int> action)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            using (var instance = new Runner<int>())
+            using var instance = new Runner<int>();
+            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
-                instance.Action = action;
-                for (var i = fromInclusive; i < toExclusive; i++)
-                {
-                    instance.Start(i);
-                    if (instance.LoopState.StopByAnySource) return;
-                }
-                instance.Wait();
+                instance.Start(i);
+                if (instance.LoopState.StopByAnySource) return;
             }
+            instance.Wait();
         }
 
         /// <summary>
@@ -41,16 +38,14 @@ namespace System.Threading.Tasks
         public static void For(int fromInclusive, int toExclusive, Action<int, ParallelLoopState> action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            using (var instance = new Runner<int>())
+            using var instance = new Runner<int>();
+            instance.Action = (item) => action(item, instance.LoopState);
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
-                instance.Action = (item) => action(item, instance.LoopState);
-                for (var i = fromInclusive; i < toExclusive; i++)
-                {
-                    instance.Start(i);
-                    if (instance.LoopState.StopByAnySource) return;
-                }
-                instance.Wait();
+                instance.Start(i);
+                if (instance.LoopState.StopByAnySource) return;
             }
+            instance.Wait();
         }
 
         /// <summary>Executes a foreach operation.</summary>
@@ -61,18 +56,15 @@ namespace System.Threading.Tasks
         public static void ForEach<T>(int concurrentTasks, IEnumerable<T> items, Action<T> action)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            using (var instance = new Runner<T>())
+            using var instance = new Runner<T>();
+            instance.ConcurrentTasks = concurrentTasks;
+            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+            foreach (var item in items)
             {
-                instance.ConcurrentTasks = concurrentTasks;
-                instance.Action = action;
-                foreach (var item in items)
-                {
-                    instance.Start(item);
-                    if (instance.LoopState.StopByAnySource) return;
-                }
-                instance.Wait();
+                instance.Start(item);
+                if (instance.LoopState.StopByAnySource) return;
             }
+            instance.Wait();
         }
 
         /// <summary>Executes a foreach operation in which up to <see cref="Environment.ProcessorCount"/> * 4 iterations may run in parallel.</summary>
@@ -82,17 +74,14 @@ namespace System.Threading.Tasks
         public static void ForEach<T>(IEnumerable<T> items, Action<T> action)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            using (var instance = new Runner<T>())
+            using var instance = new Runner<T>();
+            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+            foreach (var item in items)
             {
-                instance.Action = action;
-                foreach (var item in items)
-                {
-                    instance.Start(item);
-                    if (instance.LoopState.StopByAnySource) return;
-                }
-                instance.Wait();
+                instance.Start(item);
+                if (instance.LoopState.StopByAnySource) return;
             }
+            instance.Wait();
         }
 
         /// <summary>
@@ -105,16 +94,14 @@ namespace System.Threading.Tasks
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
             if (action == null) throw new ArgumentNullException(nameof(action));
-            using (var instance = new Runner<TSource>())
+            using var instance = new Runner<TSource>();
+            instance.Action = (item) => action(item, instance.LoopState);
+            foreach (var item in items)
             {
-                instance.Action = (item) => action(item, instance.LoopState);
-                foreach (var item in items)
-                {
-                    instance.Start(item);
-                    if (instance.LoopState.StopByAnySource) return;
-                }
-                instance.Wait();
+                instance.Start(item);
+                if (instance.LoopState.StopByAnySource) return;
             }
+            instance.Wait();
         }
 
         #endregion
@@ -125,9 +112,9 @@ namespace System.Threading.Tasks
 
             public Action<T> Action { get; set; }
 
-            readonly List<Exception> exceptions = new List<Exception>();
+            readonly List<Exception> exceptions = new();
 
-            readonly AutoResetEvent completed = new AutoResetEvent(false);
+            readonly AutoResetEvent completed = new(false);
             int currentTasks;
 
             void Run(object item)
@@ -177,10 +164,7 @@ namespace System.Threading.Tasks
                 }
             }
 
-            public void Dispose()
-            {
-                (completed as IDisposable)?.Dispose();
-            }
+            public void Dispose() => (completed as IDisposable)?.Dispose();
 
             public ParallelLoopState LoopState { get; } = new ParallelLoopState();
         }
@@ -188,3 +172,4 @@ namespace System.Threading.Tasks
 }
 
 #endif
+#pragma warning restore IDE0055

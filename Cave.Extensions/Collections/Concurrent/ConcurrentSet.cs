@@ -1,4 +1,6 @@
+#pragma warning disable IDE0055
 #if !NET35 && !NET20
+
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -6,54 +8,48 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Cave.Collections.Generic;
 
-#endif
-
 namespace Cave.Collections.Concurrent
 {
-#if NET35 || NET20
-    // This class is not available in NET20
-#else
     /// <summary>Provides a concurrent set based on the <see cref="ConcurrentDictionary{T1, T2}" /> class.</summary>
     /// <typeparam name="T">Element type.</typeparam>
     [SuppressMessage("Design", "CA1000")]
-    [SuppressMessage("Naming", "CA1710")]
     public class ConcurrentSet<T> : IItemSet<T>
     {
-        #region private Member
+#region private Member
 
         readonly ConcurrentDictionary<T, byte> list = new();
 
-        #endregion
+#endregion
 
-        #region IItemSet<T> Members
+#region IItemSet<T> Members
 
-        #region ICollection<T> Member
+#region ICollection<T> Member
 
         /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
         public bool IsReadOnly => false;
 
-        #endregion
+#endregion
 
-        #region IEnumerable Member
+#region IEnumerable Member
 
         /// <inheritdoc />
         public IEnumerator GetEnumerator() => list.Keys.GetEnumerator();
 
-        #endregion
+#endregion
 
-        #region IEnumerable<T> Member
+#region IEnumerable<T> Member
 
         /// <inheritdoc />
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => list.Keys.GetEnumerator();
 
-        #endregion
+#endregion
 
         /// <inheritdoc />
         public bool Equals(IItemSet<T> other) => (other != null) && (other.Count == Count) && ContainsRange(other);
 
-        #endregion
+#endregion
 
-        #region Overrides
+#region Overrides
 
         /// <inheritdoc />
         public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
@@ -61,9 +57,9 @@ namespace Cave.Collections.Concurrent
         /// <inheritdoc />
         public override int GetHashCode() => list.GetHashCode();
 
-        #endregion
+#endregion
 
-        #region Members
+#region Members
 
         /// <summary>Copies the items stored in the set to a new array.</summary>
         /// <returns>A new array containing a snapshot of all items.</returns>
@@ -77,9 +73,9 @@ namespace Cave.Collections.Concurrent
             }
         }
 
-        #endregion
+#endregion
 
-        #region operators
+#region operators
 
         /// <summary>Gets a <see cref="ConcurrentSet{T}" /> containing all objects part of one of the specified sets.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
@@ -120,9 +116,9 @@ namespace Cave.Collections.Concurrent
         /// <returns></returns>
         public static bool operator !=(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => !(set1 == set2);
 
-        #endregion
+#endregion
 
-        #region static Member
+#region static Member
 
         /// <summary>Builds the union of two specified <see cref="Set{T}" />s.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
@@ -263,9 +259,9 @@ namespace Cave.Collections.Concurrent
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region constructors
+#region constructors
 
         /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
         public ConcurrentSet() { }
@@ -278,9 +274,9 @@ namespace Cave.Collections.Concurrent
         /// <param name="items">Items to add to the set.</param>
         public ConcurrentSet(IEnumerable<T> items) => AddRange(items);
 
-        #endregion
+#endregion
 
-        #region public Member
+#region public Member
 
         /// <summary>Builds the union of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the result.</summary>
         /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
@@ -323,7 +319,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool IsEmpty => list.Count == 0;
+        public bool IsEmpty => list.IsEmpty;
 
         /// <inheritdoc />
         public void Add(T item)
@@ -352,7 +348,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool Include(T obj) => list.TryAdd(obj, 0);
+        public bool Include(T item) => list.TryAdd(item, 0);
 
         /// <inheritdoc />
         public int IncludeRange(T[] items) => IncludeRange((IEnumerable<T>)items);
@@ -399,7 +395,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool TryRemove(T item) => list.TryRemove(item, out _);
+        public bool TryRemove(T value) => list.TryRemove(value, out _);
 
         /// <inheritdoc />
         public int TryRemoveRange(IEnumerable<T> items)
@@ -438,9 +434,9 @@ namespace Cave.Collections.Concurrent
         /// <summary>Clears the set.</summary>
         public void Clear() => list.Clear();
 
-        #endregion
+#endregion
 
-        #region ICollection Member
+#region ICollection Member
 
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
@@ -472,7 +468,9 @@ namespace Cave.Collections.Concurrent
         /// <summary>Gets the synchronization root.</summary>
         public object SyncRoot => this;
 
-        #endregion
+#endregion
     }
-#endif
 }
+
+#endif
+#pragma warning restore IDE0055

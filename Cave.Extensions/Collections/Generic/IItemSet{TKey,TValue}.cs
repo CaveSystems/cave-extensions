@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -10,7 +9,6 @@ namespace Cave.Collections.Generic
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    [SuppressMessage("Naming", "CA1710")]
     public interface IItemSet<TKey, TValue> : IList<ItemPair<TKey, TValue>>
     {
         #region Properties

@@ -1,11 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-#pragma warning disable SA1300 // Element must begin with upper-case letter
-
-namespace Cave
+﻿namespace Cave
 {
     /// <summary>Gets the international system of units default units.</summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "Does not make sense here.")]
     public enum SiUnit
     {
         /// <summary>kilo</summary>
@@ -33,5 +28,3 @@ namespace Cave
         Y
     }
 }
-
-#pragma warning restore SA1300 // Element must begin with upper-case letter

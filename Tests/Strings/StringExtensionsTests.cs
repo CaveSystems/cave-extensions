@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Cave;
-using Cave.Collections;
 using NUnit.Framework;
 
 namespace Test.Strings
@@ -13,7 +12,7 @@ namespace Test.Strings
     [TestFixture]
     public class StringExtensionsTests
     {
-        readonly IEnumerable<CultureInfo> AllCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
+        readonly IEnumerable<CultureInfo> allCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
 
         [Test]
         public void CamelCaseTest()
@@ -144,7 +143,7 @@ namespace Test.Strings
         [Test]
         public void FormatBinarySize()
         {
-            foreach (var culture in AllCultures)
+            foreach (var culture in allCultures)
             {
                 var size = 1.432;
                 for (var i = 0; i <= (int)IecUnit.YiB; i++)
@@ -168,7 +167,7 @@ namespace Test.Strings
         [Test]
         public void FormatSize()
         {
-            foreach (var culture in AllCultures)
+            foreach (var culture in allCultures)
             {
                 var size = 1.234;
                 var i = 0;
@@ -193,7 +192,7 @@ namespace Test.Strings
         [Test]
         public void FormatSize1()
         {
-            foreach (var culture in AllCultures)
+            foreach (var culture in allCultures)
             {
                 var size = 1.432;
                 for (var i = 0; i <= (int)SiUnit.Y; i++)

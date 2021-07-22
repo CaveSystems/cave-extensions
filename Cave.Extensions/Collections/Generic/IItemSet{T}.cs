@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
     /// <summary>Gets a set of items.</summary>
     /// <typeparam name="T">Element type.</typeparam>
     /// <seealso cref="System.Collections.Generic.ICollection{T}" />
-    [SuppressMessage("Naming", "CA1710")]
     public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<T>>
     {
         #region Properties

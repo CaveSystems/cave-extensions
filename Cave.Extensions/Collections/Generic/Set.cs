@@ -9,8 +9,6 @@ namespace Cave.Collections.Generic
     /// <summary>Gets a generic typed set of objects.</summary>
     [DebuggerDisplay("Count={Count}")]
     [SuppressMessage("Design", "CA1000")]
-    [SuppressMessage("Naming", "CA1710")]
-    [SuppressMessage("Naming", "CA1716")]
 #if NET20
     public sealed class Set<T> : IItemSet<T>
 #else
@@ -109,8 +107,8 @@ namespace Cave.Collections.Generic
             return result;
 #else
             var result = new Set<T>();
-            result.List.UnionWith(set1);
-            result.List.IntersectWith(set2);
+            result.list.UnionWith(set1);
+            result.list.IntersectWith(set2);
             return result;
 #endif
         }
@@ -143,8 +141,8 @@ namespace Cave.Collections.Generic
             return result;
 #else
             var result = new Set<T>();
-            result.List.UnionWith(set1);
-            result.List.ExceptWith(set2);
+            result.list.UnionWith(set1);
+            result.list.ExceptWith(set2);
             return result;
 #endif
         }
@@ -182,8 +180,8 @@ namespace Cave.Collections.Generic
             return result;
 #else
             var result = new Set<T>();
-            result.List.UnionWith(set1);
-            result.List.SymmetricExceptWith(set2);
+            result.list.UnionWith(set1);
+            result.list.SymmetricExceptWith(set2);
             return result;
 #endif
         }
@@ -193,9 +191,9 @@ namespace Cave.Collections.Generic
         #region private Member
 
 #if NET20
-        Dictionary<T, byte> List = new Dictionary<T, byte>();
+        Dictionary<T, byte> list = new();
 #else
-        readonly HashSet<T> List = new();
+        readonly HashSet<T> list = new();
 #endif
 
         #endregion
@@ -254,18 +252,18 @@ namespace Cave.Collections.Generic
         }
 #else
         /// <inheritdoc />
-        public bool ContainsRange(IEnumerable<T> items) => List.IsSubsetOf(items);
+        public bool ContainsRange(IEnumerable<T> items) => list.IsSubsetOf(items);
 #endif
 
         /// <inheritdoc />
-        public bool IsEmpty => List.Count == 0;
+        public bool IsEmpty => list.Count == 0;
 
         /// <inheritdoc />
         public bool Contains(T item) =>
 #if NET20
-            List.ContainsKey(item);
+            list.ContainsKey(item);
 #else
-            List.Contains(item);
+            list.Contains(item);
 #endif
 
         /// <inheritdoc />
@@ -276,9 +274,9 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(item));
             }
 #if NET20
-            List.Add(item, 0);
+            list.Add(item, 0);
 #else
-            if (!List.Add(item))
+            if (!list.Add(item))
             {
                 throw new ArgumentException("Item already present!");
             }
@@ -312,17 +310,17 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool Include(T item)
         {
-            var addNew = !List.ContainsKey(item);
+            var addNew = !list.ContainsKey(item);
             if (addNew)
             {
-                List[item] = 0;
+                list[item] = 0;
             }
 
             return addNew;
         }
 #else
         /// <inheritdoc />
-        public bool Include(T item) => List.Add(item);
+        public bool Include(T item) => list.Add(item);
 #endif
 
         /// <inheritdoc />
@@ -343,9 +341,9 @@ namespace Cave.Collections.Generic
             }
             return count;
 #else
-            var oldCount = List.Count;
-            List.UnionWith(items);
-            return List.Count - oldCount;
+            var oldCount = list.Count;
+            list.UnionWith(items);
+            return list.Count - oldCount;
 #endif
         }
 
@@ -365,7 +363,7 @@ namespace Cave.Collections.Generic
         }
 #else
         /// <inheritdoc />
-        public bool TryRemove(T value) => List.Remove(value);
+        public bool TryRemove(T value) => list.Remove(value);
 #endif
 
         /// <inheritdoc />
@@ -403,7 +401,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (!List.Remove(item))
+            if (!list.Remove(item))
             {
                 throw new KeyNotFoundException();
             }
@@ -428,11 +426,11 @@ namespace Cave.Collections.Generic
         {
 #if NET20
             // cannot clear, recreate
-            List.Clear();
-            List = new Dictionary<T, byte>();
+            list.Clear();
+            list = new Dictionary<T, byte>();
 #else
-            List.Clear();
-            List.TrimExcess();
+            list.Clear();
+            list.TrimExcess();
 #endif
         }
 
@@ -446,12 +444,12 @@ namespace Cave.Collections.Generic
         /// </summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) => List.Keys.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => list.Keys.CopyTo(array, arrayIndex);
 #else
         /// <summary>Copies all items present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="index">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int index) => List.CopyTo(array, index);
+        public void CopyTo(T[] array, int index) => list.CopyTo(array, index);
 #endif
 
         /// <inheritdoc />
@@ -469,7 +467,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <inheritdoc />
-        public int Count => List.Count;
+        public int Count => list.Count;
 
         /// <summary>Gets a value indicating whether the set is synchronized or not.</summary>
         public bool IsSynchronized => false;
@@ -484,9 +482,9 @@ namespace Cave.Collections.Generic
         /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
         IEnumerator IEnumerable.GetEnumerator() =>
 #if NET20
-            List.Keys.GetEnumerator();
+            list.Keys.GetEnumerator();
 #else
-            List.GetEnumerator();
+            list.GetEnumerator();
 #endif
 
         #endregion
@@ -496,9 +494,9 @@ namespace Cave.Collections.Generic
         /// <summary>Creates a copy of this set.</summary>
         public object Clone() =>
 #if NET20
-            new Set<T>(List.Keys);
+            new Set<T>(list.Keys);
 #else
-            new Set<T>(List);
+            new Set<T>(list);
 #endif
 
         #endregion
@@ -515,9 +513,9 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public IEnumerator<T> GetEnumerator() =>
 #if NET20
-            List.Keys.GetEnumerator();
+            list.Keys.GetEnumerator();
 #else
-            List.GetEnumerator();
+            list.GetEnumerator();
 #endif
 
         #endregion
@@ -539,12 +537,12 @@ namespace Cave.Collections.Generic
         public bool Equals(IItemSet<T> other) => other != null && other.Count == Count && ContainsRange(other);
 #else
         /// <inheritdoc />
-        public bool Equals(IItemSet<T> other) => List.SetEquals(other);
+        public bool Equals(IItemSet<T> other) => list.SetEquals(other);
 #endif
 
         /// <summary>Gets the hash code of the base List.</summary>
         /// <returns></returns>
-        public override int GetHashCode() => List.GetHashCode();
+        public override int GetHashCode() => list.GetHashCode();
     }
 
     /// <summary>
@@ -554,13 +552,10 @@ namespace Cave.Collections.Generic
     /// indexing like a List.
     /// </summary>
     [DebuggerDisplay("Count={Count}")]
-    [SuppressMessage("Design", "CA1000")]
-    [SuppressMessage("Naming", "CA1710")]
-    [SuppressMessage("Naming", "CA1716")]
     public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     {
-        readonly List<ItemPair<TKey, TValue>> List = new();
-        readonly Dictionary<TKey, ItemPair<TKey, TValue>> LookupA = new();
+        readonly List<ItemPair<TKey, TValue>> list = new();
+        readonly Dictionary<TKey, ItemPair<TKey, TValue>> lookupA = new();
 
         #region IItemSet<TKey,TValue> Members
 
@@ -579,8 +574,8 @@ namespace Cave.Collections.Generic
         /// <summary>Clears the set.</summary>
         public void Clear()
         {
-            List.Clear();
-            LookupA.Clear();
+            list.Clear();
+            lookupA.Clear();
         }
 
         /// <summary>Checks whether an itempair is part of the set or not.</summary>
@@ -593,16 +588,16 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(item));
             }
 
-            return LookupA.ContainsKey(item.A) && Equals(LookupA[item.A].B, item.B);
+            return lookupA.ContainsKey(item.A) && Equals(lookupA[item.A].B, item.B);
         }
 
         /// <summary>Copies all item of the set to the specified array starting at the specified index.</summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        public void CopyTo(ItemPair<TKey, TValue>[] array, int arrayIndex) => List.CopyTo(array, arrayIndex);
+        public void CopyTo(ItemPair<TKey, TValue>[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
 
         /// <summary>Gets the number of elements actually present at the Set.</summary>
-        public int Count => List.Count;
+        public int Count => list.Count;
 
         /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
         public bool IsReadOnly => false;
@@ -617,26 +612,26 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (!LookupA.Remove(item.A))
+            if (!lookupA.Remove(item.A))
             {
                 throw new KeyNotFoundException();
             }
 
-            return List.Remove(item);
+            return list.Remove(item);
         }
 
         /// <summary>Returns an enumerator that iterates through the set.</summary>
         /// <returns>An IEnumerator object that can be used to iterate through the set.</returns>
-        IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => list.GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through the set.</summary>
         /// <returns>An IEnumerator object that can be used to iterate through the set.</returns>
-        public IEnumerator<ItemPair<TKey, TValue>> GetEnumerator() => List.GetEnumerator();
+        public IEnumerator<ItemPair<TKey, TValue>> GetEnumerator() => list.GetEnumerator();
 
         /// <summary>Checks whether a specified A key is present.</summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool ContainsA(TKey key) => LookupA.ContainsKey(key);
+        public bool ContainsA(TKey key) => lookupA.ContainsKey(key);
 
         /// <summary>Not supported. Use UniqueSet.</summary>
         /// <param name="value"></param>
@@ -646,9 +641,9 @@ namespace Cave.Collections.Generic
         public bool ContainsB(TValue value) => throw new NotSupportedException();
 
         /// <summary>Gets the A element that is assigned to the specified B element. This method is an O(1) operation;.</summary>
-        /// <param name="value">The A index.</param>
+        /// <param name="key">The A index.</param>
         /// <returns></returns>
-        public ItemPair<TKey, TValue> GetA(TKey value) => LookupA[value];
+        public ItemPair<TKey, TValue> GetA(TKey key) => lookupA[key];
 
         /// <summary>Not Supported.</summary>
         /// <param name="value">The B index.</param>
@@ -659,7 +654,7 @@ namespace Cave.Collections.Generic
         /// <summary>Gets the index of the specified A object. This is an O(n) operation.</summary>
         /// <param name="key">'A' object to be found.</param>
         /// <returns>The index of item if found in the List; otherwise, -1.</returns>
-        public int IndexOfA(TKey key) => !LookupA.ContainsKey(key) ? -1 : List.IndexOf(LookupA[key]);
+        public int IndexOfA(TKey key) => !lookupA.ContainsKey(key) ? -1 : list.IndexOf(lookupA[key]);
 
         /// <summary>Not supported. Use UniqueSet instead.</summary>
         /// <param name="value"></param>
@@ -694,7 +689,7 @@ namespace Cave.Collections.Generic
         /// <summary>Gets the index of the specified ItemPair. This is an O(1) operation.</summary>
         /// <param name="item">The ItemPair to search for.</param>
         /// <returns>The index of the ItemPair if found in the List; otherwise, -1.</returns>
-        public int IndexOf(ItemPair<TKey, TValue> item) => List.IndexOf(item);
+        public int IndexOf(ItemPair<TKey, TValue> item) => list.IndexOf(item);
 
         /// <summary>Inserts a new ItemPair at the specified index. This method needs a full index rebuild and is an O(n) operation, where n is Count.</summary>
         /// <param name="index">The index to insert the item at.</param>
@@ -708,8 +703,8 @@ namespace Cave.Collections.Generic
 
             try
             {
-                LookupA.Add(item.A, item);
-                List.Insert(index, item);
+                lookupA.Add(item.A, item);
+                list.Insert(index, item);
             }
             catch
             {
@@ -726,7 +721,7 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public ItemPair<TKey, TValue> this[int index]
         {
-            get => List[index];
+            get => list[index];
             set
             {
                 if (value == null)
@@ -734,23 +729,23 @@ namespace Cave.Collections.Generic
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                var old = List[index];
-                if (!LookupA.Remove(old.A))
+                var old = list[index];
+                if (!lookupA.Remove(old.A))
                 {
                     throw new KeyNotFoundException();
                 }
 
                 try
                 {
-                    LookupA.Add(value.A, value);
+                    lookupA.Add(value.A, value);
                 }
                 catch
                 {
-                    LookupA.Add(old.A, old);
+                    lookupA.Add(old.A, old);
                     throw;
                 }
 
-                List[index] = value;
+                list[index] = value;
             }
         }
 
@@ -760,9 +755,9 @@ namespace Cave.Collections.Generic
         {
             try
             {
-                var item = List[index];
-                List.RemoveAt(index);
-                if (!LookupA.Remove(item.A))
+                var item = list[index];
+                list.RemoveAt(index);
+                if (!lookupA.Remove(item.A))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -784,8 +779,8 @@ namespace Cave.Collections.Generic
         public void Add(TKey key, TValue value)
         {
             var node = new ItemPair<TKey, TValue>(key, value);
-            LookupA.Add(key, node);
-            List.Add(node);
+            lookupA.Add(key, node);
+            list.Add(node);
         }
 
         /// <summary>Checks whether an itempair is part of the set or not.</summary>
@@ -813,7 +808,7 @@ namespace Cave.Collections.Generic
         public bool Remove(TKey key, TValue value) => Remove(new ItemPair<TKey, TValue>(key, value));
 
         /// <summary>Reverses the index of the set.</summary>
-        public void Reverse() => List.Reverse();
+        public void Reverse() => list.Reverse();
 
         #endregion
     }

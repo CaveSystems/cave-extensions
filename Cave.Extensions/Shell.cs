@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,7 +19,6 @@ namespace Cave
         /// <param name="stderr">Action to call for each incoming line at the error stream.</param>
         /// <param name="timeoutMilliseconds">Timeout in milliseconds.</param>
         /// <returns>Returns a result dataset.</returns>
-        [SuppressMessage("Design", "CA1031")]
         public static int RunRedirected(string filename, string arguments, Action<string> stdout, Action<string> stderr, int timeoutMilliseconds = default)
         {
             Debug.WriteLine($"Run {filename} {arguments}");
@@ -34,58 +32,56 @@ namespace Cave
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-            using (var outputWaitHandle = new ManualResetEvent(false))
-            using (var errorWaitHandle = new ManualResetEvent(false))
-            using (var process = Process.Start(startInfo))
+            using var outputWaitHandle = new ManualResetEvent(false);
+            using var errorWaitHandle = new ManualResetEvent(false);
+            using var process = Process.Start(startInfo);
+            Debug.WriteLine($"Start reading from process [{process.Id}] {filename}");
+            process.ErrorDataReceived += (sender, e) =>
             {
-                Debug.WriteLine($"Start reading from process [{process.Id}] {filename}");
-                process.ErrorDataReceived += (sender, e) =>
+                if (e.Data != null)
                 {
-                    if (e.Data != null)
-                    {
-                        stderr?.Invoke(e.Data);
-                    }
-                    else
-                    {
-                        errorWaitHandle.Set();
-                    }
-                };
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (e.Data != null)
-                    {
-                        stdout?.Invoke(e.Data);
-                    }
-                    else
-                    {
-                        outputWaitHandle.Set();
-                    }
-                };
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
-                Debug.WriteLine($"Wait for exit [{process.Id}] {filename}");
-                if (timeoutMilliseconds < 1)
-                {
-                    timeoutMilliseconds = -1;
+                    stderr?.Invoke(e.Data);
                 }
-
-                if (process.WaitForExit(timeoutMilliseconds) && outputWaitHandle.WaitOne(timeoutMilliseconds) && errorWaitHandle.WaitOne(timeoutMilliseconds))
+                else
                 {
-                    Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
-                    return process.ExitCode;
+                    errorWaitHandle.Set();
                 }
-
-                try
+            };
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null)
                 {
-                    process.Kill();
+                    stdout?.Invoke(e.Data);
                 }
-                catch
+                else
                 {
-                    Debug.WriteLine($"Error killing process {filename}");
+                    outputWaitHandle.Set();
                 }
-
-                throw new TimeoutException($"Process {filename} timed out.");
+            };
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            Debug.WriteLine($"Wait for exit [{process.Id}] {filename}");
+            if (timeoutMilliseconds < 1)
+            {
+                timeoutMilliseconds = -1;
             }
+
+            if (process.WaitForExit(timeoutMilliseconds) && outputWaitHandle.WaitOne(timeoutMilliseconds) && errorWaitHandle.WaitOne(timeoutMilliseconds))
+            {
+                Debug.WriteLine($"Process {filename} exited with code {process.ExitCode}.");
+                return process.ExitCode;
+            }
+
+            try
+            {
+                process.Kill();
+            }
+            catch
+            {
+                Debug.WriteLine($"Error killing process {filename}");
+            }
+
+            throw new TimeoutException($"Process {filename} timed out.");
         }
 
         /// <summary>Runs a process with redirected output and error stream.</summary>
@@ -93,7 +89,6 @@ namespace Cave
         /// <param name="arguments">Arguments.</param>
         /// <param name="timeoutMilliseconds">Timeout in milliseconds.</param>
         /// <returns>Returns a result dataset.</returns>
-        [SuppressMessage("Design", "CA1031")]
         public static ShellResult RunRedirected(string filename, string arguments, int timeoutMilliseconds = default)
         {
             var stdoutLines = new LinkedList<string>();

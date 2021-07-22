@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -12,7 +11,7 @@ namespace Cave
         #region Static
 
         static DateTime? defaultDateTime;
-        static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+        static readonly string timeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
 
         /// <summary>Amount of seconds since 1970-01-01 00:00:00 (may return negative values for earlier dates).</summary>
         /// <param name="dateTime">The DateTime.</param>
@@ -200,7 +199,7 @@ namespace Cave
             offset = TimeSpan.Zero;
             var pattern = @"(?<hour>\d{1,2})\s*:\s*(?<minute>\d{2})\s*(?::(?<second>\d{1,2}){0,1}\s*(?:\.(?<microsecond>\d{1,7})){0,1}){0,1}\s*" +
                 @"(?:(?<OffsetSign>[\+\-])(?<OffsetHour>\d{2}):{0,1}(?<OffsetMinute>\d{2}){0,1}){0,1}\s*" +
-                @"(?<ampm>(?i:pm|am)){0,1}\s*" + TimeZoneRegEx + @"(?=$|[^\d\w])";
+                @"(?<ampm>(?i:pm|am)){0,1}\s*" + timeZoneRegEx + @"(?=$|[^\d\w])";
             var match = Regex.Match(text, pattern, RegexOptions.Compiled);
             if (!match.Success)
             {
@@ -208,13 +207,13 @@ namespace Cave
             }
 
             var h = int.Parse(match.Groups["hour"].Value, CultureInfo.InvariantCulture);
-            if ((h < 0) || (h > 23))
+            if (h is < 0 or > 23)
             {
                 return default;
             }
 
             var m = int.Parse(match.Groups["minute"].Value, CultureInfo.InvariantCulture);
-            if ((m < 0) || (m > 59))
+            if (m is < 0 or > 59)
             {
                 return default;
             }
@@ -223,7 +222,7 @@ namespace Cave
             if (!string.IsNullOrEmpty(match.Groups["second"].Value))
             {
                 s = int.Parse(match.Groups["second"].Value, CultureInfo.InvariantCulture);
-                if ((s < 0) || (s > 59))
+                if (s is < 0 or > 59)
                 {
                     return default;
                 }
@@ -285,7 +284,7 @@ namespace Cave
         public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
         {
             var match = Regex.Match(text,
-                @"(?=^|\s*)" + TimeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
+                @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
                 RegexOptions.Compiled);
             var offset = TimeSpan.Zero;
             timeZoneData = null;
@@ -346,7 +345,6 @@ namespace Cave
             set => defaultDateTime = value;
         }
 
-        [SuppressMessage("Design", "CA1031")]
         static bool ConvertDate(string year, string month, string day, out DateTime date)
         {
             date = new DateTime(0, DateTimeKind.Unspecified);

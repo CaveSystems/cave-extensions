@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Cave.Collections.Generic
@@ -10,7 +9,6 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <seealso cref="IDictionary{TKey,TValue}" />
-    [SuppressMessage("Naming", "CA1710")]
     public class DictionaryWithExpiration<TKey, TValue> : IDictionary<TKey, TValue>
         where TValue : IExpiring
     {

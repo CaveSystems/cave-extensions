@@ -2,63 +2,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
     /// <summary>Provides a read only Set.</summary>
     /// <typeparam name="T">Element type.</typeparam>
     /// <seealso cref="IItemSet{T}" />
-    [SuppressMessage("Naming", "CA1710")]
     public sealed class ReadOnlySet<T> : IItemSet<T>
     {
-        readonly IItemSet<T> Set;
+        readonly IItemSet<T> set;
 
         #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}" /> class.</summary>
         /// <param name="set">The Set.</param>
-        public ReadOnlySet(IItemSet<T> set) => this.Set = set;
+        public ReadOnlySet(IItemSet<T> set) => this.set = set;
 
         #endregion
 
         #region IItemSet<T> Members
 
         /// <inheritdoc />
-        public void CopyTo(Array array, int arrayIndex) => Set.CopyTo(array, arrayIndex);
+        public void CopyTo(Array array, int arrayIndex) => set.CopyTo(array, arrayIndex);
 
         /// <inheritdoc />
-        public bool IsSynchronized => Set.IsSynchronized;
+        public bool IsSynchronized => set.IsSynchronized;
 
         /// <inheritdoc />
-        public object SyncRoot => Set.SyncRoot;
+        public object SyncRoot => set.SyncRoot;
 
         /// <inheritdoc />
-        public bool Contains(T item) => Set.Contains(item);
+        public bool Contains(T item) => set.Contains(item);
 
         /// <inheritdoc />
-        public void CopyTo(T[] array, int arrayIndex) => Set.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => set.CopyTo(array, arrayIndex);
 
         /// <inheritdoc />
         public bool IsReadOnly => true;
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => Set.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => set.GetEnumerator();
 
         /// <inheritdoc />
-        public IEnumerator<T> GetEnumerator() => Set.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => set.GetEnumerator();
 
         /// <inheritdoc />
-        public bool Equals(IItemSet<T> other) => Set.Equals(other);
+        public bool Equals(IItemSet<T> other) => set.Equals(other);
 
         /// <inheritdoc />
-        public bool ContainsRange(IEnumerable<T> items) => Set.ContainsRange(items);
+        public bool ContainsRange(IEnumerable<T> items) => set.ContainsRange(items);
 
         /// <inheritdoc />
-        public int Count => Set.Count;
+        public int Count => set.Count;
 
         /// <inheritdoc />
-        public bool IsEmpty => Set.IsEmpty;
+        public bool IsEmpty => set.IsEmpty;
 
         #endregion
 
@@ -68,7 +66,7 @@ namespace Cave.Collections.Generic
         public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
 
         /// <inheritdoc />
-        public override int GetHashCode() => Set != null ? Set.GetHashCode() : 0;
+        public override int GetHashCode() => set != null ? set.GetHashCode() : 0;
 
         #endregion
 

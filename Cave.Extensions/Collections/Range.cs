@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
 namespace Cave.Collections
 {
     /// <summary>Gets a simple integer range.</summary>
-    [SuppressMessage("Naming", "CA1710")]
     public class Range : IEquatable<Range>, IEnumerable<int>, IEnumerable
     {
         #region Static
@@ -81,7 +79,7 @@ namespace Cave.Collections
 
         #region private functionality
 
-        readonly List<Counter> Counters = new();
+        readonly List<Counter> counters = new();
         string currentString;
         string allValuesString = "*";
         char rangeSeparator = '-';
@@ -250,7 +248,7 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(text));
             }
 
-            this.Counters.Clear();
+            this.counters.Clear();
             var counters = ParseRange(text, Minimum, Maximum);
             foreach (var counter in counters)
             {
@@ -267,20 +265,20 @@ namespace Cave.Collections
                 return;
             }
 
-            Counters.Add(new Counter(value, 1));
+            counters.Add(new Counter(value, 1));
         }
 
         /// <summary>Adds a <see cref="Counter" /> to this <see cref="Range" />.</summary>
         /// <param name="counter"></param>
         public void Add(Counter counter)
         {
-            if ((Counters.Count > 0) && Contains(counter))
+            if ((counters.Count > 0) && Contains(counter))
             {
                 return;
             }
 
             currentString = null;
-            Counters.Add(counter);
+            counters.Add(counter);
         }
 
         /// <summary>Adds a <see cref="Range" /> to this <see cref="Range" />.</summary>
@@ -293,11 +291,11 @@ namespace Cave.Collections
             }
 
             currentString = null;
-            foreach (var c in range.Counters)
+            foreach (var c in range.counters)
             {
                 if (!Contains(c))
                 {
-                    Counters.Add(c);
+                    counters.Add(c);
                 }
             }
         }
@@ -307,12 +305,12 @@ namespace Cave.Collections
         /// <returns></returns>
         public bool Contains(int value)
         {
-            if (Counters.Count == 0)
+            if (counters.Count == 0)
             {
                 return (value >= Minimum) && (value <= Maximum);
             }
 
-            foreach (var counter in Counters)
+            foreach (var counter in counters)
             {
                 if (counter.Contains(value))
                 {
@@ -333,12 +331,12 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(counter));
             }
 
-            if (Counters.Count == 0)
+            if (counters.Count == 0)
             {
                 return Contains(counter.Start) && Contains(counter.End);
             }
 
-            foreach (var c in Counters)
+            foreach (var c in counters)
             {
                 if (counter.Contains(c))
                 {
@@ -366,14 +364,14 @@ namespace Cave.Collections
                 return currentString;
             }
 
-            if (Counters.Count == 0)
+            if (counters.Count == 0)
             {
                 return AllValuesString;
             }
 
-            Counters.Sort();
+            counters.Sort();
             var result = new StringBuilder();
-            foreach (var counter in Counters)
+            foreach (var counter in counters)
             {
                 if (result.Length > 0)
                 {
@@ -421,14 +419,14 @@ namespace Cave.Collections
 
         class RangeEnumerator : IEnumerator<int>, IEnumerator
         {
-            readonly Range Range;
+            readonly Range range;
             long current;
 
             #region Constructors
 
             public RangeEnumerator(Range range)
             {
-                this.Range = range;
+                this.range = range;
                 Reset();
             }
 
@@ -440,12 +438,12 @@ namespace Cave.Collections
             {
                 get
                 {
-                    if (current < Range.Minimum)
+                    if (current < range.Minimum)
                     {
                         throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
                     }
 
-                    if (current > Range.Maximum)
+                    if (current > range.Maximum)
                     {
                         throw new InvalidOperationException("Invalid operation, moved out of Range!");
                     }
@@ -460,14 +458,14 @@ namespace Cave.Collections
 
             public bool MoveNext()
             {
-                if (current > Range.Maximum)
+                if (current > range.Maximum)
                 {
                     throw new InvalidOperationException("Invalid operation, use Reset() first!");
                 }
 
-                while (!Range.Contains((int)++current))
+                while (!range.Contains((int)++current))
                 {
-                    if (current > Range.Maximum)
+                    if (current > range.Maximum)
                     {
                         return false;
                     }
@@ -476,7 +474,7 @@ namespace Cave.Collections
                 return true;
             }
 
-            public void Reset() => current = Range.Minimum - 1L;
+            public void Reset() => current = range.Minimum - 1L;
 
             #endregion
         }

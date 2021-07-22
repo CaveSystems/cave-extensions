@@ -1,7 +1,6 @@
+#pragma warning disable IDE0055 // we will not document back ports
 #if NETSTANDARD10
 #elif NET35 || NET20
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace System.Threading.Tasks
 {
@@ -121,7 +120,6 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Gets a simple task starting mechanism backported from net 4.0 using the <see cref="Task.Factory.StartNew(Action, TaskCreationOptions)"/> function.
         /// </summary>
-        [SuppressMessage("Naming", "CA1034")]
         public static class Factory
         {
             static Factory()
@@ -171,11 +169,11 @@ namespace System.Threading.Tasks
         #endregion
 
         #region private functionality
-        readonly object State;
-        readonly object Action;
-        readonly TaskCreationOptions CreationOptions;
+        readonly object state;
+        readonly object action;
+        readonly TaskCreationOptions creationOptions;
+        readonly ManualResetEvent completedEvent = new(false);
 
-        [SuppressMessage("Design", "CA1031")]
         void Worker(object nothing = null)
         {
             void Exit()
@@ -183,14 +181,14 @@ namespace System.Threading.Tasks
                 lock (this)
                 {
                     IsCompleted = true;
-                    Monitor.PulseAll(this);
+                    completedEvent.Set();
                 }
             }
 
             try
             {
                 // spawn a new seperate thread for long running threads
-                if ((CreationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
+                if ((creationOptions == TaskCreationOptions.LongRunning) && Thread.CurrentThread.IsThreadPoolThread)
                 {
                     var thread = new Thread(Worker)
                     {
@@ -209,19 +207,19 @@ namespace System.Threading.Tasks
 
             try
             {
-                if (Action is Action actionTyp1)
+                if (action is Action actionTyp1)
                 {
                     actionTyp1();
                     return;
                 }
-                else if (Action is Action<object> actionTyp2)
+                else if (action is Action<object> actionTyp2)
                 {
-                    actionTyp2(State);
+                    actionTyp2(state);
                     return;
                 }
                 else
                 {
-                    throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {Action}!");
+                    throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {action}!");
                 }
             }
             catch (Exception ex)
@@ -238,9 +236,9 @@ namespace System.Threading.Tasks
         #region constructor
         private Task(TaskCreationOptions creationOptions, object action, object state)
         {
-            this.CreationOptions = creationOptions;
-            this.Action = action;
-            this.State = state;
+            this.creationOptions = creationOptions;
+            this.action = action;
+            this.state = state;
         }
         #endregion
 
@@ -253,10 +251,7 @@ namespace System.Threading.Tasks
         {
             while (!IsCompleted)
             {
-                lock (this)
-                {
-                    Monitor.Wait(this);
-                }
+                completedEvent.WaitOne();
             }
             if (IsFaulted)
             {
@@ -276,11 +271,8 @@ namespace System.Threading.Tasks
                 return !IsFaulted ? true : throw Exception;
             }
 
-            lock (this)
-            {
-                var result = Monitor.Wait(this, mssTimeout);
-                return !IsFaulted ? result : throw Exception;
-            }
+            var result = completedEvent.WaitOne(mssTimeout);
+            return !IsFaulted ? result : throw Exception;
         }
         #endregion
 
@@ -322,3 +314,4 @@ namespace System.Threading.Tasks
     }
 }
 #endif
+#pragma warning restore IDE0055

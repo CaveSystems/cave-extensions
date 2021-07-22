@@ -1,15 +1,12 @@
-﻿#if NET20
-#pragma warning disable CS1591 // we will not document back ports
+﻿#pragma warning disable IDE0079
+#pragma warning disable CS1591, IDE0055 // we will not document back ports
+#if NET20
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
-    [SuppressMessage("Naming", "CA1720")]
-    [SuppressMessage("Design", "CA1062")]
-    [SuppressMessage("Style", "IDE0046")]
     public static class BackportedExtensions
     {
         static TResult ThrowSequenceEmpty<TResult>() => throw new InvalidOperationException("The source sequence is empty.");
@@ -51,7 +48,7 @@ namespace System.Linq
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            foreach (var item in source)
+            foreach (var _ in source)
             {
                 return true;
             }
@@ -106,10 +103,10 @@ namespace System.Linq
         }
 
         public static double Average(this IEnumerable<int> source)
-            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
+            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
 
         public static double Average(this IEnumerable<long> source)
-            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
+            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
 
         public static double Average(this IEnumerable<double> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
@@ -143,10 +140,10 @@ namespace System.Linq
         }
 
         public static double? Average(this IEnumerable<int?> source)
-            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
+            => CalcAverage<int, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
 
         public static double? Average(this IEnumerable<long?> source)
-            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double) count);
+            => CalcAverage<long, long, double>(source, (value, total) => value + total, (total, count) => total / (double)count);
 
         public static double? Average(this IEnumerable<double?> source)
             => CalcAverage<double, double, double>(source, (value, total) => value + total, (total, count) => total / count);
@@ -737,7 +734,7 @@ namespace System.Linq
             if (inner == null) throw new ArgumentNullException(nameof(inner));
             if (outerKeySelector == null) throw new ArgumentNullException(nameof(outerKeySelector));
             if (innerKeySelector == null) throw new ArgumentNullException(nameof(innerKeySelector));
-            if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector)); 
+            if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
             if (comparer == null)
             {
                 comparer = EqualityComparer<TKey>.Default;
@@ -902,13 +899,13 @@ namespace System.Linq
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
                     selector);
             }
 
             if (typeof(IComparable).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                return CalcMinOrMax(source, (element, max) => ((IComparable)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
                     selector);
             }
 
@@ -983,13 +980,13 @@ namespace System.Linq
         {
             if (typeof(IComparable<TResult>).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                return CalcMinOrMax(source, (element, max) => ((IComparable<TResult>)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
                     selector);
             }
 
             if (typeof(IComparable).IsAssignableFrom(typeof(TResult)))
             {
-                return CalcMinOrMax(source, (element, max) => ((IComparable) element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
+                return CalcMinOrMax(source, (element, max) => ((IComparable)element).CompareTo(max) > 0 ? element : max, ThrowSequenceEmpty<TResult>,
                     selector);
             }
 
@@ -1296,20 +1293,18 @@ namespace System.Linq
             if (source == null) throw new ArgumentNullException(nameof(source));
             IEnumerable<TSource> Iterator()
             {
-                using (var enumerator = source.GetEnumerator())
+                using var enumerator = source.GetEnumerator();
+                while (count-- > 0)
                 {
-                    while (count-- > 0)
+                    if (!enumerator.MoveNext())
                     {
-                        if (!enumerator.MoveNext())
-                        {
-                            yield break;
-                        }
+                        yield break;
                     }
+                }
 
-                    while (enumerator.MoveNext())
-                    {
-                        yield return enumerator.Current;
-                    }
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
                 }
             }
 
@@ -1410,7 +1405,7 @@ namespace System.Linq
 
         public static int Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
             => CalcSum(source, selector, (result, element) => result + element);
-        
+
         public static int? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
             => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
 
@@ -1665,24 +1660,22 @@ namespace System.Linq
                 comparer = EqualityComparer<TSource>.Default;
             }
 
-            using (var firstEnumerator = first.GetEnumerator())
-            using (var secondEnumerator = second.GetEnumerator())
+            using var firstEnumerator = first.GetEnumerator();
+            using var secondEnumerator = second.GetEnumerator();
+            while (firstEnumerator.MoveNext())
             {
-                while (firstEnumerator.MoveNext())
+                if (!secondEnumerator.MoveNext())
                 {
-                    if (!secondEnumerator.MoveNext())
-                    {
-                        return false;
-                    }
-
-                    if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
 
-                return !secondEnumerator.MoveNext();
+                if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
+                {
+                    return false;
+                }
             }
+
+            return !secondEnumerator.MoveNext();
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second) => first.SequenceEqual(second, null);
@@ -1696,7 +1689,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Union<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            if (first == null) throw new ArgumentNullException(nameof(first)); 
+            if (first == null) throw new ArgumentNullException(nameof(first));
             if (second == null) throw new ArgumentNullException(nameof(second));
             if (comparer == null)
             {
@@ -1773,5 +1766,5 @@ namespace System.Linq
     }
 }
 
-#pragma warning restore CS1591
 #endif
+#pragma warning restore CS1591, IDE0055, IDE0079

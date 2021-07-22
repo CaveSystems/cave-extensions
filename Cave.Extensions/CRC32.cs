@@ -101,7 +101,7 @@ namespace Cave
                         }
                         else
                         {
-                            crc = crc << 1;
+                            crc <<= 1;
                         }
 
                         value <<= 1;
@@ -131,7 +131,7 @@ namespace Cave
                         }
                         else
                         {
-                            crc = crc >> 1;
+                            crc >>= 1;
                         }
                     }
                 }
@@ -276,7 +276,7 @@ namespace Cave
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             for (var i = 0; i < cbSize; i++)

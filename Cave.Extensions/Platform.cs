@@ -27,14 +27,14 @@ namespace Cave
         /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
         public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
 
-        static readonly Dictionary<string, object> CachedValues = new();
+        static readonly Dictionary<string, object> cachedValues = new();
 
         static T GetCached<T>(string name, Func<T> getter)
         {
-            if (!CachedValues.TryGetValue(name, out var value))
+            if (!cachedValues.TryGetValue(name, out var value))
             {
                 value = getter();
-                CachedValues[name] = value;
+                cachedValues[name] = value;
             }
 
             return (T)value;
@@ -151,6 +151,7 @@ namespace Cave
             return systemVersionString.BeforeFirst('\n');
         }
 
+        [SuppressMessage("Style", "IDE0066:Keep switch")]
         static bool GetIsMicrosoft()
         {
             switch ((int)Environment.OSVersion.Platform)

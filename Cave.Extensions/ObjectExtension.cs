@@ -276,9 +276,9 @@ namespace Cave
         /// <param name="result">Returns the result value.</param>
         /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
         /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
-        public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = 0)
+        public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = default)
         {
-            var error = TryGetPropertyValue(instance, fullPath, out var obj);
+            var error = TryGetPropertyValue(instance, fullPath, out var obj, bindingFlags);
             if (error != GetPropertyValueError.None)
             {
                 // error during get

@@ -24,13 +24,13 @@ namespace Cave
 
             for (var i = 0; i < 128; i++)
             {
-                Values[i] = -1;
+                values[i] = -1;
             }
 
-            Charset = charset.ToCharArray();
-            for (var i = 0; i < Charset.Length; i++)
+            this.charset = charset.ToCharArray();
+            for (var i = 0; i < this.charset.Length; i++)
             {
-                Values[Charset[i]] = i;
+                values[this.charset[i]] = i;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Cave
 
         /// <summary>Gets the length.</summary>
         /// <value>The length.</value>
-        public int Length => Charset.Length;
+        public int Length => charset.Length;
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace Cave
         /// <summary>Gets the character for the specified value.</summary>
         /// <param name="value">The value to look up.</param>
         /// <returns>Returns the character for the value.</returns>
-        public char GetCharacter(int value) => Charset[value];
+        public char GetCharacter(int value) => charset[value];
 
         /// <summary>Gets the value for the specified character.</summary>
         /// <param name="character">The <see cref="char" /> to look up.</param>
@@ -61,7 +61,7 @@ namespace Cave
         /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found.</exception>
         public int GetValue(char character)
         {
-            var result = Values[character];
+            var result = values[character];
             if (result < 0)
             {
                 throw new KeyNotFoundException($"Invalid symbol '{character}'!");
@@ -76,12 +76,12 @@ namespace Cave
         /// <returns></returns>
         public int TryGetValue(char character, int defaultValue)
         {
-            if ((character < 0) || (character >= Values.Length))
+            if ((character < 0) || (character >= values.Length))
             {
                 return defaultValue;
             }
 
-            var result = Values[character];
+            var result = values[character];
             return result < 0 ? defaultValue : result;
         }
 
@@ -89,13 +89,13 @@ namespace Cave
 
         #region private implementation
 
-        readonly char[] Charset;
-        readonly int[] Values = new int[128];
+        readonly char[] charset;
+        readonly int[] values = new int[128];
 
         CharacterDictionary(CharacterDictionary cloneData)
         {
-            Charset = (char[])cloneData.Charset.Clone();
-            Values = (int[])cloneData.Values.Clone();
+            charset = (char[])cloneData.charset.Clone();
+            values = (int[])cloneData.values.Clone();
         }
 
         #endregion private implementation

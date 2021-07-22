@@ -1,4 +1,13 @@
+
+/* Nicht gemergte Änderung aus Projekt "Cave.Extensions (net20)"
+Vor:
 #pragma warning disable SA1402 // File may only contain a single type
+
+#if NET35 || NETSTANDARD10
+Nach:
+#if NET35 || NETSTANDARD10
+*/
+
 
 #if NET35 || NETSTANDARD10
 #elif NET20
@@ -26,4 +35,3 @@ namespace System
 }
 #endif
 
-#pragma warning restore SA1402 // File may only contain a single type

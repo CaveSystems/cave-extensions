@@ -39,10 +39,8 @@ namespace Cave
                 var iv = new byte[data[ofs++]];
                 Buffer.BlockCopy(data, ofs, iv, 0, iv.Length);
                 ofs += iv.Length;
-                using (var dec = algorithm.CreateDecryptor(key, iv))
-                {
-                    return dec.TransformFinalBlock(data, ofs, data.Length - ofs);
-                }
+                using var dec = algorithm.CreateDecryptor(key, iv);
+                return dec.TransformFinalBlock(data, ofs, data.Length - ofs);
             }
             finally
             {
@@ -94,20 +92,18 @@ namespace Cave
 
             try
             {
-                using (var enc = algorithm.CreateEncryptor())
-                {
-                    var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
-                    var encoded = new List<byte>(maxLength);
-                    // add key
-                    encoded.Add((byte)algorithm.Key.Length);
-                    encoded.AddRange(algorithm.Key);
-                    // add iv
-                    encoded.Add((byte)algorithm.IV.Length);
-                    encoded.AddRange(algorithm.IV);
-                    // add data
-                    encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
-                    return encoded.ToArray();
-                }
+                using var enc = algorithm.CreateEncryptor();
+                var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
+                var encoded = new List<byte>(maxLength);
+                // add key
+                encoded.Add((byte)algorithm.Key.Length);
+                encoded.AddRange(algorithm.Key);
+                // add iv
+                encoded.Add((byte)algorithm.IV.Length);
+                encoded.AddRange(algorithm.IV);
+                // add data
+                encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
+                return encoded.ToArray();
             }
             finally
             {

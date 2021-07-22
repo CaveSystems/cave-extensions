@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cave.Collections.Generic
 {
@@ -11,19 +10,18 @@ namespace Cave.Collections.Generic
     /// <typeparam name="TValue1"></typeparam>
     /// <typeparam name="TValue2"></typeparam>
     [DebuggerDisplay("Count={Count}")]
-    [SuppressMessage("Naming", "CA1710")]
     public sealed class ReadOnlyListA<TValue1, TValue2> : IList<TValue1>
     {
         #region Nested type: EnumeratorA
 
         class EnumeratorA : IEnumerator<TValue1>
         {
-            readonly IItemSet<TValue1, TValue2> Set;
+            readonly IItemSet<TValue1, TValue2> set;
             int index = -1;
 
             #region Constructors
 
-            public EnumeratorA(IItemSet<TValue1, TValue2> items) => Set = items;
+            public EnumeratorA(IItemSet<TValue1, TValue2> items) => set = items;
 
             #endregion
 
@@ -31,26 +29,26 @@ namespace Cave.Collections.Generic
 
             public void Dispose() { }
 
-            object IEnumerator.Current => Set[index].A;
+            object IEnumerator.Current => set[index].A;
 
-            public bool MoveNext() => ++index < Set.Count;
+            public bool MoveNext() => ++index < set.Count;
 
             public void Reset() => index = -1;
 
-            public TValue1 Current => Set[index].A;
+            public TValue1 Current => set[index].A;
 
             #endregion
         }
 
         #endregion
 
-        readonly IItemSet<TValue1, TValue2> Set;
+        readonly IItemSet<TValue1, TValue2> set;
 
         #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="ReadOnlyListA{TValue1, TValue2}" /> class.</summary>
         /// <param name="items">Items to be added to the list.</param>
-        public ReadOnlyListA(IItemSet<TValue1, TValue2> items) => Set = items;
+        public ReadOnlyListA(IItemSet<TValue1, TValue2> items) => set = items;
 
         #endregion
 
@@ -78,14 +76,14 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(array));
             }
 
-            for (var i = 0; i < Set.Count; i++)
+            for (var i = 0; i < set.Count; i++)
             {
-                array[arrayIndex++] = Set[i].A;
+                array[arrayIndex++] = set[i].A;
             }
         }
 
         /// <summary>Gets the number of elements present.</summary>
-        public int Count => Set.Count;
+        public int Count => set.Count;
 
         /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
         public bool IsReadOnly => true;
@@ -97,16 +95,16 @@ namespace Cave.Collections.Generic
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator() => new EnumeratorA(Set);
+        IEnumerator IEnumerable.GetEnumerator() => new EnumeratorA(set);
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns></returns>
-        public IEnumerator<TValue1> GetEnumerator() => new EnumeratorA(Set);
+        public IEnumerator<TValue1> GetEnumerator() => new EnumeratorA(set);
 
         /// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire collection.</summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public int IndexOf(TValue1 item) => Set.IndexOfA(item);
+        public int IndexOf(TValue1 item) => set.IndexOfA(item);
 
         /// <summary>Throws a ReadOnlyException.</summary>
         /// <param name="index"></param>
@@ -116,7 +114,7 @@ namespace Cave.Collections.Generic
         /// <summary>Gets the item at the specified index. Setter throws a ReadOnlyException.</summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public TValue1 this[int index] { get => Set[index].A; set => throw new ReadOnlyException(); }
+        public TValue1 this[int index] { get => set[index].A; set => throw new ReadOnlyException(); }
 
         /// <summary>Throws a ReadOnlyException.</summary>
         /// <param name="index"></param>

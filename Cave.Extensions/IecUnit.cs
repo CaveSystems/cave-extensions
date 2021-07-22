@@ -1,5 +1,4 @@
-﻿#pragma warning disable SA1300 // Element must begin with upper-case letter
-
+﻿
 namespace Cave
 {
     /// <summary>Gets common IEC units for binary values (byte).</summary>
@@ -33,5 +32,3 @@ namespace Cave
         YiB
     }
 }
-
-#pragma warning restore SA1300 // Element must begin with upper-case letter

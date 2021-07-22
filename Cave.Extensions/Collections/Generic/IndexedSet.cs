@@ -10,8 +10,6 @@ namespace Cave.Collections.Generic
     /// <typeparam name="T">Value type for the set.</typeparam>
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     [SuppressMessage("Design", "CA1000")]
-    [SuppressMessage("Naming", "CA1710")]
-    [SuppressMessage("Naming", "CA1716")]
     public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     {
         #region IEquatable<IndexedSet<T>> Members
@@ -35,14 +33,14 @@ namespace Cave.Collections.Generic
         #region IEnumerable Member
 
         /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
-        public IEnumerator GetEnumerator() => Items.GetEnumerator();
+        public IEnumerator GetEnumerator() => items.GetEnumerator();
 
         #endregion
 
         #region IEnumerable<T> Member
 
         /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => Items.GetEnumerator();
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => items.GetEnumerator();
 
         #endregion
 
@@ -61,7 +59,7 @@ namespace Cave.Collections.Generic
 
         /// <summary>Gets the hash code of the base list.</summary>
         /// <returns></returns>
-        public override int GetHashCode() => Items.GetHashCode();
+        public override int GetHashCode() => items.GetHashCode();
 
         #endregion
 
@@ -70,13 +68,13 @@ namespace Cave.Collections.Generic
         #region ICloneable Member
 
         /// <summary>Creates a copy of this set.</summary>
-        public object Clone() => new IndexedSet<T>(Items);
+        public object Clone() => new IndexedSet<T>(items);
 
         #endregion
 
         /// <summary>Gets an array of all elements present.</summary>
         /// <returns></returns>
-        public T[] ToArray() => Items.ToArray();
+        public T[] ToArray() => items.ToArray();
 
         #endregion
 
@@ -262,8 +260,8 @@ namespace Cave.Collections.Generic
 
         #region private Member
 
-        readonly List<T> Items;
-        readonly Dictionary<T, int> Lookup;
+        readonly List<T> items;
+        readonly Dictionary<T, int> lookup;
 
         #endregion
 
@@ -272,15 +270,15 @@ namespace Cave.Collections.Generic
         /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}" /> class.</summary>
         public IndexedSet()
         {
-            Items = new List<T>();
-            Lookup = new Dictionary<T, int>();
+            items = new List<T>();
+            lookup = new Dictionary<T, int>();
         }
 
         /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}" /> class.</summary>
         public IndexedSet(int capacity)
         {
-            Items = new List<T>(capacity);
-            Lookup = new Dictionary<T, int>(capacity);
+            items = new List<T>(capacity);
+            lookup = new Dictionary<T, int>(capacity);
         }
 
         /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}" /> class.</summary>
@@ -318,7 +316,7 @@ namespace Cave.Collections.Generic
         public IndexedSet<T> ExclusiveOr(IndexedSet<T> items) => Xor(this, items);
 
         /// <summary>Checks whether a specified object is part of the set.</summary>
-        public bool Contains(T item) => Lookup.ContainsKey(item);
+        public bool Contains(T item) => lookup.ContainsKey(item);
 
         /// <summary>Checks whether all specified objects are part of the set.</summary>
         public bool ContainsRange(ICollection<T> collection)
@@ -338,7 +336,7 @@ namespace Cave.Collections.Generic
         }
 
         /// <summary>Gets a value indicating whether the list is empty or not.</summary>
-        public bool IsEmpty => Items.Count == 0;
+        public bool IsEmpty => items.Count == 0;
 
         /// <summary>Adds a specified object to the set.</summary>
         /// <param name="item">The item to be added to the set.</param>
@@ -349,11 +347,11 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var index = Items.Count;
+            var index = items.Count;
             try
             {
-                Items.Add(item);
-                Lookup.Add(item, index);
+                items.Add(item);
+                lookup.Add(item, index);
             }
             catch
             {
@@ -404,10 +402,10 @@ namespace Cave.Collections.Generic
 
         void RebuildIndex()
         {
-            Lookup.Clear();
-            for (var i = 0; i < Items.Count; i++)
+            lookup.Clear();
+            for (var i = 0; i < items.Count; i++)
             {
-                Lookup.Add(Items[i], i);
+                lookup.Add(items[i], i);
             }
         }
 
@@ -415,7 +413,7 @@ namespace Cave.Collections.Generic
         /// <param name="item">The object to be removed.</param>
         public bool Remove(T item)
         {
-            RemoveAt(Lookup[item]);
+            RemoveAt(lookup[item]);
             return true;
         }
 
@@ -436,8 +434,8 @@ namespace Cave.Collections.Generic
         /// <summary>Clears the set.</summary>
         public void Clear()
         {
-            Lookup.Clear();
-            Items.Clear();
+            lookup.Clear();
+            items.Clear();
         }
 
         #endregion
@@ -447,23 +445,23 @@ namespace Cave.Collections.Generic
         /// <summary>Returns the zero-based index of the first occurrence of a value in the set.</summary>
         /// <param name="item">The object to locate in the set.</param>
         /// <returns>The zero-based index of the first occurrence of item within the entire set, if found; otherwise, –1.</returns>
-        public int IndexOf(T item) => Lookup[item];
+        public int IndexOf(T item) => lookup[item];
 
         /// <summary>Inserts an element into the set at the specified index.</summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <param name="item">The object to insert.</param>
         public void Insert(int index, T item)
         {
-            if ((index < 0) || (index > Items.Count))
+            if ((index < 0) || (index > items.Count))
             {
                 throw new IndexOutOfRangeException();
             }
 
-            Lookup.Add(item, index);
-            Items.Insert(index, item);
-            for (var i = index + 1; i < Items.Count; i++)
+            lookup.Add(item, index);
+            items.Insert(index, item);
+            for (var i = index + 1; i < items.Count; i++)
             {
-                Lookup[Items[i]] = i - 1;
+                lookup[items[i]] = i - 1;
             }
         }
 
@@ -471,24 +469,24 @@ namespace Cave.Collections.Generic
         /// <param name="index">The zero-based index of the element to remove.</param>
         public void RemoveAt(int index)
         {
-            if ((index < 0) || (index > Items.Count))
+            if ((index < 0) || (index > items.Count))
             {
                 throw new IndexOutOfRangeException();
             }
 
             try
             {
-                for (var i = index + 1; i < Items.Count; i++)
+                for (var i = index + 1; i < items.Count; i++)
                 {
-                    Lookup[Items[i]] = i - 1;
+                    lookup[items[i]] = i - 1;
                 }
 
-                if (!Lookup.Remove(Items[index]))
+                if (!lookup.Remove(items[index]))
                 {
                     throw new IndexOutOfRangeException();
                 }
 
-                Items.RemoveAt(index);
+                items.RemoveAt(index);
             }
             catch
             {
@@ -502,19 +500,19 @@ namespace Cave.Collections.Generic
         /// <returns></returns>
         public T this[int index]
         {
-            get => Items[index];
+            get => items[index];
             set
             {
                 try
                 {
-                    var oldKey = Items[index];
-                    if (!Lookup.Remove(oldKey))
+                    var oldKey = items[index];
+                    if (!lookup.Remove(oldKey))
                     {
                         throw new KeyNotFoundException();
                     }
 
-                    Lookup.Add(value, index);
-                    Items[index] = value;
+                    lookup.Add(value, index);
+                    items[index] = value;
                 }
                 catch
                 {
@@ -531,10 +529,10 @@ namespace Cave.Collections.Generic
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) => Items.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
         /// <summary>Gets the number of objects present at the set.</summary>
-        public int Count => Items.Count;
+        public int Count => items.Count;
 
         #endregion
     }

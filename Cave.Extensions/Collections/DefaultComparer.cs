@@ -32,7 +32,7 @@ namespace Cave.Collections
                     byte* x1 = p1, x2 = p2;
                     if (len > 7)
                     {
-                        var e1 = (x1 + len) - 7;
+                        var e1 = x1 + len - 7;
                         for (; x1 < e1; x1 += 8, x2 += 8)
                         {
                             if (*(long*)x1 != *(long*)x2)
@@ -81,7 +81,7 @@ namespace Cave.Collections
                 byte* x1 = p1, x2 = p2;
                 if (len > 3)
                 {
-                    var e1 = (x1 + len) - 3;
+                    var e1 = x1 + len - 3;
                     for (; x1 < e1; x1 += 4, x2 += 4)
                     {
                         if (*(int*)x1 != *(int*)x2)

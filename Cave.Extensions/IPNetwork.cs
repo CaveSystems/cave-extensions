@@ -13,18 +13,12 @@ namespace Cave
 
         static IPAddress GetMask(int subnet, AddressFamily addressFamily)
         {
-            byte[] result;
-            switch (addressFamily)
+            var result = addressFamily switch
             {
-                case AddressFamily.InterNetwork:
-                    result = new byte[4];
-                    break;
-                case AddressFamily.InterNetworkV6:
-                    result = new byte[16];
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(addressFamily));
-            }
-
+                AddressFamily.InterNetwork => new byte[4],
+                AddressFamily.InterNetworkV6 => new byte[16],
+                _ => throw new ArgumentOutOfRangeException(nameof(addressFamily)),
+            };
             var byteCount = subnet / 8;
             var bitCount = subnet % 8;
             for (var i = 0; i < byteCount; i++)

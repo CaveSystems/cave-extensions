@@ -52,7 +52,7 @@ namespace Cave
                 if (Platform.IsMicrosoft)
                 {
                     var software = Registry.LocalMachine.OpenSubKey(@"SOFTWARE");
-                    if (!(software.GetValue("SystemGuid") is byte[] data))
+                    if (software.GetValue("SystemGuid") is not byte[] data)
                     {
                         data = Guid.NewGuid().ToByteArray();
                         software.SetValue("SystemGuid", data, RegistryValueKind.Binary);

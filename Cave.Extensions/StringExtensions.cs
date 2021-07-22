@@ -1,4 +1,3 @@
-#pragma warning disable CA1307
 
 using System;
 using System.Collections;
@@ -21,7 +20,6 @@ namespace Cave
         public const string DisplayDateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff";
 
         /// <summary>Gets the default date time string used when formatting date time variables for display.</summary>
-        [Obsolete]
         public const string DisplayDateTimeWithTimeZoneFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff K";
 
         /// <summary>Gets the default date time string used when formatting date time variables for file names.</summary>
@@ -210,7 +208,7 @@ namespace Cave
                         continue;
                 }
 
-                if ((c < ' ') || (c > (char)127))
+                if (c is < ' ' or > ((char)127))
                 {
                     sb.Append($"\\u{(int)c:x4}");
                     continue;
@@ -936,13 +934,13 @@ namespace Cave
         /// <summary>Joins a collection to a string.</summary>
         /// <param name="array">The string array.</param>
         /// <param name="separator">The seperator.</param>
-        /// <param name="cultureInfo">The culture info.</param>
+        /// <param name="formatProvider">The format provider.</param>
         /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo = null)
+        public static string Join(this IEnumerable array, string separator, IFormatProvider formatProvider = null)
         {
-            if (cultureInfo == null)
+            if (formatProvider == null)
             {
-                cultureInfo = CultureInfo.CurrentCulture;
+                formatProvider = CultureInfo.CurrentCulture;
             }
 
             if (array == null)
@@ -963,52 +961,48 @@ namespace Cave
                     result.Append(separator);
                 }
 
-                result.Append(ToString(obj, cultureInfo));
+                result.Append(ToString(obj, formatProvider));
             }
 
             return result.ToString();
         }
+
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The seperator.</param>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo) => Join(array, separator, (IFormatProvider)cultureInfo);
 
         /// <summary>Joins a collection to a string.</summary>
         /// <param name="array">The string array.</param>
         /// <param name="separator">The separator.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo = null)
-        {
-            if (cultureInfo == null)
-            {
-                cultureInfo = CultureInfo.CurrentCulture;
-            }
+        public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo) => Join(array, separator.ToString(), (IFormatProvider)cultureInfo);
 
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            var result = new StringBuilder();
-            foreach (var obj in array)
-            {
-                if (result.Length != 0)
-                {
-                    result.Append(separator);
-                }
-
-                result.Append(ToString(obj, cultureInfo));
-            }
-
-            return result.ToString();
-        }
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="separator">The separator.</param>
+        /// <param name="formatProvider">The format provider info.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, char separator, IFormatProvider formatProvider = null) => Join(array, separator.ToString(), formatProvider);
 
         /// <summary>Joins a collection to a string.</summary>
         /// <param name="array">The string array.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        public static string Join(this IEnumerable array, CultureInfo cultureInfo = null)
+        public static string Join(this IEnumerable array, CultureInfo cultureInfo) => Join(array, (IFormatProvider)cultureInfo);
+
+        /// <summary>Joins a collection to a string.</summary>
+        /// <param name="array">The string array.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>Returns a new string.</returns>
+        public static string Join(this IEnumerable array, IFormatProvider formatProvider = null)
         {
-            if (cultureInfo == null)
+            if (formatProvider == null)
             {
-                cultureInfo = CultureInfo.CurrentCulture;
+                formatProvider = CultureInfo.CurrentCulture;
             }
 
             if (array == null)
@@ -1019,7 +1013,7 @@ namespace Cave
             var result = new StringBuilder();
             foreach (var obj in array)
             {
-                result.Append(ToString(obj, cultureInfo));
+                result.Append(ToString(obj, formatProvider));
             }
 
             return result.ToString();
@@ -1097,7 +1091,7 @@ namespace Cave
 
                 if (result.Length > 0)
                 {
-                    result.Append("_");
+                    result.Append('_');
                 }
 
                 result.Append(t.ToLower(culture));
@@ -1176,20 +1170,33 @@ namespace Cave
         /// <param name="dateTimeString">String value to parse.</param>
         /// <param name="culture">Culture used to check for the full date time pattern.</param>
         /// <returns>The parsed datetime.</returns>
-        public static DateTime ParseDateTime(string dateTimeString, CultureInfo culture)
+        public static DateTime ParseDateTime(string dateTimeString, CultureInfo culture) => ParseDateTime(dateTimeString, (IFormatProvider)culture);
+
+        /// <summary>Parses a DateTime.</summary>
+        /// <param name="dateTimeString">String value to parse.</param>
+        /// <param name="formatProvider">Format provider used to check for the full date time pattern.</param>
+        /// <returns>The parsed datetime.</returns>
+        public static DateTime ParseDateTime(string dateTimeString, IFormatProvider formatProvider)
         {
-            if ((culture != null) && DateTime.TryParseExact(dateTimeString, culture.DateTimeFormat.FullDateTimePattern, culture, default, out var dateTime0))
+            DateTime result;
+            if (formatProvider is CultureInfo culture)
             {
-                return dateTime0;
+                if (DateTime.TryParseExact(dateTimeString, culture.DateTimeFormat.FullDateTimePattern, formatProvider, default, out result))
+                {
+                    return result;
+                }
             }
-            if (DateTime.TryParse(dateTimeString, culture, default, out var dateTime1))
+
+            if (DateTime.TryParse(dateTimeString, formatProvider, default, out result))
             {
-                return dateTime1;
+                return result;
             }
-            if (DateTimeParser.TryParseDateTime(dateTimeString, out var dateTime2, out var offset))
+
+            if (DateTimeParser.TryParseDateTime(dateTimeString, out result, out var _))
             {
-                return dateTime2;
+                return result;
             }
+
             return DateTime.Parse(dateTimeString, CultureInfo.InvariantCulture);
         }
 
@@ -1488,7 +1495,7 @@ namespace Cave
             var maxChange = 0;
             if (pattern.Length < replacement.Length)
             {
-                maxChange = (text.Length / pattern.Length) * (replacement.Length - pattern.Length);
+                maxChange = text.Length / pattern.Length * (replacement.Length - pattern.Length);
             }
 
             var chars = new char[text.Length + maxChange];
@@ -1826,7 +1833,7 @@ namespace Cave
 
             var result = new List<string>();
             var start = 0;
-            for(var i = 1; i < text.Length; i++)
+            for (var i = 1; i < text.Length; i++)
             {
                 if (isSeparator(text[i]))
                 {
@@ -1838,7 +1845,7 @@ namespace Cave
                     continue;
                 }
             }
-            
+
             var remainder = text.Substring(start);
             if (remainder.Length > 0) result.Add(remainder);
             return result.ToArray();
@@ -2154,48 +2161,57 @@ namespace Cave
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The string.</returns>
-        public static string ToString(object value, CultureInfo culture)
+        public static string ToString(object value, CultureInfo culture) => ToString(value, (IFormatProvider)culture);
+
+        /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The string.</returns>
+        public static string ToString(object value, IFormatProvider formatProvider)
         {
             if (value == null)
             {
                 return "<null>";
             }
 
-            if (culture == null)
+            if (formatProvider == null)
             {
-                culture = CultureInfo.InvariantCulture;
-            }
-            else if (!(culture.Calendar is GregorianCalendar))
-            {
-                throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
+                formatProvider = CultureInfo.InvariantCulture;
             }
 
             // special handling for roundtrip types
             if (value is double d)
             {
-                return d.ToString("R", culture);
+                return d.ToString("R", formatProvider);
             }
 
             if (value is float f)
             {
-                return f.ToString("R", culture);
+                return f.ToString("R", formatProvider);
             }
 
             if (value is DateTime dt)
             {
-                return dt.Kind switch
+                if (formatProvider is CultureInfo culture)
                 {
-                    DateTimeKind.Local or DateTimeKind.Unspecified => dt.ToString(culture.DateTimeFormat.FullDateTimePattern, culture),
-                    _ => dt.ToString(InterOpDateTimeFormat, culture),
-                };
+                    if (culture.Calendar is not GregorianCalendar)
+                    {
+                        throw new NotSupportedException($"Calendar {culture.Calendar} not supported!");
+                    }
+                    if (dt.Kind is DateTimeKind.Local or DateTimeKind.Unspecified)
+                    {
+                        return dt.ToString(culture.DateTimeFormat.FullDateTimePattern, culture);
+                    };
+                }
+                return dt.ToString(InterOpDateTimeFormat, formatProvider);
             }
 
             if (value is IFormattable formattable)
             {
-                return formattable.ToString(null, culture);
+                return formattable.ToString(null, formatProvider);
             }
 
-            return value is ICollection collection ? value + " {" + Join(collection, ",", culture) + "}" : value.ToString();
+            return value is ICollection collection ? value + " {" + Join(collection, ",", formatProvider) + "}" : value.ToString();
         }
 
         /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
@@ -2601,5 +2617,3 @@ namespace Cave
         #endregion
     }
 }
-
-#pragma warning restore CA1307

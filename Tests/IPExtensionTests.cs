@@ -11,154 +11,154 @@ namespace Test
         public void IPNetwork_IPv4()
         {
             {
-                const int Net = 8;
-                var expected = new IPNetwork(IPAddress.Parse("192.0.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 8;
+                var expected = new IPNetwork(IPAddress.Parse("192.0.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.0.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.0.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.255.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 9;
-                var expected = new IPNetwork(IPAddress.Parse("192.128.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 9;
+                var expected = new IPNetwork(IPAddress.Parse("192.128.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("128.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("128.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.128.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.128.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.255.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 10;
-                var expected = new IPNetwork(IPAddress.Parse("192.128.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 10;
+                var expected = new IPNetwork(IPAddress.Parse("192.128.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("128.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("128.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.192.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.192.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.191.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 11;
-                var expected = new IPNetwork(IPAddress.Parse("192.160.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 11;
+                var expected = new IPNetwork(IPAddress.Parse("192.160.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("160.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("160.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.224.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.224.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.191.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 12;
-                var expected = new IPNetwork(IPAddress.Parse("192.160.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 12;
+                var expected = new IPNetwork(IPAddress.Parse("192.160.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("160.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("160.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.240.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.240.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.175.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 13;
-                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 13;
+                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("168.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("168.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.248.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.248.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.175.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 14;
-                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 14;
+                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("168.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("168.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.252.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.252.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.171.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 15;
-                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 15;
+                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("168.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("168.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.254.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.254.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.169.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                const int Net = 16;
-                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), Net);
-                var test = IPAddress.Parse("192.168.255.255").GetSubnet(Net);
+                const int net = 16;
+                var expected = new IPNetwork(IPAddress.Parse("192.168.0.0"), net);
+                var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                 Assert.AreEqual(expected, test);
                 Assert.AreEqual("168.192.in-addr.arpa.", expected.ReverseLookupZone);
                 Assert.AreEqual("168.192.in-addr.arpa.", test.ReverseLookupZone);
                 Assert.AreEqual("255.255.0.0", expected.Mask.ToString());
                 Assert.AreEqual("255.255.0.0", test.Mask.ToString());
                 Assert.AreEqual("192.168.255.255", test.Broadcast.ToString());
-                Assert.AreEqual(Net, expected.Subnet);
-                Assert.AreEqual(Net, test.Subnet);
+                Assert.AreEqual(net, expected.Subnet);
+                Assert.AreEqual(net, test.Subnet);
                 var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);
                 Assert.AreEqual(expected, test2);
-                Assert.AreEqual(Net, test2.Subnet);
+                Assert.AreEqual(net, test2.Subnet);
             }
             {
-                var Address = 128;
-                for (var net = 17; net <= 24; net++, Address |= Address >> 1)
+                var address = 128;
+                for (var net = 17; net <= 24; net++, address |= address >> 1)
                 {
-                    var expected = new IPNetwork(IPAddress.Parse($"192.168.{Address}.0"), net);
+                    var expected = new IPNetwork(IPAddress.Parse($"192.168.{address}.0"), net);
                     var test = IPAddress.Parse("192.168.255.255").GetSubnet(net);
                     Assert.AreEqual(expected, test);
                     var test2 = new IPNetwork(IPAddress.Parse("192.168.255.255"), expected.Mask);

@@ -23,7 +23,7 @@ namespace Cave
 #endif
 
             // maximum 5 digits
-            var decimalValue = (long)Math.Round((price % 1) * 100000);
+            var decimalValue = (long)Math.Round(price % 1 * 100000);
             if ((decimalValue % 100) != 0)
             {
                 // need all (5) digits

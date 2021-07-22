@@ -1,4 +1,3 @@
-#pragma warning disable CA1034
 
 using System;
 using System.Collections.Generic;
@@ -805,7 +804,7 @@ namespace Cave
                         return new string(result, 0, i);
                     }
 
-                    if ((value < 17) || (value > 127))
+                    if (value is < 17 or > 127)
                     {
                         value = 255;
                     }
@@ -823,7 +822,7 @@ namespace Cave
         public static char GetHexChar(int value)
         {
             value &= 0xF;
-            return value < 10 ? (char)(value + '0') : (char)((value - 10) + 'A');
+            return value < 10 ? (char)(value + '0') : (char)(value - 10 + 'A');
         }
 
         /// <summary>Gets the string for the specified 7Bit ASCII bytes.</summary>
@@ -892,7 +891,7 @@ namespace Cave
         /// <returns>True if the string does not contain any character outside the valid range.</returns>
         public static bool IsValidForConnectionString(this string text) =>
             text != null
-                ? !text.Any(c => (c < 32) || (c > 127) || (c == ';') || (c == '\\'))
+                ? !text.Any(c => c is < (char)32 or > (char)127 or ';' or '\\')
                 : throw new ArgumentNullException(nameof(text));
 
         /// <summary>Reverts a previous <see cref="Escape(string, char)" />.</summary>
@@ -967,5 +966,3 @@ namespace Cave
         #endregion
     }
 }
-
-#pragma warning restore CA1034
