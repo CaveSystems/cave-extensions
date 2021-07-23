@@ -17,6 +17,11 @@ namespace Cave
         /// <value>The valid chars.</value>
         public const string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyz.-+";
 
+        /// <summary>converts a version to a semantic version.</summary>
+        /// <param name="version">The version to convert.</param>
+        /// <returns>Returns a new semantic version instance.</returns>
+        public static implicit operator SemanticVersion(Version version) => new(version.Major, version.Minor, version.Build, version.Revision> -1 ? $".{version.Revision}" : null);
+
         /// <summary>Parses the specified value major.minor[.patch][-meta[.pre]].</summary>
         /// <param name="value">The value.</param>
         /// <returns>the semantic version.</returns>
@@ -269,18 +274,19 @@ namespace Cave
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(SemanticVersion other)
         {
-            if (Major != other.Major)
-            {
-                return comparer.Compare(Major, other.Major);
-            }
-            if (Minor != other.Minor)
-            {
-                return comparer.Compare(Minor, other.Minor);
-            }
-            if (Patch != other.Patch)
-            {
-                return comparer.Compare(Patch, other.Patch);
-            }
+            var result = comparer.Compare(Major, other.Major);
+            if (result != 0) return result;
+
+            var minor = (Minor < 0 ? 0 : Minor);
+            var otherMinor = (other.Minor < 0 ? 0 : other.Minor);
+            result = comparer.Compare(minor, otherMinor);
+            if (result != 0) return result;
+
+            var patch = (Patch < 0 ? 0 : Patch);
+            var otherPatch = (other.Patch < 0 ? 0 : other.Patch);
+            result = comparer.Compare(patch, otherPatch);
+            if (result != 0) return result;
+
             return metaComparer.Compare(Meta ?? string.Empty, other.Meta ?? string.Empty);
         }
 
@@ -291,7 +297,7 @@ namespace Cave
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
-        public bool Equals(SemanticVersion other) => !(other is null) && (other.Major == Major) && (other.Minor == Minor) && (other.Patch == Patch) && (other.Meta == Meta);
+        public bool Equals(SemanticVersion other) => CompareTo(other) == 0;
 
         #endregion
 
@@ -300,15 +306,12 @@ namespace Cave
         /// <summary>Determines whether the specified <see cref="object" />, is equal to this instance.</summary>
         /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) => obj switch
         {
-            if (obj is SemanticVersion version)
-            {
-                Equals(version);
-            }
-
-            return base.Equals(obj);
-        }
+            SemanticVersion semVer => Equals(semVer),
+            Version version => Equals(version),
+            _ => false,
+        };
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -337,13 +340,17 @@ namespace Cave
 
         #region Members
 
-        /// <summary>Gets the classic version (calculates a build number based on the characters).</summary>
+        /// <summary>Gets the classic version (calculates a build number based on the number of characters).</summary>
         /// <returns>the classic version.</returns>
-        public Version GetClassicVersion() => Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
+        [Obsolete("Use GetNormalizedVersion() instead.")]
+        public Version GetClassicVersion() =>
+            Patch < 0 ? new Version(Major, Minor) :
+            Meta == null ? new Version(Major, Minor, Patch) :
+            new Version(Major, Minor, Patch, Meta.Length);
 
         /// <summary>Gets the normalized version.</summary>
         /// <returns>the normalized version.</returns>
-        public Version GetNormalizedVersion() => Patch > -1 ? new Version(Major, Minor, Patch) : new Version(Major, Minor);
+        public Version GetNormalizedVersion() => Patch < 0 ? new Version(Major, Minor) : new Version(Major, Minor, Patch);
 
         /// <summary>Gets an absolute value for this version.</summary>
         /// <returns>Returns an absolute value.</returns>
