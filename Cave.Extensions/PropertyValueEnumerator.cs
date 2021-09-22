@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -36,6 +37,16 @@ namespace Cave
         /// <summary>Gets the root type.</summary>
         public object Root { get; }
 
+        /// <summary>
+        /// Gets or sets the types we will not recurse into.
+        /// </summary>
+        public Type[] SkipTypes { get; set; } = PropertyData.DefaultSkipTypes;
+
+        /// <summary>
+        /// Gets or sets the namespaces we will not recurse into.
+        /// </summary>
+        public string[] SkipNamespaces { get; set; } = PropertyData.DefaultSkipNamespaces;
+
         #endregion
 
         #region IEnumerable<PropertyData> Members
@@ -67,14 +78,19 @@ namespace Cave
             var current = stack.Pop();
             if (Recursive)
             {
+                object value = null;
                 if (current.CanGetValue)
                 {
-                    AddProperties(current.FullPath, current.Value);
+                    try
+                    {
+                        value = current.Value;
+                    }
+                    catch
+                    {
+                        /* getter throws error */
+                    }
                 }
-                else
-                {
-                    AddProperties(current.FullPath, null);
-                }
+                AddProperties(current, current.FullPath, value);
             }
 
             Current = current;
@@ -85,7 +101,7 @@ namespace Cave
         public void Reset()
         {
             stack = new Stack<PropertyData>();
-            AddProperties(string.Empty, Root);
+            AddProperties(null, string.Empty, Root);
         }
 
         /// <inheritdoc />
@@ -95,7 +111,7 @@ namespace Cave
 
         #region Members
 
-        void AddProperties(string rootPath, object instance)
+        void AddProperties(PropertyData parent, string rootPath, object instance)
         {
             if (instance == null)
             {
@@ -110,13 +126,13 @@ namespace Cave
             var instanceType = instance.GetType();
             foreach (var property in instanceType.GetProperties(BindingFlags))
             {
-                // do not recurse into nested properties of sme type
-                if (property.PropertyType == instanceType)
+                // skip nested
+                if (PropertyData.IsNested(parent, property, SkipNamespaces, SkipTypes))
                 {
                     continue;
                 }
 
-                stack.Push(new PropertyData(rootPath, property, instance));
+                stack.Push(new PropertyData(parent, rootPath, property, instance));
             }
         }
 

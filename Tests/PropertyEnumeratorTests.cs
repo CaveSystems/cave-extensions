@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using Cave;
 using NUnit.Framework;
 
@@ -64,7 +66,7 @@ namespace Test
             Assert.AreEqual(root.EmptyIntermediate?.EmptyItem?.TestInt ?? default, emptyItemTestInt);
             Assert.AreEqual(root.Intermediate, root.GetPropertyValue<Intermediate>("/Intermediate"));
             Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue("Intermediate.TestLong"));
-            Assert.AreEqual((object)root.Intermediate.TestLong, root.GetPropertyValue<object>("Intermediate.TestLong"));
+            Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue<object>("Intermediate.TestLong"));
             Assert.AreEqual(root.Intermediate.EmptyItem, root.GetPropertyValue("Intermediate.EmptyItem"));
             Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue(".Intermediate.EmptyItem.TestInt", out int emptyItemTestInt2));
             Assert.AreEqual(root.Intermediate.EmptyItem?.TestInt ?? default, emptyItemTestInt2);
@@ -159,6 +161,50 @@ namespace Test
             {
                 Assert.AreEqual(property.Value, root.GetPropertyValue(property.FullPath));
             }
+        }
+
+        [Test]
+        public void TestTypes_mscorlib() => TestTypes(typeof(int).Assembly.GetExportedTypes());
+
+        [Test]
+        public void TestTypes_System() => TestTypes(typeof(Uri).Assembly.GetExportedTypes());
+
+        [Test]
+        public void TestTypes_SystemData() => TestTypes(typeof(IDbConnection).Assembly.GetExportedTypes());
+
+        [Test]
+        public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).Assembly.GetExportedTypes());
+
+        [Test]
+        public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
+
+        void TestTypes(Type[] types)
+        {
+            foreach (var type in types) { TestType(type); }
+        }
+
+        void TestType(Type type)
+        {
+            if (type.IsAbstract) return;
+            if (type.ContainsGenericParameters) return;
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+            if (constructor == null) return;
+            object obj;
+            try
+            {
+                obj = Activator.CreateInstance(type);
+            }
+            catch
+            {
+                return;
+            }
+            var p1 = obj.GetProperties(withValue: true);
+            var p2 = obj.GetProperties(withValue: false);
+            var p1Count = p1.Count();
+            var p2Count = p2.Count();
+            Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
+            foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+            foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
         }
     }
 }

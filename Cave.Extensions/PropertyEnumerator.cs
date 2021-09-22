@@ -37,6 +37,16 @@ namespace Cave
         /// <summary>Gets the root type.</summary>
         public Type Root { get; }
 
+        /// <summary>
+        /// Gets or sets the types we will not recurse into.
+        /// </summary>
+        public Type[] SkipTypes { get; set; } = PropertyData.DefaultSkipTypes;
+
+        /// <summary>
+        /// Gets or sets the namespaces we will not recurse into.
+        /// </summary>
+        public string[] SkipNamespaces { get; set; } = PropertyData.DefaultSkipNamespaces;
+
         #endregion
 
         #region IEnumerable<PropertyData> Members
@@ -68,7 +78,7 @@ namespace Cave
             Current = stack.Pop() ?? throw new InvalidOperationException();
             if (Recursive)
             {
-                AddProperties(Current.FullPath, Current.PropertyInfo.PropertyType);
+                AddProperties(Current, Current.FullPath, Current.PropertyInfo.PropertyType);
             }
 
             return true;
@@ -78,7 +88,7 @@ namespace Cave
         public void Reset()
         {
             stack = new Stack<PropertyData>();
-            AddProperties(string.Empty, Root);
+            AddProperties(null, string.Empty, Root);
         }
 
         /// <inheritdoc />
@@ -88,17 +98,17 @@ namespace Cave
 
         #region Members
 
-        void AddProperties(string rootPath, Type type)
+        void AddProperties(PropertyData parent, string rootPath, Type type)
         {
             foreach (var property in type.GetProperties(BindingFlags))
             {
                 // skip nested
-                if (property.PropertyType == type)
+                if (PropertyData.IsNested(parent, property, SkipNamespaces, SkipTypes))
                 {
                     continue;
                 }
 
-                stack.Push(new PropertyData(rootPath, property));
+                stack.Push(new PropertyData(parent, rootPath, property));
             }
         }
 
