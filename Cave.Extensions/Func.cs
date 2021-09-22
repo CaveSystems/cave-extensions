@@ -1,16 +1,7 @@
-﻿
-/* Nicht gemergte Änderung aus Projekt "Cave.Extensions (net20)"
-Vor:
-#pragma warning disable SA1402 // File may only contain a single type
-
-#if NET35 || NETSTANDARD10
-Nach:
-#if NET35 || NETSTANDARD10
-*/
-
-
-#if NET35 || NETSTANDARD10
+﻿#if NET35 || NETSTANDARD10
 #elif NET20
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 namespace System
 {
     /// <summary>
@@ -31,5 +22,7 @@ namespace System
     /// </summary>
     public delegate TResult Func<in TParam, in TParam2, out TResult>(TParam arg, TParam2 arg2);
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif
 

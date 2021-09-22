@@ -65,7 +65,7 @@ namespace Cave.Collections
 
         /// <summary>Gets the average for the current items.</summary>
         /// <value>The average.</value>
-        public long Average => total / items.Count;
+        public long Average => total == 0 ? 0 : total / items.Count;
 
         /// <summary>Clears this instance.</summary>
         public void Clear()

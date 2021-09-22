@@ -1,5 +1,6 @@
-﻿#pragma warning disable IDE0055 // we will not document back ports
-#if NET20 || NET35 || NETSTANDARD10
+﻿#if NET20 || NET35 || NETSTANDARD10
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -145,5 +146,6 @@ namespace System
         #endregion Public Methods
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif
-#pragma warning restore IDE0055 // we will not document back ports

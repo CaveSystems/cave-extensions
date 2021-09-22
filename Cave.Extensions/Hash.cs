@@ -49,20 +49,17 @@ namespace Cave
         /// <exception cref="NotImplementedException">Throws an exeption if hash type is unknown.</exception>
         [SuppressMessage("Security", "CA5351:Do not use weak cryptos.")]
         [SuppressMessage("Security", "CA5350:Do not use weak cryptos.")]
-        public static HashAlgorithm Create(Type type)
+        public static HashAlgorithm Create(Type type) => type switch
         {
-            return type switch
-            {
-                Type.CRC32 => new CRC32(),
-                Type.CRC64 => new CRC64(),
-                Type.MD5 => MD5.Create(),
-                Type.SHA1 => SHA1.Create(),
-                Type.SHA256 => SHA256.Create(),
-                Type.SHA384 => SHA384.Create(),
-                Type.SHA512 => SHA512.Create(),
-                _ => throw new NotImplementedException(),
-            };
-        }
+            Type.CRC32 => new CRC32(),
+            Type.CRC64 => new CRC64(),
+            Type.MD5 => MD5.Create(),
+            Type.SHA1 => SHA1.Create(),
+            Type.SHA256 => SHA256.Create(),
+            Type.SHA384 => SHA384.Create(),
+            Type.SHA512 => SHA512.Create(),
+            _ => throw new NotImplementedException(),
+        };
 
         /// <summary>Obtains the hash code for a specified data array.</summary>
         /// <param name="type">The type.</param>

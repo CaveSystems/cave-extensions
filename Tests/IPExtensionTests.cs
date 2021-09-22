@@ -2,7 +2,7 @@
 using Cave;
 using NUnit.Framework;
 
-namespace Test
+namespace Test.Extensions
 {
     [TestFixture]
     class IPExtensionTests

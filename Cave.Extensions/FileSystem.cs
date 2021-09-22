@@ -1008,18 +1008,12 @@ namespace Cave
         }
 
         /// <summary>Gets the local machine configuration directory.</summary>
-        public static string LocalMachineConfiguration
+        public static string LocalMachineConfiguration => Platform.Type switch
         {
-            get
-            {
-                return Platform.Type switch
-                {
-                    PlatformType.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                    PlatformType.Windows or PlatformType.CompactFramework or PlatformType.Xbox => LocalMachineAppData,
-                    _ => "/etc/",
-                };
-            }
-        }
+            PlatformType.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            PlatformType.Windows or PlatformType.CompactFramework or PlatformType.Xbox => LocalMachineAppData,
+            _ => "/etc/",
+        };
 
         /// <summary>Gets the local user configuration directory.</summary>
         public static string LocalUserConfiguration => LocalUserAppData;

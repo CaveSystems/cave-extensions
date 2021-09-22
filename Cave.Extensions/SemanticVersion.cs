@@ -20,7 +20,7 @@ namespace Cave
         /// <summary>converts a version to a semantic version.</summary>
         /// <param name="version">The version to convert.</param>
         /// <returns>Returns a new semantic version instance.</returns>
-        public static implicit operator SemanticVersion(Version version) => new(version.Major, version.Minor, version.Build, version.Revision> -1 ? $".{version.Revision}" : null);
+        public static implicit operator SemanticVersion(Version version) => new(version.Major, version.Minor, version.Build, version.Revision > -1 ? $".{version.Revision}" : null);
 
         /// <summary>Parses the specified value major.minor[.patch][-meta[.pre]].</summary>
         /// <param name="value">The value.</param>
@@ -277,13 +277,13 @@ namespace Cave
             var result = comparer.Compare(Major, other.Major);
             if (result != 0) return result;
 
-            var minor = (Minor < 0 ? 0 : Minor);
-            var otherMinor = (other.Minor < 0 ? 0 : other.Minor);
+            var minor = Minor < 0 ? 0 : Minor;
+            var otherMinor = other.Minor < 0 ? 0 : other.Minor;
             result = comparer.Compare(minor, otherMinor);
             if (result != 0) return result;
 
-            var patch = (Patch < 0 ? 0 : Patch);
-            var otherPatch = (other.Patch < 0 ? 0 : other.Patch);
+            var patch = Patch < 0 ? 0 : Patch;
+            var otherPatch = other.Patch < 0 ? 0 : other.Patch;
             result = comparer.Compare(patch, otherPatch);
             if (result != 0) return result;
 

@@ -1,4 +1,6 @@
 #if NET35 || NET20
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -90,4 +92,6 @@ namespace System
         public override void GetObjectData(SerializationInfo info, StreamingContext context) => base.GetObjectData(info, context);
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif

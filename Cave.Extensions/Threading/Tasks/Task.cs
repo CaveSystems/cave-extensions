@@ -1,6 +1,6 @@
-#pragma warning disable IDE0055 // we will not document back ports
 #if NETSTANDARD10
 #elif NET35 || NET20
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
 
 namespace System.Threading.Tasks
 {
@@ -313,5 +313,6 @@ namespace System.Threading.Tasks
         #endregion
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif
-#pragma warning restore IDE0055

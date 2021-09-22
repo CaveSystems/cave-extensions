@@ -1,4 +1,6 @@
 #if NETSTANDARD10 || NET35 || NET20
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>
@@ -16,4 +18,6 @@ namespace System.Diagnostics.CodeAnalysis
         }
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif

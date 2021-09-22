@@ -1,4 +1,7 @@
 ﻿#if NET20
+
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
@@ -9,4 +12,7 @@ namespace System.Runtime.CompilerServices
     {
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
+
 #endif

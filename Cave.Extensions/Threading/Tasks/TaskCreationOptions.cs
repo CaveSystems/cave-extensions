@@ -1,5 +1,7 @@
 #if NETSTANDARD10
 #elif NET35 || NET20
+#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+
 namespace System.Threading.Tasks
 {
     /// <summary>
@@ -28,4 +30,6 @@ namespace System.Threading.Tasks
         LongRunning = 0x2,
     }
 }
+
+#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
 #endif
