@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
+#pragma warning disable CS0618 // Allow obsolete functions/fields
+
 namespace Cave
 {
     /// <summary>Gets <see cref="AppDomain" /> specific extensions.</summary>
@@ -67,7 +69,6 @@ namespace Cave
         /// <param name="mode">The loader mode.</param>
         /// <returns>Returns the first matching type.</returns>
         /// <exception cref="System.TypeLoadException">when type cannot be loaded.</exception>
-#pragma warning disable CS0618 // Allow obsolete functions/fields
         public static Type FindType(string typeName, string assemblyName = null, LoadFlags mode = 0)
         {
             if (typeName == null)
@@ -145,45 +146,66 @@ namespace Cave
 
             return null;
         }
-#pragma warning restore CS0618
+
+        /// <summary>Gets all loaded types assignable to the specified one.</summary>
+        /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
+        /// <returns>Returns a list of types.</returns>
+        public static IEnumerable<Type> FindTypes<T>() => FindTypes(typeof(T));
+
+        /// <summary>Gets all loaded types assignable to the specified one.</summary>
+        /// <param name="predicate">Filter function.</param>
+        /// <returns>Returns a list of types.</returns>
+        public static IEnumerable<Type> FindTypes(Func<Type, bool> predicate = null)
+        {
+            var selector = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm => asm.GetTypes());
+            if (predicate != null)
+            {
+                selector = selector.Where(predicate);
+            }
+            return selector;
+        }
+
+        /// <summary>Gets all loaded types assignable to the specified one.</summary>
+        /// <param name="ofType">Type or interface all types need to be assignable to.</param>
+        /// <returns>Returns a list of types.</returns>
+        public static IEnumerable<Type> FindTypes(Type ofType)
+            => FindTypes(type => !type.IsAbstract && ofType.IsAssignableFrom(type));
 
         /// <summary>Gets the installation unique identifier.</summary>
         /// <returns>unique id as GUID.</returns>
         public static Guid GetInstallationGuid() => InstallationGuid.SystemGuid;
 
-        /// <summary>Gets all loaded types assignable to the specified one and containing a default constructor.</summary>
+        /// <summary>Searches all loaded types assignable to the specified one and containing a default constructor.</summary>
         /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
-        /// <returns>Returns a list of types.</returns>
-        public static List<T> GetTypes<T>()
+        /// <returns>Returns a list of new instances.</returns>
+        public static List<T> GetInstances<T>(bool ignoreExceptions)
         {
-            var interfaceType = typeof(T);
             var types = new List<T>();
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var type in FindTypes(typeof(T)))
             {
-                foreach (var type in asm.GetTypes())
+                try
                 {
-                    if (type.IsAbstract)
+                    var api = (T)Activator.CreateInstance(type);
+                    types.Add(api);
+                }
+                catch
+                {
+                    Trace.TraceError($"Could not create instance of type {type}!");
+                    if (!ignoreExceptions)
                     {
-                        continue;
-                    }
-
-                    if (interfaceType.IsAssignableFrom(type))
-                    {
-                        try
-                        {
-                            var api = (T)Activator.CreateInstance(type);
-                            types.Add(api);
-                        }
-                        catch
-                        {
-                            Trace.TraceError($"Could not create instance of type {type}!");
-                        }
+                        throw;
                     }
                 }
             }
 
             return types;
         }
+
+        /// <summary>Searches all loaded types assignable to the specified one and containing a default constructor.</summary>
+        /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
+        /// <returns>Returns a list of types.</returns>
+        [Obsolete("Use GetInstances() or FindTypes() instead.")]
+        public static List<T> GetTypes<T>() => GetInstances<T>(true);
 
         /// <summary>Gets the installation identifier.</summary>
         /// <value>The installation identifier.</value>
@@ -194,3 +216,5 @@ namespace Cave
         #endregion
     }
 }
+
+#pragma warning restore CS0618
