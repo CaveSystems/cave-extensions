@@ -39,6 +39,12 @@ namespace Cave.Collections
         /// <returns>The result of the operator.</returns>
         public static bool operator >(Counter left, Counter right) => right is null || (!(left is null) && (left.Start > right.End));
 
+        /// <summary>Implements the operator &gt;=.</summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(Counter left, Counter right) => (left == right) || (left > right);
+
         /// <summary>Implements the operator !=.</summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -60,13 +66,7 @@ namespace Cave.Collections
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator <=(Counter left, Counter right) => left == right || left < right;
-
-        /// <summary>Implements the operator &gt;=.</summary>
-        /// <param name="left">The left operand.</param>
-        /// <param name="right">The right operand.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator >=(Counter left, Counter right) => left == right || left > right;
+        public static bool operator <=(Counter left, Counter right) => (left == right) || (left < right);
 
         #endregion
 
@@ -189,7 +189,7 @@ namespace Cave.Collections
 
         /// <summary>Gets the counter properties as string.</summary>
         /// <returns>Returns a string representing this object.</returns>
-        public override string ToString() => "x = k * " + Step + " | " + (Start - 1L) + " < k < " + (End + 1L);
+        public override string ToString() => "x = k * " + Step + " | " + ((Start - 1L) / Step) + " < k < " + ((End + 1L) / Step);
 
         #endregion
 

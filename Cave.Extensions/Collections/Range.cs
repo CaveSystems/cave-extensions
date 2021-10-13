@@ -79,70 +79,60 @@ namespace Cave.Collections
 
         #region private functionality
 
+        bool allValues;
         readonly List<Counter> counters = new();
+        readonly List<int> values = new();
         string currentString;
         string allValuesString = "*";
         char rangeSeparator = '-';
         char valueSeparator = ',';
         char repetitionSeparator = '/';
 
-        Counter ParseRangePart(string text, int minValue, int maxValue)
+        void ParseRangePart(string text, int minValue, int maxValue)
         {
             try
             {
-                if (text.IndexOf(RangeSeparator) > -1)
-                {
-                    var parts = text.Split(RangeSeparator);
-                    if (parts.Length != 2)
-                    {
-                        throw new ArgumentException("Expected 'start-end'!", nameof(text));
-                    }
-
-                    var start = int.Parse(parts[0], CultureInfo.InvariantCulture);
-                    if (start < minValue)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(minValue));
-                    }
-
-                    return Counter.Create(start, int.Parse(parts[1], CultureInfo.InvariantCulture));
-                }
-
-                if (text.IndexOf(RepetitionSeparator) > -1)
-                {
-                    var parts = text.Split(RepetitionSeparator);
-                    if (parts.Length != 2)
-                    {
-                        throw new ArgumentException("Expected 'start/repetition'!", nameof(text));
-                    }
-
-                    if (parts[0] == AllValuesString)
-                    {
-                        return Counter.Create(minValue, maxValue, int.Parse(parts[1], CultureInfo.InvariantCulture));
-                    }
-
-                    var start = int.Parse(parts[0], CultureInfo.InvariantCulture);
-                    if (start < minValue)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(minValue));
-                    }
-
-                    return Counter.Create(start, maxValue, int.Parse(parts[1], CultureInfo.InvariantCulture));
-                }
+                var start = minValue;
+                var end = maxValue;
 
                 if (text == AllValuesString)
                 {
-                    return null;
+                    allValues = true;
+                    return;
                 }
 
+                // repetition part .../x
+                var parts = text.Split(RepetitionSeparator);
+                var repetition = 1;
+                switch (parts.Length)
                 {
-                    var start = int.Parse(text, CultureInfo.InvariantCulture);
-                    if (start < minValue)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(minValue));
-                    }
-
-                    return new Counter(start, 1);
+                    case 0: throw new ArgumentException($"Invalid range {text}!");
+                    case 1: break;
+                    case 2:
+                        repetition = int.Parse(parts[1], CultureInfo.InvariantCulture);
+                        break;
                 }
+
+                // value part x[-y]/...
+                parts = parts[0].Split(RangeSeparator);
+                if (parts.Length == 0)
+                {
+                    throw new ArgumentException($"Invalid range {text}!");
+                }
+                if ((parts.Length == 1) && (repetition == 1))
+                {
+                    Add(int.Parse(parts[0]));
+                    return;
+                }
+                if (parts[0] != AllValuesString)
+                {
+                    start = Math.Max(start, int.Parse(parts[0]));
+                }
+                if (parts.Length > 1)
+                {
+                    end = Math.Max(start, int.Parse(parts[1]));
+                }
+                Add(Counter.Create(start, end, repetition));
             }
             catch (Exception ex)
             {
@@ -150,30 +140,13 @@ namespace Cave.Collections
             }
         }
 
-        Counter[] ParseRange(string text, int minValue, int maxValue)
+        void ParseRange(string text, int minValue, int maxValue)
         {
-            var allValueRangePart = false;
-            var result = new List<Counter>();
             var parts = text.Split(new[] { ValueSeparator }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var part in parts)
             {
-                var counter = ParseRangePart(part, minValue, maxValue);
-                if (counter == null)
-                {
-                    allValueRangePart = true;
-                }
-                else
-                {
-                    if (allValueRangePart)
-                    {
-                        throw new ArgumentException("You may not add an all-value-range and a normal range!");
-                    }
-
-                    result.Add(counter);
-                }
+                ParseRangePart(part, minValue, maxValue);
             }
-
-            return result.ToArray();
         }
 
         #endregion
@@ -248,35 +221,48 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(text));
             }
 
-            this.counters.Clear();
-            var counters = ParseRange(text, Minimum, Maximum);
-            foreach (var counter in counters)
-            {
-                Add(counter);
-            }
+            counters.Clear();
+            values.Clear();
+            ParseRange(text, Minimum, Maximum);
         }
 
         /// <summary>Adds a value to this <see cref="Range" />.</summary>
         /// <param name="value"></param>
         public void Add(int value)
         {
-            if (Contains(value))
+            if (allValues)
             {
                 return;
             }
-
-            counters.Add(new Counter(value, 1));
+            if (Contains(value) || (value < Minimum) || (value > Maximum))
+            {
+                return;
+            }
+            currentString = null;
+            values.Add(value);
         }
 
         /// <summary>Adds a <see cref="Counter" /> to this <see cref="Range" />.</summary>
         /// <param name="counter"></param>
         public void Add(Counter counter)
         {
+            if (allValues)
+            {
+                return;
+            }
             if ((counters.Count > 0) && Contains(counter))
             {
                 return;
             }
 
+            if (counter.Start < Minimum)
+            {
+                throw new($"Counter {counter} undercuts minimum {Minimum}!");
+            }
+            if (counter.End > Maximum)
+            {
+                throw new($"Counter {counter} exceeds maximum {Maximum}!");
+            }
             currentString = null;
             counters.Add(counter);
         }
@@ -298,6 +284,13 @@ namespace Cave.Collections
                     counters.Add(c);
                 }
             }
+            foreach (var v in range.values)
+            {
+                if (!Contains(v))
+                {
+                    values.Add(v);
+                }
+            }
         }
 
         /// <summary>Checks whether a specified value is part of the <see cref="Range" /> or not.</summary>
@@ -305,9 +298,14 @@ namespace Cave.Collections
         /// <returns></returns>
         public bool Contains(int value)
         {
-            if (counters.Count == 0)
+            if (allValues)
             {
                 return (value >= Minimum) && (value <= Maximum);
+            }
+
+            if (values.Contains(value))
+            {
+                return true;
             }
 
             foreach (var counter in counters)
@@ -331,9 +329,9 @@ namespace Cave.Collections
                 throw new ArgumentNullException(nameof(counter));
             }
 
-            if (counters.Count == 0)
+            if (allValues)
             {
-                return Contains(counter.Start) && Contains(counter.End);
+                return (counter.Start >= Minimum) && (counter.End <= Maximum);
             }
 
             foreach (var c in counters)
@@ -344,9 +342,9 @@ namespace Cave.Collections
                 }
             }
 
-            foreach (Counter c in counter)
+            foreach (int value in counter)
             {
-                if (Contains(c))
+                if (Contains(value))
                 {
                     return true;
                 }
@@ -378,29 +376,40 @@ namespace Cave.Collections
                     result.Append(ValueSeparator);
                 }
 
-                if (counter.Start < Minimum)
+                if (counter.Count <= 1)
                 {
-                    return "Invalid";
+                    result.Append($"{counter.Start}");
+                    continue;
                 }
 
-                if (counter.Count > 1)
+                if (counter.Step == 1)
                 {
-                    if (counter.Step != 1)
-                    {
-                        if (counter.Start == Minimum)
-                        {
-                            return AllValuesString + RepetitionSeparator + counter.Step;
-                        }
-
-                        result.Append($"{counter.Start}{RepetitionSeparator}{counter.Step}");
-                        continue;
-                    }
-
                     result.Append($"{counter.Start}{RangeSeparator}{counter.End}");
                     continue;
                 }
 
-                result.Append($"{counter.Start}");
+                if (counter.Start == Minimum)
+                {
+                    result.Append(AllValuesString + RepetitionSeparator + counter.Step);
+                    continue;
+                }
+
+                if (counter.End == Maximum)
+                {
+                    result.Append($"{counter.Start}{RepetitionSeparator}{counter.Step}");
+                    continue;
+                }
+
+                result.Append($"{counter.Start}{RangeSeparator}{counter.End}{RepetitionSeparator}{counter.Step}");
+            }
+
+            foreach (var value in values)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(ValueSeparator);
+                }
+                result.Append(value);
             }
 
             currentString = $"{result}";
@@ -438,6 +447,10 @@ namespace Cave.Collections
             {
                 get
                 {
+                    if (Disposed)
+                    {
+                        throw new ObjectDisposedException(nameof(RangeEnumerator));
+                    }
                     if (current < range.Minimum)
                     {
                         throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
@@ -454,10 +467,16 @@ namespace Cave.Collections
 
             object IEnumerator.Current => Current;
 
-            public void Dispose() => throw new NotImplementedException();
+            public bool Disposed { get; private set; }
+
+            public void Dispose() => Disposed = true;
 
             public bool MoveNext()
             {
+                if (Disposed)
+                {
+                    throw new ObjectDisposedException(nameof(RangeEnumerator));
+                }
                 if (current > range.Maximum)
                 {
                     throw new InvalidOperationException("Invalid operation, use Reset() first!");
@@ -474,7 +493,14 @@ namespace Cave.Collections
                 return true;
             }
 
-            public void Reset() => current = range.Minimum - 1L;
+            public void Reset()
+            {
+                if (Disposed)
+                {
+                    throw new ObjectDisposedException(nameof(RangeEnumerator));
+                }
+                current = range.Minimum - 1L;
+            }
 
             #endregion
         }
