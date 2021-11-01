@@ -1,25 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net20;net35;net40;net45;net48</TargetFrameworks>
+        <TargetFrameworks>net20;net35;net40;net45;net46;net47;net48;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <ApplicationIcon />
         <OutputType>Exe</OutputType>
         <StartupObject>Test.Program</StartupObject>
         <RootNamespace>Test</RootNamespace>
-        <NoWarn>55</NoWarn>
+        <LangVersion>latest</LangVersion>
+        <GenerateDocumentation>false</GenerateDocumentation>
+        <NoWarn>CS1591</NoWarn>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
-    </ItemGroup>
-    
+    <PropertyGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
+        <NoWarn>CS1591,IDE0004</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net47' OR '$(TargetFramework)'=='net48'">
-        <PackageReference Include="NUnit" Version="3.13.1" />
+        <PackageReference Include="NUnit" Version="3.12.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.1'">
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
         <PackageReference Include="NUnit" Version="2.6.4" />
         <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />

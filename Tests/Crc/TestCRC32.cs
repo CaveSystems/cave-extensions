@@ -535,7 +535,7 @@ namespace Test.Crc
         }
 
         [Test]
-        public void Test_CRC32_Check()
+        public void Crc32()
         {
             var u = CRC32.Reflect32(0x8F4F8040);
             Assert.AreEqual(0x0201f2f1, u);

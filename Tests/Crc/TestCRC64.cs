@@ -278,7 +278,7 @@ namespace Test.Crc
         }
 
         [Test]
-        public void Test_CRC64_Check()
+        public void Crc64()
         {
             var u = CRC64.Reflect64(0x8F4F2F1F80402010);
             Assert.AreEqual(0x08040201f8f4f2f1, u);
