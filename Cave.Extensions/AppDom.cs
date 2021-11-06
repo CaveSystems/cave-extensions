@@ -41,9 +41,10 @@ namespace Cave
         {
             if (name.Contains(','))
             {
+                var asmName = new AssemblyName(name);
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    if (assembly.FullName == name)
+                    if (AssemblyName.ReferenceMatchesDefinition(assembly.GetName(), asmName))
                     {
                         return assembly;
                     }
@@ -77,8 +78,8 @@ namespace Cave
         {
             if (name.Contains(','))
             {
-                var typeName = name.BeforeFirst(',');
-                var assemblyName = name.AfterFirst(',');
+                var typeName = name.BeforeFirst(',').Trim();
+                var assemblyName = name.AfterFirst(',').Trim();
                 var assembly =
                     mode.HasFlag(LoadFlags.LoadAssemblies) ?
                     Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
