@@ -33,17 +33,30 @@ namespace Cave
         #region Static
 
         /// <summary>Finds the loaded assembly with the specified name.</summary>
-        /// <param name="name">The name of the assembly.</param>
+        /// <param name="name">The name of the assembly (this can be a full qualified or a short name).</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception if no assembly can be found].</param>
         /// <returns>Returns the first matching type.</returns>
         /// <exception cref="ArgumentException">Cannot find assembly {0}.</exception>
         public static Assembly FindAssembly(string name, bool throwException)
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            if (name.Contains(','))
             {
-                if (assembly.GetName().Name == name)
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    return assembly;
+                    if (assembly.FullName == name)
+                    {
+                        return assembly;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (assembly.GetName().Name == name)
+                    {
+                        return assembly;
+                    }
                 }
             }
 
@@ -56,12 +69,24 @@ namespace Cave
         }
 
         /// <summary>Finds the type with the specified name.</summary>
-        /// <param name="name">The name of the type.</param>
+        /// <param name="name">The name of the type (this can be a full type name or a full qualified name with assembly information).</param>
         /// <param name="mode">The loader mode.</param>
         /// <returns>Returns the first matching type.</returns>
         /// <exception cref="System.TypeLoadException">when type cannot be loaded.</exception>
-        [Obsolete("Use FindType(string typeName, string assemblyName = null, LoadMode mode = 0)")]
-        public static Type FindType(string name, LoadFlags mode = 0) => FindType(name.BeforeFirst(','), null, mode);
+        public static Type FindType(string name, LoadFlags mode = 0)
+        {
+            if (name.Contains(','))
+            {
+                var typeName = name.BeforeFirst(',');
+                var assemblyName = name.AfterFirst(',');
+                var assembly =
+                    mode.HasFlag(LoadFlags.LoadAssemblies) ?
+                    Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
+                    FindAssembly(assemblyName, true);
+                return assembly.GetType(typeName, true, false);
+            }
+            return FindType(name, null, mode);
+        }
 
         /// <summary>Finds the type with the specified name.</summary>
         /// <param name="typeName">The full qualified assemblyname of the type (e.g. System.Uri).</param>
@@ -69,7 +94,7 @@ namespace Cave
         /// <param name="mode">The loader mode.</param>
         /// <returns>Returns the first matching type.</returns>
         /// <exception cref="System.TypeLoadException">when type cannot be loaded.</exception>
-        public static Type FindType(string typeName, string assemblyName = null, LoadFlags mode = 0)
+        public static Type FindType(string typeName, string assemblyName, LoadFlags mode = 0)
         {
             if (typeName == null)
             {
@@ -78,7 +103,7 @@ namespace Cave
 
             if (typeName.IndexOf(',') > -1)
             {
-                throw new ArgumentOutOfRangeException(nameof(typeName), "Type name has to be the full qualified typename without additional arguments.");
+                throw new ArgumentOutOfRangeException(nameof(typeName), "Type name has to be the full typename without assembly arguments.");
             }
 
             // try direct load with assembly name first.
