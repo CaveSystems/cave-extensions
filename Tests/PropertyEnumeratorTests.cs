@@ -44,7 +44,7 @@ namespace Test
             #endregion
         }
 
-        static readonly Random rnd = new Random();
+        static readonly Random rnd = new();
 
         static void TestRoot(Root root)
         {
@@ -178,7 +178,7 @@ namespace Test
         [Test]
         public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
 
-        void TestTypes(Type[] types)
+        static void TestTypes(Type[] types)
         {
             foreach (var type in types) { TestType(type); }
         }

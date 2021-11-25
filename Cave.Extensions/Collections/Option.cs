@@ -25,7 +25,7 @@ namespace Cave.Collections
         {
             option = option.UnboxText(false);
             var optionID = GetPrefix(option);
-            return optionID == null ? option : option.Substring(optionID.Length);
+            return optionID == null ? option : option[optionID.Length..];
         }
 
         /// <summary>Gets only the option prefix at the beginning null, "-", "--".</summary>
@@ -123,12 +123,12 @@ namespace Cave.Collections
             }
             else
             {
-                value = option.Substring(index + 1);
+                value = option[(index + 1)..];
                 name = option.Substring(0, index);
                 prefix = GetPrefix(name);
             }
 
-            name = prefix == null ? name.Trim() : name.Substring(prefix.Length).Trim();
+            name = prefix == null ? name.Trim() : name[prefix.Length..].Trim();
             return new Option(prefix, name, separator, value.Trim());
         }
 

@@ -78,7 +78,7 @@ namespace Cave
             var optionsIndex = connectionString.LastIndexOf('?');
             if (optionsIndex > -1)
             {
-                options = connectionString.Substring(optionsIndex + 1);
+                options = connectionString[(optionsIndex + 1)..];
                 connectionString = connectionString.Substring(0, optionsIndex);
             }
 
@@ -90,12 +90,12 @@ namespace Cave
             }
 
             // get username & password, server & port & path parts
-            parts = parts[parts.Length - 1].Split(new[] { '@' }, 2);
+            parts = parts[^1].Split(new[] { '@' }, 2);
 
             // get server, port and path part
-            if (parts[parts.Length - 1].Trim().Length > 0)
+            if (parts[^1].Trim().Length > 0)
             {
-                server = parts[parts.Length - 1].Trim();
+                server = parts[^1].Trim();
 
                 // get path (if any) and remove it from server string
                 var pathIndex = server.IndexOfAny(new[] { '/' });
@@ -106,7 +106,7 @@ namespace Cave
                 }
                 else if (pathIndex > -1)
                 {
-                    path = server.Substring(protocol == null ? pathIndex : pathIndex + 1);
+                    path = server[(protocol == null ? pathIndex : pathIndex + 1)..];
                     server = server.Substring(0, pathIndex);
                 }
             }
@@ -122,7 +122,7 @@ namespace Cave
                 }
                 else if (portIndex > -1)
                 {
-                    var portString = server.Substring(portIndex + 1);
+                    var portString = server[(portIndex + 1)..];
                     if (ushort.TryParse(portString, out port))
                     {
                         server = server.Substring(0, portIndex);

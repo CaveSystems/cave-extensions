@@ -71,7 +71,7 @@ namespace Cave
 
                 #region handle rooted paths
 
-                if ((path.Length > 4) && path.Substring(1).StartsWith("://", StringComparison.OrdinalIgnoreCase))
+                if ((path.Length > 4) && path[1..].StartsWith("://", StringComparison.OrdinalIgnoreCase))
                 {
                     type = PathType.ConnectionString;
                     separator = '/';
@@ -88,7 +88,7 @@ namespace Cave
                             separator = '\\';
                             resultParts.Clear();
                             root = WindowsLongPathPrefix;
-                            path = path.Substring(WindowsLongPathPrefix.Length);
+                            path = path[WindowsLongPathPrefix.Length..];
                             type = PathType.Absolute;
                         }
                         else if (path.StartsWith(WindowsPysicalDrivePrefix, StringComparison.OrdinalIgnoreCase))
@@ -96,7 +96,7 @@ namespace Cave
                             separator = '\\';
                             resultParts.Clear();
                             root = WindowsPysicalDrivePrefix;
-                            path = path.Substring(WindowsPysicalDrivePrefix.Length);
+                            path = path[WindowsPysicalDrivePrefix.Length..];
                             type = PathType.Absolute;
                         }
                         else if ((path.Length >= 2) && (path[1] == ':'))
@@ -109,7 +109,7 @@ namespace Cave
                             separator = pathSeparator;
                             resultParts.Clear();
                             root = path.Substring(0, 2) + separator;
-                            path = path.Substring(2).TrimStart((char[])PathSeparatorChars);
+                            path = path[2..].TrimStart((char[])PathSeparatorChars);
                             type = PathType.Absolute;
                         }
                     }
@@ -161,7 +161,7 @@ namespace Cave
                                     separator = pathSeparator;
                                     resultParts.Clear();
                                     root = path.Substring(0, 2) + separator;
-                                    path = path.Substring(2).TrimStart((char[])PathSeparatorChars);
+                                    path = path[2..].TrimStart((char[])PathSeparatorChars);
                                 }
                             }
 
@@ -241,7 +241,7 @@ namespace Cave
             var result = path;
             if (Platform.IsMicrosoft && result.StartsWith(WindowsLongPathPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                result = result.Substring(WindowsLongPathPrefix.Length);
+                result = result[WindowsLongPathPrefix.Length..];
             }
 
             if (path[0] is '\\' or '/')
@@ -260,7 +260,7 @@ namespace Cave
                     }
 
                     index++;
-                    result = index < path.Length ? path.Substring(index) : string.Empty;
+                    result = index < path.Length ? path[index..] : string.Empty;
                 }
             }
             else if ((path.Length > 1) && (path[1] == ':'))
@@ -309,7 +309,7 @@ namespace Cave
                     var mask = dir;
                     if (mask.EndsWith("|r", StringComparison.OrdinalIgnoreCase) || mask.EndsWith(":r", StringComparison.OrdinalIgnoreCase) || recursive)
                     {
-                        mask = mask.Substring(0, mask.Length - 2);
+                        mask = mask[0..^2];
                         searchOption = SearchOption.AllDirectories;
                     }
 
@@ -400,7 +400,7 @@ namespace Cave
                     var mask = fileMask;
                     if (mask.EndsWith("|r", StringComparison.Ordinal) || mask.EndsWith(":r", StringComparison.Ordinal))
                     {
-                        mask = mask.Substring(0, mask.Length - 2);
+                        mask = mask[0..^2];
                         searchOption = SearchOption.AllDirectories;
                     }
 

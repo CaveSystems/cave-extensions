@@ -40,7 +40,7 @@ namespace Cave
         public static string AfterFirst(this string value, char character)
         {
             var i = value?.IndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + 1);
+            return i < 0 ? string.Empty : value[(i + 1)..];
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -55,7 +55,7 @@ namespace Cave
             }
 
             var i = value?.IndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
+            return i < 0 ? string.Empty : value[(i + pattern.Length)..];
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -65,7 +65,7 @@ namespace Cave
         public static string AfterLast(this string value, char character)
         {
             var i = value?.LastIndexOf(character) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + 1);
+            return i < 0 ? string.Empty : value[(i + 1)..];
         }
 
         /// <summary>Returns the string after the specified pattern.</summary>
@@ -80,7 +80,7 @@ namespace Cave
             }
 
             var i = value?.LastIndexOf(pattern) ?? throw new ArgumentNullException(nameof(value));
-            return i < 0 ? string.Empty : value.Substring(i + pattern.Length);
+            return i < 0 ? string.Empty : value[(i + pattern.Length)..];
         }
 
         /// <summary>Returns the string before the specified pattern.</summary>
@@ -763,7 +763,7 @@ namespace Cave
                 throw new ArgumentException("StartMark not found!");
             }
 
-            if (!data.Substring(start).StartsWith(startMark))
+            if (!data[start..].StartsWith(startMark))
             {
                 if (!throwException)
                 {
@@ -785,7 +785,7 @@ namespace Cave
                 throw new ArgumentException("EndMark not found!");
             }
 
-            return data.Substring(start, end - start);
+            return data[start..end];
         }
 
         /// <summary>Retrieves only validated chars from a string.</summary>
@@ -903,7 +903,7 @@ namespace Cave
         /// <param name="start">The start marker.</param>
         /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[text.Length - 1] == end);
+        public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[^1] == end);
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>
@@ -1046,7 +1046,7 @@ namespace Cave
                 result.Append(char.ToUpper(t[0], culture));
                 if (t.Length > 1)
                 {
-                    result.Append(t.Substring(1).ToLower(culture));
+                    result.Append(t[1..].ToLower(culture));
                 }
             }
 
@@ -1252,8 +1252,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
             }
 
-            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
+            var x = int.Parse(parts[0].Trim()[2..], CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim()[2..], CultureInfo.CurrentCulture);
             return new Point(x, y);
         }
 
@@ -1310,10 +1310,10 @@ namespace Cave
                 throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
             }
 
-            var x = int.Parse(parts[0].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var y = int.Parse(parts[1].Trim().Substring(2), CultureInfo.CurrentCulture);
-            var w = int.Parse(parts[2].Trim().Substring(6), CultureInfo.CurrentCulture);
-            var h = int.Parse(parts[3].Trim().Substring(7), CultureInfo.CurrentCulture);
+            var x = int.Parse(parts[0].Trim()[2..], CultureInfo.CurrentCulture);
+            var y = int.Parse(parts[1].Trim()[2..], CultureInfo.CurrentCulture);
+            var w = int.Parse(parts[2].Trim()[6..], CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[3].Trim()[7..], CultureInfo.CurrentCulture);
             return new Rectangle(x, y, w, h);
         }
 
@@ -1369,8 +1369,8 @@ namespace Cave
                 throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
             }
 
-            var w = int.Parse(parts[0].Trim().Substring(6), CultureInfo.CurrentCulture);
-            var h = int.Parse(parts[1].Trim().Substring(7), CultureInfo.CurrentCulture);
+            var w = int.Parse(parts[0].Trim()[6..], CultureInfo.CurrentCulture);
+            var h = int.Parse(parts[1].Trim()[7..], CultureInfo.CurrentCulture);
             return new Size(w, h);
         }
 
@@ -1745,13 +1745,13 @@ namespace Cave
             var start = 0;
             foreach (var i in indices)
             {
-                items.Add(text.Substring(start, i - start));
+                items.Add(text[start..i]);
                 start = i;
             }
 
             if (start < text.Length)
             {
-                items.Add(text.Substring(start));
+                items.Add(text[start..]);
             }
 
             return items.ToArray();
@@ -1823,7 +1823,7 @@ namespace Cave
 
             if (last < text.Length)
             {
-                result.Add(text.Substring(last));
+                result.Add(text[last..]);
             }
 
             return result.ToArray();
@@ -1855,7 +1855,7 @@ namespace Cave
                 }
             }
 
-            var remainder = text.Substring(start);
+            var remainder = text[start..];
             if (remainder.Length > 0) result.Add(remainder);
             return result.ToArray();
         }
@@ -1910,13 +1910,13 @@ namespace Cave
                     if (indexNull < indexNL)
                     {
                         // 0<NL|CR
-                        result.Add(text.Substring(start, indexNull - start));
+                        result.Add(text[start..indexNull]);
                         start = indexNull + 1;
                         continue;
                     }
 
                     // NL<0<CR
-                    result.Add(text.Substring(start, indexNL - start));
+                    result.Add(text[start..indexNL]);
                     start = indexNL + 1;
                     continue;
                 }
@@ -1925,7 +1925,7 @@ namespace Cave
                 if (indexCR == (indexNL - 1))
                 {
                     // CRLF
-                    result.Add(text.Substring(start, indexCR - start));
+                    result.Add(text[start..indexCR]);
                     start = indexCR + 2;
                     continue;
                 }
@@ -1933,7 +1933,7 @@ namespace Cave
                 // CR<NL
                 if (indexCR < indexNL)
                 {
-                    result.Add(text.Substring(start, indexCR - start));
+                    result.Add(text[start..indexCR]);
                     start = indexCR + 1;
                     continue;
                 }
@@ -1941,7 +1941,7 @@ namespace Cave
                 // NL?
                 if (indexNL < int.MaxValue)
                 {
-                    result.Add(text.Substring(start, indexNL - start));
+                    result.Add(text[start..indexNL]);
                     start = indexNL + 1;
                     continue;
                 }
@@ -1951,7 +1951,7 @@ namespace Cave
 
             if (start < text.Length)
             {
-                result.Add(text.Substring(start));
+                result.Add(text[start..]);
             }
 
             if (textSplitOptions == StringSplitOptions.RemoveEmptyEntries)
@@ -2004,11 +2004,11 @@ namespace Cave
                         var partLength = maxLength - currentText.Length;
                         currentText += textPart.Substring(0, partLength);
                         array.Add(currentText);
-                        currentText = textPart.Substring(partLength);
+                        currentText = textPart[partLength..];
                         while (currentText.Length > maxLength)
                         {
                             array.Add(currentText.Substring(0, maxLength));
-                            currentText = currentText.Substring(maxLength);
+                            currentText = currentText[maxLength..];
                         }
                     }
                     else
@@ -2064,7 +2064,7 @@ namespace Cave
 
             if (count > 0)
             {
-                return text.Substring(len - count);
+                return text[(len - count)..];
             }
 
             // if count < 0
@@ -2439,7 +2439,7 @@ namespace Cave
 
             if ((text.Length > border.Length) && text.StartsWith(border) && text.EndsWith(border))
             {
-                return text.Substring(border.Length, text.Length - border.Length - border.Length);
+                return text[border.Length..^border.Length];
             }
 
             if (throwEx)
@@ -2464,9 +2464,9 @@ namespace Cave
                 throw new ArgumentNullException(nameof(text));
             }
 
-            if ((text.Length > 1) && (text[0] == border) && (text[text.Length - 1] == border))
+            if ((text.Length > 1) && (text[0] == border) && (text[^1] == border))
             {
-                return text.Substring(1, text.Length - 2);
+                return text[1..^1];
             }
 
             if (throwEx)
@@ -2492,17 +2492,17 @@ namespace Cave
             {
                 if (text.StartsWith("(") && text.EndsWith(")"))
                 {
-                    return text.Substring(1, text.Length - 2);
+                    return text[1..^1];
                 }
 
                 if (text.StartsWith("[") && text.EndsWith("]"))
                 {
-                    return text.Substring(1, text.Length - 2);
+                    return text[1..^1];
                 }
 
                 if (text.StartsWith("{") && text.EndsWith("}"))
                 {
-                    return text.Substring(1, text.Length - 2);
+                    return text[1..^1];
                 }
             }
 
@@ -2524,12 +2524,12 @@ namespace Cave
             {
                 if (text.StartsWith("'") && text.EndsWith("'"))
                 {
-                    return text.Substring(1, text.Length - 2);
+                    return text[1..^1];
                 }
 
                 if (text.StartsWith("\"") && text.EndsWith("\""))
                 {
-                    return text.Substring(1, text.Length - 2);
+                    return text[1..^1];
                 }
             }
 

@@ -123,10 +123,10 @@ namespace Cave.Security
             var i = ++hashNumber;
             var s = new byte[salt.Length + 4];
             Buffer.BlockCopy(salt, 0, s, 0, salt.Length);
-            s[s.Length - 4] = (byte)(i >> 24);
-            s[s.Length - 3] = (byte)(i >> 16);
-            s[s.Length - 2] = (byte)(i >> 8);
-            s[s.Length - 1] = (byte)i;
+            s[^4] = (byte)(i >> 24);
+            s[^3] = (byte)(i >> 16);
+            s[^2] = (byte)(i >> 8);
+            s[^1] = (byte)i;
             // this is like j=0
             var u1 = algorithm.ComputeHash(s);
             var data = u1;
