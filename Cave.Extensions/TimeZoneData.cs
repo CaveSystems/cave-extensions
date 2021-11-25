@@ -20,9 +20,9 @@ namespace Cave
                     return new TimeZoneData(data.Description, data.Name, data.Offset + offset);
                 }
             }
-#if NET35 || NET40 || NET45 || NET46 || NET47 || NETSTANDARD20
+#if NET35_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET50
             throw new TimeZoneNotFoundException();
-#elif NET20 || NETSTANDARD13
+#elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
             throw new ArgumentException("Timezone not found!");
 #else
 #error No code defined for the current framework or NETXX version define missing!

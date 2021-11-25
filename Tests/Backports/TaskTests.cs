@@ -9,9 +9,9 @@ namespace Test.Backports
     [TestFixture]
     class TaskTests
     {
-        void TestSleep(int number) => Thread.Sleep(1000 - number);
+        static void TestSleep(int number) => Thread.Sleep(1000 - number);
 
-        void TestWait(Task task)
+        static void TestWait(Task task)
         {
             try
             {

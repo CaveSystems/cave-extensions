@@ -148,9 +148,9 @@ namespace Cave
                 {
                     return null;
                 }
-#if NET45 || NET46 || NET47 || NETSTANDARD13 || NETSTANDARD20
+#if NET45_OR_GREATER || NETSTANDARD1_3_OR_GREATER || NET50
                 toType = toType.GenericTypeArguments[0];
-#elif NET20 || NET35 || NET40
+#elif NET20_OR_GREATER
                 toType = toType.GetGenericArguments()[0];
 #else
 #error No code defined for the current framework or NETXX version define missing!

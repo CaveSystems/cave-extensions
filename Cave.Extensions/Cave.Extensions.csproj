@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net20;net35;net40;net45</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net20;net35;net40;net45;net50</TargetFrameworks>
         <!--project-->
         <RootNamespace>Cave</RootNamespace>
         <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
@@ -17,20 +17,5 @@
         <NeutralLanguage />
         <DelaySign>false</DelaySign>
     </PropertyGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)'=='net20' OR '$(TargetFramework)'=='net35'">
-        <Reference Include="System" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-    </ItemGroup>
-    
-    <ItemGroup
-      Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net47'">
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="Microsoft.CSharp" />
-    </ItemGroup>
     
 </Project>

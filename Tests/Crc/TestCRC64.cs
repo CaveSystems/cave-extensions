@@ -270,7 +270,7 @@ namespace Test.Crc
         readonly byte[] test0 = Encoding.ASCII.GetBytes("123456789");
         readonly byte[] test1 = Encoding.ASCII.GetBytes("This is a test of the emergency broadcast system.");
 
-        void Check(IChecksum<ulong> crc, byte[] data, ulong value)
+        static void Check(IChecksum<ulong> crc, byte[] data, ulong value)
         {
             crc.Reset();
             crc.Update(data);

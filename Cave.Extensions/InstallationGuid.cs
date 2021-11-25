@@ -47,7 +47,7 @@ namespace Cave
         {
             get
             {
-#if NETSTANDARD20
+#if NETSTANDARD2_0_OR_GREATER || NET50
 #else
                 if (Platform.IsMicrosoft)
                 {

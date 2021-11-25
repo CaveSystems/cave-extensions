@@ -77,7 +77,7 @@ namespace Cave
             return result;
         }
 
-#if NET40 || NET45 || NET46 || NET47 || NETSTANDARD20
+#if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET50
         /// <summary>Tries to parse the specified string.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>
@@ -86,7 +86,7 @@ namespace Cave
         public static bool TryParse<TEnum>(this string value, out TEnum result)
             where TEnum : struct, IConvertible =>
             Enum.TryParse(value, true, out result);
-#elif NET35 || NET20 || NETSTANDARD13
+#elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
         /// <summary>Tries the parse.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>

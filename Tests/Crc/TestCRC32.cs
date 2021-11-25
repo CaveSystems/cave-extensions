@@ -527,7 +527,7 @@ namespace Test.Crc
             0XB1F740B4
         };
 
-        void Check(IChecksum<uint> crc, byte[] data, uint value)
+        static void Check(IChecksum<uint> crc, byte[] data, uint value)
         {
             crc.Reset();
             crc.Update(data);

@@ -290,7 +290,7 @@ namespace Cave.Security
 
         /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-#if NET40 || NET45 || NETSTANDARD20
+#if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET50
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -301,7 +301,7 @@ namespace Cave.Security
             }
         }
 
-#elif NET20 || NET35
+#elif NET20_OR_GREATER || NET35
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

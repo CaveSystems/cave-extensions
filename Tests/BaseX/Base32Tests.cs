@@ -11,12 +11,7 @@ namespace Test.BaseX
         public void Base32Test()
         {
             var rnd = new Random();
-            foreach (var b in new[]
-            {
-                Base32.Default,
-                Base32.NoPadding,
-                Base32.Safe
-            })
+            foreach (var b in new[] { Base32.Default, Base32.NoPadding, Base32.Safe })
             {
                 for (var i = 0; i < 1000; i++)
                 {

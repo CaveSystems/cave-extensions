@@ -46,7 +46,7 @@ namespace Test
 
         static readonly Random rnd = new Random();
 
-        void TestRoot(Root root)
+        static void TestRoot(Root root)
         {
             try { root.GetPropertyValue<long>("EmptyIntermediate.TestLong"); }
             catch (Exception ex) { Assert.AreEqual(typeof(NullReferenceException), ex.GetType()); }
@@ -90,7 +90,7 @@ namespace Test
             Assert.AreEqual(root.TestItem.TestInt, root.GetPropertyValue<int>("TestItem/TestInt"));
         }
 
-        void TestSequence(IOrderedEnumerable<PropertyData> sequence, bool fullSequence)
+        static void TestSequence(IOrderedEnumerable<PropertyData> sequence, bool fullSequence)
         {
             if (fullSequence)
             {
@@ -183,7 +183,7 @@ namespace Test
             foreach (var type in types) { TestType(type); }
         }
 
-        void TestType(Type type)
+        static void TestType(Type type)
         {
             if (type.IsAbstract) return;
             if (type.ContainsGenericParameters) return;
