@@ -345,6 +345,14 @@ namespace Test.Strings
         }
 
         [Test]
+        public void JoinNull()
+        {
+            string[] array = null;
+            Assert.AreEqual(string.Empty, array.Join("-"));
+            Assert.AreEqual(string.Empty, array.Join('-'));
+        }
+
+        [Test]
         public void JoinNewLine()
         {
             var result = new[]
@@ -368,6 +376,13 @@ namespace Test.Strings
             }.JoinNewLine();
             var expected = "1\r\n2\r\n<null>";
             Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void JoinNewLineNull()
+        {
+            string[] array = null;
+            Assert.AreEqual(string.Empty, array.JoinNewLine());
         }
 
         [Test]
