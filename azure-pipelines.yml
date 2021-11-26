@@ -77,13 +77,21 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+#- task: VSTest@2
+#  inputs:
+#    platform: '$(buildPlatform)'
+#    configuration: '$(buildConfiguration)'
+#    testAssemblyVer2: |
+#      **/bin/Release/**/Test.exe
+#      **/bin/Release/**/Test.dll
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests - $(buildConfiguration)'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    testAssemblyVer2: |
-      **/bin/Release/**/Test.exe
-      **/bin/Release/**/Test.dll
+    command: 'test'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+    projects: '**/[Tt]est_*.csproj'
+    publishTestResults: true
 
 - task: NuGetCommand@2
   displayName: Push to nuget (release)
