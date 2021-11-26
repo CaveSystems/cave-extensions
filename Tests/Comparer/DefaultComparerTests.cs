@@ -72,7 +72,10 @@ namespace Test.Comparer
                     continue;
                 }
 
-                Console.WriteLine(culture);
+                if (Program.Verbose)
+                {
+                    Console.WriteLine(culture);
+                }
                 Thread.CurrentThread.CurrentCulture = culture;
                 Thread.CurrentThread.CurrentUICulture = culture;
                 for (var i = 0; i < 1000; i++)

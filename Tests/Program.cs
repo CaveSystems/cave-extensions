@@ -8,12 +8,12 @@ namespace Test
     class Program
     {
         #region Private Methods
+        public static bool Verbose { get; private set; }
 
-        static int Main()
+        static int Main(string[] args)
         {
+            Verbose = args.Contains("-v") || args.Contains("--verbose");
             var errors = 0;
-            Console.WriteLine($"Running tests with framework {Environment.Version}");
-            Console.WriteLine("---");
             var types = typeof(Program).Assembly.GetTypes();
             foreach (var type in types.OrderBy(t => t.Name))
             {
@@ -32,20 +32,20 @@ namespace Test
 
                     GC.Collect(999, GCCollectionMode.Default);
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name}");
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name} framework {Environment.Version}");
                     Console.ResetColor();
                     try
                     {
                         method.Invoke(instance, null);
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name}");
+                        Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name} framework {Environment.Version}");
                         Console.ResetColor();
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: {ex.Message}");
+                        Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: {ex.Message} framework {Environment.Version}");
                         Console.WriteLine(ex);
                         Console.ResetColor();
                         errors++;
@@ -58,12 +58,12 @@ namespace Test
             if (errors == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("---: info TI9999: All tests successfully completed.");
+                Console.WriteLine($"---: info TI9999: All tests successfully completed at framework {Environment.Version}.");
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"---: error TE9999: {errors} tests failed!");
+                Console.WriteLine($"---: error TE9999: {errors} tests failed framework {Environment.Version}!");
             }
 
             Console.ResetColor();

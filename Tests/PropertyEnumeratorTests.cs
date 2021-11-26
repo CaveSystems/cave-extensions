@@ -202,9 +202,12 @@ namespace Test
             var p2 = obj.GetProperties(withValue: false);
             var p1Count = p1.Count();
             var p2Count = p2.Count();
-            Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
-            foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
-            foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+            if (Program.Verbose)
+            {
+                Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
+                foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+                foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+            }
         }
     }
 }
