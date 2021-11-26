@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace Cave
@@ -66,6 +67,7 @@ namespace Cave
         /// <summary>Reflects 32 bits.</summary>
         /// <param name="x">The bits.</param>
         /// <returns>Returns a center reflection.</returns>
+        [MethodImpl(256)]
         public static uint Reflect32(uint x)
         {
             // move bits

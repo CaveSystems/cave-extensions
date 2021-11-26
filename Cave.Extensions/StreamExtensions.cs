@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Cave
@@ -19,6 +20,7 @@ namespace Cave
         /// <param name="userItem">The user item.</param>
         /// <returns>The number of bytes copied.</returns>
         /// <exception cref="ArgumentNullException">source or target.</exception>
+        [MethodImpl(256)]
         public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
             if (source == null)
@@ -83,6 +85,7 @@ namespace Cave
         /// <param name="userItem">The user item.</param>
         /// <returns>The bytes read.</returns>
         /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
+        [MethodImpl(256)]
         public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
         {
             if (source == null)
@@ -131,6 +134,7 @@ namespace Cave
         /// <param name="source">Source stream.</param>
         /// <param name="count">The number of bytes to read.</param>
         /// <returns>The bytes read.</returns>
+        [MethodImpl(256)]
         public static byte[] ReadBlock(this Stream source, int count) => ReadBlock(source, count, null);
 
         /// <summary>Reads a block from the specified stream (nonblocking).</summary>
@@ -140,6 +144,7 @@ namespace Cave
         /// <param name="userItem">The user item.</param>
         /// <returns>The bytes read.</returns>
         /// <exception cref="ArgumentNullException">source.</exception>
+        [MethodImpl(256)]
         public static byte[] ReadBlock(this Stream source, int count, ProgressCallback callback, object userItem = null)
         {
             if (source == null)
@@ -177,18 +182,19 @@ namespace Cave
         /// <param name="stream">The stream.</param>
         /// <param name="text">The text.</param>
         /// <exception cref="ArgumentNullException">stream.</exception>
+        [MethodImpl(256)]
         public static void WriteUtf8(this Stream stream, string text)
         {
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-
+            text ??= string.Empty;
             var data = Encoding.UTF8.GetBytes(text);
             stream.Write(data, 0, data.Length);
         }
 
-        /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 32kb.</summary>
+        /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 64kb.</summary>
         public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
 
         #endregion
