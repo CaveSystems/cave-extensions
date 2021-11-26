@@ -12,16 +12,15 @@
         <SignAssembly>true</SignAssembly>
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 
-        <!-- Nullable 
-        <nullable>enable</nullable>
-        -->
-        <WarningsAsErrors>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8620;CS8621;CS8622;CS8625;CS8764;CS8765;CS8766;CS8767</WarningsAsErrors>
-        <NoWarn>IDE0047;CA1822</NoWarn>
+        <!-- Nullable -->
+        <!--<nullable>enable</nullable>-->
 
         <!-- Analyzer -->
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisLevel>latest</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <WarningsAsErrors>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8620;CS8621;CS8622;CS8625;CS8764;CS8765;CS8766;CS8767</WarningsAsErrors>
+        <NoWarn>IDE0047;CA1822</NoWarn>
 
         <!-- Compiler -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,8 +31,8 @@
 
         <!-- Package -->
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <PackageIcon>cavesystems.png</PackageIcon>
         <PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
-        <PackageIcon>cavesystems.jpg</PackageIcon>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>

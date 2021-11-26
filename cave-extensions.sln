@@ -11,7 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
 		build.bat = build.bat
-		cavesystems.jpg = cavesystems.jpg
+		cavesystems.pdn = cavesystems.pdn
+		cavesystems.png = cavesystems.png
 		CodeMaid.config = CodeMaid.config
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
@@ -26,6 +27,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NET4x", "Tests\Test_NET4x.csproj", "{767AFF18-A447-475B-A64D-DC068481486B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NETCORE", "Tests\Test_NETCORE.csproj", "{EFEAFD47-803F-4544-9860-DF1419B30628}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +59,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6791982D-B402-4B59-9824-46D3CBDE33F3} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
+		{366CE2E4-3919-4F4D-916A-DB3C8801AA2F} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
+		{767AFF18-A447-475B-A64D-DC068481486B} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
+		{EFEAFD47-803F-4544-9860-DF1419B30628} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AEF21AA2-1CDB-40F2-81A5-99B67962757E}

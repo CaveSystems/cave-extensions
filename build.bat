@@ -33,3 +33,6 @@ Tests\bin\Release\net45\Test.exe
 Tests\bin\Release\net46\Test.exe
 Tests\bin\Release\net47\Test.exe
 Tests\bin\Release\net48\Test.exe
+Tests\bin\Release\net50\Test.exe
+Tests\bin\Release\netcoreapp2.1\Test.exe
+Tests\bin\Release\netcoreapp3.1\Test.exe
