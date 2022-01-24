@@ -11,57 +11,61 @@ namespace Cave.Collections.Generic
     [DebuggerDisplay("Count={Count}")]
     public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterCollection>, ICollection<string>
     {
+        #region Private Fields
+
         readonly string[] items;
+
+        #endregion Private Fields
 
         #region Constructors
 
-        /// <summary>Initializes a new instance of the <see cref="ParameterCollection" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ParameterCollection"/> class.</summary>
         /// <param name="items"></param>
         public ParameterCollection(params string[] items) => this.items = items;
 
-        #endregion
+        #endregion Constructors
 
         #region Properties
 
-        /// <summary>Gets or sets the <see cref="string" /> at the specified index.</summary>
-        /// <value>The <see cref="string" />.</value>
+        /// <summary>Gets or sets the <see cref="string"/> at the specified index.</summary>
+        /// <value>The <see cref="string"/>.</value>
         /// <param name="index">The index.</param>
         /// <returns></returns>
         public string this[int index] => items[index];
 
-        #endregion
+        #endregion Properties
 
         #region ICollection<string> Members
+
+        /// <inheritdoc/>
+        public int Count => items.Length;
+
+        /// <inheritdoc/>
+        public bool IsReadOnly => true;
+
+        /// <inheritdoc/>
+        public bool Contains(string item) => IndexOf(item) > -1;
+
+        /// <inheritdoc/>
+        public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
         void ICollection<string>.Add(string item) => throw new ReadOnlyException();
 
         void ICollection<string>.Clear() => throw new ReadOnlyException();
 
-        /// <inheritdoc />
-        public bool Contains(string item) => IndexOf(item) > -1;
-
-        /// <inheritdoc />
-        public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
-
-        /// <inheritdoc />
-        public int Count => items.Length;
-
-        /// <inheritdoc />
-        public bool IsReadOnly => true;
-
         bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
 
-        #endregion
+        #endregion ICollection<string> Members
 
         #region IEnumerable<string> Members
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
-
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>)items).GetEnumerator();
 
-        #endregion
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
+
+        #endregion IEnumerable<string> Members
 
         #region IEquatable<ParameterCollection> Members
 
@@ -91,14 +95,14 @@ namespace Cave.Collections.Generic
             return true;
         }
 
-        #endregion
+        #endregion IEquatable<ParameterCollection> Members
 
         #region Overrides
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override bool Equals(object obj) => Equals(obj as ParameterCollection);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override int GetHashCode() => ToString().GetHashCode();
 
         /// <summary>Gets a string containing all parameters.</summary>
@@ -129,13 +133,13 @@ namespace Cave.Collections.Generic
             return result.ToString();
         }
 
-        #endregion
+        #endregion Overrides
 
         #region Members
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int IndexOf(string item) => Array.IndexOf(items, item);
 
-        #endregion
+        #endregion Members
     }
 }

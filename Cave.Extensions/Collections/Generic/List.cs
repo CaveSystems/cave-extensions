@@ -6,14 +6,18 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>Gets a list implementation for <see cref="ItemPair{A, B}" /> objects.</summary>
+    /// <summary>Gets a list implementation for <see cref="ItemPair{A, B}"/> objects.</summary>
     /// <typeparam name="TValue1">The type of the first object.</typeparam>
     /// <typeparam name="TValue2">The type of the second object.</typeparam>
     [DebuggerDisplay("Count={Count}")]
     public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     {
+        #region Private Fields
+
         readonly List<TValue1> listA;
         readonly List<TValue2> listB;
+
+        #endregion Private Fields
 
         #region Properties
 
@@ -23,9 +27,38 @@ namespace Cave.Collections.Generic
         /// <summary>Gets all B items present.</summary>
         public IList<TValue2> ItemsB => listB.ToArray();
 
-        #endregion
+        #endregion Properties
 
         #region IList<ItemPair<TValue1,TValue2>> Members
+
+        /// <summary>Gets the number of items present.</summary>
+        public int Count => listA.Count;
+
+        /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
+        public bool IsReadOnly { get; private set; }
+
+        /// <summary>Gets/sets the ItemPair at the specified index.</summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        public ItemPair<TValue1, TValue2> this[int index]
+        {
+            get => new(listA[index], listB[index]);
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                if (IsReadOnly)
+                {
+                    throw new ReadOnlyException();
+                }
+
+                listA[index] = value.A;
+                listB[index] = value.B;
+            }
+        }
 
         /// <summary>Adds a new ItemPair at the end of the list.</summary>
         /// <param name="item">The ItemPair to add.</param>
@@ -71,36 +104,6 @@ namespace Cave.Collections.Generic
             {
                 array[arrayIndex++] = this[i];
             }
-        }
-
-        /// <summary>Gets the number of items present.</summary>
-        public int Count => listA.Count;
-
-        /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
-        public bool IsReadOnly { get; private set; }
-
-        /// <summary>Removes the specified ItemPair from the list if it is present.</summary>
-        /// <param name="item">The ItemPair to remove.</param>
-        /// <returns>Returns true if an ItemPair was removed.</returns>
-        public bool Remove(ItemPair<TValue1, TValue2> item)
-        {
-            var index = IndexOf(item);
-            if (index < 0)
-            {
-                return false;
-            }
-
-            RemoveAt(index);
-            return true;
-        }
-
-        /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
-        /// <returns>Returns an IEnumerator.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            var array = new ItemPair<TValue1, TValue2>[Count];
-            CopyTo(array, 0);
-            return array.GetEnumerator();
         }
 
         /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
@@ -150,27 +153,19 @@ namespace Cave.Collections.Generic
             listB.Insert(index, item.B);
         }
 
-        /// <summary>Gets/sets the ItemPair at the specified index.</summary>
-        /// <param name="index">The index.</param>
-        /// <returns></returns>
-        public ItemPair<TValue1, TValue2> this[int index]
+        /// <summary>Removes the specified ItemPair from the list if it is present.</summary>
+        /// <param name="item">The ItemPair to remove.</param>
+        /// <returns>Returns true if an ItemPair was removed.</returns>
+        public bool Remove(ItemPair<TValue1, TValue2> item)
         {
-            get => new(listA[index], listB[index]);
-            set
+            var index = IndexOf(item);
+            if (index < 0)
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                if (IsReadOnly)
-                {
-                    throw new ReadOnlyException();
-                }
-
-                listA[index] = value.A;
-                listB[index] = value.B;
+                return false;
             }
+
+            RemoveAt(index);
+            return true;
         }
 
         /// <summary>Removes the ItemPair at the specified index.</summary>
@@ -186,7 +181,16 @@ namespace Cave.Collections.Generic
             listB.RemoveAt(index);
         }
 
-        #endregion
+        /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
+        /// <returns>Returns an IEnumerator.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            var array = new ItemPair<TValue1, TValue2>[Count];
+            CopyTo(array, 0);
+            return array.GetEnumerator();
+        }
+
+        #endregion IList<ItemPair<TValue1,TValue2>> Members
 
         #region Members
 
@@ -362,18 +366,18 @@ namespace Cave.Collections.Generic
         /// <summary>Sets the list readonly. This operation is not reversible.</summary>
         public void SetReadOnly() => IsReadOnly = true;
 
-        #endregion
+        #endregion Members
 
         #region constructor
 
-        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
         public List()
         {
             listA = new List<TValue1>();
             listB = new List<TValue2>();
         }
 
-        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
         /// <param name="capacity">Initial capacity.</param>
         public List(int capacity)
         {
@@ -381,10 +385,10 @@ namespace Cave.Collections.Generic
             listB = new List<TValue2>(capacity);
         }
 
-        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
         /// <param name="items">Items to be added to the list.</param>
         public List(IEnumerable<ItemPair<TValue1, TValue2>> items) => AddRange(items);
 
-        #endregion
+        #endregion constructor
     }
 }

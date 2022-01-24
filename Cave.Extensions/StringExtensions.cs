@@ -822,7 +822,7 @@ namespace Cave
         /// <summary>Retrieves only validated chars from a string.</summary>
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
-        /// <returns>Returns a new string with valid chars.</returns>
+        /// <returns>Returns a new string containing only the valid chars.</returns>
         [MethodImpl(256)]
         public static string GetValidChars(this string text, string validChars)
         {
@@ -835,6 +835,30 @@ namespace Cave
             foreach (var c in text)
             {
                 if (validChars.IndexOf(c) > -1)
+                {
+                    result.Append(c);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Retrieves only invalidated chars from a string.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns a new string containing only the invalid chars.</returns>
+        [MethodImpl(256)]
+        public static string GetInvalidChars(this string text, string validChars)
+        {
+            if (text == null || string.IsNullOrEmpty(validChars))
+            {
+                return string.Empty;
+            }
+
+            var result = new StringBuilder(text.Length);
+            foreach (var c in text)
+            {
+                if (validChars.IndexOf(c) < 0)
                 {
                     result.Append(c);
                 }
@@ -858,6 +882,29 @@ namespace Cave
             foreach (var c in text)
             {
                 if (validChars.IndexOf(c) < 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Gets whether the specified string contains valid chars or not.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="validChars">The string with the valid chars.</param>
+        /// <returns>Returns true if the text contains valid chars.</returns>
+        [MethodImpl(256)]
+        public static bool HasValidChars(this string text, string validChars)
+        {
+            if (text == null || string.IsNullOrEmpty(validChars))
+            {
+                return false;
+            }
+
+            foreach (var c in text)
+            {
+                if (validChars.IndexOf(c) > -1)
                 {
                     return true;
                 }

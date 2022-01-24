@@ -11,6 +11,8 @@ namespace Test
     [TestFixture]
     class PropertyEnumeratorTests
     {
+        #region Private Classes
+
         class Intermediate
         {
             #region Properties
@@ -18,7 +20,7 @@ namespace Test
             public Item EmptyItem { get; }
             public long TestLong { get; } = rnd.Next() * (long)rnd.Next();
 
-            #endregion
+            #endregion Properties
         }
 
         class Item
@@ -27,7 +29,7 @@ namespace Test
 
             public int TestInt { get; } = rnd.Next();
 
-            #endregion
+            #endregion Properties
         }
 
         class Root
@@ -41,10 +43,18 @@ namespace Test
             public Item TestItem { get; } = new Item();
             public object TestRandom { get; } = rnd;
 
-            #endregion
+            #endregion Properties
         }
 
+        #endregion Private Classes
+
+        #region Private Fields
+
         static readonly Random rnd = new();
+
+        #endregion Private Fields
+
+        #region Private Methods
 
         static void TestRoot(Root root)
         {
@@ -126,6 +136,42 @@ namespace Test
             }
         }
 
+        static void TestType(Type type)
+        {
+            if (type.IsAbstract) return;
+            if (type.ContainsGenericParameters) return;
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+            if (constructor == null) return;
+            object obj;
+            try
+            {
+                obj = Activator.CreateInstance(type);
+            }
+            catch
+            {
+                return;
+            }
+            var p1 = obj.GetProperties(withValue: true);
+            var p2 = obj.GetProperties(withValue: false);
+            var p1Count = p1.Count();
+            var p2Count = p2.Count();
+            if (Program.Verbose)
+            {
+                Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
+                foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+                foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+            }
+        }
+
+        static void TestTypes(Type[] types)
+        {
+            foreach (var type in types) { TestType(type); }
+        }
+
+        #endregion Private Methods
+
+        #region Public Methods
+
         [Test]
         public void GetProperties()
         {
@@ -164,6 +210,9 @@ namespace Test
         }
 
         [Test]
+        public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
+
+        [Test]
         public void TestTypes_mscorlib() => TestTypes(typeof(int).Assembly.GetExportedTypes());
 
         [Test]
@@ -175,39 +224,6 @@ namespace Test
         [Test]
         public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).Assembly.GetExportedTypes());
 
-        [Test]
-        public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
-
-        static void TestTypes(Type[] types)
-        {
-            foreach (var type in types) { TestType(type); }
-        }
-
-        static void TestType(Type type)
-        {
-            if (type.IsAbstract) return;
-            if (type.ContainsGenericParameters) return;
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-            if (constructor == null) return;
-            object obj;
-            try
-            {
-                obj = Activator.CreateInstance(type);
-            }
-            catch
-            {
-                return;
-            }
-            var p1 = obj.GetProperties(withValue: true);
-            var p2 = obj.GetProperties(withValue: false);
-            var p1Count = p1.Count();
-            var p2Count = p2.Count();
-            if (Program.Verbose)
-            {
-                Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
-                foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
-                foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
-            }
-        }
+        #endregion Public Methods
     }
 }

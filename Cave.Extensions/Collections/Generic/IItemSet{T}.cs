@@ -7,19 +7,22 @@ namespace Cave.Collections.Generic
 {
     /// <summary>Gets a set of items.</summary>
     /// <typeparam name="T">Element type.</typeparam>
-    /// <seealso cref="System.Collections.Generic.ICollection{T}" />
+    /// <seealso cref="System.Collections.Generic.ICollection{T}"/>
     public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<T>>
     {
         #region Properties
 
 #pragma warning disable 108,114 // reintroduced for harmonization
+
         /// <summary>Gets the number of items in the set.</summary>
         int Count { get; }
+
 #pragma warning restore 108,114
+
         /// <summary>Gets a value indicating whether the set is empty or not.</summary>
         bool IsEmpty { get; }
 
-        #endregion
+        #endregion Properties
 
         #region Members
 
@@ -83,6 +86,6 @@ namespace Cave.Collections.Generic
         /// <exception cref="ReadOnlyException">Set is readonly.</exception>
         int TryRemoveRange(IEnumerable<T> items);
 
-        #endregion
+        #endregion Members
     }
 }
