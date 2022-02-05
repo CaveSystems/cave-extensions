@@ -8,7 +8,10 @@ namespace Test
     [TestFixture]
     class PBKDF2Tests
     {
+        #region Public Methods
+
         [Test]
+        [Obsolete]
         public void PBKDF2Test1()
         {
             Assert.AreEqual(8, PBKDF2.GuessComplexity(ASCII.GetBytes("ABCDEFGH")));
@@ -17,5 +20,7 @@ namespace Test
             Assert.AreEqual(49, PBKDF2.GuessComplexity(ASCII.GetBytes("2ZY3AXBC1")));
             Assert.AreEqual(37, PBKDF2.GuessComplexity(ASCII.GetBytes("gqTU7x_kP!")));
         }
+
+        #endregion Public Methods
     }
 }
