@@ -16,8 +16,10 @@ namespace Cave
         /// <param name="type">Type to iterate.</param>
         /// <param name="bindingFlags">Property binding flags.</param>
         /// <param name="recursive">Recursive property search.</param>
-        public PropertyEnumerator(Type type, BindingFlags bindingFlags, bool recursive = false)
+        /// <param name="filter">Allows to filter properties.</param>
+        public PropertyEnumerator(Type type, BindingFlags bindingFlags, bool recursive = false, PropertyDataFilter filter = null)
         {
+            Filter = filter;
             Root = type;
             BindingFlags = bindingFlags;
             Recursive = recursive;
@@ -27,6 +29,9 @@ namespace Cave
         #endregion
 
         #region Properties
+
+        /// <summary>Gets the filter used.</summary>
+        public PropertyDataFilter Filter { get; }
 
         /// <summary>Gets the used <see cref="BindingFlags" />.</summary>
         public BindingFlags BindingFlags { get; }
@@ -52,10 +57,10 @@ namespace Cave
         #region IEnumerable<PropertyData> Members
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive);
+        IEnumerator IEnumerable.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive, Filter);
 
         /// <inheritdoc />
-        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive);
+        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive, Filter);
 
         #endregion
 
@@ -108,7 +113,13 @@ namespace Cave
                     continue;
                 }
 
-                stack.Push(new PropertyData(parent, rootPath, property));
+                var data = new PropertyData(parent, rootPath, property);
+                if (Filter != null && Filter(data))
+                {
+                    continue;
+                }
+
+                stack.Push(data);
             }
         }
 

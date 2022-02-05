@@ -17,8 +17,17 @@ namespace Cave
         /// <param name="withValue">List only sub-properties with values.</param>
         /// <param name="noRecursion">Disable recursion.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
-        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false,
-            bool noRecursion = false)
+        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags, bool withValue, bool noRecursion)
+            => GetProperties(instance, bindingFlags: bindingFlags, withValue: withValue, noRecursion: noRecursion);
+
+        /// <summary>Get a list of available properties.</summary>
+        /// <param name="instance">Object instance to read.</param>
+        /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
+        /// <param name="withValue">List only sub-properties with values.</param>
+        /// <param name="noRecursion">Disable recursion.</param>
+        /// <param name="filter">Allows to filter properties.</param>
+        /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
+        public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false, bool noRecursion = false, PropertyDataFilter filter = null)
         {
             if (instance == null)
             {
@@ -31,14 +40,14 @@ namespace Cave
             }
 
             return withValue
-                ? new PropertyValueEnumerator(instance, bindingFlags, !noRecursion)
-                : new PropertyEnumerator(instance.GetType(), bindingFlags, !noRecursion);
+                ? new PropertyValueEnumerator(instance, bindingFlags, !noRecursion, filter)
+                : new PropertyEnumerator(instance.GetType(), bindingFlags, !noRecursion, filter);
         }
 
         /// <summary>Gets the specified property value.</summary>
         /// <remarks>
         /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
+        /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
         /// </remarks>
         /// <param name="instance">Instance to read from.</param>
         /// <param name="fullPath">Full property path.</param>
@@ -77,7 +86,7 @@ namespace Cave
         /// <summary>Gets the specified property value.</summary>
         /// <remarks>
         /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
+        /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
         /// </remarks>
         /// <param name="instance">Instance to read from.</param>
         /// <param name="fullPath">Full property path.</param>
@@ -218,7 +227,7 @@ namespace Cave
         /// <summary>Gets the specified property value.</summary>
         /// <remarks>
         /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
+        /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
         /// </remarks>
         /// <param name="instance">Instance to read from.</param>
         /// <param name="fullPath">Full property path.</param>
@@ -237,11 +246,7 @@ namespace Cave
                 bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             }
 
-            IList<string> path = fullPath?.Split(new[]
-            {
-                '.',
-                '/'
-            }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+            IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
             var current = instance;
             for (var i = 0; i < path.Count; i++)
             {
@@ -259,7 +264,20 @@ namespace Cave
                     return GetPropertyValueError.InvalidPath;
                 }
 
-                current = property.GetValue(current, null);
+                try
+                {
+                    current = property.GetValue(current, null);
+                }
+                catch (TargetParameterCountException)
+                {
+                    result = null;
+                    return GetPropertyValueError.ParameterRequired;
+                }
+                catch
+                {
+                    result = null;
+                    return GetPropertyValueError.InvalidPath;
+                }
             }
 
             result = current;
@@ -269,7 +287,7 @@ namespace Cave
         /// <summary>Gets the specified property value.</summary>
         /// <remarks>
         /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-        /// <see cref="GetProperties" />.
+        /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
         /// </remarks>
         /// <param name="instance">Instance to read from.</param>
         /// <param name="fullPath">Full property path.</param>

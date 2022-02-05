@@ -15,6 +15,9 @@ namespace Cave
         NullReference,
 
         /// <summary>Target type does not match.</summary>
-        InvalidType
+        InvalidType,
+
+        /// <summary>Parameter for getter and setter required. This indicates anj indexer property.</summary>
+        ParameterRequired,
     }
 }
