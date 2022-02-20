@@ -664,7 +664,7 @@ namespace Cave
         public static string GetCamelCaseName(this string text, string validChars, char splitter)
         {
             text = text.ReplaceInvalidChars(validChars, $"{splitter}");
-            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
+            var parts = text.Split(splitter).SelectMany(s => s.SplitCamelCase());
             return parts.ToArray().JoinCamelCase();
         }
 
@@ -680,11 +680,30 @@ namespace Cave
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
         [MethodImpl(256)]
+        public static string GetLowerCamelCaseName(this string text, string validChars, char splitter)
+        {
+            text = text.ReplaceInvalidChars(validChars, $"{splitter}");
+            var parts = text.Split(splitter).SelectMany(s => s.SplitCamelCase());
+            return parts.ToArray().JoinLowerCamelCase();
+        }
+
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        [MethodImpl(256)]
+        public static string GetLowerCamelCaseName(this string text) => GetLowerCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+
+        /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
+        /// <param name="validChars">Valid characters.</param>
+        /// <param name="splitter">Character used to split parts.</param>
+        /// <param name="text">The text to use.</param>
+        /// <returns>A camel case version of text.</returns>
+        [MethodImpl(256)]
         public static string GetSnakeCaseName(this string text, string validChars, char splitter)
         {
             text ??= string.Empty;
             text = text.ReplaceInvalidChars(validChars, $"{splitter}");
-            var parts = text.Split('_').SelectMany(s => s.SplitCamelCase());
+            var parts = text.Split(splitter).SelectMany(s => s.SplitCamelCase());
             return parts.ToArray().JoinSnakeCase();
         }
 
@@ -966,11 +985,38 @@ namespace Cave
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>
+        /// <param name="marker">The marker.</param>
+        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
+        [MethodImpl(256)]
+        public static bool IsBoxed(this string text, char marker) => !string.IsNullOrEmpty(text) && (text[0] == marker) && (text[^1] == marker);
+
+        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
+        /// <param name="text">The text to check.</param>
         /// <param name="start">The start marker.</param>
         /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
         [MethodImpl(256)]
         public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[^1] == end);
+
+        /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
+        /// <param name="text">The text to check.</param>
+        /// <param name="marker">The start marker.</param>
+        /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
+        [MethodImpl(256)]
+        public static bool IsBoxed(this string text, string marker)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            if (marker == null)
+            {
+                throw new ArgumentNullException(nameof(marker));
+            }
+
+            return text.StartsWith(marker) && text.EndsWith(marker);
+        }
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>
@@ -1092,7 +1138,7 @@ namespace Cave
             return result.ToString();
         }
 
-        /// <summary>Joins the camel case.</summary>
+        /// <summary>Joins the strings with camel casing.</summary>
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
@@ -1128,6 +1174,128 @@ namespace Cave
             return result.ToString();
         }
 
+        /// <summary>Joins the strings with camel casing.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        [MethodImpl(256)]
+        public static string JoinCamelCase(this IEnumerable parts, CultureInfo culture = null)
+        {
+            if (parts == null)
+            {
+                return string.Empty;
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = (part is IFormattable formattable) ? formattable.ToString(null, culture) : $"{part}";
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                result.Append(char.ToUpper(t[0], culture));
+                if (t.Length > 1)
+                {
+                    result.Append(t[1..].ToLower(culture));
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins the strings with camel casing.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        [MethodImpl(256)]
+        public static string JoinLowerCamelCase(this string[] parts, CultureInfo culture = null)
+        {
+            if (parts == null || parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = part.Trim();
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                if (result.Length > 0)
+                {
+                    result.Append(char.ToUpper(t[0], culture));
+                    if (t.Length > 1)
+                    {
+                        result.Append(t[1..].ToLower(culture));
+                    }
+                }
+                else
+                {
+                    result.Append(t.ToLower(culture));
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins the strings with camel casing.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        [MethodImpl(256)]
+        public static string JoinLowerCamelCase(this IEnumerable parts, CultureInfo culture = null)
+        {
+            if (parts == null)
+            {
+                return string.Empty;
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = (part is IFormattable formattable) ? formattable.ToString(null, culture) : $"{part}";
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                if (result.Length > 0)
+                {
+                    result.Append(char.ToUpper(t[0], culture));
+                    if (t.Length > 1)
+                    {
+                        result.Append(t[1..].ToLower(culture));
+                    }
+                }
+                else
+                {
+                    result.Append(t.ToLower(culture));
+                }
+            }
+
+            return result.ToString();
+        }
+
         /// <summary>Joins a collection to a string with newlines for all systems.</summary>
         /// <param name="texts">The string collection.</param>
         /// <returns>Returns a new string.</returns>
@@ -1140,7 +1308,7 @@ namespace Cave
         [MethodImpl(256)]
         public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n");
 
-        /// <summary>Joins the camel case.</summary>
+        /// <summary>Joins the strings using snake case.</summary>
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
@@ -1161,6 +1329,43 @@ namespace Cave
             foreach (var part in parts)
             {
                 var t = part.Trim();
+                if (t.Length < 1)
+                {
+                    continue;
+                }
+
+                if (result.Length > 0)
+                {
+                    result.Append('_');
+                }
+
+                result.Append(t.ToLower(culture));
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>Joins the strings using snake case.</summary>
+        /// <param name="parts">The parts.</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The joned string.</returns>
+        [MethodImpl(256)]
+        public static string JoinSnakeCase(this IEnumerable parts, CultureInfo culture = null)
+        {
+            if (parts == null)
+            {
+                return string.Empty;
+            }
+
+            if (culture == null)
+            {
+                culture = CultureInfo.CurrentCulture;
+            }
+
+            var result = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var t = (part is IFormattable formattable) ? formattable.ToString(null, culture) : $"{part}";
                 if (t.Length < 1)
                 {
                     continue;
@@ -2605,6 +2810,35 @@ namespace Cave
             if (throwEx)
             {
                 throw new FormatException($"Could not unbox {border} string {border}!");
+            }
+
+            return text;
+        }
+
+        /// <summary>Unboxes a string.</summary>
+        /// <param name="text">The string to be unboxed.</param>
+        /// <param name="start">Start of box.</param>
+        /// <param name="end">End of box.</param>
+        /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
+        /// <returns>Returns the content between the start and end marks.</returns>
+        /// <exception cref="ArgumentNullException">text.</exception>
+        /// <exception cref="FormatException">Could not unbox {0} string {1}!.</exception>
+        [MethodImpl(256)]
+        public static string Unbox(this string text, char start, char end, bool throwEx = true)
+        {
+            if (text == null)
+            {
+                return string.Empty;
+            }
+
+            if ((text.Length > 1) && (text[0] == start) && (text[^1] == end))
+            {
+                return text[1..^1];
+            }
+
+            if (throwEx)
+            {
+                throw new FormatException($"Could not unbox {start} string {end}!");
             }
 
             return text;
