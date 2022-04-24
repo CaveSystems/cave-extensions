@@ -35,7 +35,7 @@ namespace Cave
                 bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             }
             long result = 0;
-            var fields = typeof(T).GetFields();
+            var fields = typeof(T).GetFields(bindingFlags);
             foreach (var item in items)
             {
                 foreach (var field in fields)

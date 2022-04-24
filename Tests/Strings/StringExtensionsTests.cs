@@ -151,7 +151,7 @@ namespace Test.Strings
                     var expected = 1.432d.ToString("0.000", culture) + " " + (IecUnit)i;
                     var string1 = size.FormatBinarySize(culture);
                     Assert.AreEqual(expected, string1);
-                    if ((size > 10) && (size < long.MaxValue))
+                    if (size is > 10 and < long.MaxValue)
                     {
                         var string2 = ((ulong)size).FormatBinarySize(culture);
                         var string3 = ((long)size).FormatBinarySize(culture);

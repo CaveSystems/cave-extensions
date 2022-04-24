@@ -273,7 +273,7 @@ namespace Cave
             {
                 try
                 {
-                    if (str.Contains(":"))
+                    if (str.Contains(':'))
                     {
 #if NET20 || NET35
                         return TimeSpan.Parse(str);

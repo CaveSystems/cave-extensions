@@ -8,9 +8,10 @@ namespace Cave.Progress
     {
         #region Static
 
-        static readonly object SyncRoot = new object();
-
         static IProgressManager globalInstance;
+
+        /// <summary>Gets the global sync root.</summary>
+        public static object SyncRoot { get; } = new();
 
         /// <summary>Gets the current progress items.</summary>
         public static IEnumerable<IProgress> Items => GlobalInstance.Items;

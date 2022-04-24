@@ -845,7 +845,7 @@ namespace Cave
                 if (root == null)
                 {
                     root = parts[i];
-                    if (parts[i].Contains(":"))
+                    if (parts[i].Contains(':'))
                     {
                         if (!Platform.IsMicrosoft || (root.Length > 1))
                         {

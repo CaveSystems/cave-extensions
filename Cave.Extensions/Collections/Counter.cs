@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cave.Collections
 {
     /// <summary>Gets an <see cref="IEnumerable" /> implementation for simple integer counting.</summary>
-    public class Counter : IEnumerable<int>, IComparable, IEnumerable
+    public class Counter : IEnumerable<int>, IComparable, IEnumerable, IEquatable<Counter>
     {
         #region Static
 
@@ -26,18 +26,13 @@ namespace Cave.Collections
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(Counter left, Counter right) =>
-            left is null
-                ? right is null
-                : !(right is null)
-             && (left.Count == right.Count) && (left.Start == right.Start) && (left.End == right.End) &&
-                (left.Step == right.Step);
+        public static bool operator ==(Counter left, Counter right) => left is null ? right is null : right is not null && left.Equals(right);
 
         /// <summary>Implements the operator &gt;.</summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator >(Counter left, Counter right) => right is null || (!(left is null) && (left.Start > right.End));
+        public static bool operator >(Counter left, Counter right) => right is null || (left is not null && (left.Start > right.End));
 
         /// <summary>Implements the operator &gt;=.</summary>
         /// <param name="left">The left operand.</param>
@@ -49,18 +44,13 @@ namespace Cave.Collections
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Counter left, Counter right) =>
-            left is null
-                ? !(right is null)
-                : right is null
-             || (left.Count != right.Count) || (left.Start != right.Start) || (left.End != right.End) ||
-                (left.Step != right.Step);
+        public static bool operator !=(Counter left, Counter right) => left is null ? right is not null : right is null || !left.Equals(right);
 
         /// <summary>Implements the operator &lt;.</summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator <(Counter left, Counter right) => left is null || (!(right is null) && (left.End < right.Start));
+        public static bool operator <(Counter left, Counter right) => left is null || (right is not null && (left.End < right.Start));
 
         /// <summary>Implements the operator &lt;=.</summary>
         /// <param name="left">The left operand.</param>
@@ -181,7 +171,10 @@ namespace Cave.Collections
         /// <summary>Checks another <see cref="Counter" /> for equality.</summary>
         /// <param name="obj">The <see cref="Counter" /> instance to check for equality.</param>
         /// <returns>Returns true if the specified object equals this one.</returns>
-        public override bool Equals(object obj) => obj is Counter other && (other.Start == Start) && (other.End == End) && (other.Step == Step);
+        public override bool Equals(object obj) => obj is Counter other && Equals(other);
+
+        /// <inheritdoc />
+        public bool Equals(Counter other) => (Start == other.Start) && (End == other.End) && (Step == other.Step);
 
         /// <summary>Gets a hash code for this instance.</summary>
         /// <returns></returns>

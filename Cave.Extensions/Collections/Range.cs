@@ -42,14 +42,14 @@ namespace Cave.Collections
                 return range2 is null;
             }
 
-            return !(range2 is null) && (range1.AllValuesString == range2.AllValuesString);
+            return range2 is not null && (range1.AllValuesString == range2.AllValuesString);
         }
 
         /// <summary>Implements the operator !=.</summary>
         /// <param name="range1">The range1.</param>
         /// <param name="range2">The range2.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(Range range1, Range range2) => range1 is null ? !(range2 is null) : range2 is null || (range1.AllValuesString != range2.AllValuesString);
+        public static bool operator !=(Range range1, Range range2) => range1 is null ? range2 is not null : range2 is null || (range1.AllValuesString != range2.AllValuesString);
 
         /// <summary>Adds two <see cref="Range" />s.</summary>
         /// <param name="range1"></param>

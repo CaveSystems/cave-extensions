@@ -76,7 +76,7 @@ namespace Cave
         /// <summary>Checks for equality with another object.</summary>
         /// <param name="obj">The other time zone.</param>
         /// <returns>True if the time zones are equal.</returns>
-        public override bool Equals(object obj) => !(obj is null) && (ToString() == obj.ToString());
+        public override bool Equals(object obj) => obj is not null && (ToString() == obj.ToString());
 
         /// <summary>Gets the hashcode of this instance based on the offset from utc.</summary>
         /// <returns>The hash code.</returns>

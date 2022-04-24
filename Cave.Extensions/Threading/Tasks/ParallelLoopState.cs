@@ -1,5 +1,5 @@
 ﻿#if NET20 || NET35 || NETSTANDARD10
-#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning disable CS1591, IDE0055, IDE0130
 
 using System.Diagnostics;
 
@@ -72,6 +72,6 @@ namespace System.Threading.Tasks
     }
 }
 
-#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning restore CS1591, IDE0055, IDE0130
 
 #endif

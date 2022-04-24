@@ -12,15 +12,15 @@ namespace Cave.Progress
     public abstract class ProgressManagerBase : IProgressManager
     {
 #if NET20
-        readonly Dictionary<IProgress, IProgress> items = new Dictionary<IProgress, IProgress>();
+        readonly Dictionary<IProgress, IProgress> items = new();
 #else
-        readonly HashSet<IProgress> items = new HashSet<IProgress>();
+        readonly HashSet<IProgress> items = new();
 #endif
         int nextIdentifier;
 
         class ProgressItem : IProgress
         {
-            readonly object syncRoot = new object();
+            readonly object syncRoot = new();
             readonly ProgressManagerBase manager;
 
             #region Constructors

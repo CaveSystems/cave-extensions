@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-#if !NETSTANDARD20
+#if !(NETSTANDARD2_0_OR_GREATER || NET50)
 using Microsoft.Win32;
 #endif
 

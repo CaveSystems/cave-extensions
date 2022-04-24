@@ -8,12 +8,12 @@ namespace Cave.Progress
     public abstract class Estimation : IEstimation
     {
         /// <summary>Obtains the <see cref="EstimationItem" />s of this estimation.</summary>
-        readonly List<EstimationItem> items = new List<EstimationItem>();
+        readonly List<EstimationItem> items = new();
 
         #region Constructors
 
         /// <summary>Initializes a new instance of the <see cref="Estimation" /> class.</summary>
-        protected Estimation() { Reset(); }
+        protected Estimation() => Reset();
 
         #endregion
 
@@ -56,10 +56,7 @@ namespace Cave.Progress
         /// <summary>This function is called internally whenever the list of <see cref="EstimationItem" />s (<see cref="Items" />) is updated.</summary>
         /// <param name="estimatedCompletionTime">Estimated completion time (absolute).</param>
         /// <remarks>Overloaded versions of this function have to call the base function in order to generate the ActualizedEvent.</remarks>
-        protected virtual void OnUpdated(DateTime estimatedCompletionTime)
-        {
-            Actualized?.Invoke(this, new EstimationUpdatedEventArgs(estimatedCompletionTime));
-        }
+        protected virtual void OnUpdated(DateTime estimatedCompletionTime) => Actualized?.Invoke(this, new EstimationUpdatedEventArgs(estimatedCompletionTime));
 
         #endregion
 
@@ -85,13 +82,13 @@ namespace Cave.Progress
         /// <param name="progress">The progress in range [0.0 .. 1.0].</param>
         public void Update(float progress)
         {
-            if ((progress < 0.0) || (progress > 1.0))
+            if (progress is < 0.0f or > 1.0f)
             {
                 throw new ArgumentOutOfRangeException(nameof(progress));
             }
 
             // never add 0.0 to progress list
-            if (progress == 0.0)
+            if (progress == 0.0f)
             {
                 return;
             }

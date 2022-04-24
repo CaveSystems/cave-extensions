@@ -1,6 +1,6 @@
 #if NETSTANDARD10
 #elif NET35 || NET20
-#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning disable CS1591, IDE0055, IDE0130
 
 namespace System.Threading.Tasks
 {
@@ -163,7 +163,7 @@ namespace System.Threading.Tasks
             /// <param name="state">An object containing data to be used by the action delegate.</param>
             /// <param name="options">LongRunning spawns a new seperate Thread.</param>
             /// <returns>Returns a new <see cref="Task"/> instance.</returns>
-            public static Task StartNew<T>(Action<T> action, T state, TaskCreationOptions options = TaskCreationOptions.None) => StartNew((object o) => action((T)o), state, options);
+            public static Task StartNew<T>(Action<T> action, object state, TaskCreationOptions options = TaskCreationOptions.None) => StartNew((object o) => action((T)o), state, options);
         }
 
         #endregion
@@ -314,5 +314,5 @@ namespace System.Threading.Tasks
     }
 }
 
-#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning restore CS1591, IDE0055, IDE0130
 #endif

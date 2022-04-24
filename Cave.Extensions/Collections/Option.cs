@@ -252,7 +252,7 @@ namespace Cave.Collections
         /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(Option other) => !(other is null) && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
+        public bool Equals(Option other) => other is not null && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
 
         #endregion
 

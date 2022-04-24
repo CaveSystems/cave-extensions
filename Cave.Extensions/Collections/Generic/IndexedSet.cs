@@ -108,7 +108,7 @@ namespace Cave.Collections.Generic
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>true if the sets equal each other.</returns>
-        public static bool operator ==(IndexedSet<T> set1, IndexedSet<T> set2) => set1 is null ? set2 is null : !(set2 is null) && set1.Equals(set2);
+        public static bool operator ==(IndexedSet<T> set1, IndexedSet<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>

@@ -45,7 +45,7 @@ namespace Cave.Collections.Generic
         /// <param name="set1"></param>
         /// <param name="set2"></param>
         /// <returns></returns>
-        public static bool operator ==(Set<T> set1, Set<T> set2) => set1 is null ? set2 is null : !(set2 is null) && set1.Equals(set2);
+        public static bool operator ==(Set<T> set1, Set<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1"></param>

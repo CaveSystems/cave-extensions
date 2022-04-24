@@ -1,5 +1,5 @@
 #if NET35 || NET20
-#pragma warning disable CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning disable CS1591, IDE0055, IDE0130
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -93,5 +93,5 @@ namespace System
     }
 }
 
-#pragma warning restore CS1591, IDE0055, IDE0079, IDE0130
+#pragma warning restore CS1591, IDE0055, IDE0130
 #endif

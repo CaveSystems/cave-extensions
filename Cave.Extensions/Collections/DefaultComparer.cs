@@ -194,7 +194,7 @@ namespace Cave.Collections
                 return array2 is null;
             }
 
-            return !(array2 is null) && ItemsEqual(array1, array2);
+            return array2 is not null && ItemsEqual(array1, array2);
         }
 
         /// <summary>Compares items of two arrays item by item without checking the type of the array.</summary>

@@ -299,7 +299,7 @@ namespace Cave
         /// Gets a string {ipaddress}/{subnet} or {ipaddress}/{mask}. This can be parsed by <see cref="Parse(string)"/>.
         /// </summary>
         /// <returns>Parsable string describing this instance.</returns>
-        public override string ToString() => $"{Address}/{(Subnet > -1 ? Subnet : (object)Mask)}";
+        public override string ToString() => $"{Address}/{(Subnet > -1 ? Subnet : Mask)}";
 
         #endregion Public Methods
     }
