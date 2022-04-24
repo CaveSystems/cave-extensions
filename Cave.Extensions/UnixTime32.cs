@@ -5,10 +5,10 @@ using System.Globalization;
 namespace Cave
 {
     /// <summary>
-    /// unix time stamp
+    /// unix time stamp in seconds since epoch
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 4)]
-    public struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime32> //MakeInternal:KEEP
+    public struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime32>
     {
         /// <summary>Implements the operator ==.</summary>
         /// <param name="value1">The value1.</param>
@@ -50,6 +50,24 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator UnixTime32(uint value) => new() { TimeStamp = value };
+
+        /// <summary>Adds a <see cref="TimeSpan"/> to the <see cref="UnixTime64"/>.</summary>
+        /// <param name="value1">The first value.</param>
+        /// <param name="value2">The second value.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static UnixTime32 operator +(UnixTime32 value1, TimeSpan value2) => new() { TimeStamp = (uint)(value1.TimeStamp + (value2.Ticks / TimeSpan.TicksPerSecond)) };
+
+        /// <summary>Substracts a <see cref="TimeSpan"/> from the <see cref="MicroSecondsDateTime64"/>.</summary>
+        /// <param name="value1">The first value.</param>
+        /// <param name="value2">The second value.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static UnixTime32 operator -(UnixTime32 value1, TimeSpan value2) => new() { TimeStamp = (uint)(value1.TimeStamp - (value2.Ticks / TimeSpan.TicksPerSecond)) };
+
+        /// <summary>Substracts two <see cref="UnixTime64"/> values.</summary>
+        /// <param name="value1">The first value.</param>
+        /// <param name="value2">The second value.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static TimeSpan operator -(UnixTime32 value1, UnixTime32 value2) => new((value1.TimeStamp - value2.TimeStamp) * TimeSpan.TicksPerSecond);
 
         /// <summary>
         /// Parses a UnixTime32 previously converted to a string with ToString()

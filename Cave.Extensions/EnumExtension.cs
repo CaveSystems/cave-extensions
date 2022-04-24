@@ -77,7 +77,7 @@ namespace Cave
             return result;
         }
 
-#if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET50
+#if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
         /// <summary>Tries to parse the specified string.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
         /// <param name="value">The value.</param>

@@ -148,7 +148,7 @@ namespace Cave
                 {
                     return null;
                 }
-#if NET45_OR_GREATER || NETSTANDARD1_3_OR_GREATER || NET50
+#if NET45_OR_GREATER || NETSTANDARD1_3_OR_GREATER || NET5_0_OR_GREATER
                 toType = toType.GenericTypeArguments[0];
 #elif NET20_OR_GREATER
                 toType = toType.GetGenericArguments()[0];

@@ -79,24 +79,59 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  displayName: Test netcore, net5+
+  displayName: Test netcore
   inputs:
     runInParallel: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     codeCoverageEnabled: true
     testAssemblyVer2: |
-      **/bin/Release/net*/Test.dll
+      **/bin/Release/netcoreapp*/Test.dll
 
 - task: VSTest@2
-  displayName: Test net2x, net3x, net4x
+  displayName: Test net5
   inputs:
     runInParallel: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     codeCoverageEnabled: true
     testAssemblyVer2: |
-      **/bin/Release/net*/Test.exe
+      **/bin/Release/net5.0/Test.dll
+
+- task: VSTest@2
+  displayName: Test net6
+  inputs:
+    runInParallel: true
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    codeCoverageEnabled: true
+    testAssemblyVer2: |
+      **/bin/Release/net6.0/Test.dll
+
+- task: VSTest@2
+  displayName: Test net2x, net3x
+  inputs:
+    runInParallel: true
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    codeCoverageEnabled: true
+    testAssemblyVer2: |
+      **/bin/Release/net20/Test.exe
+      **/bin/Release/net35/Test.exe
+
+- task: VSTest@2
+  displayName: Test net4x
+  inputs:
+    runInParallel: true
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    codeCoverageEnabled: true
+    testAssemblyVer2: |
+      **/bin/Release/net40/Test.exe
+      **/bin/Release/net45/Test.exe
+      **/bin/Release/net46/Test.exe
+      **/bin/Release/net47/Test.exe
+      **/bin/Release/net48/Test.exe
 
 - task: NuGetCommand@2
   displayName: Push to nuget (release)

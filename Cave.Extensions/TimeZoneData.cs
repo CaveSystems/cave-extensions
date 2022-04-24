@@ -20,7 +20,7 @@ namespace Cave
                     return new TimeZoneData(data.Description, data.Name, data.Offset + offset);
                 }
             }
-#if NET35_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET50
+#if NET35_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
             throw new TimeZoneNotFoundException();
 #elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
             throw new ArgumentException("Timezone not found!");
