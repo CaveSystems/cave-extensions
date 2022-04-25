@@ -8,7 +8,7 @@ namespace Cave
     /// unix time stamp in seconds since epoch
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 4)]
-    public struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime32>
+    public struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime32>, IConvertible, IFormattable
     {
         /// <summary>Implements the operator ==.</summary>
         /// <param name="value1">The value1.</param>
@@ -79,6 +79,17 @@ namespace Cave
             DateTime = DateTime.ParseExact(value, StringExtensions.InterOpDateTimeFormat, CultureInfo.InvariantCulture),
         };
 
+        /// <summary>
+        /// Parses a UnixTime32 previously converted to a string with ToString()
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static UnixTime32 Parse(string value, IFormatProvider provider) => new()
+        {
+            DateTime = DateTime.ParseExact(value, StringExtensions.InterOpDateTimeFormat, provider),
+        };
+
         /// <summary>Converts the specified date time.</summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns></returns>
@@ -139,31 +150,81 @@ namespace Cave
             set => TimeStamp = Convert(value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc/>
         public override string ToString() => DateTime.ToString(StringExtensions.InterOpDateTimeFormat);
 
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </returns>
+        /// <inheritdoc/>
         public override int GetHashCode() => TimeStamp.GetHashCode();
 
-        /// <summary>Determines whether the specified <see cref="object" />, is equal to this instance.</summary>
-        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-        /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is UnixTime32 time && Equals(time);
 
-        /// <summary>Determines whether the specified <see cref="UnixTime32" />, is equal to this instance.</summary>
-        /// <param name="other">The <see cref="UnixTime32" /> to compare with this instance.</param>
-        /// <returns><c>true</c> if the specified <see cref="UnixTime32" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc/>
         public bool Equals(UnixTime32 other) => TimeStamp.Equals(other.TimeStamp);
 
-        /// <summary>Vergleicht das aktuelle Objekt mit einem anderen Objekt desselben Typs.</summary>
-        /// <param name="other">Ein Objekt, das mit diesem Objekt verglichen werden soll.</param>
-        /// <returns>
-        /// Ein Wert, der die relative Reihenfolge der verglichenen Objekte angibt.Der Rückgabewert hat folgende Bedeutung:Wert Bedeutung Kleiner als 0 (null) Dieses Objekt ist kleiner als der <paramref name="other" />-Parameter.Zero Dieses Objekt ist gleich <paramref name="other" />. Größer als 0 (null) Dieses Objekt ist größer als <paramref name="other" />.
-        /// </returns>
+        /// <inheritdoc/>
         public int CompareTo(UnixTime32 other) => TimeStamp.CompareTo(other.TimeStamp);
+
+        #region IConvertible
+
+        /// <inheritdoc/>
+        public TypeCode GetTypeCode() => DateTime.GetTypeCode();
+
+        /// <inheritdoc/>
+        public bool ToBoolean(IFormatProvider provider) => ((IConvertible)DateTime).ToBoolean(provider);
+
+        /// <inheritdoc/>
+        public byte ToByte(IFormatProvider provider) => ((IConvertible)DateTime).ToByte(provider);
+
+        /// <inheritdoc/>
+        public char ToChar(IFormatProvider provider) => ((IConvertible)DateTime).ToChar(provider);
+
+        /// <inheritdoc/>
+        public DateTime ToDateTime(IFormatProvider provider) => ((IConvertible)DateTime).ToDateTime(provider);
+
+        /// <inheritdoc/>
+        public decimal ToDecimal(IFormatProvider provider) => ((IConvertible)DateTime).ToDecimal(provider);
+
+        /// <inheritdoc/>
+        public double ToDouble(IFormatProvider provider) => ((IConvertible)DateTime).ToDouble(provider);
+
+        /// <inheritdoc/>
+        public short ToInt16(IFormatProvider provider) => ((IConvertible)DateTime).ToInt16(provider);
+
+        /// <inheritdoc/>
+        public int ToInt32(IFormatProvider provider) => ((IConvertible)DateTime).ToInt32(provider);
+
+        /// <inheritdoc/>
+        public long ToInt64(IFormatProvider provider) => ((IConvertible)DateTime).ToInt64(provider);
+
+        /// <inheritdoc/>
+        public sbyte ToSByte(IFormatProvider provider) => ((IConvertible)DateTime).ToSByte(provider);
+
+        /// <inheritdoc/>
+        public float ToSingle(IFormatProvider provider) => ((IConvertible)DateTime).ToSingle(provider);
+
+        /// <inheritdoc/>
+        public string ToString(IFormatProvider provider) => DateTime.ToString(provider);
+
+        /// <inheritdoc/>
+        public object ToType(Type conversionType, IFormatProvider provider) => ((IConvertible)DateTime).ToType(conversionType, provider);
+
+        /// <inheritdoc/>
+        public ushort ToUInt16(IFormatProvider provider) => ((IConvertible)DateTime).ToUInt16(provider);
+
+        /// <inheritdoc/>
+        public uint ToUInt32(IFormatProvider provider) => ((IConvertible)DateTime).ToUInt32(provider);
+
+        /// <inheritdoc/>
+        public ulong ToUInt64(IFormatProvider provider) => ((IConvertible)DateTime).ToUInt64(provider);
+
+        #endregion
+
+        #region IFormattable
+
+        /// <inheritdoc/>
+        public string ToString(string format, IFormatProvider formatProvider) => DateTime.ToString(format, formatProvider);
+
+        #endregion
     }
 }
