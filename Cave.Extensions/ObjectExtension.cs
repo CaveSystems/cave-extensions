@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -118,7 +119,7 @@ namespace Cave
                     throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
                 }
 
-                var property = current.GetType().GetProperty(part, bindingFlags);
+                var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
                 if (property == null)
                 {
                     throw new ArgumentOutOfRangeException(nameof(fullPath),
@@ -126,6 +127,12 @@ namespace Cave
                 }
 
                 current = property.GetValue(current, null);
+                var indexer = part.AfterFirst('[');
+                if (indexer.Length > 0)
+                {
+                    var index = int.Parse(indexer.BeforeFirst(']'));
+                    current = ((IEnumerable)current).Cast<object>().Skip(index).First();
+                }
             }
 
             return current;

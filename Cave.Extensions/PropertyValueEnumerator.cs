@@ -145,8 +145,44 @@ namespace Cave
 
                 stack.Push(data);
             }
+
+            if (instance is IEnumerable enumerable)
+            {
+                try
+                {
+                    HandleEnumerable(parent, rootPath, enumerable);
+                }
+                catch { }
+            }
         }
 
+        void HandleEnumerable(PropertyData parent, string rootPath, IEnumerable enumerable)
+        {
+            var i = -1;
+            foreach (var item in enumerable)
+            {
+                i++;
+                if (item is null) continue;
+                var type = item.GetType();
+
+                foreach (var property in type.GetProperties(BindingFlags))
+                {
+                    // skip nested
+                    if (PropertyData.IsNested(parent, property, SkipNamespaces, SkipTypes))
+                    {
+                        continue;
+                    }
+
+                    var data = new PropertyData(parent, rootPath + $"[{i}]", property, item);
+                    if (Filter != null && Filter(data))
+                    {
+                        continue;
+                    }
+
+                    stack.Push(data);
+                }
+            }
+        }
         #endregion
     }
 }

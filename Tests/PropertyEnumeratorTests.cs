@@ -18,7 +18,10 @@ namespace Test
             #region Properties
 
             public Item EmptyItem { get; }
+
             public long TestLong { get; } = rnd.Next() * (long)rnd.Next();
+
+            public Item[] ItemArray { get; } = new[] { new Item(), null, new Item() };
 
             #endregion Properties
         }
@@ -41,6 +44,7 @@ namespace Test
             public Intermediate Intermediate { get; } = new Intermediate();
 
             public Item TestItem { get; } = new Item();
+
             public object TestRandom { get; } = rnd;
 
             #endregion Properties
@@ -109,16 +113,19 @@ namespace Test
                     "/EmptyIntermediate",
                     "/EmptyIntermediate/EmptyItem",
                     "/EmptyIntermediate/EmptyItem/TestInt",
+                    "/EmptyIntermediate/ItemArray",
                     "/EmptyIntermediate/TestLong",
                     "/Intermediate",
                     "/Intermediate/EmptyItem",
                     "/Intermediate/EmptyItem/TestInt",
+                    "/Intermediate/ItemArray",
                     "/Intermediate/TestLong",
                     "/TestItem",
                     "/TestItem/TestInt",
                     "/TestRandom"
                 };
-                Assert.IsTrue(sequence.Select(p => p.FullPath).SequenceEqual(sequence1));
+                var items = sequence.ToList();
+                Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence1));
             }
             else
             {
@@ -127,12 +134,16 @@ namespace Test
                     "/EmptyIntermediate",
                     "/Intermediate",
                     "/Intermediate/EmptyItem",
+                    "/Intermediate/ItemArray",
+                    "/Intermediate/ItemArray[0]/TestInt",
+                    "/Intermediate/ItemArray[2]/TestInt",
                     "/Intermediate/TestLong",
                     "/TestItem",
                     "/TestItem/TestInt",
                     "/TestRandom"
                 };
-                Assert.IsTrue(sequence.Select(p => p.FullPath).SequenceEqual(sequence2));
+                var items = sequence.ToList();
+                Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence2));
             }
         }
 
@@ -181,6 +192,7 @@ namespace Test
             TestRoot(root);
             foreach (var property in sequence)
             {
+                Assert.IsTrue(property.Source is not null);
                 Assert.AreEqual(property.Value, root.GetPropertyValue(property.FullPath));
             }
         }
