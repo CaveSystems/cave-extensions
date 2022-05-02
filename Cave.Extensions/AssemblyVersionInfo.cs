@@ -111,7 +111,8 @@ namespace Cave
                 {
                     if (attribute is AssemblyInformationalVersionAttribute a)
                     {
-                        i.InformalVersion = SemanticVersion.TryParse(a.InformationalVersion);
+                        SemVer.TryParse(a.InformationalVersion, false, out var iv);
+                        i.InformalVersion = iv;
                         continue;
                     }
                 }
@@ -198,7 +199,7 @@ namespace Cave
         public Version AssemblyVersion;
 
         /// <summary>The Assembly display version.</summary>
-        public SemanticVersion InformalVersion;
+        public SemVer InformalVersion;
 
         /// <summary>The Setup Version.</summary>
         public Version SetupVersion;
