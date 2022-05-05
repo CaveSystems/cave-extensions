@@ -18,6 +18,7 @@ namespace Cave
         /// <param name="withValue">List only sub-properties with values.</param>
         /// <param name="noRecursion">Disable recursion.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
+        [Obsolete("Use GetProperties(instance, flags, bindingFlags, filter) instead!")]
         public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags, bool withValue, bool noRecursion)
             => GetProperties(instance, bindingFlags: bindingFlags, withValue: withValue, noRecursion: noRecursion);
 
@@ -28,7 +29,17 @@ namespace Cave
         /// <param name="noRecursion">Disable recursion.</param>
         /// <param name="filter">Allows to filter properties.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
+        [Obsolete("Use GetProperties(instance, flags, bindingFlags, filter) instead!")]
         public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false, bool noRecursion = false, PropertyDataFilter filter = null)
+            => GetProperties(instance, (withValue ? PropertyFlags.FilterUnset : 0) | (noRecursion ? 0 : PropertyFlags.Recursive), bindingFlags, filter);
+
+        /// <summary>Get a list of available properties.</summary>
+        /// <param name="instance">Object instance to read.</param>
+        /// <param name="flags">Filter flags for property search.</param>
+        /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
+        /// <param name="filter">Allows to filter properties.</param>
+        /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
+        public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = 0, PropertyDataFilter filter = null)
         {
             if (instance == null)
             {
@@ -40,9 +51,10 @@ namespace Cave
                 bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             }
 
-            return withValue
-                ? new PropertyValueEnumerator(instance, bindingFlags, !noRecursion, filter)
-                : new PropertyEnumerator(instance.GetType(), bindingFlags, !noRecursion, filter);
+            var recursive = flags.HasFlag(PropertyFlags.Recursive);
+            return flags.HasFlag(PropertyFlags.FilterUnset)
+                ? new PropertyValueEnumerator(instance, bindingFlags, recursive, filter)
+                : new PropertyEnumerator(instance.GetType(), instance, bindingFlags, recursive, filter);
         }
 
         /// <summary>Gets the specified property value.</summary>

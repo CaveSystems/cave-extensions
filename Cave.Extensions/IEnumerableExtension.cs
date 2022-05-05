@@ -685,5 +685,19 @@ namespace Cave
         }
 
         #endregion
+
+        /// <summary>
+        /// Runs an action for each item within the specified <paramref name="enumerable"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable">Items to enumerate</param>
+        /// <param name="action">Action to run.</param>
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var item in enumerable)
+            {
+                action(item);
+            }
+        }
     }
 }

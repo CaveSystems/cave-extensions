@@ -26,7 +26,7 @@ namespace Cave
             RootPath = rootPath ?? throw new ArgumentNullException(nameof(rootPath));
             PropertyInfo = propertyInfo ?? throw new ArgumentNullException(nameof(propertyInfo));
             Source = source;
-            CanGetValue = (Source != null) && (PropertyInfo.GetGetMethod()?.GetParameters().Length == 0);
+            CanGetValue = (Source != null) && PropertyInfo.CanRead && (PropertyInfo.GetGetMethod()?.GetParameters().Length == 0);
         }
 
         #endregion
@@ -86,6 +86,22 @@ namespace Cave
             }
 
             return PropertyInfo.GetValue(source, null);
+        }
+
+        /// <summary>
+        /// Tries to get the value and catches all exceptions the properties getter throws.
+        /// </summary>
+        /// <returns>Returns the value of the property, null if value cannot be retrieved.</returns>
+        public object TryGetValue()
+        {
+            try
+            {
+                return PropertyInfo.GetValue(Source, null);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #endregion

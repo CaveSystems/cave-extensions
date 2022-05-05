@@ -163,7 +163,9 @@ namespace Test
                 return;
             }
             var p1 = obj.GetProperties(withValue: true);
+            p1.ForEach(TestPropertyWithValue);
             var p2 = obj.GetProperties(withValue: false);
+            p1.ForEach(TestPropertyWithoutValue);
             var p1Count = p1.Count();
             var p2Count = p2.Count();
             if (Program.Verbose)
@@ -171,6 +173,24 @@ namespace Test
                 Console.WriteLine($"{type} PropertyValues: {p1Count} TypeProperties: {p2Count}");
                 foreach (var p in p1) { Console.WriteLine($"+ {p.PropertyInfo}"); }
                 foreach (var p in p2) { Console.WriteLine($"+ {p.PropertyInfo}"); }
+            }
+        }
+
+        static void TestPropertyWithValue(PropertyData property)
+        {
+            Assert.IsTrue(property.Source != null, "Property.Source unset. {0}", property.FullPath);
+            if (property.PropertyInfo.CanRead)
+            {
+                Assert.IsTrue(property.CanGetValue, "Property.CanGetValue unset. {0}", property.FullPath);
+            }
+            TestPropertyWithoutValue(property);
+        }
+
+        static void TestPropertyWithoutValue(PropertyData property)
+        {
+            if (property.FullPath.Count(c => c == '/') > 1)
+            {
+                Assert.IsTrue(property.Parent != null, "Property.Parent unset. {0}", property.FullPath);
             }
         }
 
@@ -201,7 +221,7 @@ namespace Test
         public void PropertyEnumerator()
         {
             var root = new Root();
-            var enumerator = new PropertyEnumerator(typeof(Root), BindingFlags.Public | BindingFlags.Instance, true);
+            var enumerator = new PropertyEnumerator(typeof(Root), root, BindingFlags.Public | BindingFlags.Instance, true);
             var sequence = enumerator.OrderBy(p => p.FullPath);
             TestSequence(sequence, true);
             TestRoot(root);

@@ -17,10 +17,11 @@ namespace Cave
         /// <param name="bindingFlags">Property binding flags.</param>
         /// <param name="recursive">Recursive property search.</param>
         /// <param name="filter">Allows to filter properties.</param>
-        public PropertyEnumerator(Type type, BindingFlags bindingFlags, bool recursive = false, PropertyDataFilter filter = null)
+        public PropertyEnumerator(Type type, object obj, BindingFlags bindingFlags, bool recursive = false, PropertyDataFilter filter = null)
         {
             Filter = filter;
-            Root = type;
+            RootObject = obj;
+            RootType = type;
             BindingFlags = bindingFlags;
             Recursive = recursive;
             Reset();
@@ -36,11 +37,14 @@ namespace Cave
         /// <summary>Gets the used <see cref="BindingFlags" />.</summary>
         public BindingFlags BindingFlags { get; }
 
-        /// <summary>Gets a value indicating whether only the <see cref="Root" /> objects properties are returned or even properties of properties.</summary>
+        /// <summary>Gets a value indicating whether only the <see cref="RootType" /> objects properties are returned or even properties of properties.</summary>
         public bool Recursive { get; }
 
         /// <summary>Gets the root type.</summary>
-        public Type Root { get; }
+        public Type RootType { get; }
+
+        /// <summary>Gets the root type.</summary>
+        public object RootObject { get; }
 
         /// <summary>
         /// Gets or sets the types we will not recurse into.
@@ -57,10 +61,10 @@ namespace Cave
         #region IEnumerable<PropertyData> Members
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive, Filter);
+        IEnumerator IEnumerable.GetEnumerator() => new PropertyEnumerator(RootType, RootObject, BindingFlags, Recursive, Filter);
 
         /// <inheritdoc />
-        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyEnumerator(Root, BindingFlags, Recursive, Filter);
+        IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyEnumerator(RootType, RootObject, BindingFlags, Recursive, Filter);
 
         #endregion
 
@@ -83,7 +87,7 @@ namespace Cave
             Current = stack.Pop() ?? throw new InvalidOperationException();
             if (Recursive)
             {
-                AddProperties(Current, Current.FullPath, Current.PropertyInfo.PropertyType);
+                AddProperties(Current, Current.FullPath, Current.PropertyInfo.PropertyType, Current.CanGetValue ? Current.TryGetValue() : null);
             }
 
             return true;
@@ -93,7 +97,7 @@ namespace Cave
         public void Reset()
         {
             stack = new Stack<PropertyData>();
-            AddProperties(null, string.Empty, Root);
+            AddProperties(null, string.Empty, RootType, RootObject);
         }
 
         /// <inheritdoc />
@@ -103,7 +107,7 @@ namespace Cave
 
         #region Members
 
-        void AddProperties(PropertyData parent, string rootPath, Type type)
+        void AddProperties(PropertyData parent, string rootPath, Type type, object instance)
         {
             foreach (var property in type.GetProperties(BindingFlags))
             {
@@ -113,7 +117,7 @@ namespace Cave
                     continue;
                 }
 
-                var data = new PropertyData(parent, rootPath, property);
+                var data = new PropertyData(parent, rootPath, property, instance);
                 if (Filter != null && Filter(data))
                 {
                     continue;

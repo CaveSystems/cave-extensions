@@ -129,15 +129,20 @@ namespace Cave
             }
 
             var instanceType = instance.GetType();
-            foreach (var property in instanceType.GetProperties(BindingFlags))
+            foreach (var propertyInfo in instanceType.GetProperties(BindingFlags))
             {
                 // skip nested
-                if (PropertyData.IsNested(parent, property, SkipNamespaces, SkipTypes))
+                if (PropertyData.IsNested(parent, propertyInfo, SkipNamespaces, SkipTypes))
                 {
                     continue;
                 }
 
-                var data = new PropertyData(parent, rootPath, property, instance);
+                if (propertyInfo.IsIndexProperty())
+                {
+                    continue;
+                }
+
+                var data = new PropertyData(parent, rootPath, propertyInfo, instance);
                 if (Filter != null && Filter(data))
                 {
                     continue;
