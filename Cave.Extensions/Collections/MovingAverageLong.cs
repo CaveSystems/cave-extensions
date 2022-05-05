@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Cave.Collections
@@ -30,7 +31,7 @@ namespace Cave.Collections
 
         /// <summary>Gets the average for the current items.</summary>
         /// <value>The average.</value>
-        public long Average => total / items.Count;
+        public long Average => total / Math.Max(1, items.Count);
 
         /// <summary>Clears this instance.</summary>
         public void Clear()
