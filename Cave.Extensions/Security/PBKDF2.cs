@@ -27,7 +27,11 @@ namespace Cave.Security
 
         #region Private Constructors
 
-        PBKDF2(HMAC algorithm) => this.algorithm = algorithm ?? new HMACSHA512();
+        PBKDF2(HMAC algorithm)
+        {
+            this.algorithm = algorithm ?? new HMACSHA512();
+            CreateSalt();
+        }
 
         #endregion Private Constructors
 
@@ -262,6 +266,15 @@ namespace Cave.Security
             }
 
             algorithm.Key = (byte[])password.Clone();
+        }
+
+        /// <summary>Creates a new salt.</summary>
+        public void CreateSalt()
+        {
+            var csp = new RNGCryptoServiceProvider();
+            var newSalt = new byte[32];
+            csp.GetBytes(newSalt);
+            SetSalt(newSalt);
         }
 
         /// <summary>Sets the salt.</summary>
