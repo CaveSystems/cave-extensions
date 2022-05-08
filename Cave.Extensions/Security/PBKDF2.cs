@@ -269,13 +269,7 @@ namespace Cave.Security
         }
 
         /// <summary>Creates a new salt.</summary>
-        public void CreateSalt()
-        {
-            var csp = new RNGCryptoServiceProvider();
-            var newSalt = new byte[32];
-            csp.GetBytes(newSalt);
-            SetSalt(newSalt);
-        }
+        public void CreateSalt() => SetSalt(RNG.GetBytes(32));
 
         /// <summary>Sets the salt.</summary>
         /// <param name="salt">The salt.</param>
