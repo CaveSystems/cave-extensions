@@ -214,6 +214,8 @@ namespace Test
             {
                 Assert.IsTrue(property.Source is not null);
                 Assert.AreEqual(property.Value, root.GetPropertyValue(property.FullPath));
+                var result = root.TryGetPropertyValue(property.FullPath, out var test);
+                Assert.AreEqual(property.Value, test);
             }
         }
 
