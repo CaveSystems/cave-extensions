@@ -130,8 +130,7 @@ namespace Cave
                 var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
                 if (property == null)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(fullPath),
-                        $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
                 }
 
                 current = property.GetValue(current, null);
@@ -272,7 +271,7 @@ namespace Cave
                     return GetPropertyValueError.NullReference;
                 }
 
-                var property = current.GetType().GetProperty(part, bindingFlags);
+                var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
                 if (property == null)
                 {
                     result = null;
@@ -282,6 +281,12 @@ namespace Cave
                 try
                 {
                     current = property.GetValue(current, null);
+                    var indexer = part.AfterFirst('[');
+                    if (indexer.Length > 0)
+                    {
+                        var index = int.Parse(indexer.BeforeFirst(']'));
+                        current = ((IEnumerable)current).Cast<object>().Skip(index).First();
+                    }
                 }
                 catch (TargetParameterCountException)
                 {

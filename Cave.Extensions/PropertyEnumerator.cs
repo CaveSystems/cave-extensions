@@ -14,6 +14,7 @@ namespace Cave
 
         /// <summary>Initializes a new instance of the <see cref="PropertyEnumerator" /> class.</summary>
         /// <param name="type">Type to iterate.</param>
+        /// <param name="obj">The source object of <paramref name="type"/>.</param>
         /// <param name="bindingFlags">Property binding flags.</param>
         /// <param name="recursive">Recursive property search.</param>
         /// <param name="filter">Allows to filter properties.</param>
