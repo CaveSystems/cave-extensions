@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Cave
 {
-    /// <summary>Provides semantic version numbers: <see cref="https://semver.org/"/></summary>
+    /// <summary>Provides semantic version numbers: <see href="https://semver.org/"/></summary>
     /// <seealso cref="IEquatable{T}" />
     /// <seealso cref="IComparable{SemanticVersion}" />
     public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
@@ -40,7 +40,7 @@ namespace Cave
         }
 
         /// <summary>Parses the specified value major.minor[.patch][-meta[.pre]].</summary>
-        /// <param name="value">The value.</param>
+        /// <param name="text">The value.</param>
         /// <param name="throwEx">if set to <c>true</c> [throw exception on parser error].</param>
         /// <param name="version">The version.</param>
         /// <returns>Returns true if the version was parsed successfully, false otherwise.</returns>
@@ -316,7 +316,7 @@ namespace Cave
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
-        public bool Equals(SemVer? other) => other is null ? false : CompareTo(other) == 0;
+        public bool Equals(SemVer? other) => other is not null && CompareTo(other) == 0;
 
         #endregion
 

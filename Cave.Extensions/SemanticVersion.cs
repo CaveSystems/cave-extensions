@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+
+#nullable enable
 
 namespace Cave
 {
-    /// <summary>Provides semantic version numbers: <see cref="https://semver.org/"/></summary>
+    /// <summary>Provides semantic version numbers: <see href="https://semver.org/"/></summary>
     /// <seealso cref="IEquatable{T}" />
     /// <seealso cref="IComparable{SemanticVersion}" />
     [Obsolete("Use SemVer instead!")]
