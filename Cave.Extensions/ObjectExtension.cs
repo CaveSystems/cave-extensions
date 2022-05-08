@@ -117,11 +117,7 @@ namespace Cave
                 bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             }
 
-            IList<string> path = fullPath?.Split(new[]
-            {
-                '.',
-                '/'
-            }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+            IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
             var current = instance;
             for (var i = 0; i < path.Count; i++)
             {

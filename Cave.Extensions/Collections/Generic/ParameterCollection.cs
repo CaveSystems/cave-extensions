@@ -117,7 +117,7 @@ namespace Cave.Collections.Generic
                     result.Append(' ');
                 }
 
-                var containsSpace = parameter.IndexOf(' ') >= 0;
+                var containsSpace = parameter.Contains(' ');
                 if (containsSpace)
                 {
                     result.Append('"');

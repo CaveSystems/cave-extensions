@@ -233,7 +233,7 @@ namespace Cave.Collections
                 result.Append(Separator);
                 if (value != null)
                 {
-                    if (value.IndexOf(' ') >= 0)
+                    if (value.Contains(' '))
                     {
                         result.Append('\'');
                         result.Append(value.Replace("'", "''"));
