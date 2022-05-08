@@ -1,4 +1,7 @@
-﻿#if !NET5_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
+﻿#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+//analyzer does not ignore this file...
+#pragma warning disable IDE0055
+#else
 
 #pragma warning disable CA2231
 
