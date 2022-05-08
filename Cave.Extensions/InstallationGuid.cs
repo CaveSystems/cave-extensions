@@ -51,13 +51,14 @@ namespace Cave
 #else
                 if (Platform.IsMicrosoft)
                 {
+#pragma warning disable CA1416
                     var software = Registry.LocalMachine.OpenSubKey(@"SOFTWARE");
                     if (software.GetValue("SystemGuid") is not byte[] data)
                     {
                         data = Guid.NewGuid().ToByteArray();
                         software.SetValue("SystemGuid", data, RegistryValueKind.Binary);
                     }
-
+#pragma warning restore CA1416
                     return new Guid(data);
                 }
 #endif
