@@ -138,7 +138,14 @@ namespace Cave
                 if (indexer.Length > 0)
                 {
                     var index = int.Parse(indexer.BeforeFirst(']'));
-                    current = ((IEnumerable)current).Cast<object>().Skip(index).First();
+                    try
+                    {
+                        current = ((IEnumerable)current).Cast<object>().Skip(index).First();
+                    }
+                    catch
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property index [{indexer}] of {fullPath} is out of valid range!");
+                    }
                 }
             }
 
@@ -285,7 +292,15 @@ namespace Cave
                     if (indexer.Length > 0)
                     {
                         var index = int.Parse(indexer.BeforeFirst(']'));
-                        current = ((IEnumerable)current).Cast<object>().Skip(index).First();
+                        if (current is IEnumerable enumerable)
+                        {
+                            current = enumerable.Cast<object>().Skip(index).FirstOrDefault();
+                        }
+                        else
+                        {
+                            result = null;
+                            return GetPropertyValueError.InvalidType;
+                        }
                     }
                 }
                 catch (TargetParameterCountException)
