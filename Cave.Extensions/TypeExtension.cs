@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -55,6 +56,15 @@ namespace Cave
             where T : Attribute =>
             (T)GetAttribute(type, typeof(T), inherit);
 
+        /// <summary>Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an empty list is returned.</summary>
+        /// <typeparam name="T">The attribute type to check for.</typeparam>
+        /// <param name="type">The type to check.</param>
+        /// <param name="inherit">Inherit attributes from parents.</param>
+        /// <returns>Returns the attributes found.</returns>
+        public static IEnumerable<T> GetAttributes<T>(this Type type, bool inherit = false)
+            where T : Attribute =>
+            GetAttributes(type, typeof(T), inherit).Cast<T>();
+
         /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
         /// <param name="type">The type to check.</param>
         /// <param name="attributeType">The attribute type to check for.</param>
@@ -63,6 +73,15 @@ namespace Cave
         public static object GetAttribute(this Type type, Type attributeType, bool inherit = false) =>
             type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
          ?? throw new ArgumentNullException(nameof(type));
+
+        /// <summary>Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an empty list is returned.</summary>
+        /// <param name="type">The type to check.</param>
+        /// <param name="attributeType">The attribute type to check for.</param>
+        /// <param name="inherit">Inherit attributes from parents.</param>
+        /// <returns>Returns the attributes found.</returns>
+        public static IEnumerable GetAttributes(this Type type, Type attributeType, bool inherit = false) =>
+            type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType()))
+            ?? throw new ArgumentNullException(nameof(type));
 
         /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
         /// <param name="type">Type to search for the product attribute.</param>

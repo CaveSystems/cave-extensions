@@ -111,45 +111,8 @@ namespace Cave
             {
                 throw new ArgumentNullException(nameof(instance));
             }
-
-            if (bindingFlags == 0)
-            {
-                bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-            }
-
-            IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-            var current = instance;
-            for (var i = 0; i < path.Count; i++)
-            {
-                var part = path[i];
-                if (current == null)
-                {
-                    throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
-                }
-
-                var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
-                if (property == null)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
-                }
-
-                current = property.GetValue(current, null);
-                var indexer = part.AfterFirst('[');
-                if (indexer.Length > 0)
-                {
-                    var index = int.Parse(indexer.BeforeFirst(']'));
-                    try
-                    {
-                        current = ((IEnumerable)current).Cast<object>().Skip(index).First();
-                    }
-                    catch
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property index [{indexer}] of {fullPath} is out of valid range!");
-                    }
-                }
-            }
-
-            return current;
+            var result = TryGetPropertyValue(instance, fullPath, out var value, bindingFlags, true);
+            return (result == GetPropertyValueError.None) ? value : throw new($"Unhandled error {result}!");
         }
 
         /// <summary>Gets the specified property value and checks the return value type.</summary>
@@ -256,6 +219,20 @@ namespace Cave
         /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
         /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
         public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = 0)
+            => TryGetPropertyValue(instance, fullPath, out result, bindingFlags, false);
+
+        /// <summary>Gets the specified property value.</summary>
+        /// <remarks>
+        /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
+        /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+        /// </remarks>
+        /// <param name="instance">Instance to read from.</param>
+        /// <param name="fullPath">Full property path.</param>
+        /// <param name="result">Returns the result value.</param>
+        /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
+        /// <param name="throwException">Throw exceptions instead of returning an error code.</param>
+        /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
+        static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags, bool throwException)
         {
             if (instance == null)
             {
@@ -274,6 +251,10 @@ namespace Cave
                 var part = path[i];
                 if (current == null)
                 {
+                    if (throwException)
+                    {
+                        throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
+                    }
                     result = null;
                     return GetPropertyValueError.NullReference;
                 }
@@ -281,6 +262,10 @@ namespace Cave
                 var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
                 if (property == null)
                 {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                    }
                     result = null;
                     return GetPropertyValueError.InvalidPath;
                 }
@@ -288,7 +273,20 @@ namespace Cave
                 try
                 {
                     current = property.GetValue(current, null);
-                    var indexer = part.AfterFirst('[');
+                }
+                catch
+                {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                    }
+                    result = null;
+                    return GetPropertyValueError.InvalidPath;
+                }
+
+                var indexer = part.AfterFirst('[');
+                try
+                {
                     if (indexer.Length > 0)
                     {
                         var index = int.Parse(indexer.BeforeFirst(']'));
@@ -296,8 +294,21 @@ namespace Cave
                         {
                             current = enumerable.Cast<object>().Skip(index).FirstOrDefault();
                         }
+                        else if (current is null)
+                        {
+                            if (throwException)
+                            {
+                                throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
+                            }
+                            result = null;
+                            return GetPropertyValueError.NullReference;
+                        }
                         else
                         {
+                            if (throwException)
+                            {
+                                throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is of invalid type {current.GetType()}!");
+                            }
                             result = null;
                             return GetPropertyValueError.InvalidType;
                         }
@@ -305,11 +316,19 @@ namespace Cave
                 }
                 catch (TargetParameterCountException)
                 {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property {fullPath} requires multiple target parameters!");
+                    }
                     result = null;
                     return GetPropertyValueError.ParameterRequired;
                 }
                 catch
                 {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property index [{indexer}] of {fullPath} is out of valid range!");
+                    }
                     result = null;
                     return GetPropertyValueError.InvalidPath;
                 }
