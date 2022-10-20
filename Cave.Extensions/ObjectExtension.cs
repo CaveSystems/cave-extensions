@@ -20,7 +20,7 @@ namespace Cave
         /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
         [Obsolete("Use GetProperties(instance, flags, bindingFlags, filter) instead!")]
         public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags, bool withValue, bool noRecursion)
-            => GetProperties(instance, bindingFlags: bindingFlags, withValue: withValue, noRecursion: noRecursion);
+            => GetProperties(instance, bindingFlags: bindingFlags, withValue: withValue, noRecursion: noRecursion, filter: null);
 
         /// <summary>Get a list of available properties.</summary>
         /// <param name="instance">Object instance to read.</param>
@@ -259,29 +259,37 @@ namespace Cave
                     return GetPropertyValueError.NullReference;
                 }
 
-                var property = current.GetType().GetProperty(part.BeforeFirst('['), bindingFlags);
-                if (property == null)
+                var namePart = part.BeforeFirst('[');
+                if (namePart.Length == 0) 
                 {
-                    if (throwException)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
-                    }
-                    result = null;
-                    return GetPropertyValueError.InvalidPath;
+                    //no sub item only indexer given
                 }
+                else
+                {
+                    var property = current.GetType().GetProperty(namePart, bindingFlags);
+                    if (property == null)
+                    {
+                        if (throwException)
+                        {
+                            throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                        }
+                        result = null;
+                        return GetPropertyValueError.InvalidPath;
+                    }
 
-                try
-                {
-                    current = property.GetValue(current, null);
-                }
-                catch
-                {
-                    if (throwException)
+                    try
                     {
-                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                        current = property.GetValue(current, null);
                     }
-                    result = null;
-                    return GetPropertyValueError.InvalidPath;
+                    catch
+                    {
+                        if (throwException)
+                        {
+                            throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                        }
+                        result = null;
+                        return GetPropertyValueError.InvalidPath;
+                    }
                 }
 
                 var indexer = part.AfterFirst('[');
