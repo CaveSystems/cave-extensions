@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Security.Cryptography;
 
 namespace Cave
@@ -81,10 +82,26 @@ namespace Cave
         protected override byte[] HashFinal() => Hash;
 
         /// <summary>Gets the value of the computed hash code.</summary>
-#if !NETSTANDARD13 && !NETCOREAPP10
+#if NET20_OR_GREATER || NET5_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
         public override byte[] Hash => BitConverter.GetBytes(Value);
 #else
         public byte[] Hash => BitConverter.GetBytes(Value);
 #endif
+
+#pragma warning disable CS0809
+
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => throw new NotSupportedException();
+
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj) => throw new NotSupportedException();
+
+#pragma warning restore CS0809
     }
 }

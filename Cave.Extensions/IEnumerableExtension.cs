@@ -14,7 +14,7 @@ namespace Cave
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="items">The items.</param>
         /// <returns>Returns the combined hashcode for all fields of all items.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculateFieldHash<T>(this IEnumerable<T> items)
             => CalculateFieldHash(items, 0);
 
@@ -23,7 +23,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="bindingFlags">Flags used to search for fields.</param>
         /// <returns>Returns the combined hashcode for all fields of all items.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculateFieldHash<T>(this IEnumerable<T> items, BindingFlags bindingFlags)
         {
             if (items == null)
@@ -53,7 +53,7 @@ namespace Cave
         /// <param name="obj">The object.</param>
         /// <param name="bindingFlags">Flags used to search for fields.</param>
         /// <returns>Returns the combined hashcode for all fields.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculateFieldHash<T>(this object obj, BindingFlags bindingFlags)
         {
             if (obj == null)
@@ -80,7 +80,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="bindingFlags">Flags used to search for properties.</param>
         /// <returns>Returns the combined hashcode for all properties of all items.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculatePropertyHash<T>(this IEnumerable<T> items, BindingFlags bindingFlags)
         {
             if (items == null)
@@ -113,7 +113,7 @@ namespace Cave
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="items">The items.</param>
         /// <returns>Returns the combined hashcode for all properties of all items.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculatePropertyHash<T>(this IEnumerable<T> items)
             => CalculatePropertyHash(items, 0);
 
@@ -122,7 +122,7 @@ namespace Cave
         /// <param name="obj">The object.</param>
         /// <param name="bindingFlags">Flags used to search for properties.</param>
         /// <returns>Returns the combined hashcode for all properties.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long CalculatePropertyHash<T>(this object obj, BindingFlags bindingFlags)
         {
             if (obj == null)
@@ -157,7 +157,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryOr<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
             if (items == null)
@@ -179,7 +179,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryXor<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
             if (items == null)
@@ -201,7 +201,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryAnd<T>(this IEnumerable<T> items, Func<T, long> predicate)
         {
             if (items == null)
@@ -227,7 +227,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryOr<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
             if (items == null)
@@ -249,7 +249,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryXor<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
             if (items == null)
@@ -271,7 +271,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryAnd<T>(this IEnumerable<T> items, Func<T, ulong> predicate)
         {
             if (items == null)
@@ -297,7 +297,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryOr<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
             if (items == null)
@@ -319,7 +319,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryXor<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
             if (items == null)
@@ -341,7 +341,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryAnd<T>(this IEnumerable<T> items, Func<T, int> predicate)
         {
             if (items == null)
@@ -367,7 +367,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryOr<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
             if (items == null)
@@ -389,7 +389,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryXor<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
             if (items == null)
@@ -411,7 +411,7 @@ namespace Cave
         /// <param name="items">The items.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryAnd<T>(this IEnumerable<T> items, Func<T, uint> predicate)
         {
             if (items == null)
@@ -435,7 +435,7 @@ namespace Cave
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryOr(this IEnumerable<long> items)
         {
             if (items == null)
@@ -455,7 +455,7 @@ namespace Cave
         /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryXor(this IEnumerable<long> items)
         {
             if (items == null)
@@ -475,7 +475,7 @@ namespace Cave
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long BinaryAnd(this IEnumerable<long> items)
         {
             if (items == null)
@@ -499,7 +499,7 @@ namespace Cave
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryOr(this IEnumerable<ulong> items)
         {
             if (items == null)
@@ -519,7 +519,7 @@ namespace Cave
         /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryXor(this IEnumerable<ulong> items)
         {
             if (items == null)
@@ -539,7 +539,7 @@ namespace Cave
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong BinaryAnd(this IEnumerable<ulong> items)
         {
             if (items == null)
@@ -563,7 +563,7 @@ namespace Cave
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryOr(this IEnumerable<int> items)
         {
             if (items == null)
@@ -583,7 +583,7 @@ namespace Cave
         /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryXor(this IEnumerable<int> items)
         {
             if (items == null)
@@ -603,7 +603,7 @@ namespace Cave
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int BinaryAnd(this IEnumerable<int> items)
         {
             if (items == null)
@@ -627,7 +627,7 @@ namespace Cave
         /// <summary>Computes the binary or result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryOr(this IEnumerable<uint> items)
         {
             if (items == null)
@@ -647,7 +647,7 @@ namespace Cave
         /// <summary>Computes the binary xor result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary or result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryXor(this IEnumerable<uint> items)
         {
             if (items == null)
@@ -667,7 +667,7 @@ namespace Cave
         /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
         /// <param name="items">The items.</param>
         /// <returns>The binary and result of the values in the sequence.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint BinaryAnd(this IEnumerable<uint> items)
         {
             if (items == null)

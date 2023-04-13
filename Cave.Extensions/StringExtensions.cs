@@ -38,7 +38,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="character">The character to search for.</param>
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string AfterFirst(this string value, char character)
         {
             var i = value?.IndexOf(character) ?? -1;
@@ -49,7 +49,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="pattern">The character to search for.</param>
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string AfterFirst(this string value, string pattern)
         {
             if (pattern == null)
@@ -65,7 +65,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="character">The pattern to search for.</param>
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string AfterLast(this string value, char character)
         {
             var i = value?.LastIndexOf(character) ?? -1;
@@ -76,7 +76,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="pattern">The pattern to search for.</param>
         /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string AfterLast(this string value, string pattern)
         {
             if (pattern == null)
@@ -92,7 +92,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="character">The pattern to search for.</param>
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string BeforeFirst(this string value, char character)
         {
             if (value == null) return string.Empty;
@@ -104,7 +104,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="pattern">The character to search for.</param>
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string BeforeFirst(this string value, string pattern)
         {
             if (value == null) return string.Empty;
@@ -116,7 +116,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="character">The character to search for.</param>
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string BeforeLast(this string value, char character)
         {
             if (value == null) return string.Empty;
@@ -128,7 +128,7 @@ namespace Cave
         /// <param name="value">The string value.</param>
         /// <param name="pattern">The pattern to search for.</param>
         /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string BeforeLast(this string value, string pattern)
         {
             if (value == null) return string.Empty;
@@ -145,14 +145,14 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="c">The character to pre and append.</param>
         /// <returns>Returns a string starting and ending with the specified character.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Box(this string text, char c) => c + text + c;
 
         /// <summary>Boxes the specified text with the given string.</summary>
         /// <param name="text">The text.</param>
         /// <param name="s">The string to pre and append.</param>
         /// <returns>Returns a string starting and ending with the specified string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Box(this string text, string s) => s + text + s;
 
         /// <summary>Boxes the specified text with the given string.</summary>
@@ -160,7 +160,7 @@ namespace Cave
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <returns>Returns a string starting and ending with the specified string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Box(this string text, string start, string end) => start + text + end;
 
 #if NET5_0_OR_GREATER
@@ -170,14 +170,14 @@ namespace Cave
         /// <param name="c">The character to seek.</param>
         /// <remarks>This method performs an ordinal (case-sensitive and culture-insensitive) comparison.</remarks>
         /// <returns>true if the value parameter occurs within this string; otherwise, false.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool Contains(this string text, char c) => text.IndexOf(c) >= 0;
 #endif
 
         /// <summary>Tries to detect the used newline chars in the specified string.</summary>
         /// <param name="text">The text.</param>
         /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string DetectNewLine(this string text)
         {
             if (text == null)
@@ -201,7 +201,7 @@ namespace Cave
         /// <summary>Escapes all characters at the specified string below ascii 32 and above ascii 127.</summary>
         /// <param name="text">The text.</param>
         /// <returns>Returns an escaped ascii 7 bit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Escape(this string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -251,7 +251,7 @@ namespace Cave
         /// <summary>Escapes all characters at the specified string below ascii 32.</summary>
         /// <param name="text">The text.</param>
         /// <returns>Returns an escaped utf8 string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string EscapeUtf8(this string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -302,7 +302,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length.</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ForceLength(this string text, int maxLength) => ForceLength(text, maxLength, string.Empty, " ");
 
         /// <summary>Enforces a specific string length.</summary>
@@ -311,7 +311,7 @@ namespace Cave
         /// <param name="prefix">The prefix to add.</param>
         /// <param name="suffix">The suffix to add.</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ForceLength(this string text, int maxLength, string prefix, string suffix)
         {
             text ??= string.Empty;
@@ -344,7 +344,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length.</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ForceMaxLength(this string text, int maxLength)
         {
             text ??= string.Empty;
@@ -356,7 +356,7 @@ namespace Cave
         /// <param name="maxLength">The maximum length.</param>
         /// <param name="endReplacer">The end replacer. (String appended to the end when cutting the text. Sample: "..").</param>
         /// <returns>Returns a string with a length smaller than or equal to maxLength.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ForceMaxLength(this string text, int maxLength, string endReplacer)
         {
             if (endReplacer == null)
@@ -371,7 +371,7 @@ namespace Cave
         /// <param name="text">The format string.</param>
         /// <param name="args">The parameters.</param>
         /// <returns>The formatted string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Format(this string text, params object[] args)
         {
             if (text == null) return string.Empty;
@@ -393,7 +393,7 @@ namespace Cave
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatBinarySize(this float size, IFormatProvider culture = null)
         {
             if (culture == null)
@@ -422,35 +422,35 @@ namespace Cave
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatBinarySize(this double value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
 
         /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatBinarySize(this decimal value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
 
         /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatBinarySize(this ulong value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
 
         /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The formatted string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatBinarySize(this long value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatSize(this float size, IFormatProvider culture = null)
         {
             if (culture == null)
@@ -484,35 +484,35 @@ namespace Cave
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float)size, culture);
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float)size, culture);
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float)size, culture);
 
         /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
         /// <param name="size">The size.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float)size, culture);
 
         /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
         /// <param name="timeSpan">TimeSpan to format.</param>
         /// <param name="culture">Culture used to format the double value.</param>
         /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatTime(this TimeSpan timeSpan, IFormatProvider culture = null)
         {
             if (culture == null)
@@ -583,7 +583,7 @@ namespace Cave
         /// <param name="seconds">Seconds to format.</param>
         /// <param name="culture">Culture used to format the double value.</param>
         /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatTime(this double seconds, IFormatProvider culture = null)
         {
             if (culture == null)
@@ -629,7 +629,7 @@ namespace Cave
         /// <param name="millisecondDigits">The number of millisecond digits.</param>
         /// <returns>The formatted string.</returns>
         /// <exception cref="NotSupportedException">Only 0-3 millisecond digits are supported!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string FormatTimeSpan(this TimeSpan timeSpan, int millisecondDigits)
         {
             var result = new StringBuilder();
@@ -671,7 +671,7 @@ namespace Cave
         /// <param name="splitter">Character used to split parts.</param>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetCamelCaseName(this string text, string validChars, char splitter)
         {
             text = text.ReplaceInvalidChars(validChars, $"{splitter}");
@@ -682,7 +682,7 @@ namespace Cave
         /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
 
         /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
@@ -690,7 +690,7 @@ namespace Cave
         /// <param name="splitter">Character used to split parts.</param>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetLowerCamelCaseName(this string text, string validChars, char splitter)
         {
             text = text.ReplaceInvalidChars(validChars, $"{splitter}");
@@ -701,7 +701,7 @@ namespace Cave
         /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetLowerCamelCaseName(this string text) => GetLowerCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
 
         /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
@@ -709,7 +709,7 @@ namespace Cave
         /// <param name="splitter">Character used to split parts.</param>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetSnakeCaseName(this string text, string validChars, char splitter)
         {
             text ??= string.Empty;
@@ -721,7 +721,7 @@ namespace Cave
         /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
         /// <param name="text">The text to use.</param>
         /// <returns>A camel case version of text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
 
         /// <summary>Gets a part of a string.</summary>
@@ -734,7 +734,7 @@ namespace Cave
         /// <exception cref="System.ArgumentNullException">data.</exception>
         /// <exception cref="ArgumentException">StartMark not found! or EndMark not found!.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetString(this string data, int start, char startMark, char endMark, bool throwException = true)
         {
             if (data == null)
@@ -791,7 +791,7 @@ namespace Cave
         /// <exception cref="System.ArgumentNullException">data or startMark or endMark.</exception>
         /// <exception cref="ArgumentException">StartMark not found! or EndMark not found!.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">StartMark does not match!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetString(this string data, int start, string startMark, string endMark, bool throwException = true)
         {
             if (data == null)
@@ -853,7 +853,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns a new string containing only the valid chars.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetValidChars(this string text, string validChars)
         {
             if (text == null || string.IsNullOrEmpty(validChars))
@@ -877,7 +877,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns a new string containing only the invalid chars.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string GetInvalidChars(this string text, string validChars)
         {
             if (text == null || string.IsNullOrEmpty(validChars))
@@ -901,7 +901,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns true if the text contains invalid chars.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool HasInvalidChars(this string text, string validChars)
         {
             if (text == null || string.IsNullOrEmpty(validChars))
@@ -924,7 +924,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns true if the text contains valid chars.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool HasValidChars(this string text, string validChars)
         {
             if (text == null || string.IsNullOrEmpty(validChars))
@@ -947,7 +947,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="validChars">The string with the valid chars.</param>
         /// <returns>Returns the index or -1.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int IndexOfInvalidChar(this string text, string validChars)
         {
             if (text != null)
@@ -973,7 +973,7 @@ namespace Cave
         /// <param name="validChars">The string with the valid chars.</param>
         /// <param name="start">The start index.</param>
         /// <returns>Returns the index or -1.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int IndexOfInvalidChar(this string text, string validChars, int start)
         {
             if (text != null)
@@ -998,7 +998,7 @@ namespace Cave
         /// <param name="text">The text to check.</param>
         /// <param name="marker">The marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool IsBoxed(this string text, char marker) => !string.IsNullOrEmpty(text) && (text[0] == marker) && (text[^1] == marker);
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
@@ -1006,14 +1006,14 @@ namespace Cave
         /// <param name="start">The start marker.</param>
         /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool IsBoxed(this string text, char start, char end) => !string.IsNullOrEmpty(text) && (text[0] == start) && (text[^1] == end);
 
         /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
         /// <param name="text">The text to check.</param>
         /// <param name="marker">The start marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool IsBoxed(this string text, string marker)
         {
             if (string.IsNullOrEmpty(text))
@@ -1034,7 +1034,7 @@ namespace Cave
         /// <param name="start">The start marker.</param>
         /// <param name="end">The end marker.</param>
         /// <returns>Returns true if the string is boxed with the start and end mark.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool IsBoxed(this string text, string start, string end)
         {
             if (string.IsNullOrEmpty(text))
@@ -1060,7 +1060,7 @@ namespace Cave
         /// <param name="separator">The seperator.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, string separator, IFormatProvider formatProvider = null)
         {
             if (array == null)
@@ -1097,7 +1097,7 @@ namespace Cave
         /// <param name="separator">The seperator.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo) => Join(array, separator, (IFormatProvider)cultureInfo);
 
         /// <summary>Joins a collection to a string.</summary>
@@ -1105,7 +1105,7 @@ namespace Cave
         /// <param name="separator">The separator.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo) => Join(array, separator.ToString(), (IFormatProvider)cultureInfo);
 
         /// <summary>Joins a collection to a string.</summary>
@@ -1113,21 +1113,21 @@ namespace Cave
         /// <param name="separator">The separator.</param>
         /// <param name="formatProvider">The format provider info.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, char separator, IFormatProvider formatProvider = null) => Join(array, separator.ToString(), formatProvider);
 
         /// <summary>Joins a collection to a string.</summary>
         /// <param name="array">The string array.</param>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, CultureInfo cultureInfo) => Join(array, (IFormatProvider)cultureInfo);
 
         /// <summary>Joins a collection to a string.</summary>
         /// <param name="array">The string array.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Join(this IEnumerable array, IFormatProvider formatProvider = null)
         {
             if (formatProvider == null)
@@ -1153,7 +1153,7 @@ namespace Cave
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
         {
             if (parts == null || parts.Length == 0)
@@ -1189,7 +1189,7 @@ namespace Cave
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinCamelCase(this IEnumerable parts, CultureInfo culture = null)
         {
             if (parts == null)
@@ -1225,7 +1225,7 @@ namespace Cave
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinLowerCamelCase(this string[] parts, CultureInfo culture = null)
         {
             if (parts == null || parts.Length == 0)
@@ -1268,7 +1268,7 @@ namespace Cave
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinLowerCamelCase(this IEnumerable parts, CultureInfo culture = null)
         {
             if (parts == null)
@@ -1310,20 +1310,20 @@ namespace Cave
         /// <summary>Joins a collection to a string with newlines for all systems.</summary>
         /// <param name="texts">The string collection.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinNewLine(this string[] texts) => Join(texts, "\r\n");
 
         /// <summary>Joins a collection to a string with newlines for all systems.</summary>
         /// <param name="array">The string array.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n");
 
         /// <summary>Joins the strings using snake case.</summary>
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinSnakeCase(this string[] parts, CultureInfo culture = null)
         {
             if (parts == null || parts.Length == 0)
@@ -1360,7 +1360,7 @@ namespace Cave
         /// <param name="parts">The parts.</param>
         /// <param name="culture">The culture info.</param>
         /// <returns>The joned string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string JoinSnakeCase(this IEnumerable parts, CultureInfo culture = null)
         {
             if (parts == null)
@@ -1401,7 +1401,7 @@ namespace Cave
         /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)" />.</returns>
         /// <exception cref="ArgumentNullException">value.</exception>
         /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static double ParseBinarySize(this string value)
         {
             if (value == null)
@@ -1458,21 +1458,21 @@ namespace Cave
         /// <summary>Parses a DateTime.</summary>
         /// <param name="dateTimeString">String value to parse.</param>
         /// <returns>The parsed datetime.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static DateTime ParseDateTime(this string dateTimeString) => ParseDateTime(dateTimeString, null);
 
         /// <summary>Parses a DateTime.</summary>
         /// <param name="dateTimeString">String value to parse.</param>
         /// <param name="culture">Culture used to check for the full date time pattern.</param>
         /// <returns>The parsed datetime.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static DateTime ParseDateTime(this string dateTimeString, CultureInfo culture) => ParseDateTime(dateTimeString, (IFormatProvider)culture);
 
         /// <summary>Parses a DateTime.</summary>
         /// <param name="dateTimeString">String value to parse.</param>
         /// <param name="formatProvider">Format provider used to check for the full date time pattern.</param>
         /// <returns>The parsed datetime.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static DateTime ParseDateTime(this string dateTimeString, IFormatProvider formatProvider)
         {
             DateTime result;
@@ -1500,7 +1500,7 @@ namespace Cave
         /// <summary>Converts a hex string to a byte array.</summary>
         /// <param name="hex">The string with hex values.</param>
         /// <returns>The byte array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static byte[] ParseHexString(this string hex)
         {
             if (hex == null)
@@ -1527,7 +1527,7 @@ namespace Cave
         /// <summary>Parses a Point.ToString() result.</summary>
         /// <param name="point">String value to parse.</param>
         /// <returns>The parsed point.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static Point ParsePoint(this string point)
         {
             if (point == null)
@@ -1560,7 +1560,7 @@ namespace Cave
         /// <summary>Parses a PointF.ToString() result.</summary>
         /// <param name="point">String value to parse.</param>
         /// <returns>The parsed float point.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static PointF ParsePointF(this string point)
         {
             var data = Unbox(point, "{", "}");
@@ -1582,7 +1582,7 @@ namespace Cave
         /// <summary>Parses a Rectangle.ToString() result.</summary>
         /// <param name="rect">String value to parse.</param>
         /// <returns>The parsed rectangle.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static Rectangle ParseRectangle(this string rect)
         {
             var data = Unbox(rect, "{", "}");
@@ -1622,7 +1622,7 @@ namespace Cave
         /// <summary>Parses a RectangleF.ToString() result.</summary>
         /// <param name="rect">String value to parse.</param>
         /// <returns>The parsed float rectangle.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static RectangleF ParseRectangleF(this string rect)
         {
             var data = Unbox(rect, "{", "}");
@@ -1648,7 +1648,7 @@ namespace Cave
         /// <summary>Parses a Size.ToString() result.</summary>
         /// <param name="size">String value to parse.</param>
         /// <returns>The parsed size.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static Size ParseSize(this string size)
         {
             if (size == null)
@@ -1681,7 +1681,7 @@ namespace Cave
         /// <summary>Parses a SizeF.ToString() result.</summary>
         /// <param name="size">String value to parse.</param>
         /// <returns>The parsed float size.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static SizeF ParseSizeF(this string size)
         {
             var data = Unbox(size, "{", "}");
@@ -1708,7 +1708,7 @@ namespace Cave
         /// <param name="value">String value to convert.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a new value instance.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static T ParseValue<T>(this string value, CultureInfo culture = null) => (T)typeof(T).ConvertValue(value, culture);
 
         /// <summary>
@@ -1719,13 +1719,13 @@ namespace Cave
         /// <param name="value">String value to convert.</param>
         /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
         /// <returns>Returns a new value instance.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static T ParseValue<T>(this string value, IFormatProvider formatProvider) => (T)typeof(T).ConvertValue(value, formatProvider);
 
         /// <summary>Randomizes the character casing.</summary>
         /// <param name="value">The string.</param>
         /// <returns>Returns a new string with random case.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string RandomCase(this string value)
         {
             if (value == null)
@@ -1746,7 +1746,7 @@ namespace Cave
         /// <summary>Removes any newline markings.</summary>
         /// <param name="text">The text.</param>
         /// <returns>Returns a string without any newline characters.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string RemoveNewLine(this string text)
         {
             if (text == null)
@@ -1789,7 +1789,7 @@ namespace Cave
         /// <param name="pattern">The pattern to find.</param>
         /// <param name="replacement">The replacement.</param>
         /// <returns>The replaced text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceCaseInsensitiveInvariant(this string text, string pattern, string replacement)
         {
             if (pattern == null)
@@ -1855,7 +1855,7 @@ namespace Cave
         /// <param name="chars">The array of chars to retrieve.</param>
         /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceChars(this string text, char[] chars, string replacer)
         {
             if (string.IsNullOrEmpty(text))
@@ -1894,7 +1894,7 @@ namespace Cave
         /// <param name="chars">The array of chars to retrieve.</param>
         /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceChars(this string text, string chars, string replacer)
         {
             if (string.IsNullOrEmpty(text))
@@ -1933,7 +1933,7 @@ namespace Cave
         /// <param name="validChars">The array of chars to retrieve.</param>
         /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns only valid characters.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceInvalidChars(this string text, char[] validChars, string replacer)
         {
             if ((validChars == null) || (validChars.Length == 0))
@@ -1972,7 +1972,7 @@ namespace Cave
         /// <param name="validChars">The array of chars to retrieve.</param>
         /// <param name="replacer">The replacer string.</param>
         /// <returns>Returns a string containing only valid characters.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceInvalidChars(this string text, string validChars, string replacer)
         {
             if (string.IsNullOrEmpty(validChars))
@@ -2010,7 +2010,7 @@ namespace Cave
         /// <param name="text">the text.</param>
         /// <param name="newLine">The new newline markings.</param>
         /// <returns>Returns a new string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplaceNewLine(this string text, string newLine)
         {
             if (text == null)
@@ -2028,7 +2028,7 @@ namespace Cave
         /// <param name="index">The index of the part to replace.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns>The replaced string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ReplacePart(this string text, char separator, int index, string newValue)
         {
             if (text == null)
@@ -2045,7 +2045,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="indices">The indices.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitAt(this string text, IEnumerable<int> indices)
         {
             if (text == null)
@@ -2078,13 +2078,13 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="indices">The indices.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitAt(this string text, params int[] indices) => SplitAt(text, (IEnumerable<int>)indices);
 
         /// <summary>Splits a string at character casing.</summary>
         /// <param name="text">The text.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitCamelCase(this string text)
         {
             if (text == null)
@@ -2116,7 +2116,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="separators">The arrays of chars used to seperate the text.</param>
         /// <returns>The array of seperated strings.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitKeepSeparators(this string text, params char[] separators)
         {
             if (string.IsNullOrEmpty(text))
@@ -2153,7 +2153,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="isSeparator">A function to determine whether the char is a seperator.</param>
         /// <returns>The array of seperated strings.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitKeepSeparators(this string text, Func<char, bool> isSeparator)
         {
             if (string.IsNullOrEmpty(text))
@@ -2185,7 +2185,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="textSplitOptions">The options.</param>
         /// <returns>Returns a new array of strings.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitNewLine(this string text, StringSplitOptions textSplitOptions)
         {
             if (text == null)
@@ -2290,7 +2290,7 @@ namespace Cave
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitNewLine(this string text) => SplitNewLine(text, StringSplitOptions.None);
 
         /// <summary>
@@ -2300,7 +2300,7 @@ namespace Cave
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length of the new strings.</param>
         /// <returns>Returns a new array of strings.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] SplitNewLineAndLength(this string text, int maxLength)
         {
             var array = new List<string>();
@@ -2373,7 +2373,7 @@ namespace Cave
         /// <param name="text">The string.</param>
         /// <param name="count">The number of characters at the end to be retrieved.</param>
         /// <returns>The substring.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string SubstringEnd(this string text, int count)
         {
             if (text == null)
@@ -2400,49 +2400,49 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool ToBool(this string value, bool defaultValue = false) => bool.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this double value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this float value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this int value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this uint value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this long value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a value to a hexadecimal string.</summary>
         /// <param name="value">The value.</param>
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>Returns the hexadecimal representation of the value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this ulong value, bool upperCase = false) => ToHexString(BitConverter.GetBytes(value), BitConverter.IsLittleEndian, upperCase);
 
         /// <summary>Converts a byte array to a hexadecimal string.</summary>
@@ -2450,7 +2450,7 @@ namespace Cave
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>The converted string.</returns>
         /// <exception cref="ArgumentNullException">data.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this byte[] data, bool upperCase = false) => ToHexString(data, false, upperCase);
 
         /// <summary>Converts a byte array to a hexadecimal string.</summary>
@@ -2459,7 +2459,7 @@ namespace Cave
         /// <param name="upperCase">if set to <c>true</c> [use upper case caracters].</param>
         /// <returns>The converted string.</returns>
         /// <exception cref="ArgumentNullException">data.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToHexString(this byte[] data, bool isLittleEndian, bool upperCase = false)
         {
             if (data == null)
@@ -2486,35 +2486,35 @@ namespace Cave
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static int ToInt32(this string value, int defaultValue = 0) => int.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static long ToInt64(this string value, long defaultValue = 0) => long.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong ToInt64(this string value, ulong defaultValue = 0) => ulong.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
         /// <param name="value">Value to format.</param>
         /// <param name="culture">An object that supplies culture-specific formatting information.</param>
         /// <returns>The string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToString(object value, CultureInfo culture) => ToString(value, (IFormatProvider)culture);
 
         /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
         /// <param name="value">Value to format.</param>
         /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
         /// <returns>The string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToString(object value, IFormatProvider formatProvider)
         {
             if (value == null)
@@ -2565,20 +2565,20 @@ namespace Cave
         /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
         /// <param name="value">Value to format.</param>
         /// <returns>The string.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToString(object value) => ToString(value, null);
 
         /// <summary>Returns an array of strings using the element objects ToString() method with invariant culture.</summary>
         /// <param name="enumerable">The array ob objects.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] ToStringArray(this IEnumerable enumerable) => ToStringArray(enumerable, CultureInfo.InvariantCulture);
 
         /// <summary>Returns an array of strings using the element objects ToString() method.</summary>
         /// <param name="enumerable">The array ob objects.</param>
         /// <param name="cultureInfo">The culture to use during formatting.</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] ToStringArray(this IEnumerable enumerable, CultureInfo cultureInfo)
         {
             if (enumerable == null)
@@ -2604,7 +2604,7 @@ namespace Cave
         /// <param name="exception">The <see cref="Exception" />.</param>
         /// <param name="debug">Include debug information (stacktrace, data).</param>
         /// <returns>The string array.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string[] ToStrings(this Exception exception, bool debug = false)
         {
             // ignore AggregateException
@@ -2711,21 +2711,21 @@ namespace Cave
         /// <param name="ex">The <see cref="Exception" />.</param>
         /// <param name="debug">Include debug information (stacktrace, data).</param>
         /// <returns>The text.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string ToText(this Exception ex, bool debug = false) => string.Join(Environment.NewLine, ToStrings(ex, debug));
 
         /// <summary>Converts a string to an integer.</summary>
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the integer representation of the string if the parser succeeds or the default value.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
 
         /// <summary>Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat" />, <see cref="DisplayDateTimeFormat" />, default).</summary>
         /// <param name="dateTime">String value to parse.</param>
         /// <param name="result">The parsed datetime.</param>
         /// <returns>True if the value could be parsed.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static bool TryParseDateTime(string dateTime, out DateTime result) => DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParse(dateTime, out result);
 
         /// <summary>Unboxes a string (removes strings from start end end).</summary>
@@ -2734,7 +2734,7 @@ namespace Cave
         /// <param name="end">End of box.</param>
         /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unbox(this string text, string start, string end, bool throwEx = true)
         {
             if (text == null)
@@ -2772,7 +2772,7 @@ namespace Cave
         /// <returns>Returns the content between the start and end marks.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="FormatException">Could not unbox string!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unbox(this string text, string border, bool throwEx = true)
         {
             if (text == null)
@@ -2805,7 +2805,7 @@ namespace Cave
         /// <returns>Returns the content between the start and end marks.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="FormatException">Could not unbox {0} string {0}!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unbox(this string text, char border, bool throwEx = true)
         {
             if (text == null)
@@ -2834,7 +2834,7 @@ namespace Cave
         /// <returns>Returns the content between the start and end marks.</returns>
         /// <exception cref="ArgumentNullException">text.</exception>
         /// <exception cref="FormatException">Could not unbox {0} string {1}!.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unbox(this string text, char start, char end, bool throwEx = true)
         {
             if (text == null)
@@ -2859,7 +2859,7 @@ namespace Cave
         /// <param name="text">The string to be unboxed.</param>
         /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string UnboxBrackets(this string text, bool throwEx = true)
         {
             if (text == null)
@@ -2892,7 +2892,7 @@ namespace Cave
         /// <param name="text">The string to be unboxed.</param>
         /// <param name="throwEx">Throw a FormatException on unboxing error.</param>
         /// <returns>Returns the content between the start and end marks.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string UnboxText(this string text, bool throwEx = true)
         {
             if (text == null)
@@ -2925,7 +2925,7 @@ namespace Cave
         /// <param name="text">The text (escaped ascii 7 bit string).</param>
         /// <returns>Returns the unescaped string.</returns>
         /// <exception cref="InvalidDataException">Invalid escape code.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unescape(this string text) => Unescape(text, true);
 
         /// <summary>Unescapes the specified text.</summary>
@@ -2933,7 +2933,7 @@ namespace Cave
         /// <param name="throwOnInvalid">Throw exception on invalid escape codes.</param>
         /// <returns>Returns the unescaped string.</returns>
         /// <exception cref="InvalidDataException">Invalid escape code.</exception>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static string Unescape(this string text, bool throwOnInvalid)
         {
             if (text == null) return string.Empty;

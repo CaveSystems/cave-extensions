@@ -1,4 +1,4 @@
-#pragma warning disable CA1707 // Bezeichner dürfen keine Unterstriche enthalten
+#pragma warning disable CA1707
 
 using System;
 
@@ -46,4 +46,4 @@ namespace Cave
     }
 }
 
-#pragma warning restore CA1707 // Bezeichner dürfen keine Unterstriche enthalten
+#pragma warning restore CA1707

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -239,8 +241,10 @@ namespace Cave
         [Obsolete("Use InstallationGuid.ProgramGuid")]
         public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
 
-        #endregion
+#endregion
     }
 }
 
 #pragma warning restore CS0618
+
+#endif

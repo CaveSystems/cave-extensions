@@ -12,12 +12,8 @@ namespace Cave.Collections.Generic
     {
         #region Properties
 
-#pragma warning disable 108,114 // reintroduced for harmonization
-
         /// <summary>Gets the number of items in the set.</summary>
-        int Count { get; }
-
-#pragma warning restore 108,114
+        new int Count { get; }
 
         /// <summary>Gets a value indicating whether the set is empty or not.</summary>
         bool IsEmpty { get; }

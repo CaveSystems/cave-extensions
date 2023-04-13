@@ -9,8 +9,22 @@ namespace Cave.Security
     public static class RNG
     {
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#elif NET20_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+        static RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+
+        /// <summary>
+        /// Fills an array of bytes with a cryptographically strong sequence of random values.
+        /// </summary>
+        /// <param name="block">The array to fill with a cryptographically strong sequence of random values.</param>
+        public static void Fill(byte[] block) => rng.GetBytes(block);
 #else
-            static RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        static Random rng = new Random();
+
+        /// <summary>
+        /// Fills an array of bytes with a cryptographically strong sequence of random values.
+        /// </summary>
+        /// <param name="block">The array to fill with a cryptographically strong sequence of random values.</param>
+        public static void Fill(byte[] block) => rng.NextBytes(block);
 #endif
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
@@ -36,9 +50,7 @@ namespace Cave.Security
         /// </summary>
         /// <param name="block">The array to fill with a cryptographically strong sequence of random values.</param>
         public static void Fill(byte[] block) => RandomNumberGenerator.Fill(block);
-
 #else
-
         /// <summary>
         /// Generates a random integer between a specified inclusive lower bound and a specified
         /// exclusive upper bound using a cryptographically strong random number generator.
@@ -49,10 +61,8 @@ namespace Cave.Security
         public static int GetInt32(int fromInclusive, int toExclusive)
         {
             if (toExclusive <= fromInclusive) throw new ArgumentOutOfRangeException(nameof(toExclusive));
-            for (var value = Int32; ; value = Int32)
-            {
-                if (value < fromInclusive && value >= toExclusive) return value;
-            }
+            var count = toExclusive - fromInclusive;
+            return fromInclusive + (Int32 % count);
         }
 
         /// <summary>
@@ -62,13 +72,6 @@ namespace Cave.Security
         /// <param name="toExclusive">The exclusive upper bound of the random range.</param>
         /// <returns>A random integer between 0 (inclusive) and toExclusive (exclusive).</returns>
         public static int GetInt32(int toExclusive) => GetInt32(0, toExclusive);
-
-        /// <summary>
-        /// Fills an array of bytes with a cryptographically strong sequence of random values.
-        /// </summary>
-        /// <param name="block">The array to fill with a cryptographically strong sequence of random values.</param>
-        public static void Fill(byte[] block) => rng.GetBytes(block);
-
 #endif
 
 #if NET6_0_OR_GREATER
@@ -99,7 +102,7 @@ namespace Cave.Security
         {
             get
             {
-                return Convert.ToInt32(GetBytes(4));
+                return BitConverter.ToInt32(GetBytes(4), 0);
             }
         }
 
@@ -110,7 +113,7 @@ namespace Cave.Security
         {
             get
             {
-                return Convert.ToInt64(GetBytes(8));
+                return BitConverter.ToInt64(GetBytes(8), 0);
             }
         }
 
@@ -121,7 +124,7 @@ namespace Cave.Security
         {
             get
             {
-                return Convert.ToUInt32(GetBytes(4));
+                return BitConverter.ToUInt32(GetBytes(4), 0);
             }
         }
 
@@ -132,7 +135,7 @@ namespace Cave.Security
         {
             get
             {
-                return Convert.ToUInt64(GetBytes(8));
+                return BitConverter.ToUInt64(GetBytes(8), 0);
             }
         }
     }

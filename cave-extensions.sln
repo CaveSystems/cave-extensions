@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28531.58
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cave.Extensions", "Cave.Extensions\Cave.Extensions.csproj", "{46756D48-E45B-47E5-B778-B18A1C2A81CF}"
 EndProject
@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NET2x", "Tests\Test_NE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NET4x", "Tests\Test_NET4x.csproj", "{767AFF18-A447-475B-A64D-DC068481486B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NETCORE", "Tests\Test_NETCORE.csproj", "{EFEAFD47-803F-4544-9860-DF1419B30628}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_NET5+", "Tests\Test_NET5+.csproj", "{EFEAFD47-803F-4544-9860-DF1419B30628}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}"
 EndProject

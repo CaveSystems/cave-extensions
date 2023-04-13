@@ -5,13 +5,19 @@ using System.Linq;
 
 namespace Cave.Collections.Generic
 {
-    /// <summary>Gets a thread safe dictionary. This is much faster than ConcurrentDictionary if you got only two threads accessing values.</summary>
+    /// <summary>Gets a thread safe dictionary. This is much faster than SynchronizedDictionary if you got only two threads accessing values.</summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <seealso cref="System.Collections.Generic.IDictionary{TKey, TValue}" />
     public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         readonly IDictionary<TKey, TValue> dict;
+
+        /// <inheritdoc/>
+        public object SyncRoot { get; } = new();
+
+        /// <inheritdoc/>
+        public bool IsEmpty => dict.Count == 0;
 
         #region Constructors
 
@@ -29,7 +35,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 dict.Add(item);
             }
@@ -38,7 +44,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public void Clear()
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 dict.Clear();
             }
@@ -47,7 +53,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 return dict.Contains(item);
             }
@@ -56,7 +62,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 dict.CopyTo(array, arrayIndex);
             }
@@ -67,7 +73,7 @@ namespace Cave.Collections.Generic
         {
             get
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     return dict.Count;
                 }
@@ -79,7 +85,7 @@ namespace Cave.Collections.Generic
         {
             get
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     return dict.IsReadOnly;
                 }
@@ -89,7 +95,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 return dict.Remove(item);
             }
@@ -98,7 +104,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public void Add(TKey key, TValue value)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 dict.Add(key, value);
             }
@@ -107,7 +113,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool ContainsKey(TKey key)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 return dict.ContainsKey(key);
             }
@@ -121,14 +127,14 @@ namespace Cave.Collections.Generic
         {
             get
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     return dict[key];
                 }
             }
             set
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     dict[key] = value;
                 }
@@ -140,7 +146,7 @@ namespace Cave.Collections.Generic
         {
             get
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     return dict.Keys.ToArray();
                 }
@@ -150,7 +156,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool Remove(TKey key)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 return dict.Remove(key);
             }
@@ -159,7 +165,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public bool TryGetValue(TKey key, out TValue value)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 return dict.TryGetValue(key, out value);
             }
@@ -170,7 +176,7 @@ namespace Cave.Collections.Generic
         {
             get
             {
-                lock (this)
+                lock (SyncRoot)
                 {
                     return dict.Values.ToArray();
                 }
@@ -180,7 +186,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 var items = new KeyValuePair<TKey, TValue>[dict.Count];
                 CopyTo(items, 0);
@@ -191,7 +197,7 @@ namespace Cave.Collections.Generic
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 var items = new KeyValuePair<TKey, TValue>[dict.Count];
                 CopyTo(items, 0);
@@ -212,7 +218,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(items));
             }
 
-            lock (this)
+            lock (SyncRoot)
             {
                 foreach (var item in items)
                 {
@@ -232,7 +238,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(constructor));
             }
 
-            lock (this)
+            lock (SyncRoot)
             {
                 if (!dict.TryGetValue(key, out var result))
                 {
@@ -256,7 +262,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(constructor));
             }
 
-            lock (this)
+            lock (SyncRoot)
             {
                 if (!dict.TryGetValue(key, out var result))
                 {
@@ -280,7 +286,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(items));
             }
 
-            lock (this)
+            lock (SyncRoot)
             {
                 foreach (var item in items)
                 {
@@ -300,7 +306,7 @@ namespace Cave.Collections.Generic
                 throw new ArgumentNullException(nameof(constructor));
             }
 
-            lock (this)
+            lock (SyncRoot)
             {
                 if (dict.ContainsKey(key))
                 {
@@ -319,7 +325,7 @@ namespace Cave.Collections.Generic
         /// <returns>Returns true if the item was added, false otherwise.</returns>
         public bool TryAdd(TKey key, TValue value)
         {
-            lock (this)
+            lock (SyncRoot)
             {
                 if (dict.ContainsKey(key))
                 {
@@ -338,7 +344,7 @@ namespace Cave.Collections.Generic
         public bool TryRemove(TKey key)
         {
             var removed = false;
-            lock (this)
+            lock (SyncRoot)
             {
                 if (dict.ContainsKey(key))
                 {
@@ -357,7 +363,7 @@ namespace Cave.Collections.Generic
         public bool TryRemove(TKey key, out TValue value)
         {
             var removed = false;
-            lock (this)
+            lock (SyncRoot)
             {
                 if (dict.TryGetValue(key, out value))
                 {

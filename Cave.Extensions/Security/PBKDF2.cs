@@ -302,12 +302,8 @@ namespace Cave.Security
 
         #endregion Public Methods
 
-        /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
 #if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
-
-        #region Protected Methods
-
+        /// <inheritdoc/> 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -318,25 +314,24 @@ namespace Cave.Security
             }
         }
 
-        #endregion Protected Methods
-
-#elif NET20_OR_GREATER || NET35
+#else //NET20 || NET35
+        /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                (algorithm as IDisposable).Dispose(); algorithm = null;
+                (algorithm as IDisposable).Dispose();
+                algorithm = null;
             }
         }
 
-        /// <summary>Releases all resources used by the this instance</summary>
+        /// <inheritdoc/> 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-#else
-#error NETXX not defined!
 #endif
     }
 }

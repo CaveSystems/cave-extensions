@@ -1,11 +1,12 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace Cave
 {
     /// <summary>Provides a managed implementation of the Cyclic Redundancy Checksum with 32 bits.</summary>
-    public class CRC32 : HashAlgorithm, IChecksum<uint>
+    public class CRC32 : HashAlgorithm, IChecksum<uint>, IUserHashingFunction
     {
         /// <summary>
         /// Provides the default polynomial (*the* standard CRC-32 polynomial, first popularized by Ethernet)
@@ -67,7 +68,7 @@ namespace Cave
         /// <summary>Reflects 32 bits.</summary>
         /// <param name="x">The bits.</param>
         /// <returns>Returns a center reflection.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static uint Reflect32(uint x)
         {
             // move bits
@@ -186,10 +187,11 @@ namespace Cave
         /// <summary>Gets the size, in bits, of the computed hash code.</summary>
         public override int HashSize => 32;
 
+#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
         /// <summary>Gets the value of the computed hash code.</summary>
-#if !NETSTANDARD13 && !NETCOREAPP10
         public override byte[] Hash => BitConverter.GetBytes(Value);
 #else
+        /// <summary>Gets the value of the computed hash code.</summary>
         public byte[] Hash => BitConverter.GetBytes(Value);
 #endif
 
@@ -338,8 +340,50 @@ namespace Cave
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString() => Name + " width=32 poly=" + Polynomial + " init=" + Initializer + " refin=" + ReflectInput + " refout=" + ReflectOutput + " xorout=" + FinalXor;
 
-        /// <summary>Erstellt ein neues Objekt, das eine Kopie der aktuellen Instanz darstellt.</summary>
-        /// <returns>Ein neues Objekt, das eine Kopie dieser Instanz darstellt.</returns>
+        /// <inheritdoc/>
         public object Clone() => new CRC32(this);
+
+        /// <inheritdoc/>
+        public void Add<T>(T item)
+        {
+            var itemHash = (uint)(item?.GetHashCode() ?? 0);
+            if (ReflectInput)
+            {
+                currentCRC = (currentCRC >> 8) ^ table[(currentCRC ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC >> 8) ^ table[(currentCRC ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC >> 8) ^ table[(currentCRC ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC >> 8) ^ table[(currentCRC ^ itemHash) & 0xFF];
+            }
+            else
+            {
+                currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
+                itemHash >>= 8;
+                currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
+            }
+        }
+
+        /// <inheritdoc/>
+        public int ToHashCode() => (int)Value;
+
+#pragma warning disable CS0809
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => throw new NotSupportedException();
+
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj) => throw new NotSupportedException();
+#pragma warning restore CS0809
     }
 }

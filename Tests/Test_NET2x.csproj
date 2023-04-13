@@ -8,7 +8,7 @@
         <StartupObject>Test.Program</StartupObject>
         <RootNamespace>Test</RootNamespace>
         <AssemblyName>Test</AssemblyName>
-        <NoWarn>CS1591;CA1806;CA1825;</NoWarn>
+        <WarningLevel>0</WarningLevel>
     </PropertyGroup>
 
     <ItemGroup>

@@ -10,7 +10,11 @@ namespace Cave
     /// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages / ascii based
     /// character sets.
     /// </summary>
+#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
     public sealed class UTF8 : IEnumerable<char>, IEnumerable, ICloneable, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
+#else
+    public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
+#endif
     {
         /// <summary>Performs an implicit conversion from <see cref="UTF8"/> to <see cref="string"/>.</summary>
         /// <param name="s">The string.</param>
@@ -80,6 +84,7 @@ namespace Cave
             return ToString().CompareTo(obj.ToString());
         }
 
+#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
         /// <inheritdoc/>
         public IEnumerator<char> GetEnumerator() => ToString().GetEnumerator();
 
@@ -87,10 +92,11 @@ namespace Cave
         IEnumerator IEnumerable.GetEnumerator() => ToString().GetEnumerator();
 
         /// <inheritdoc/>
-        public object Clone() => new UTF8(data, Length);
+        public TypeCode GetTypeCode() => ToString().GetTypeCode();
+#endif
 
         /// <inheritdoc/>
-        public TypeCode GetTypeCode() => ToString().GetTypeCode();
+        public object Clone() => new UTF8(data, Length);
 
         /// <inheritdoc/>
         public bool ToBoolean(IFormatProvider provider) => ((IConvertible)ToString()).ToBoolean(provider);
@@ -126,7 +132,7 @@ namespace Cave
         public float ToSingle(IFormatProvider provider) => ((IConvertible)ToString()).ToSingle(provider);
 
         /// <inheritdoc/>
-        public string ToString(IFormatProvider provider) => ToString().ToString(provider);
+        public string ToString(IFormatProvider provider) => ToString();
 
         /// <inheritdoc/>
         public object ToType(Type conversionType, IFormatProvider provider) => ((IConvertible)ToString()).ToType(conversionType, provider);

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -31,7 +32,7 @@ namespace Cave
         /// <summary>Reflects 64 bits.</summary>
         /// <param name="x">The bits.</param>
         /// <returns>Returns a center reflection.</returns>
-        [MethodImpl(256)]
+        [MethodImpl((MethodImplOptions)256)]
         public static ulong Reflect64(ulong x)
         {
             // move bits
@@ -141,10 +142,11 @@ namespace Cave
         /// <summary>Gets the size, in bits, of the computed hash code.</summary>
         public override int HashSize => 32;
 
+#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
         /// <summary>Gets the value of the computed hash code.</summary>
-#if !NETSTANDARD13 && !NETCOREAPP10
         public override byte[] Hash => BitConverter.GetBytes(Value);
 #else
+        /// <summary>Gets the value of the computed hash code.</summary>
         public byte[] Hash => BitConverter.GetBytes(Value);
 #endif
 
@@ -279,5 +281,21 @@ namespace Cave
         /// <summary>Erstellt ein neues Objekt, das eine Kopie der aktuellen Instanz darstellt.</summary>
         /// <returns>Ein neues Objekt, das eine Kopie dieser Instanz darstellt.</returns>
         public object Clone() => new CRC64(this);
+
+#pragma warning disable CS0809
+
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => throw new NotSupportedException();
+
+        /// <summary>NotSupported</summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj) => throw new NotSupportedException();
+
+#pragma warning restore CS0809
     }
 }

@@ -1,22 +1,19 @@
-#if !NET35 && !NET20
-
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Cave.Collections.Generic;
+using System.Linq;
 
-namespace Cave.Collections.Concurrent
+namespace Cave.Collections.Generic
 {
-    /// <summary>Provides a concurrent set based on the <see cref="ConcurrentDictionary{T1, T2}" /> class.</summary>
+    /// <summary>Provides a synchronized set based on the <see cref="SynchronizedDictionary{T1, T2}" /> class.</summary>
     /// <typeparam name="T">Element type.</typeparam>
     [SuppressMessage("Design", "CA1000")]
-    public class ConcurrentSet<T> : IItemSet<T>
+    public class SynchronizedSet<T> : IItemSet<T>
     {
         #region private Member
 
-        readonly ConcurrentDictionary<T, byte> list = new();
+        readonly SynchronizedDictionary<T, byte> dict = new();
 
         #endregion
 
@@ -32,14 +29,14 @@ namespace Cave.Collections.Concurrent
         #region IEnumerable Member
 
         /// <inheritdoc />
-        public IEnumerator GetEnumerator() => list.Keys.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => dict.Keys.GetEnumerator();
 
         #endregion
 
         #region IEnumerable<T> Member
 
         /// <inheritdoc />
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => list.Keys.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => dict.Keys.GetEnumerator();
 
         #endregion
 
@@ -54,7 +51,7 @@ namespace Cave.Collections.Concurrent
         public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
 
         /// <inheritdoc />
-        public override int GetHashCode() => list.GetHashCode();
+        public override int GetHashCode() => dict.GetHashCode();
 
         #endregion
 
@@ -64,10 +61,10 @@ namespace Cave.Collections.Concurrent
         /// <returns>A new array containing a snapshot of all items.</returns>
         public T[] ToArray()
         {
-            lock (this)
+            lock (SyncRoot)
             {
-                var result = new T[list.Count];
-                list.Keys.CopyTo(result, 0);
+                var result = new T[dict.Count];
+                dict.Keys.CopyTo(result, 0);
                 return result;
             }
         }
@@ -76,44 +73,44 @@ namespace Cave.Collections.Concurrent
 
         #region operators
 
-        /// <summary>Gets a <see cref="ConcurrentSet{T}" /> containing all objects part of one of the specified sets.</summary>
+        /// <summary>Gets a <see cref="SynchronizedSet{T}" /> containing all objects part of one of the specified sets.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> operator |(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => BitwiseOr(set1, set2);
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public static SynchronizedSet<T> operator |(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => BitwiseOr(set1, set2);
 
-        /// <summary>Gets a <see cref="ConcurrentSet{T}" /> containing only objects part of both of the specified sets.</summary>
+        /// <summary>Gets a <see cref="SynchronizedSet{T}" /> containing only objects part of both of the specified sets.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>Returns a new <see cref="Set{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> operator &(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => BitwiseAnd(set1, set2);
+        public static SynchronizedSet<T> operator &(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => BitwiseAnd(set1, set2);
 
         /// <summary>
-        /// Gets a <see cref="ConcurrentSet{T}" /> containing all objects part of the first set after removing all objects present at the
+        /// Gets a <see cref="SynchronizedSet{T}" /> containing all objects part of the first set after removing all objects present at the
         /// second set.
         /// </summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> operator -(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => Subtract(set1, set2);
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public static SynchronizedSet<T> operator -(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => Subtract(set1, set2);
 
-        /// <summary>Builds a new <see cref="ConcurrentSet{T}" /> containing only the items found exclusivly in one of both specified sets.</summary>
+        /// <summary>Builds a new <see cref="SynchronizedSet{T}" /> containing only the items found exclusivly in one of both specified sets.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> operator ^(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => Xor(set1, set2);
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public static SynchronizedSet<T> operator ^(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => Xor(set1, set2);
 
         /// <summary>Checks two sets for equality.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns></returns>
-        public static bool operator ==(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
+        public static bool operator ==(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
         /// <summary>Checks two sets for inequality.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns></returns>
-        public static bool operator !=(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => !(set1 == set2);
+        public static bool operator !=(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => !(set1 == set2);
 
         #endregion
 
@@ -123,7 +120,7 @@ namespace Cave.Collections.Concurrent
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>Returns a new <see cref="Set{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> BitwiseOr(ConcurrentSet<T> set1, ConcurrentSet<T> set2)
+        public static SynchronizedSet<T> BitwiseOr(SynchronizedSet<T> set1, SynchronizedSet<T> set2)
         {
             if (set1 == null)
             {
@@ -140,9 +137,9 @@ namespace Cave.Collections.Concurrent
                 return BitwiseOr(set2, set1);
             }
 
-            var result = new ConcurrentSet<T>();
+            var result = new SynchronizedSet<T>();
             result.AddRange(set2);
-            foreach (T item in set1)
+            foreach (var item in set1)
             {
                 if (set2.Contains(item))
                 {
@@ -155,11 +152,11 @@ namespace Cave.Collections.Concurrent
             return result;
         }
 
-        /// <summary>Builds the intersection of two specified <see cref="ConcurrentSet{T}" />s.</summary>
+        /// <summary>Builds the intersection of two specified <see cref="SynchronizedSet{T}" />s.</summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> BitwiseAnd(ConcurrentSet<T> set1, ConcurrentSet<T> set2)
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public static SynchronizedSet<T> BitwiseAnd(SynchronizedSet<T> set1, SynchronizedSet<T> set2)
         {
             if (set1 == null)
             {
@@ -176,8 +173,8 @@ namespace Cave.Collections.Concurrent
                 return BitwiseAnd(set2, set1);
             }
 
-            var result = new ConcurrentSet<T>();
-            foreach (T itemsItem in set1)
+            var result = new SynchronizedSet<T>();
+            foreach (var itemsItem in set1)
             {
                 if (set2.Contains(itemsItem))
                 {
@@ -189,13 +186,13 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <summary>
-        /// Subtracts the specified <see cref="ConcurrentSet{T}" /> from this one and returns a new <see cref="ConcurrentSet{T}" /> containing
+        /// Subtracts the specified <see cref="SynchronizedSet{T}" /> from this one and returns a new <see cref="SynchronizedSet{T}" /> containing
         /// the result.
         /// </summary>
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> Subtract(ConcurrentSet<T> set1, ConcurrentSet<T> set2)
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public static SynchronizedSet<T> Subtract(SynchronizedSet<T> set1, SynchronizedSet<T> set2)
         {
             if (set1 == null)
             {
@@ -207,8 +204,8 @@ namespace Cave.Collections.Concurrent
                 throw new ArgumentNullException(nameof(set2));
             }
 
-            var result = new ConcurrentSet<T>();
-            foreach (T setItem in set1)
+            var result = new SynchronizedSet<T>();
+            foreach (var setItem in set1)
             {
                 if (!set2.Contains(setItem))
                 {
@@ -223,7 +220,7 @@ namespace Cave.Collections.Concurrent
         /// <param name="set1">The first set used to calculate the result.</param>
         /// <param name="set2">The second set used to calculate the result.</param>
         /// <returns>Returns a new <see cref="Set{T}" /> containing the result.</returns>
-        public static ConcurrentSet<T> Xor(ConcurrentSet<T> set1, ConcurrentSet<T> set2)
+        public static SynchronizedSet<T> Xor(SynchronizedSet<T> set1, SynchronizedSet<T> set2)
         {
             if (set1 == null)
             {
@@ -241,8 +238,8 @@ namespace Cave.Collections.Concurrent
             }
 
             var newSet2 = new LinkedList<T>(set2);
-            var result = new ConcurrentSet<T>();
-            foreach (T setItem in set1)
+            var result = new SynchronizedSet<T>();
+            foreach (var setItem in set1)
             {
                 if (!set2.Contains(setItem))
                 {
@@ -262,43 +259,43 @@ namespace Cave.Collections.Concurrent
 
         #region constructors
 
-        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
-        public ConcurrentSet() { }
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedSet{T}" /> class.</summary>
+        public SynchronizedSet() { }
 
-        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedSet{T}" /> class.</summary>
         /// <param name="items">Items to add to the set.</param>
-        public ConcurrentSet(params T[] items) => AddRange(items);
+        public SynchronizedSet(params T[] items) => AddRange(items);
 
-        /// <summary>Initializes a new instance of the <see cref="ConcurrentSet{T}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedSet{T}" /> class.</summary>
         /// <param name="items">Items to add to the set.</param>
-        public ConcurrentSet(IEnumerable<T> items) => AddRange(items);
+        public SynchronizedSet(IEnumerable<T> items) => AddRange(items);
 
         #endregion
 
         #region public Member
 
-        /// <summary>Builds the union of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the result.</summary>
-        /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public ConcurrentSet<T> Union(ConcurrentSet<T> items) => BitwiseOr(this, items);
+        /// <summary>Builds the union of the specified and this <see cref="SynchronizedSet{T}" /> and returns a new set with the result.</summary>
+        /// <param name="items">Provides the other <see cref="SynchronizedSet{T}" /> used.</param>
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public SynchronizedSet<T> Union(SynchronizedSet<T> items) => BitwiseOr(this, items);
 
-        /// <summary>Builds the intersection of the specified and this <see cref="ConcurrentSet{T}" /> and returns a new set with the result.</summary>
-        /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public ConcurrentSet<T> Intersect(ConcurrentSet<T> items) => BitwiseAnd(this, items);
+        /// <summary>Builds the intersection of the specified and this <see cref="SynchronizedSet{T}" /> and returns a new set with the result.</summary>
+        /// <param name="items">Provides the other <see cref="SynchronizedSet{T}" /> used.</param>
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public SynchronizedSet<T> Intersect(SynchronizedSet<T> items) => BitwiseAnd(this, items);
 
-        /// <summary>Subtracts a specified <see cref="ConcurrentSet{T}" /> from this one and returns a new set with the result.</summary>
-        /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public ConcurrentSet<T> Subtract(ConcurrentSet<T> items) => Subtract(this, items);
+        /// <summary>Subtracts a specified <see cref="SynchronizedSet{T}" /> from this one and returns a new set with the result.</summary>
+        /// <param name="items">Provides the other <see cref="SynchronizedSet{T}" /> used.</param>
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public SynchronizedSet<T> Subtract(SynchronizedSet<T> items) => Subtract(this, items);
 
-        /// <summary>Builds a new <see cref="ConcurrentSet{T}" /> containing only items found exclusivly in one of both specified sets.</summary>
-        /// <param name="items">Provides the other <see cref="ConcurrentSet{T}" /> used.</param>
-        /// <returns>Returns a new <see cref="ConcurrentSet{T}" /> containing the result.</returns>
-        public ConcurrentSet<T> ExclusiveOr(ConcurrentSet<T> items) => Xor(this, items);
+        /// <summary>Builds a new <see cref="SynchronizedSet{T}" /> containing only items found exclusivly in one of both specified sets.</summary>
+        /// <param name="items">Provides the other <see cref="SynchronizedSet{T}" /> used.</param>
+        /// <returns>Returns a new <see cref="SynchronizedSet{T}" /> containing the result.</returns>
+        public SynchronizedSet<T> ExclusiveOr(SynchronizedSet<T> items) => Xor(this, items);
 
         /// <inheritdoc />
-        public bool Contains(T item) => list.ContainsKey(item);
+        public bool Contains(T item) => dict.ContainsKey(item);
 
         /// <inheritdoc />
         public bool ContainsRange(IEnumerable<T> items)
@@ -318,12 +315,12 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool IsEmpty => list.IsEmpty;
+        public bool IsEmpty => dict.Count == 0;
 
         /// <inheritdoc />
         public void Add(T item)
         {
-            if (!list.TryAdd(item, 0))
+            if (!dict.TryAdd(item, 0))
             {
                 throw new ArgumentException("An element with the same key already exists!");
             }
@@ -347,7 +344,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public bool Include(T item) => list.TryAdd(item, 0);
+        public bool Include(T item) => dict.TryAdd(item, 0);
 
         /// <inheritdoc />
         public int IncludeRange(T[] items) => IncludeRange((IEnumerable<T>)items);
@@ -387,14 +384,14 @@ namespace Cave.Collections.Concurrent
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (!list.TryRemove(item, out _))
+            if (!dict.TryRemove(item, out _))
             {
                 throw new KeyNotFoundException();
             }
         }
 
         /// <inheritdoc />
-        public bool TryRemove(T value) => list.TryRemove(value, out _);
+        public bool TryRemove(T value) => dict.TryRemove(value, out _);
 
         /// <inheritdoc />
         public int TryRemoveRange(IEnumerable<T> items)
@@ -431,7 +428,7 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <summary>Clears the set.</summary>
-        public void Clear() => list.Clear();
+        public void Clear() => dict.Clear();
 
         #endregion
 
@@ -440,10 +437,10 @@ namespace Cave.Collections.Concurrent
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
         /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) => list.Keys.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => dict.Keys.CopyTo(array, arrayIndex);
 
         /// <summary>Gets the number of objects present at the set.</summary>
-        public int Count => list.Count;
+        public int Count => dict.Count;
 
         /// <summary>Copies all objects present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
@@ -455,20 +452,18 @@ namespace Cave.Collections.Concurrent
                 throw new ArgumentNullException(nameof(array));
             }
 
-            foreach (int item in this)
+            foreach (var item in this)
             {
                 array.SetValue(item, index++);
             }
         }
 
         /// <summary>Gets a value indicating whether the set is synchronized or not.</summary>
-        public bool IsSynchronized => false;
+        public bool IsSynchronized => true;
 
         /// <summary>Gets the synchronization root.</summary>
-        public object SyncRoot => this;
+        public object SyncRoot => dict.SyncRoot;
 
         #endregion
     }
 }
-
-#endif

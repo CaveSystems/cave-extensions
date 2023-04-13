@@ -12,7 +12,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  fixedBuildVersion: '2.1'
+  fixedBuildVersion: '3.0'
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
@@ -65,6 +65,34 @@ steps:
   inputs:
     versionSpec: '>=4.9.0'
 
+- task: UseDotNet@2
+  displayName: 'Install .NET sdk 7'
+  inputs:
+    packageType: sdk
+    version: 7.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: UseDotNet@2
+  displayName: 'Install .NET sdk 6'
+  inputs:
+    packageType: sdk
+    version: 6.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: UseDotNet@2
+  displayName: 'Install .NET sdk 5'
+  inputs:
+    packageType: sdk
+    version: 5.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+    
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk 3.1'
+  inputs:
+    packageType: sdk
+    version: 3.1.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
 - task: NuGetCommand@2
   displayName: Restore nuget packages
   inputs:
@@ -89,24 +117,14 @@ steps:
       **/bin/Release/netcoreapp*/Test.dll
 
 - task: VSTest@2
-  displayName: Test net5
+  displayName: Test net5+
   inputs:
     runInParallel: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     codeCoverageEnabled: true
     testAssemblyVer2: |
-      **/bin/Release/net5.0/Test.dll
-
-- task: VSTest@2
-  displayName: Test net6
-  inputs:
-    runInParallel: true
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: true
-    testAssemblyVer2: |
-      **/bin/Release/net6.0/Test.dll
+      **/bin/Release/net?.?/Test.dll
 
 - task: VSTest@2
   displayName: Test net2x, net3x
@@ -127,11 +145,7 @@ steps:
     configuration: '$(buildConfiguration)'
     codeCoverageEnabled: true
     testAssemblyVer2: |
-      **/bin/Release/net40/Test.exe
-      **/bin/Release/net45/Test.exe
-      **/bin/Release/net46/Test.exe
-      **/bin/Release/net47/Test.exe
-      **/bin/Release/net48/Test.exe
+      **/bin/Release/net4?/Test.exe
 
 - task: NuGetCommand@2
   displayName: Push to nuget (release)
