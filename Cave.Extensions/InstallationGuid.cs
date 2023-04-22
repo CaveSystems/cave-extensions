@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-
 #if !(NETSTANDARD2_0_OR_GREATER || NET50)
 using Microsoft.Win32;
 #endif
@@ -70,7 +69,7 @@ namespace Cave
                     File.WriteAllText(fileName, Guid.NewGuid().ToString());
                 }
 
-                return new Guid(File.ReadAllLines(fileName)[0]);
+                return new(File.ReadAllLines(fileName)[0]);
             }
         }
 

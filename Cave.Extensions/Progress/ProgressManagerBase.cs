@@ -20,8 +20,12 @@ namespace Cave.Progress
 
         class ProgressItem : IProgress
         {
+            #region Fields
+
             readonly object syncRoot = new();
             readonly ProgressManagerBase manager;
+
+            #endregion
 
             #region Constructors
 
@@ -46,9 +50,10 @@ namespace Cave.Progress
                 }
             }
 
-            public object Source { get; private set; }
             public bool Completed { get; private set; }
             public int Identifier { get; }
+
+            public object Source { get; }
             public string Text { get; private set; }
 
             public void Update(float value, string text = null)
@@ -93,7 +98,7 @@ namespace Cave.Progress
 
         void OnUpdated(IProgress progress)
         {
-            Updated?.Invoke(progress, new ProgressEventArgs(progress));
+            Updated?.Invoke(progress, new(progress));
             if (progress.Completed)
             {
                 lock (items)
@@ -114,7 +119,10 @@ namespace Cave.Progress
         /// <returns>Retruns a new instance implementing the <see cref="IProgress" /> interface.</returns>
         public IProgress CreateProgress(object source)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
             var result = new ProgressItem(this, source);
             lock (items)
             {

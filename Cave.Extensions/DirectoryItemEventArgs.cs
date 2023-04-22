@@ -1,28 +1,27 @@
 ﻿using System;
 
-namespace Cave
+namespace Cave;
+
+/// <summary>Gets directory item event arguments.</summary>
+/// <seealso cref="System.EventArgs" />
+public sealed class DirectoryItemEventArgs : EventArgs
 {
-    /// <summary>Gets directory item event arguments.</summary>
-    /// <seealso cref="System.EventArgs" />
-    public sealed class DirectoryItemEventArgs : EventArgs
-    {
-        #region Constructors
+    #region Constructors
 
-        /// <summary>Initializes a new instance of the <see cref="DirectoryItemEventArgs" /> class.</summary>
-        /// <param name="dir">The dir.</param>
-        public DirectoryItemEventArgs(DirectoryItem dir) => Directory = dir;
+    /// <summary>Initializes a new instance of the <see cref="DirectoryItemEventArgs" /> class.</summary>
+    /// <param name="dir">The dir.</param>
+    public DirectoryItemEventArgs(DirectoryItem dir) => Directory = dir;
 
-        #endregion
+    #endregion
 
-        #region Properties
+    #region Properties
 
-        /// <summary>Gets the directory.</summary>
-        /// <value>The directory.</value>
-        public DirectoryItem Directory { get; }
+    /// <summary>Gets the directory.</summary>
+    /// <value>The directory.</value>
+    public DirectoryItem Directory { get; }
 
-        /// <summary>Gets or sets a value indicating whether the file was handled or not.</summary>
-        public bool Handled { get; set; }
+    /// <summary>Gets or sets a value indicating whether the file was handled or not.</summary>
+    public bool Handled { get; set; }
 
-        #endregion
-    }
+    #endregion
 }

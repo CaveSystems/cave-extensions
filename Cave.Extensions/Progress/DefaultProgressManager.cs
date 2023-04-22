@@ -1,6 +1,3 @@
-﻿namespace Cave.Progress
-{
-    class DefaultProgressManager : ProgressManagerBase
-    {
-    }
-}
+﻿namespace Cave.Progress;
+
+class DefaultProgressManager : ProgressManagerBase { }

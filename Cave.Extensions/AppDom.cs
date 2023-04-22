@@ -84,8 +84,8 @@ namespace Cave
                 var assemblyName = name.AfterFirst(',').Trim();
                 var assembly =
                     mode.HasFlag(LoadFlags.LoadAssemblies) ?
-                    Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
-                    FindAssembly(assemblyName, true);
+                        Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
+                        FindAssembly(assemblyName, true);
                 return assembly.GetType(typeName, true, false);
             }
             return FindType(name, null, mode);
@@ -241,7 +241,7 @@ namespace Cave
         [Obsolete("Use InstallationGuid.ProgramGuid")]
         public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
 
-#endregion
+        #endregion
     }
 }
 

@@ -1,176 +1,163 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cave
+namespace Cave;
+
+/// <summary>Gets Base32 en-/decoding.</summary>
+public class Base32 : BaseX
 {
-    /// <summary>Gets Base32 en-/decoding.</summary>
-    public class Base32 : BaseX
+    #region Static
+
+    const int bitCount = 5;
+
+    /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
+    public static Base32 Default => new(new("0123456789ABCDEFGHIJKLMNOPQRSTUV"), '=');
+
+    /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
+    public static Base32 NoPadding => new(new("0123456789ABCDEFGHIJKLMNOPQRSTUV"), null);
+
+    /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
+    public static Base32 OTP => new(new("abcdefghijklmnopqrstuvwxyz234567"), null);
+
+    /// <summary>Gets the url safe dictatable (no i,l,v,0) charset for Base32 en-/decoding (no padding).</summary>
+    public static Base32 Safe => new(new("abcdefghjkmnopqrstuwxyz123456789"), null);
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="Base32" /> class.</summary>
+    /// <param name="dictionary">The dictionary containing 64 ascii characters used for encoding.</param>
+    /// <param name="padding">The padding (use null to skip padding).</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    public Base32(CharacterDictionary dictionary, char? padding)
+        : base(dictionary, bitCount)
     {
-        #region Static
-
-        const int bitCount = 5;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>Initializes a new instance of the <see cref="Base32" /> class.</summary>
-        /// <param name="dictionary">The dictionary containing 64 ascii characters used for encoding.</param>
-        /// <param name="padding">The padding (use null to skip padding).</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public Base32(CharacterDictionary dictionary, char? padding)
-            : base(dictionary, bitCount)
+        Padding = padding;
+        if (Padding != null)
         {
-            Padding = padding;
-            if (Padding != null)
+            int paddingChar = (char)Padding;
+            if (paddingChar is < 0 or > 127)
             {
-                int paddingChar = (char)Padding;
-                if (paddingChar is < 0 or > 127)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(padding));
-                }
+                throw new ArgumentOutOfRangeException(nameof(padding));
+            }
+        }
+    }
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>Gets the used padding character or null.</summary>
+    public char? Padding { get; }
+
+    #endregion
+
+    #region Overrides
+
+    /// <summary>Decodes a Base32 data array.</summary>
+    /// <param name="data">The Base32 data to decode.</param>
+    public override byte[] Decode(byte[] data)
+    {
+        if (CharacterDictionary == null)
+        {
+            throw new InvalidOperationException($"Property {nameof(CharacterDictionary)} has to be set!");
+        }
+
+        if (data == null)
+        {
+            throw new ArgumentNullException(nameof(data));
+        }
+
+        if (Padding != null)
+        {
+            int paddingChar = (char)Padding;
+            if (paddingChar is < 0 or > 127)
+            {
+                throw new InvalidOperationException("Invalid padding character!");
             }
         }
 
-        #endregion
-
-        #region Properties
-
-        /// <summary>Gets the used padding character or null.</summary>
-        public char? Padding { get; }
-
-        #endregion
-
-        #region Overrides
-
-        #region public decoder interface
-
-        /// <summary>Decodes a Base32 data array.</summary>
-        /// <param name="data">The Base32 data to decode.</param>
-        public override byte[] Decode(byte[] data)
+        // decode data
+        var result = new List<byte>(data.Length);
+        var value = 0;
+        var bits = 0;
+        foreach (var b in data)
         {
-            if (CharacterDictionary == null)
+            if (b == Padding)
             {
-                throw new InvalidOperationException($"Property {nameof(CharacterDictionary)} has to be set!");
+                break;
             }
 
-            if (data == null)
+            value <<= bitCount;
+            bits += bitCount;
+            value |= CharacterDictionary.GetValue((char)b);
+            if (bits >= 8)
             {
-                throw new ArgumentNullException(nameof(data));
+                bits -= 8;
+                var outValue = value >> bits;
+                value &= ~(0xFFFF << bits);
+                result.Add((byte)outValue);
             }
-
-            if (Padding != null)
-            {
-                int paddingChar = (char)Padding;
-                if (paddingChar is < 0 or > 127)
-                {
-                    throw new InvalidOperationException("Invalid padding character!");
-                }
-            }
-
-            // decode data
-            var result = new List<byte>(data.Length);
-            var value = 0;
-            var bits = 0;
-            foreach (var b in data)
-            {
-                if (b == Padding)
-                {
-                    break;
-                }
-
-                value <<= bitCount;
-                bits += bitCount;
-                value |= CharacterDictionary.GetValue((char)b);
-                if (bits >= 8)
-                {
-                    bits -= 8;
-                    var outValue = value >> bits;
-                    value &= ~(0xFFFF << bits);
-                    result.Add((byte)outValue);
-                }
-            }
-
-            return result.ToArray();
         }
 
-        #endregion
+        return result.ToArray();
+    }
 
-        #region public encoder interface
-
-        /// <summary>Encodes the specified data.</summary>
-        /// <param name="data">The data to encode.</param>
-        public override string Encode(byte[] data)
+    /// <summary>Encodes the specified data.</summary>
+    /// <param name="data">The data to encode.</param>
+    public override string Encode(byte[] data)
+    {
+        if (data == null)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            throw new ArgumentNullException(nameof(data));
+        }
 
-            var result = new List<char>(data.Length * 2);
-            var value = 0;
-            var bits = 0;
-            foreach (var b in data)
-            {
-                value = (value << 8) | b;
-                bits += 8;
-                while (bits >= bitCount)
-                {
-                    bits -= bitCount;
-                    var outValue = value >> bits;
-                    value &= ~(0xFFFF << bits);
-                    result.Add(CharacterDictionary.GetCharacter(outValue));
-                }
-            }
-
-            if (bits >= bitCount)
+        var result = new List<char>(data.Length * 2);
+        var value = 0;
+        var bits = 0;
+        foreach (var b in data)
+        {
+            value = (value << 8) | b;
+            bits += 8;
+            while (bits >= bitCount)
             {
                 bits -= bitCount;
                 var outValue = value >> bits;
                 value &= ~(0xFFFF << bits);
                 result.Add(CharacterDictionary.GetCharacter(outValue));
             }
-
-            if (bits > 0)
-            {
-                var shift = bitCount - bits;
-                var outValue = value << shift;
-                result.Add(CharacterDictionary.GetCharacter(outValue));
-                bits -= bitCount;
-            }
-
-            if (Padding != null)
-            {
-                var padding = (char)Padding;
-                while ((bits % 8) != 0)
-                {
-                    result.Add(padding);
-                    bits -= bitCount;
-                }
-            }
-
-            return new string(result.ToArray());
         }
 
-        #endregion
+        if (bits >= bitCount)
+        {
+            bits -= bitCount;
+            var outValue = value >> bits;
+            value &= ~(0xFFFF << bits);
+            result.Add(CharacterDictionary.GetCharacter(outValue));
+        }
 
-        #endregion
+        if (bits > 0)
+        {
+            var shift = bitCount - bits;
+            var outValue = value << shift;
+            result.Add(CharacterDictionary.GetCharacter(outValue));
+            bits -= bitCount;
+        }
 
-        #region public static default instances
+        if (Padding != null)
+        {
+            var padding = (char)Padding;
+            while ((bits % 8) != 0)
+            {
+                result.Add(padding);
+                bits -= bitCount;
+            }
+        }
 
-        /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
-        public static Base32 OTP => new(new CharacterDictionary("abcdefghijklmnopqrstuvwxyz234567"), null);
-
-        /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
-        public static Base32 Default => new(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), '=');
-
-        /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
-        public static Base32 NoPadding => new(new CharacterDictionary("0123456789ABCDEFGHIJKLMNOPQRSTUV"), null);
-
-        /// <summary>Gets the url safe dictatable (no i,l,v,0) charset for Base32 en-/decoding (no padding).</summary>
-        public static Base32 Safe => new(new CharacterDictionary("abcdefghjkmnopqrstuwxyz123456789"), null);
-
-        #endregion
+        return new(result.ToArray());
     }
+
+    #endregion
 }

@@ -1,36 +1,39 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Cave.Collections.Generic
+namespace Cave.Collections.Generic;
+
+/// <summary>Provides a debug view for collections.</summary>
+/// <typeparam name="T"></typeparam>
+public sealed class CollectionDebuggerView<T>
 {
-    /// <summary>Provides a debug view for collections.</summary>
-    /// <typeparam name="T"></typeparam>
-    public sealed class CollectionDebuggerView<T>
+    #region Fields
+
+    readonly ICollection<T> collection;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{T}" /> class.</summary>
+    /// <param name="collection"></param>
+    public CollectionDebuggerView(ICollection<T> collection) => this.collection = collection;
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>Gets all items.</summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    public IList<T> Items
     {
-        readonly ICollection<T> collection;
-
-        #region Constructors
-
-        /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{T}" /> class.</summary>
-        /// <param name="collection"></param>
-        public CollectionDebuggerView(ICollection<T> collection) => this.collection = collection;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>Gets all items.</summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<T> Items
+        get
         {
-            get
-            {
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
-            }
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return result;
         }
-
-        #endregion
     }
+
+    #endregion
 }

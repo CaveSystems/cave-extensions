@@ -3,114 +3,113 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
-namespace Cave
+namespace Cave;
+
+/// <summary>Gets extensions to byte buffers.</summary>
+public static class BufferExtensions
 {
-    /// <summary>Gets extensions to byte buffers.</summary>
-    public static class BufferExtensions
+    #region Static
+
+    /// <summary>Deobfuscates a byte buffer.</summary>
+    /// <param name="data">Byte buffer to deobfuscate.</param>
+    /// <param name="algorithm">Algorithm to use.</param>
+    /// <returns>Returns the deobfuscated byte buffer.</returns>
+    public static byte[] Deobfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
     {
-        #region Static
-
-        /// <summary>Deobfuscates a byte buffer.</summary>
-        /// <param name="data">Byte buffer to deobfuscate.</param>
-        /// <param name="algorithm">Algorithm to use.</param>
-        /// <returns>Returns the deobfuscated byte buffer.</returns>
-        public static byte[] Deobfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+        if (data == null)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            throw new ArgumentNullException(nameof(data));
+        }
 
-            IDisposable disposable = null;
-            if (algorithm == null)
-            {
+        IDisposable disposable = null;
+        if (algorithm == null)
+        {
 #if NET20
                 disposable = algorithm = Rijndael.Create();
 #else
-                disposable = algorithm = Aes.Create();
+            disposable = algorithm = Aes.Create();
 #endif
-            }
-
-            try
-            {
-                var key = new byte[data[0]];
-                Buffer.BlockCopy(data, 1, key, 0, key.Length);
-                var ofs = 1 + key.Length;
-                var iv = new byte[data[ofs++]];
-                Buffer.BlockCopy(data, ofs, iv, 0, iv.Length);
-                ofs += iv.Length;
-                using var dec = algorithm.CreateDecryptor(key, iv);
-                return dec.TransformFinalBlock(data, ofs, data.Length - ofs);
-            }
-            finally
-            {
-                disposable?.Dispose();
-            }
         }
 
-        /// <summary>Gets the 4 byte nibbles of each byte at the specified buffer.</summary>
-        /// <param name="data">The buffer.</param>
-        /// <returns>Returns an array of nibbles.</returns>
-        public static byte[] GetNibbles(this byte[] data)
+        try
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            var result = new byte[data.Length << 1];
-            for (int i = 0, n = 0; i < data.Length; i++)
-            {
-                result[n++] = (byte)(data[i] >> 4);
-                result[n++] = (byte)(data[i] & 0xF);
-            }
-
-            return result;
+            var key = new byte[data[0]];
+            Buffer.BlockCopy(data, 1, key, 0, key.Length);
+            var ofs = 1 + key.Length;
+            var iv = new byte[data[ofs++]];
+            Buffer.BlockCopy(data, ofs, iv, 0, iv.Length);
+            ofs += iv.Length;
+            using var dec = algorithm.CreateDecryptor(key, iv);
+            return dec.TransformFinalBlock(data, ofs, data.Length - ofs);
         }
-
-        /// <summary>Obfuscates a byte buffer with a random key. This is not an encryption.</summary>
-        /// <param name="data">Byte buffer to obfuscate.</param>
-        /// <param name="algorithm">Algorithm to use.</param>
-        /// <returns>Returns the obfuscated byte buffer.</returns>
-        [SuppressMessage("Style", "IDE0028")]
-        public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+        finally
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            IDisposable disposable = null;
-            if (algorithm == null)
-            {
-#if NET20
-                disposable = algorithm = Rijndael.Create();
-#else
-                disposable = algorithm = Aes.Create();
-#endif
-            }
-
-            try
-            {
-                using var enc = algorithm.CreateEncryptor();
-                var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
-                var encoded = new List<byte>(maxLength);
-                // add key
-                encoded.Add((byte)algorithm.Key.Length);
-                encoded.AddRange(algorithm.Key);
-                // add iv
-                encoded.Add((byte)algorithm.IV.Length);
-                encoded.AddRange(algorithm.IV);
-                // add data
-                encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
-                return encoded.ToArray();
-            }
-            finally
-            {
-                disposable?.Dispose();
-            }
+            disposable?.Dispose();
         }
-
-        #endregion
     }
+
+    /// <summary>Gets the 4 byte nibbles of each byte at the specified buffer.</summary>
+    /// <param name="data">The buffer.</param>
+    /// <returns>Returns an array of nibbles.</returns>
+    public static byte[] GetNibbles(this byte[] data)
+    {
+        if (data == null)
+        {
+            throw new ArgumentNullException(nameof(data));
+        }
+
+        var result = new byte[data.Length << 1];
+        for (int i = 0, n = 0; i < data.Length; i++)
+        {
+            result[n++] = (byte)(data[i] >> 4);
+            result[n++] = (byte)(data[i] & 0xF);
+        }
+
+        return result;
+    }
+
+    /// <summary>Obfuscates a byte buffer with a random key. This is not an encryption.</summary>
+    /// <param name="data">Byte buffer to obfuscate.</param>
+    /// <param name="algorithm">Algorithm to use.</param>
+    /// <returns>Returns the obfuscated byte buffer.</returns>
+    [SuppressMessage("Style", "IDE0028")]
+    public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+    {
+        if (data == null)
+        {
+            throw new ArgumentNullException(nameof(data));
+        }
+
+        IDisposable disposable = null;
+        if (algorithm == null)
+        {
+#if NET20
+                disposable = algorithm = Rijndael.Create();
+#else
+            disposable = algorithm = Aes.Create();
+#endif
+        }
+
+        try
+        {
+            using var enc = algorithm.CreateEncryptor();
+            var maxLength = algorithm.Key.Length + algorithm.IV.Length + (algorithm.BlockSize * 2) + data.Length;
+            var encoded = new List<byte>(maxLength);
+            // add key
+            encoded.Add((byte)algorithm.Key.Length);
+            encoded.AddRange(algorithm.Key);
+            // add iv
+            encoded.Add((byte)algorithm.IV.Length);
+            encoded.AddRange(algorithm.IV);
+            // add data
+            encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
+            return encoded.ToArray();
+        }
+        finally
+        {
+            disposable?.Dispose();
+        }
+    }
+
+    #endregion
 }

@@ -3,89 +3,89 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Cave
+namespace Cave;
+
+/// <summary>Backport of enum extensions.</summary>
+public static class EnumExtension
 {
-    /// <summary>Backport of enum extensions.</summary>
-    public static class EnumExtension
+    /// <summary>Gets an array containing all single flags set. (flag1, flag4, ..)</summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <returns>The flags as array.</returns>
+    public static TEnum[] GetFlags<TEnum>(this TEnum value)
+        where TEnum : struct, IConvertible
     {
-        /// <summary>Gets an array containing all single flags set. (flag1, flag4, ..)</summary>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <returns>The flags as array.</returns>
-        public static TEnum[] GetFlags<TEnum>(this TEnum value)
-            where TEnum : struct, IConvertible
+        var flags = new List<TEnum>();
+        var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
+        for (var i = 0; i < 63; i++)
         {
-            var flags = new List<TEnum>();
-            var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
-            for (var i = 0; i < 63; i++)
+            var check = 1L << i;
+            if ((val & check) != 0)
             {
-                var check = 1L << i;
-                if ((val & check) != 0)
+                if (TryParse($"{check}", out TEnum flag))
                 {
-                    if (TryParse($"{check}", out TEnum flag))
-                    {
-                        flags.Add(flag);
-                    }
+                    flags.Add(flag);
                 }
             }
-
-            return flags.ToArray();
         }
 
-        /// <summary>Gets a string for all single flags set. ("flag1, flag4, ..").</summary>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <returns>The flags as string.</returns>
-        public static string GetString<TEnum>(this TEnum value)
-            where TEnum : struct, IConvertible
-        {
-            var sb = new StringBuilder();
-            var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
-            for (var i = 0; i < 63; i++)
-            {
-                var check = 1L << i;
-                if ((val & check) != 0)
-                {
-                    if (sb.Length != 0)
-                    {
-                        sb.Append(", ");
-                    }
+        return flags.ToArray();
+    }
 
-                    if (TryParse($"{check}", out TEnum flag))
-                    {
-                        sb.Append(flag.ToString());
-                    }
+    /// <summary>Gets a string for all single flags set. ("flag1, flag4, ..").</summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <returns>The flags as string.</returns>
+    public static string GetString<TEnum>(this TEnum value)
+        where TEnum : struct, IConvertible
+    {
+        var sb = new StringBuilder();
+        var val = Convert.ToInt64(value, CultureInfo.InvariantCulture);
+        for (var i = 0; i < 63; i++)
+        {
+            var check = 1L << i;
+            if ((val & check) != 0)
+            {
+                if (sb.Length != 0)
+                {
+                    sb.Append(", ");
+                }
+
+                if (TryParse($"{check}", out TEnum flag))
+                {
+                    sb.Append(flag.ToString());
                 }
             }
-
-            return sb.ToString();
         }
 
-        /// <summary>Parses the specified string for a valid enum value.</summary>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <param name="defaultValue">The default value to be returned if no valid value was found.</param>
-        /// <returns>The enum value.</returns>
-        public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default)
-            where TEnum : struct, IConvertible
+        return sb.ToString();
+    }
+
+    /// <summary>Parses the specified string for a valid enum value.</summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <param name="defaultValue">The default value to be returned if no valid value was found.</param>
+    /// <returns>The enum value.</returns>
+    public static TEnum Parse<TEnum>(this string value, TEnum defaultValue = default)
+        where TEnum : struct, IConvertible
+    {
+        if (!value.TryParse(out TEnum result))
         {
-            if (!value.TryParse(out TEnum result))
-            {
-                result = defaultValue;
-            }
-
-            return result;
+            result = defaultValue;
         }
+
+        return result;
+    }
 
 #if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
-        /// <summary>Tries to parse the specified string.</summary>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <param name="result">The result.</param>
-        /// <returns>True if the value could be parsed.</returns>
-        public static bool TryParse<TEnum>(this string value, out TEnum result)
-            where TEnum : struct, IConvertible =>
-            Enum.TryParse(value, true, out result);
+    /// <summary>Tries to parse the specified string.</summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>True if the value could be parsed.</returns>
+    public static bool TryParse<TEnum>(this string value, out TEnum result)
+        where TEnum : struct, IConvertible =>
+        Enum.TryParse(value, true, out result);
 #elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
         /// <summary>Tries the parse.</summary>
         /// <typeparam name="TEnum">The type of the enum.</typeparam>
@@ -127,5 +127,4 @@ namespace Cave
 #else
 #error No code defined for the current framework or NETXX version define missing!
 #endif
-    }
 }

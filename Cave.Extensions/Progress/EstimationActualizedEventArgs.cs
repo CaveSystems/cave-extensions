@@ -1,23 +1,22 @@
 using System;
 
-namespace Cave.Progress
+namespace Cave.Progress;
+
+/// <summary>Provides an event for <see cref="IEstimation" /> classes to notify about actualization.</summary>
+public sealed class EstimationActualizedEventArgs : EventArgs
 {
-    /// <summary>Provides an event for <see cref="IEstimation" /> classes to notify about actualization.</summary>
-    public sealed class EstimationActualizedEventArgs : EventArgs
-    {
-        #region Constructors
+    #region Constructors
 
-        /// <summary>Initializes a new instance of the <see cref="EstimationActualizedEventArgs" /> class.</summary>
-        /// <param name="estimatedEndTime">Estimated completion time.</param>
-        public EstimationActualizedEventArgs(DateTime estimatedEndTime) => EstimatedEndTime = estimatedEndTime;
+    /// <summary>Initializes a new instance of the <see cref="EstimationActualizedEventArgs" /> class.</summary>
+    /// <param name="estimatedEndTime">Estimated completion time.</param>
+    public EstimationActualizedEventArgs(DateTime estimatedEndTime) => EstimatedEndTime = estimatedEndTime;
 
-        #endregion
+    #endregion
 
-        #region Properties
+    #region Properties
 
-        /// <summary>Gets the estimated end time.</summary>
-        public DateTime EstimatedEndTime { get; }
+    /// <summary>Gets the estimated end time.</summary>
+    public DateTime EstimatedEndTime { get; }
 
-        #endregion
-    }
+    #endregion
 }

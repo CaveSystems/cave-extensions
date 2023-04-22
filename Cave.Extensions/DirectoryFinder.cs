@@ -8,327 +8,327 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cave
-{
-    /// <summary>Gets an asynchronous file finder.</summary>
-    public class DirectoryFinder
-    {
-        #region Static
+namespace Cave;
 
-        static string CheckDirectory(string value)
+/// <summary>Gets an asynchronous file finder.</summary>
+public class DirectoryFinder
+{
+    #region Static
+
+    static string CheckDirectory(string value)
+    {
+        var result = FileSystem.GetFullPath(value);
+        if (!Directory.Exists(result))
         {
-            var result = FileSystem.GetFullPath(value);
-            if (!Directory.Exists(result))
+            throw new DirectoryNotFoundException();
+        }
+
+        return result;
+    }
+
+    #endregion
+
+    #region Fields
+
+    readonly Queue<DirectoryItem> directoryList = new();
+    string baseDirectory;
+    bool deepestFirst;
+    int depth;
+    string directoryMask;
+    int maxDepth;
+    Task task;
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>Gets a value indicating whether the filefinder has completed the search task and all items have been read.</summary>
+    public bool Completed => Started && !SearchRunning;
+
+    /// <summary>Gets or sets the base directory of the search.</summary>
+    public string BaseDirectory
+    {
+        get => baseDirectory;
+        set => baseDirectory = !Started ? CheckDirectory(value) : throw new ReadOnlyException("FileFinder already started!");
+    }
+
+    /// <summary>Gets the comparers used to (un)select a directory.</summary>
+    public IList<IDirectoryFinderComparer> Comparer { get; private set; } = new List<IDirectoryFinderComparer>();
+
+    /// <summary>Gets or sets a value indicating whether the finder returns the deepest directory first (e.g. first /tmp/some/dir then /tmp/some).</summary>
+    public bool DeepestFirst { get => deepestFirst; set => deepestFirst = !Started ? value : throw new ReadOnlyException("Finder was already started!"); }
+
+    /// <summary>Gets or sets the directory mask applied while searching.</summary>
+    public string DirectoryMask
+    {
+        get => directoryMask;
+        set => directoryMask = !Started ? value : throw new ReadOnlyException("FileFinder already started!");
+    }
+
+    /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Debug" /> output is enabled.</summary>
+    public bool EnableDebug { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Trace" /> output is enabled.</summary>
+    public bool EnableTrace { get; set; }
+
+    /// <summary>Gets or sets the maximum number of directories in queue.</summary>
+    public int MaximumDirectoriesQueued { get; set; }
+
+    /// <summary>Gets the current progress of the finder. This is a very rough estimation.</summary>
+    public float Progress { get; private set; }
+
+    /// <summary>Gets a value indicating whether the search task is still running.</summary>
+    public bool SearchRunning { get; private set; }
+
+    /// <summary>Gets a value indicating whether the finder has been started.</summary>
+    public bool Started { get; private set; }
+
+    #endregion
+
+    #region Members
+
+    /// <summary>Called on each error</summary>
+    public event EventHandler<ErrorEventArgs> Error;
+
+    /// <summary>The found directory event</summary>
+    public event EventHandler<DirectoryItemEventArgs> FoundDirectory;
+
+    /// <summary>Closes the finder.</summary>
+    public void Close()
+    {
+        SearchRunning = false;
+        task?.Wait();
+    }
+
+    /// <summary>Retrieves (dequeues) all files already found. This may called repeatedly until Completed==true.</summary>
+    /// <param name="wait">Wait until at least one file was found.</param>
+    /// <param name="maximum">Maximum number of items to return.</param>
+    /// <returns>Returns an array of files.</returns>
+    public IList<DirectoryItem> Get(bool wait = false, int maximum = 0)
+    {
+        lock (directoryList)
+        {
+            if (wait)
             {
-                throw new DirectoryNotFoundException();
+                while ((directoryList.Count == 0) && SearchRunning)
+                {
+                    Monitor.Wait(directoryList);
+                }
             }
 
-            return result;
+            if (maximum > 0)
+            {
+                if (directoryList.Count < maximum)
+                {
+                    maximum = directoryList.Count;
+                }
+
+                var result = new List<DirectoryItem>(maximum);
+                for (var i = 0; i < maximum; i++)
+                {
+                    result.Add(directoryList.Dequeue());
+                }
+
+                return result;
+            }
+            else
+            {
+                var result = new DirectoryItem[directoryList.Count];
+                directoryList.CopyTo(result, 0);
+                directoryList.Clear();
+                return result;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the next directory found. This function waits until a directory is found or the search thread completes without finding
+    /// any further items.
+    /// </summary>
+    /// <param name="waitAction">An action to call when entering wait for next search results.</param>
+    /// <returns>Returns the next file found or null if the finder completed without finding any further directories.</returns>
+    public DirectoryItem GetNext(Action waitAction = null)
+    {
+        DirectoryItem result = null;
+        while (SearchRunning)
+        {
+            lock (directoryList)
+            {
+                if (directoryList.Count > 0)
+                {
+                    result = directoryList.Dequeue();
+                    break;
+                }
+
+                if (waitAction == null)
+                {
+                    Monitor.Wait(directoryList);
+                }
+            }
+
+            waitAction?.Invoke();
         }
 
-        #endregion Static
-
-        #region Private Fields
-
-        readonly Queue<DirectoryItem> directoryList = new();
-        string baseDirectory;
-        bool deepestFirst;
-        int depth;
-        string directoryMask;
-        int maxDepth;
-        Task task;
-
-        #endregion Private Fields
-
-        #region Properties
-
-        /// <summary>Gets or sets the base directory of the search.</summary>
-        public string BaseDirectory
+        lock (directoryList)
         {
-            get => baseDirectory;
-            set => baseDirectory = !Started ? CheckDirectory(value) : throw new ReadOnlyException("FileFinder already started!");
+            if ((result == null) && (directoryList.Count > 0))
+            {
+                result = directoryList.Dequeue();
+            }
+
+            Monitor.Pulse(directoryList);
         }
 
-        /// <summary>Gets the comparers used to (un)select a directory.</summary>
-        public IList<IDirectoryFinderComparer> Comparer { get; private set; } = new List<IDirectoryFinderComparer>();
+        return result;
+    }
 
-        /// <summary>Gets a value indicating whether the filefinder has completed the search task and all items have been read.</summary>
-        public bool Completed => Started && !SearchRunning;
-
-        /// <summary>Gets or sets a value indicating whether the finder returns the deepest directory first (e.g. first /tmp/some/dir then /tmp/some).</summary>
-        public bool DeepestFirst { get => deepestFirst; set => deepestFirst = !Started ? value : throw new ReadOnlyException("Finder was already started!"); }
-
-        /// <summary>Gets or sets the directory mask applied while searching.</summary>
-        public string DirectoryMask
+    /// <summary>Starts the finder.</summary>
+    public void Start()
+    {
+        lock (this)
         {
-            get => directoryMask;
-            set => directoryMask = !Started ? value : throw new ReadOnlyException("FileFinder already started!");
+            if (Started)
+            {
+                throw new InvalidOperationException("DirectoryFinder already started!");
+            }
+
+            Started = true;
+            Comparer = new ReadOnlyCollection<IDirectoryFinderComparer>(Comparer.ToArray());
         }
 
-        /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Debug"/> output is enabled.</summary>
-        public bool EnableDebug { get; set; }
-
-        /// <summary>Gets or sets a value indicating whether logging of messages to <see cref="Trace"/> output is enabled.</summary>
-        public bool EnableTrace { get; set; }
-
-        /// <summary>Gets or sets the maximum number of directories in queue.</summary>
-        public int MaximumDirectoriesQueued { get; set; }
-
-        /// <summary>Gets the current progress of the finder. This is a very rough estimation.</summary>
-        public float Progress { get; private set; }
-
-        /// <summary>Gets a value indicating whether the search task is still running.</summary>
-        public bool SearchRunning { get; private set; }
-
-        /// <summary>Gets a value indicating whether the finder has been started.</summary>
-        public bool Started { get; private set; }
-
-        #endregion Properties
-
-        #region Members
-
-        void RecursiveSearch(DirectoryItem current)
+        Verbose($"Start FileFinder at {BaseDirectory}");
+        if (!Directory.Exists(BaseDirectory))
         {
+            throw new DirectoryNotFoundException();
+        }
+
+        SearchRunning = true;
+        task = Task.Factory.StartNew(SearchDirectories);
+    }
+
+    void RecursiveSearch(DirectoryItem current)
+    {
+        try
+        {
+            if (++depth > maxDepth)
+            {
+                maxDepth++;
+            }
+
+            string[] dirs;
             try
             {
-                if (++depth > maxDepth)
-                {
-                    maxDepth++;
-                }
-
-                string[] dirs;
-                try
-                {
-                    dirs = directoryMask == null ? Directory.GetDirectories(current.FullPath) : Directory.GetDirectories(current.FullPath, DirectoryMask);
-                }
-                catch (Exception ex)
-                {
-                    Error?.Invoke(this, new ErrorEventArgs(ex));
-                    Verbose($"DirectoryFinder got an error reading {current}: {ex.Message}", true);
-                    return;
-                }
-
-                foreach (var dir in dirs)
-                {
-                    var directory = DirectoryItem.FromFullPath(BaseDirectory, dir);
-                    foreach (var comparer in Comparer)
-                    {
-                        if (!comparer.DirectoryMatches(directory))
-                        {
-                            directory = null;
-                            break;
-                        }
-                    }
-
-                    if (directory != null)
-                    {
-                        if (deepestFirst)
-                        {
-                            // recursive search in directory first
-                            RecursiveSearch(directory);
-                        }
-
-                        var addDirectoryToList = true;
-                        var callback = FoundDirectory;
-                        if (callback != null)
-                        {
-                            var arg = new DirectoryItemEventArgs(directory);
-                            callback.Invoke(this, arg);
-                            addDirectoryToList = !arg.Handled;
-                        }
-
-                        // then add items to list
-                        while (SearchRunning && addDirectoryToList)
-                        {
-                            lock (directoryList)
-                            {
-                                if ((MaximumDirectoriesQueued <= 0) || (directoryList.Count < MaximumDirectoriesQueued))
-                                {
-                                    directoryList.Enqueue(directory);
-                                    Monitor.Pulse(directoryList);
-                                    break;
-                                }
-
-                                Monitor.Wait(directoryList);
-                            }
-                        }
-
-                        if (!deepestFirst)
-                        {
-                            // recursive search later
-                            RecursiveSearch(directory);
-                        }
-                    }
-                }
-
-                if (depth == 0)
-                {
-                    Progress = 1;
-                }
-                else
-                {
-                    var newProgress = Math.Max(1 - (--depth / (float)maxDepth), Progress);
-                    if (newProgress > Progress)
-                    {
-                        Progress = Math.Min(Progress + 0.01f, newProgress);
-                    }
-                }
+                dirs = directoryMask == null ? Directory.GetDirectories(current.FullPath) : Directory.GetDirectories(current.FullPath, DirectoryMask);
             }
             catch (Exception ex)
             {
-                Trace.TraceError("Cannot get directory listing for {0}.\n{1}", current, ex);
-            }
-        }
-
-        /// <summary>runs the current search.</summary>
-        void SearchDirectories()
-        {
-            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
-            Thread.CurrentThread.IsBackground = true;
-            Verbose($"Starting directory search at {BaseDirectory}");
-            RecursiveSearch(new DirectoryItem(BaseDirectory, "."));
-            SearchRunning = false;
-            Verbose($"Completed directory search at {BaseDirectory}");
-        }
-
-        void Verbose(string message, bool error = false)
-        {
-            if (EnableTrace)
-            {
-                if (error)
-                {
-                    Trace.TraceError(message);
-                }
-                else
-                {
-                    Trace.WriteLine(message);
-                }
+                Error?.Invoke(this, new(ex));
+                Verbose($"DirectoryFinder got an error reading {current}: {ex.Message}", true);
+                return;
             }
 
-            if (EnableDebug)
+            foreach (var dir in dirs)
             {
-                Debug.WriteLine(message);
-            }
-        }
-
-        /// <summary>Called on each error</summary>
-        public event EventHandler<ErrorEventArgs> Error;
-
-        /// <summary>The found directory event</summary>
-        public event EventHandler<DirectoryItemEventArgs> FoundDirectory;
-
-        /// <summary>Closes the finder.</summary>
-        public void Close()
-        {
-            SearchRunning = false;
-            task?.Wait();
-        }
-
-        /// <summary>Retrieves (dequeues) all files already found. This may called repeatedly until Completed==true.</summary>
-        /// <param name="wait">Wait until at least one file was found.</param>
-        /// <param name="maximum">Maximum number of items to return.</param>
-        /// <returns>Returns an array of files.</returns>
-        public IList<DirectoryItem> Get(bool wait = false, int maximum = 0)
-        {
-            lock (directoryList)
-            {
-                if (wait)
+                var directory = DirectoryItem.FromFullPath(BaseDirectory, dir);
+                foreach (var comparer in Comparer)
                 {
-                    while ((directoryList.Count == 0) && SearchRunning)
+                    if (!comparer.DirectoryMatches(directory))
                     {
-                        Monitor.Wait(directoryList);
-                    }
-                }
-
-                if (maximum > 0)
-                {
-                    if (directoryList.Count < maximum)
-                    {
-                        maximum = directoryList.Count;
-                    }
-
-                    var result = new List<DirectoryItem>(maximum);
-                    for (var i = 0; i < maximum; i++)
-                    {
-                        result.Add(directoryList.Dequeue());
-                    }
-
-                    return result;
-                }
-                else
-                {
-                    var result = new DirectoryItem[directoryList.Count];
-                    directoryList.CopyTo(result, 0);
-                    directoryList.Clear();
-                    return result;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the next directory found. This function waits until a directory is found or the search thread completes without finding any further items.
-        /// </summary>
-        /// <param name="waitAction">An action to call when entering wait for next search results.</param>
-        /// <returns>Returns the next file found or null if the finder completed without finding any further directories.</returns>
-        public DirectoryItem GetNext(Action waitAction = null)
-        {
-            DirectoryItem result = null;
-            while (SearchRunning)
-            {
-                lock (directoryList)
-                {
-                    if (directoryList.Count > 0)
-                    {
-                        result = directoryList.Dequeue();
+                        directory = null;
                         break;
                     }
+                }
 
-                    if (waitAction == null)
+                if (directory != null)
+                {
+                    if (deepestFirst)
                     {
-                        Monitor.Wait(directoryList);
+                        // recursive search in directory first
+                        RecursiveSearch(directory);
+                    }
+
+                    var addDirectoryToList = true;
+                    var callback = FoundDirectory;
+                    if (callback != null)
+                    {
+                        var arg = new DirectoryItemEventArgs(directory);
+                        callback.Invoke(this, arg);
+                        addDirectoryToList = !arg.Handled;
+                    }
+
+                    // then add items to list
+                    while (SearchRunning && addDirectoryToList)
+                    {
+                        lock (directoryList)
+                        {
+                            if ((MaximumDirectoriesQueued <= 0) || (directoryList.Count < MaximumDirectoriesQueued))
+                            {
+                                directoryList.Enqueue(directory);
+                                Monitor.Pulse(directoryList);
+                                break;
+                            }
+
+                            Monitor.Wait(directoryList);
+                        }
+                    }
+
+                    if (!deepestFirst)
+                    {
+                        // recursive search later
+                        RecursiveSearch(directory);
                     }
                 }
-
-                waitAction?.Invoke();
             }
 
-            lock (directoryList)
+            if (depth == 0)
             {
-                if ((result == null) && (directoryList.Count > 0))
-                {
-                    result = directoryList.Dequeue();
-                }
-
-                Monitor.Pulse(directoryList);
+                Progress = 1;
             }
-
-            return result;
+            else
+            {
+                var newProgress = Math.Max(1 - (--depth / (float)maxDepth), Progress);
+                if (newProgress > Progress)
+                {
+                    Progress = Math.Min(Progress + 0.01f, newProgress);
+                }
+            }
         }
-
-        /// <summary>Starts the finder.</summary>
-        public void Start()
+        catch (Exception ex)
         {
-            lock (this)
+            Trace.TraceError("Cannot get directory listing for {0}.\n{1}", current, ex);
+        }
+    }
+
+    /// <summary>runs the current search.</summary>
+    void SearchDirectories()
+    {
+        Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+        Thread.CurrentThread.IsBackground = true;
+        Verbose($"Starting directory search at {BaseDirectory}");
+        RecursiveSearch(new(BaseDirectory, "."));
+        SearchRunning = false;
+        Verbose($"Completed directory search at {BaseDirectory}");
+    }
+
+    void Verbose(string message, bool error = false)
+    {
+        if (EnableTrace)
+        {
+            if (error)
             {
-                if (Started)
-                {
-                    throw new InvalidOperationException("DirectoryFinder already started!");
-                }
-
-                Started = true;
-                Comparer = new ReadOnlyCollection<IDirectoryFinderComparer>(Comparer.ToArray());
+                Trace.TraceError(message);
             }
-
-            Verbose($"Start FileFinder at {BaseDirectory}");
-            if (!Directory.Exists(BaseDirectory))
+            else
             {
-                throw new DirectoryNotFoundException();
+                Trace.WriteLine(message);
             }
-
-            SearchRunning = true;
-            task = Task.Factory.StartNew(SearchDirectories);
         }
 
-        #endregion Members
+        if (EnableDebug)
+        {
+            Debug.WriteLine(message);
+        }
     }
+
+    #endregion
 }

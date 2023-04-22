@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 #if NET20 || NET35 || NET40
 using System.Collections.Generic;
 #endif
