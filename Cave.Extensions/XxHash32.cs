@@ -36,12 +36,10 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Cave.CodeGen;
+namespace Cave;
 
-/// <summary>
-/// Provides a fast hash algorithm without random seed (the .net hashcode class does not calculate deterministic hashes).
-/// </summary>
-public struct XxHash32 : IUserHashingFunction
+/// <summary>Provides a fast hash algorithm without random seed (the .net hashcode class does not calculate deterministic hashes).</summary>
+public struct XxHash32 : IHashingFunction
 {
     const uint seed = 1667331685U;
     const uint prime1 = 2654435761U;
@@ -70,10 +68,10 @@ public struct XxHash32 : IUserHashingFunction
     static uint RotateLeft(uint value, int bits) => (value << bits) | (value >> (32 - bits));
 
     [MethodImpl((MethodImplOptions)256)]
-    static uint Round(uint hash, uint input) => RotateLeft(hash + input * prime2, 13) * prime1;
+    static uint Round(uint hash, uint input) => RotateLeft(hash + (input * prime2), 13) * prime1;
 
     [MethodImpl((MethodImplOptions)256)]
-    static uint QueueRound(uint hash, uint queuedValue) => RotateLeft(hash + queuedValue * prime3, 17) * prime4;
+    static uint QueueRound(uint hash, uint queuedValue) => RotateLeft(hash + (queuedValue * prime3), 17) * prime4;
 
     [MethodImpl((MethodImplOptions)256)]
     static uint MixState(uint v1, uint v2, uint v3, uint v4) => RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
@@ -95,9 +93,7 @@ public struct XxHash32 : IUserHashingFunction
         }
     }
 
-    /// <summary>
-    /// Add a items hash to the hashcode.
-    /// </summary>
+    /// <summary>Add a items hash to the hashcode.</summary>
     /// <typeparam name="T">Type of the item to add (prevents unboxing).</typeparam>
     /// <param name="value">Item to add.</param>
     public void Add<T>(T value)
@@ -134,12 +130,24 @@ public struct XxHash32 : IUserHashingFunction
 
             // Switch can't be inlined.
 
-            if (position == 0) q1 = val;
-            else if (position == 1) q2 = val;
-            else if (position == 2) q3 = val;
+            if (position == 0)
+            {
+                q1 = val;
+            }
+            else if (position == 1)
+            {
+                q2 = val;
+            }
+            else if (position == 2)
+            {
+                q3 = val;
+            }
             else // position == 3
             {
-                if (previousLength == 3) Initialize(out v1, out v2, out v3, out v4);
+                if (previousLength == 3)
+                {
+                    Initialize(out v1, out v2, out v3, out v4);
+                }
 
                 v1 = Round(v1, q1);
                 v2 = Round(v2, q2);
@@ -149,9 +157,7 @@ public struct XxHash32 : IUserHashingFunction
         }
     }
 
-    /// <summary>
-    /// Returns the resulting hashcode.
-    /// </summary>
+    /// <summary>Returns the resulting hashcode.</summary>
     /// <returns></returns>
     public int ToHashCode()
     {
@@ -215,13 +221,13 @@ public struct XxHash32 : IUserHashingFunction
 
     /// <summary>NotSupported</summary>
     /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override int GetHashCode() => throw new NotSupportedException();
 
     /// <summary>NotSupported</summary>
     /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override bool Equals(object obj) => throw new NotSupportedException();
 #pragma warning restore 0809
