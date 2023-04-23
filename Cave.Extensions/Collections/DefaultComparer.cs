@@ -634,7 +634,7 @@ public struct DefaultComparer
     #region Constructors
 
     /// <summary>Creates a new instance of the <see cref="DefaultComparer" /> structure.</summary>
-    public DefaultComparer() { }
+    public DefaultComparer() { value = 0; }
 
     #endregion
 

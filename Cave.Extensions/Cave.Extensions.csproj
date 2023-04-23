@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-        <PackageReference Include="Cave.Backports" Version="3.0.0-ci-20230415-1" />
+        <PackageReference Include="Cave.Backports" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net20'">
