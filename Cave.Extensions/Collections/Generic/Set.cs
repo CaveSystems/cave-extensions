@@ -10,7 +10,7 @@ namespace Cave.Collections.Generic;
 [DebuggerDisplay("Count={Count}")]
 [SuppressMessage("Design", "CA1000")]
 #if NET20
-    public sealed class Set<T> : IItemSet<T>
+public sealed class Set<T> : IItemSet<T>
 #else
 public sealed class Set<T> : IItemSet<T>
 #endif
@@ -95,16 +95,16 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(set2));
         }
 #if NET20
-            var s2 = new Set<T>(set2);
-            var result = new Set<T>();
-            foreach (var item in set1)
+        var s2 = new Set<T>(set2);
+        var result = new Set<T>();
+        foreach (var item in set1)
+        {
+            if (s2.Contains(item))
             {
-                if (s2.Contains(item))
-                {
-                    result.Add(item);
-                }
+                result.Add(item);
             }
-            return result;
+        }
+        return result;
 #else
         var result = new Set<T>();
         result.list.UnionWith(set1);
@@ -129,16 +129,16 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(set2));
         }
 #if NET20
-            var s2 = new Set<T>(set2);
-            var result = new Set<T>();
-            foreach (var item in set1)
+        var s2 = new Set<T>(set2);
+        var result = new Set<T>();
+        foreach (var item in set1)
+        {
+            if (!s2.Contains(item))
             {
-                if (!s2.Contains(item))
-                {
-                    result.Add(item);
-                }
+                result.Add(item);
             }
-            return result;
+        }
+        return result;
 #else
         var result = new Set<T>();
         result.list.UnionWith(set1);
@@ -163,21 +163,21 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(set2));
         }
 #if NET20
-            var counter = new Dictionary<T, int>();
-            foreach (var item in set1)
+        var counter = new Dictionary<T, int>();
+        foreach (var item in set1)
+        {
+            counter.TryGetValue(item, out var count);
+            counter[item] = ++count;
+        }
+        var result = new Set<T>();
+        foreach (var item in counter)
+        {
+            if (item.Value == 0)
             {
-                counter.TryGetValue(item, out var count);
-                counter[item] = ++count;
+                result.Add(item.Key);
             }
-            var result = new Set<T>();
-            foreach (var item in counter)
-            {
-                if (item.Value == 0)
-                {
-                    result.Add(item.Key);
-                }
-            }
-            return result;
+        }
+        return result;
 #else
         var result = new Set<T>();
         result.list.UnionWith(set1);
@@ -191,7 +191,7 @@ public sealed class Set<T> : IItemSet<T>
     #region private Member
 
 #if NET20
-        Dictionary<T, byte> list = new();
+    Dictionary<T, byte> list = new();
 #else
     readonly HashSet<T> list = new();
 #endif
@@ -235,21 +235,21 @@ public sealed class Set<T> : IItemSet<T>
     #region public Member
 
 #if NET20
-        /// <inheritdoc />
-        public bool ContainsRange(IEnumerable<T> items)
+    /// <inheritdoc />
+    public bool ContainsRange(IEnumerable<T> items)
+    {
+        if (items == null)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-
-            var allFound = true;
-            foreach (var obj in items)
-            {
-                allFound &= Contains(obj);
-            }
-            return allFound;
+            throw new ArgumentNullException(nameof(items));
         }
+
+        var allFound = true;
+        foreach (var obj in items)
+        {
+            allFound &= Contains(obj);
+        }
+        return allFound;
+    }
 #else
     /// <inheritdoc />
     public bool ContainsRange(IEnumerable<T> items) => list.IsSubsetOf(items);
@@ -261,7 +261,7 @@ public sealed class Set<T> : IItemSet<T>
     /// <inheritdoc />
     public bool Contains(T item) =>
 #if NET20
-            list.ContainsKey(item);
+        list.ContainsKey(item);
 #else
         list.Contains(item);
 #endif
@@ -274,7 +274,7 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(item));
         }
 #if NET20
-            list.Add(item, 0);
+        list.Add(item, 0);
 #else
         if (!list.Add(item))
         {
@@ -291,10 +291,10 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(items));
         }
 #if NET20
-            foreach (var obj in items)
-            {
-                Add(obj);
-            }
+        foreach (var obj in items)
+        {
+            Add(obj);
+        }
 #else
         foreach (var obj in items)
         {
@@ -307,17 +307,17 @@ public sealed class Set<T> : IItemSet<T>
     public void AddRange(params T[] items) => AddRange((IEnumerable<T>)items);
 
 #if NET20
-        /// <inheritdoc />
-        public bool Include(T item)
+    /// <inheritdoc />
+    public bool Include(T item)
+    {
+        var addNew = !list.ContainsKey(item);
+        if (addNew)
         {
-            var addNew = !list.ContainsKey(item);
-            if (addNew)
-            {
-                list[item] = 0;
-            }
-
-            return addNew;
+            list[item] = 0;
         }
+
+        return addNew;
+    }
 #else
     /// <inheritdoc />
     public bool Include(T item) => list.Add(item);
@@ -331,15 +331,15 @@ public sealed class Set<T> : IItemSet<T>
             throw new ArgumentNullException(nameof(items));
         }
 #if NET20
-            var count = 0;
-            foreach (var item in items)
+        var count = 0;
+        foreach (var item in items)
+        {
+            if (Include(item))
             {
-                if (Include(item))
-                {
-                    count++;
-                }
+                count++;
             }
-            return count;
+        }
+        return count;
 #else
         var oldCount = list.Count;
         list.UnionWith(items);
@@ -351,16 +351,16 @@ public sealed class Set<T> : IItemSet<T>
     public int IncludeRange(params T[] items) => IncludeRange((IEnumerable<T>)items);
 
 #if NET20
-        /// <inheritdoc />
-        public bool TryRemove(T value)
+    /// <inheritdoc />
+    public bool TryRemove(T value)
+    {
+        if (Contains(value))
         {
-            if (Contains(value))
-            {
-                Remove(value);
-                return true;
-            }
-            return false;
+            Remove(value);
+            return true;
         }
+        return false;
+    }
 #else
     /// <inheritdoc />
     public bool TryRemove(T value) => list.Remove(value);
@@ -425,9 +425,9 @@ public sealed class Set<T> : IItemSet<T>
     public void Clear()
     {
 #if NET20
-            // cannot clear, recreate
-            list.Clear();
-            list = new Dictionary<T, byte>();
+        // cannot clear, recreate
+        list.Clear();
+        list = new();
 #else
         list.Clear();
         list.TrimExcess();
@@ -439,12 +439,10 @@ public sealed class Set<T> : IItemSet<T>
     #region ICollection Member
 
 #if NET20
-        /// <summary>
-        /// Copies all items present at the set to the specified array, starting at a specified index.
-        /// </summary>
-        /// <param name="array">one-dimensional array to copy to.</param>
-        /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex) => list.Keys.CopyTo(array, arrayIndex);
+    /// <summary>Copies all items present at the set to the specified array, starting at a specified index.</summary>
+    /// <param name="array">one-dimensional array to copy to.</param>
+    /// <param name="arrayIndex">the zero-based index in array at which copying begins.</param>
+    public void CopyTo(T[] array, int arrayIndex) => list.Keys.CopyTo(array, arrayIndex);
 #else
     /// <summary>Copies all items present at the set to the specified array, starting at a specified index.</summary>
     /// <param name="array">one-dimensional array to copy to.</param>
@@ -482,7 +480,7 @@ public sealed class Set<T> : IItemSet<T>
     /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
     IEnumerator IEnumerable.GetEnumerator() =>
 #if NET20
-            list.Keys.GetEnumerator();
+        list.Keys.GetEnumerator();
 #else
         list.GetEnumerator();
 #endif
@@ -494,7 +492,7 @@ public sealed class Set<T> : IItemSet<T>
     /// <summary>Creates a copy of this set.</summary>
     public object Clone() =>
 #if NET20
-            new Set<T>(list.Keys);
+        new Set<T>(list.Keys);
 #else
         new Set<T>(list);
 #endif
@@ -513,7 +511,7 @@ public sealed class Set<T> : IItemSet<T>
     /// <inheritdoc />
     public IEnumerator<T> GetEnumerator() =>
 #if NET20
-            list.Keys.GetEnumerator();
+        list.Keys.GetEnumerator();
 #else
         list.GetEnumerator();
 #endif
@@ -533,8 +531,8 @@ public sealed class Set<T> : IItemSet<T>
     public override bool Equals(object obj) => obj is IItemSet<T> s && Equals(s);
 
 #if NET20
-        /// <inheritdoc/>
-        public bool Equals(IItemSet<T> other) => other != null && other.Count == Count && ContainsRange(other);
+    /// <inheritdoc />
+    public bool Equals(IItemSet<T> other) => (other != null) && (other.Count == Count) && ContainsRange(other);
 #else
     /// <inheritdoc />
     public bool Equals(IItemSet<T> other) => list.SetEquals(other);

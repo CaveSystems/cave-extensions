@@ -12,12 +12,22 @@ namespace Cave;
 /// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages /
 /// ascii based character sets.
 /// </summary>
-#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
-public sealed class UTF8 : IEnumerable<char>, IEnumerable, ICloneable, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
-#else
-public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
-#endif
+public sealed class UTF8 : IEnumerable<char>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>, ICloneable
 {
+    #region Static
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="s1">The s1.</param>
+    /// <param name="s2">The s2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator ==(UTF8 s1, UTF8 s2) => s1 is null ? s2 is null : s1.Equals(s2);
+
+    /// <inheritdoc />
+    public static bool operator >(UTF8 left, UTF8 right) => left is not null && (left.CompareTo(right) > 0);
+
+    /// <inheritdoc />
+    public static bool operator >=(UTF8 left, UTF8 right) => left is null ? right is null : left.CompareTo(right) >= 0;
+
     /// <summary>Performs an implicit conversion from <see cref="UTF8" /> to <see cref="string" />.</summary>
     /// <param name="s">The string.</param>
     /// <returns>The result of the conversion.</returns>
@@ -28,17 +38,27 @@ public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>,
     /// <returns>The result of the conversion.</returns>
     public static implicit operator UTF8(string s) => s == null ? null : new(s);
 
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(UTF8 s1, UTF8 s2) => s1 is null ? s2 is null : s1.Equals(s2);
-
     /// <summary>Implements the operator !=.</summary>
     /// <param name="s1">The s1.</param>
     /// <param name="s2">The s2.</param>
     /// <returns>The result of the operator.</returns>
     public static bool operator !=(UTF8 s1, UTF8 s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
+
+    /// <inheritdoc />
+    public static bool operator <(UTF8 left, UTF8 right) => left is null ? right is not null : left.CompareTo(right) < 0;
+
+    /// <inheritdoc />
+    public static bool operator <=(UTF8 left, UTF8 right) => left is null || (left.CompareTo(right) <= 0);
+
+    #endregion
+
+    #region Fields
+
+    readonly byte[] data;
+
+    #endregion
+
+    #region Constructors
 
     UTF8(byte[] data, int length)
     {
@@ -58,7 +78,9 @@ public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>,
         data = Encoding.UTF8.GetBytes(text);
     }
 
-    readonly byte[] data;
+    #endregion
+
+    #region Properties
 
     /// <summary>Gets the data bytes.</summary>
     public IList<byte> Data => data.AsReadOnly();
@@ -67,17 +89,16 @@ public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>,
     /// <value>The length of the string.</value>
     public int Length { get; }
 
-    /// <inheritdoc />
-    public override string ToString() => Encoding.UTF8.GetString(data);
+    #endregion
+
+    #region ICloneable Members
 
     /// <inheritdoc />
-    public override int GetHashCode() => ToString().GetHashCode();
+    public object Clone() => new UTF8(data, Length);
 
-    /// <inheritdoc />
-    public override bool Equals(object obj) => obj is UTF8 utf8 && Equals(utf8);
+    #endregion
 
-    /// <inheritdoc />
-    public bool Equals(UTF8 other) => (Length == other.Length) && data.SequenceEqual(other.data);
+    #region IComparable Members
 
     /// <inheritdoc />
     public int CompareTo(object obj)
@@ -89,19 +110,26 @@ public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>,
         return ToString().CompareTo(obj.ToString());
     }
 
-#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
-    /// <inheritdoc />
-    public IEnumerator<char> GetEnumerator() => ToString().GetEnumerator();
+    #endregion
+
+    #region IComparable<string> Members
 
     /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => ToString().GetEnumerator();
+    public int CompareTo(string other) => ToString().CompareTo(other);
+
+    #endregion
+
+    #region IComparable<UTF8> Members
+
+    /// <inheritdoc />
+    public int CompareTo(UTF8 other) => ToString().CompareTo(other?.ToString());
+
+    #endregion
+
+    #region IConvertible Members
 
     /// <inheritdoc />
     public TypeCode GetTypeCode() => ToString().GetTypeCode();
-#endif
-
-    /// <inheritdoc />
-    public object Clone() => new UTF8(data, Length);
 
     /// <inheritdoc />
     public bool ToBoolean(IFormatProvider provider) => ((IConvertible)ToString()).ToBoolean(provider);
@@ -151,24 +179,42 @@ public sealed class UTF8 : IComparable, IComparable<string>, IEquatable<string>,
     /// <inheritdoc />
     public ulong ToUInt64(IFormatProvider provider) => ((IConvertible)ToString()).ToUInt64(provider);
 
+    #endregion
+
+    #region IEnumerable<char> Members
+
     /// <inheritdoc />
-    public int CompareTo(string other) => ToString().CompareTo(other);
+    IEnumerator IEnumerable.GetEnumerator() => ToString().GetEnumerator();
+
+    /// <inheritdoc />
+    public IEnumerator<char> GetEnumerator() => ToString().GetEnumerator();
+
+    #endregion
+
+    #region IEquatable<string> Members
 
     /// <inheritdoc />
     public bool Equals(string other) => ToString().Equals(other);
 
-    /// <inheritdoc />
-    public int CompareTo(UTF8 other) => ToString().CompareTo(other?.ToString());
+    #endregion
+
+    #region IEquatable<UTF8> Members
 
     /// <inheritdoc />
-    public static bool operator <(UTF8 left, UTF8 right) => left is null ? right is not null : left.CompareTo(right) < 0;
+    public bool Equals(UTF8 other) => (Length == other.Length) && data.SequenceEqual(other.data);
+
+    #endregion
+
+    #region Overrides
 
     /// <inheritdoc />
-    public static bool operator <=(UTF8 left, UTF8 right) => left is null || (left.CompareTo(right) <= 0);
+    public override bool Equals(object obj) => obj is UTF8 utf8 && Equals(utf8);
 
     /// <inheritdoc />
-    public static bool operator >(UTF8 left, UTF8 right) => left is not null && (left.CompareTo(right) > 0);
+    public override int GetHashCode() => ToString().GetHashCode();
 
     /// <inheritdoc />
-    public static bool operator >=(UTF8 left, UTF8 right) => left is null ? right is null : left.CompareTo(right) >= 0;
+    public override string ToString() => Encoding.UTF8.GetString(data);
+
+    #endregion
 }

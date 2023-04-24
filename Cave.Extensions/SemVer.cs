@@ -60,19 +60,22 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         value = split[0];
         //get core version
 #if NET20 || NET35
-            Version coreVersion;
-            bool result;
-            try
+        Version coreVersion;
+        bool result;
+        try
+        {
+            coreVersion = new(value);
+            result = true;
+        }
+        catch
+        {
+            result = false;
+            coreVersion = new(0, 0);
+            if (throwEx)
             {
-                coreVersion = new Version(value);
-                result = true;
+                throw;
             }
-            catch
-            {
-                result = false;
-                coreVersion = new Version(0, 0);
-                if (throwEx) throw;
-            }
+        }
 #else
         var result = Version.TryParse(value, out var coreVersion);
         if (!result)

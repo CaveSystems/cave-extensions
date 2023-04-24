@@ -6,20 +6,13 @@ namespace Cave;
 /// <summary>Implements a fast implementation of the CRC-CCITT-16 algorithm for the polynomial 0x1021.</summary>
 public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
 {
+    #region Fields
+
     uint crc = ushort.MaxValue;
 
-    /// <summary>Gets or sets the checksum computed so far.</summary>
-    public ushort Value
-    {
-        get => (ushort)(crc & 0xFFFF);
-        set => crc = value;
-    }
+    #endregion
 
-    /// <summary>Gets the size, in bits, of the computed hash code.</summary>
-    public override int HashSize => 16;
-
-    /// <summary>Initializes an implementation of the HashAlgorithm class.</summary>
-    public override void Initialize() => crc = ushort.MaxValue;
+    #region IChecksum<ushort> Members
 
     /// <summary>Resets the checksum to initialization state.</summary>
     public void Reset() => Initialize();
@@ -64,6 +57,20 @@ public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
         }
     }
 
+    /// <summary>Gets or sets the checksum computed so far.</summary>
+    public ushort Value
+    {
+        get => (ushort)(crc & 0xFFFF);
+        set => crc = value;
+    }
+
+    #endregion
+
+    #region Overrides
+
+    /// <summary>Gets the value of the computed hash code.</summary>
+    public override byte[] Hash => BitConverter.GetBytes(Value);
+
     /// <summary>Routes data written to the object into the hash algorithm for computing the hash.</summary>
     /// <remarks>
     /// This method is not called by application code. <br /> This abstract method performs the hash computation.Every write to the
@@ -80,10 +87,11 @@ public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
     /// <returns>The computed hash code.</returns>
     protected override byte[] HashFinal() => Hash;
 
-    /// <summary>Gets the value of the computed hash code.</summary>
-#if NET20_OR_GREATER || NET5_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
-    public override byte[] Hash => BitConverter.GetBytes(Value);
-#else
-        public byte[] Hash => BitConverter.GetBytes(Value);
-#endif
+    /// <summary>Gets the size, in bits, of the computed hash code.</summary>
+    public override int HashSize => 16;
+
+    /// <summary>Initializes an implementation of the HashAlgorithm class.</summary>
+    public override void Initialize() => crc = ushort.MaxValue;
+
+    #endregion
 }

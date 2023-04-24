@@ -12,114 +12,7 @@ namespace Cave;
 /// <summary>Gets extensions for the <see cref="Type" /> class.</summary>
 public static class TypeExtension
 {
-#if NETSTANDARD13
-        /// <summary>
-        /// Returns custom attributes applied to this member.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="inherit">true to search this member's inheritance chain to find the attributes; otherwise, false. This parameter is ignored for properties and events.</param>
-        /// <returns>Returns an array that contains all the custom attributes applied to this member, or an array with zero elements if no attributes are defined.</returns>
-        public static Attribute[] GetCustomAttributes(this Type type, bool inherit = false) => type.GetTypeInfo().GetCustomAttributes(inherit).ToArray();
-
-        /// <summary>
-        /// Returns all the public properties of the specified Type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>An array of PropertyInfo objects representing all public properties of the current Type.</returns>
-        public static PropertyInfo[] GetProperties(this Type type) => type.GetTypeInfo().DeclaredProperties.ToArray();
-#endif
-
-    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
-    /// <typeparam name="T">The attribute type to check for.</typeparam>
-    /// <param name="type">The type to check.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
-    public static bool HasAttribute<T>(this Type type, bool inherit = false)
-        where T : Attribute =>
-        HasAttribute(type, typeof(T), inherit);
-
-    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
-    /// <param name="type">The type to check.</param>
-    /// <param name="attributeType">The attribute type to check for.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
-    public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false) =>
-        type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
-     ?? throw new ArgumentNullException(nameof(type));
-
-    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
-    /// <typeparam name="T">The attribute type to check for.</typeparam>
-    /// <param name="type">The type to check.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns the attribute found or null.</returns>
-    public static T GetAttribute<T>(this Type type, bool inherit = false)
-        where T : Attribute =>
-        (T)GetAttribute(type, typeof(T), inherit);
-
-    /// <summary>
-    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
-    /// empty list is returned.
-    /// </summary>
-    /// <typeparam name="T">The attribute type to check for.</typeparam>
-    /// <param name="type">The type to check.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns the attributes found.</returns>
-    public static IEnumerable<T> GetAttributes<T>(this Type type, bool inherit = false)
-        where T : Attribute =>
-        GetAttributes(type, typeof(T), inherit).Cast<T>();
-
-    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
-    /// <param name="type">The type to check.</param>
-    /// <param name="attributeType">The attribute type to check for.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns the attribute found or null.</returns>
-    public static object GetAttribute(this Type type, Type attributeType, bool inherit = false) =>
-        type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
-     ?? throw new ArgumentNullException(nameof(type));
-
-    /// <summary>
-    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
-    /// empty list is returned.
-    /// </summary>
-    /// <param name="type">The type to check.</param>
-    /// <param name="attributeType">The attribute type to check for.</param>
-    /// <param name="inherit">Inherit attributes from parents.</param>
-    /// <returns>Returns the attributes found.</returns>
-    public static IEnumerable GetAttributes(this Type type, Type attributeType, bool inherit = false) =>
-        type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType()))
-     ?? throw new ArgumentNullException(nameof(type));
-
-    /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
-    /// <param name="type">Type to search for the product attribute.</param>
-    /// <returns>The product name.</returns>
-    public static string GetProductName(this Type type) =>
-#if NETSTANDARD13
-            return type?.GetTypeInfo().Assembly.GetProductName();
-#else
-        type?.Assembly.GetProductName();
-#endif
-
-    /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
-    /// <param name="type">Type to search for the product attribute.</param>
-    /// <returns>The company name.</returns>
-    public static string GetCompanyName(this Type type) =>
-#if NETSTANDARD13
-            type?.GetTypeInfo().Assembly.GetCompanyName();
-#else
-        type?.Assembly.GetCompanyName();
-#endif
-
-    /// <summary>
-    /// Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp;
-    /// !type.IsEnum.
-    /// </summary>
-    /// <param name="type">The type to check.</param>
-    /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
-#if NETSTANDARD13
-        public static bool IsStruct(this Type type) => type?.GetTypeInfo().IsValueType == true && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
-#else
-    public static bool IsStruct(this Type type) => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
-#endif
+    #region Static
 
     /// <summary>Converts a (primitive) value to the desired type.</summary>
     /// <param name="toType">Type to convert to.</param>
@@ -157,10 +50,7 @@ public static class TypeExtension
             throw new ArgumentNullException(nameof(toType));
         }
 
-        if (formatProvider == null)
-        {
-            formatProvider = CultureInfo.InvariantCulture;
-        }
+        formatProvider ??= CultureInfo.InvariantCulture;
 
         if (value == null)
         {
@@ -176,7 +66,7 @@ public static class TypeExtension
 #if NET45_OR_GREATER || NETSTANDARD1_3_OR_GREATER || NET5_0_OR_GREATER
             toType = toType.GenericTypeArguments[0];
 #elif NET20_OR_GREATER
-                toType = toType.GetGenericArguments()[0];
+            toType = toType.GetGenericArguments()[0];
 #else
 #error No code defined for the current framework or NETXX version define missing!
 #endif
@@ -198,11 +88,7 @@ public static class TypeExtension
                     return false;
             }
         }
-#if NETSTANDARD13
-            if (toType.GetTypeInfo().IsPrimitive)
-#else
         if (toType.IsPrimitive)
-#endif
         {
             return ConvertPrimitive(toType, value, formatProvider);
         }
@@ -212,11 +98,7 @@ public static class TypeExtension
             return ConvertPrimitive(toType, value, formatProvider);
         }
 
-#if NETSTANDARD13
-            if (toType.GetTypeInfo().IsEnum)
-#else
         if (toType.IsEnum)
-#endif
         {
             return Enum.Parse(toType, value.ToString(), true);
         }
@@ -231,14 +113,11 @@ public static class TypeExtension
             else
             {
                 Trace.TraceWarning("Try to find public ToString(IFormatProvider) method in class");
-#if NETSTANDARD13
-                    var methods = value.GetType().GetTypeInfo().GetDeclaredMethods("ToString");
-                    var method =
- methods.FirstOrDefault(m => m.GetParameters().SingleOrDefault()?.ParameterType == typeof(IFormatProvider) && m.ReturnType == typeof(string));
-#else
-                var method = value.GetType().GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(IFormatProvider) },
+                var method = value.GetType().GetMethod("ToString",
+                    BindingFlags.Public | BindingFlags.Instance,
+                    null,
+                    new[] { typeof(IFormatProvider) },
                     null);
-#endif
                 if (method != null)
                 {
                     try
@@ -264,14 +143,9 @@ public static class TypeExtension
         if (toType.IsArray)
         {
             var elementType = toType.GetElementType();
-#if NETSTANDARD13
-                var isPrimitive = elementType.GetTypeInfo().IsPrimitive;
-#else
-            var isPrimitive = elementType.IsPrimitive;
-#endif
-            if (!isPrimitive)
+            if (elementType?.IsPrimitive != true)
             {
-                throw new NotSupportedException($"Not primitive array type {elementType} not supported!");
+                throw new NotSupportedException($"Not primitive array type {toType} not supported!");
             }
 
             var parts = str.AfterFirst('{').BeforeLast('}').Split(',');
@@ -301,7 +175,7 @@ public static class TypeExtension
                 if (str.Contains(':'))
                 {
 #if NET20 || NET35
-                        return TimeSpan.Parse(str);
+                    return TimeSpan.Parse(str);
 #else
                     return TimeSpan.Parse(str, formatProvider);
 #endif
@@ -351,11 +225,6 @@ public static class TypeExtension
         {
             // try to find public static Parse(string, IFormatProvider) method in class
             var errors = new List<Exception>();
-#if NETSTANDARD13
-                var method = toType.GetTypeInfo().GetDeclaredMethod("Parse");
-                var methodParams = method.GetParameters();
-                if (method.ReturnType == toType && methodParams.Length == 2 && methodParams[0].ParameterType == typeof(string) && methodParams[1].ParameterType == typeof(IFormatProvider))
-#else
             var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[]
                 {
                     typeof(string),
@@ -363,7 +232,6 @@ public static class TypeExtension
                 },
                 null);
             if (method != null)
-#endif
             {
                 try
                 {
@@ -378,13 +246,8 @@ public static class TypeExtension
                     errors.Add(ex.InnerException);
                 }
             }
-#if NETSTANDARD13
-                method = toType.GetTypeInfo().GetDeclaredMethod("Parse");
-                if (method.ReturnType == toType && method.GetParameters().SingleOrDefault()?.ParameterType == typeof(string))
-#else
             method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
             if (method != null)
-#endif
             {
                 try
                 {
@@ -395,12 +258,7 @@ public static class TypeExtension
                     errors.Add(ex.InnerException);
                 }
             }
-#if NETSTANDARD13
-                method =
- toType.GetTypeInfo().GetDeclaredMethods("op_Implicit").SingleOrDefault(m => m.ReturnType == toType && m.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null);
-#else
             method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
-#endif
             if (method != null)
             {
                 try
@@ -412,12 +270,7 @@ public static class TypeExtension
                     errors.Add(ex.InnerException);
                 }
             }
-#if NETSTANDARD13
-                var cctor =
- toType.GetTypeInfo().DeclaredConstructors.Where(c => c.GetParameters().SingleOrDefault(p => p.ParameterType == typeof(string)) != null).SingleOrDefault();
-#else
             var cctor = toType.GetConstructor(new[] { typeof(string) });
-#endif
             if (cctor != null)
             {
                 try
@@ -438,4 +291,84 @@ public static class TypeExtension
             throw new MissingMethodException($"Type {toType} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!");
         }
     }
+
+    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
+    /// <typeparam name="T">The attribute type to check for.</typeparam>
+    /// <param name="type">The type to check.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns the attribute found or null.</returns>
+    public static T GetAttribute<T>(this Type type, bool inherit = false)
+        where T : Attribute =>
+        (T)GetAttribute(type, typeof(T), inherit);
+
+    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="attributeType">The attribute type to check for.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns the attribute found or null.</returns>
+    public static object GetAttribute(this Type type, Type attributeType, bool inherit = false) =>
+        type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType())).FirstOrDefault()
+     ?? throw new ArgumentNullException(nameof(type));
+
+    /// <summary>
+    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
+    /// empty list is returned.
+    /// </summary>
+    /// <typeparam name="T">The attribute type to check for.</typeparam>
+    /// <param name="type">The type to check.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns the attributes found.</returns>
+    public static IEnumerable<T> GetAttributes<T>(this Type type, bool inherit = false)
+        where T : Attribute =>
+        GetAttributes(type, typeof(T), inherit).Cast<T>();
+
+    /// <summary>
+    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
+    /// empty list is returned.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="attributeType">The attribute type to check for.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns the attributes found.</returns>
+    public static IEnumerable GetAttributes(this Type type, Type attributeType, bool inherit = false) =>
+        type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType()))
+     ?? throw new ArgumentNullException(nameof(type));
+
+    /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
+    /// <param name="type">Type to search for the product attribute.</param>
+    /// <returns>The company name.</returns>
+    public static string GetCompanyName(this Type type) => type?.Assembly.GetCompanyName();
+
+    /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
+    /// <param name="type">Type to search for the product attribute.</param>
+    /// <returns>The product name.</returns>
+    public static string GetProductName(this Type type) => type?.Assembly.GetProductName();
+
+    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
+    /// <typeparam name="T">The attribute type to check for.</typeparam>
+    /// <param name="type">The type to check.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
+    public static bool HasAttribute<T>(this Type type, bool inherit = false)
+        where T : Attribute =>
+        HasAttribute(type, typeof(T), inherit);
+
+    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="attributeType">The attribute type to check for.</param>
+    /// <param name="inherit">Inherit attributes from parents.</param>
+    /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
+    public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false) =>
+        type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
+     ?? throw new ArgumentNullException(nameof(type));
+
+    /// <summary>
+    /// Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp;
+    /// !type.IsEnum.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
+    public static bool IsStruct(this Type type) => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
+
+    #endregion
 }

@@ -55,13 +55,13 @@ public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFor
     /// <returns>The result of the calculation.</returns>
     public static UnixTime64 operator +(UnixTime64 value1, TimeSpan value2) => new() { TimeStamp = value1.TimeStamp + (value2.Ticks / TimeSpan.TicksPerSecond) };
 
-    /// <summary>Substracts a <see cref="TimeSpan" /> from the <see cref="MicroSecondsDateTime64" />.</summary>
+    /// <summary>Subtracts a <see cref="TimeSpan" /> from the <see cref="MicroSecondsDateTime64" />.</summary>
     /// <param name="value1">The first value.</param>
     /// <param name="value2">The second value.</param>
     /// <returns>The result of the calculation.</returns>
     public static UnixTime64 operator -(UnixTime64 value1, TimeSpan value2) => new() { TimeStamp = value1.TimeStamp - (value2.Ticks / TimeSpan.TicksPerSecond) };
 
-    /// <summary>Substracts two <see cref="UnixTime64" /> values.</summary>
+    /// <summary>Subtracts two <see cref="UnixTime64" /> values.</summary>
     /// <param name="value1">The first value.</param>
     /// <param name="value2">The second value.</param>
     /// <returns>The result of the calculation.</returns>

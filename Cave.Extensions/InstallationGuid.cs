@@ -58,7 +58,7 @@ namespace Cave
                         software.SetValue("SystemGuid", data, RegistryValueKind.Binary);
                     }
 #pragma warning restore CA1416
-                    return new Guid(data);
+                    return new(data);
                 }
 #endif
                 var root = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

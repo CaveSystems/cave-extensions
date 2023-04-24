@@ -64,7 +64,6 @@ public static class IPAddressExtension
     /// <returns>Returns a local broadcast address.</returns>
     public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress netmask) => new IPNetwork(address, netmask).Broadcast;
 
-#if NET20_OR_GREATER || NET5_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
     /// <summary>Gets the local broadcast address for the specified <see cref="UnicastIPAddressInformation" />.</summary>
     /// <param name="address">Address information.</param>
     /// <param name="subnet">Subnet length. (Required for ipv6 on framework &lt;= 4.0).</param>
@@ -88,7 +87,7 @@ public static class IPAddressExtension
                 return GetBroadcastAddress(address.Address, subnet);
             }
 #if NET20 || NET35 || NET40
-                throw new NotSupportedException("Prefixlength unknown, subnet length is required! (Use >= net 4.5, netstandard 2.0)");
+            throw new NotSupportedException("Prefixlength unknown, subnet length is required! (Use >= net 4.5, netstandard 2.0)");
 #else
             return GetBroadcastAddress(address.Address, address.PrefixLength);
 #endif
@@ -96,7 +95,6 @@ public static class IPAddressExtension
 
         throw new NotSupportedException($"AddressFamily {address.Address.AddressFamily} is not supported!");
     }
-#endif
 
     /// <summary>Gets the name of the reverse lookup zone of an ipv4 or ipv6 address.</summary>
     /// <param name="address">The address.</param>

@@ -15,12 +15,7 @@ public static class DoubleExtension
     /// <returns>The formated string.</returns>
     public static string FormatPrice(this double price, CultureInfo culture = null)
     {
-#if !NETSTANDARD13
-        if (culture == null)
-        {
-            culture = Thread.CurrentThread.CurrentCulture;
-        }
-#endif
+        culture ??= Thread.CurrentThread.CurrentCulture;
 
         // maximum 5 digits
         var decimalValue = (long)Math.Round((price % 1) * 100000);

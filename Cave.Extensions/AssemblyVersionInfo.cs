@@ -46,12 +46,10 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         }
     }
 
-#if NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER || NET5_0_OR_GREATER
     /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the specified FileName.</summary>
     /// <param name="fileName">file name of the assembly.</param>
     /// <returns>the assembly version info.</returns>
     public static AssemblyVersionInfo FromAssemblyFile(string fileName) => FromAssembly(Assembly.LoadFile(fileName));
-#endif
 
     /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the specified AssemblyName.</summary>
     /// <param name="assemblyName">name of the assembly.</param>

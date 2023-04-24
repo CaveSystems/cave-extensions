@@ -11,7 +11,7 @@ namespace Cave.Security;
 /// </summary>
 public class PBKDF2 : DeriveBytes
 #if NET20 || NET35
-, IDisposable
+  , IDisposable
 #endif
 {
     #region Private Fields
@@ -318,22 +318,22 @@ public class PBKDF2 : DeriveBytes
     }
 
 #else //NET20 || NET35
-        /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+    /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            if (disposing)
-            {
-                (algorithm as IDisposable).Dispose();
-                algorithm = null;
-            }
+            (algorithm as IDisposable).Dispose();
+            algorithm = null;
         }
+    }
 
-        /// <inheritdoc/> 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 #endif
 }

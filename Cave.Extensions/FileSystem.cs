@@ -552,13 +552,13 @@ public static class FileSystem
     /// directories are found.
     /// </returns>
 #if NET35 || NET20
-        public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        {
-            var results = new List<string>();
-            results.AddRange(Directory.GetDirectories(path, "*", searchOption));
-            results.AddRange(Directory.GetFiles(path, searchPattern, searchOption));
-            return results.ToArray();
-        }
+    public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+    {
+        var results = new List<string>();
+        results.AddRange(Directory.GetDirectories(path, "*", searchOption));
+        results.AddRange(Directory.GetFiles(path, searchPattern, searchOption));
+        return results.ToArray();
+    }
 #else
     public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly) => Directory.GetFileSystemEntries(path, searchPattern, searchOption);
 #endif

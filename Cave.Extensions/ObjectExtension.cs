@@ -175,13 +175,13 @@ public static class ObjectExtension
             }
 
 #if NET20 || NET35 || NET40
-                if ((ignoredByAttribute != null) && property.GetCustomAttributes(true).Any(a => ignoredByAttribute.Contains(a.GetType())))
-                {
-                    continue;
-                }
+            if ((ignoredByAttribute != null) && property.GetCustomAttributes(true).Any(a => ignoredByAttribute.Contains(a.GetType())))
+            {
+                continue;
+            }
 
-                var instanceValue = property.GetGetMethod().Invoke(instance, null);
-                var otherValue = property.GetGetMethod().Invoke(other, null);
+            var instanceValue = property.GetGetMethod().Invoke(instance, null);
+            var otherValue = property.GetGetMethod().Invoke(other, null);
 #else
             if ((ignoredByAttribute != null) && ignoredByAttribute.Intersect(property.CustomAttributes.Select(a => a.AttributeType)).Any())
             {

@@ -112,11 +112,7 @@ public sealed class DateTimeStopWatch : IStopWatch
             var waitTime = elapsed - Elapsed;
             if (waitTime > TimeSpan.Zero)
             {
-#if NETSTANDARD13
-                    System.Threading.Tasks.Task.Delay(waitTime).Wait();
-#else
                 Thread.Sleep(waitTime);
-#endif
             }
             else
             {

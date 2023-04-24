@@ -603,7 +603,7 @@ public static class IEnumerableExtension
             {
                 result = result.BitwiseRotateLeft();
 #if NET20 || NET35 || NET40
-                    result ^= property.GetValue(item, null)?.GetHashCode() ?? 0;
+                result ^= property.GetValue(item, null)?.GetHashCode() ?? 0;
 #else
                 result ^= property.GetValue(item)?.GetHashCode() ?? 0;
 #endif
@@ -643,7 +643,7 @@ public static class IEnumerableExtension
         {
             result = result.BitwiseRotateLeft();
 #if NET20 || NET35 || NET40
-                result ^= property.GetValue(obj, null)?.GetHashCode() ?? 0;
+            result ^= property.GetValue(obj, null)?.GetHashCode() ?? 0;
 #else
             result ^= property.GetValue(obj)?.GetHashCode() ?? 0;
 #endif

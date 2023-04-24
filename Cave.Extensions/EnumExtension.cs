@@ -87,43 +87,41 @@ public static class EnumExtension
         where TEnum : struct, IConvertible =>
         Enum.TryParse(value, true, out result);
 #elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
-        /// <summary>Tries the parse.</summary>
-        /// <typeparam name="TEnum">The type of the enum.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <param name="result">The result.</param>
-        /// <returns>True if the value could be parsed.</returns>
-        public static bool TryParse<TEnum>(this string value, out TEnum result)
-            where TEnum : struct, IConvertible
+    /// <summary>Tries the parse.</summary>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>True if the value could be parsed.</returns>
+    public static bool TryParse<TEnum>(this string value, out TEnum result)
+        where TEnum : struct, IConvertible
+    {
+        var t = typeof(TEnum);
+        if (value == null)
         {
-            var t = typeof(TEnum);
-            if (value == null)
-            {
-                result = default;
-                return false;
-            }
-            try
-            {
-                result = (TEnum)Enum.Parse(t, value, true);
-                return true;
-            }
-            catch
-            {
-                result = default;
-                return false;
-            }
+            result = default;
+            return false;
         }
+        try
+        {
+            result = (TEnum)Enum.Parse(t, value, true);
+            return true;
+        }
+        catch
+        {
+            result = default;
+            return false;
+        }
+    }
 
-        /// <summary>
-        /// Determines whether one or more bit fields are set at the enum.
-        /// </summary>
-        /// <param name="value">The enum value.</param>
-        /// <param name="flag">The flag.</param>
-        /// <returns>True if the flag is set in the value.</returns>
-        public static bool HasFlag(this Enum value, IConvertible flag)
-        {
-            var test = Convert.ToUInt64(flag, CultureInfo.InvariantCulture);
-            return test == (Convert.ToUInt64(value, CultureInfo.InvariantCulture) & test);
-        }
+    /// <summary>Determines whether one or more bit fields are set at the enum.</summary>
+    /// <param name="value">The enum value.</param>
+    /// <param name="flag">The flag.</param>
+    /// <returns>True if the flag is set in the value.</returns>
+    public static bool HasFlag(this Enum value, IConvertible flag)
+    {
+        var test = Convert.ToUInt64(flag, CultureInfo.InvariantCulture);
+        return test == (Convert.ToUInt64(value, CultureInfo.InvariantCulture) & test);
+    }
 #else
 #error No code defined for the current framework or NETXX version define missing!
 #endif

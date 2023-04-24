@@ -25,7 +25,7 @@ public static class BufferExtensions
         if (algorithm == null)
         {
 #if NET20
-                disposable = algorithm = Rijndael.Create();
+            disposable = algorithm = Rijndael.Create();
 #else
             disposable = algorithm = Aes.Create();
 #endif
@@ -84,7 +84,7 @@ public static class BufferExtensions
         if (algorithm == null)
         {
 #if NET20
-                disposable = algorithm = Rijndael.Create();
+            disposable = algorithm = Rijndael.Create();
 #else
             disposable = algorithm = Aes.Create();
 #endif

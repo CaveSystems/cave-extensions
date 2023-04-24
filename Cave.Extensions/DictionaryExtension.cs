@@ -6,6 +6,8 @@ namespace Cave;
 /// <summary>Gets extensions for <see cref="IDictionary{TKey,TValue}" /> instances.</summary>
 public static class DictionaryExtension
 {
+    #region Static
+
     /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
@@ -128,23 +130,28 @@ public static class DictionaryExtension
     }
 
 #if NET20
-        /// <summary>Tries to retrieve the value for the specified key.</summary>
-        /// <typeparam name="TKey">Key type.</typeparam>
-        /// <typeparam name="TValue">Value type.</typeparam>
-        /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
-        /// <param name="key">The key to get.</param>
-        /// <param name="value">Returns the value found or default(value).</param>
-        /// <returns>Returns the value found or default(value).</returns>
-        public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+    /// <summary>Tries to retrieve the value for the specified key.</summary>
+    /// <typeparam name="TKey">Key type.</typeparam>
+    /// <typeparam name="TValue">Value type.</typeparam>
+    /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
+    /// <param name="key">The key to get.</param>
+    /// <param name="value">Returns the value found or default(value).</param>
+    /// <returns>Returns the value found or default(value).</returns>
+    public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+    {
+        if (dictionary == null)
         {
-            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
-            if (dictionary.ContainsKey(key))
-            {
-                value = dictionary[key];
-                return true;
-            }
-            value = default;
-            return false;
+            throw new ArgumentNullException(nameof(dictionary));
         }
+        if (dictionary.ContainsKey(key))
+        {
+            value = dictionary[key];
+            return true;
+        }
+        value = default;
+        return false;
+    }
 #endif
+
+    #endregion
 }

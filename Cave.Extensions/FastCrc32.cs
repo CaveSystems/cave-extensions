@@ -59,7 +59,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
         HashCore(val & 0xFF);
     }
 
-    [MethodImpl(256)]
+    [MethodImpl((MethodImplOptions)256)]
     void HashCore(uint @byte)
     {
         var i = ((currentCRC >> 24) ^ @byte) & 0xFF;

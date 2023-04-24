@@ -75,9 +75,7 @@ public sealed class HighPerformanceStopWatch : IStopWatch
         {
             throw new InvalidOperationException("Timer already running!");
         }
-#if !NETSTANDARD13
         Thread.BeginThreadAffinity();
-#endif
         stopwatch = new();
         StartDateTime = DateTime.UtcNow;
         stopwatch.Start();
@@ -96,9 +94,7 @@ public sealed class HighPerformanceStopWatch : IStopWatch
 
         elapsed = stopwatch.Elapsed;
         stopwatch = null;
-#if !NETSTANDARD13
         Thread.EndThreadAffinity();
-#endif
     }
 
     /// <summary>Waits until the specified <see cref="Elapsed" /> time is reached.</summary>
@@ -116,11 +112,7 @@ public sealed class HighPerformanceStopWatch : IStopWatch
             var waitTime = elapsed - Elapsed;
             if (waitTime > TimeSpan.Zero)
             {
-#if NETSTANDARD13
-                    System.Threading.Tasks.Task.Delay(waitTime).Wait();
-#else
                 Thread.Sleep(waitTime);
-#endif
             }
             else
             {
