@@ -63,7 +63,7 @@ public static class TypeExtension
             {
                 return null;
             }
-#if NET45_OR_GREATER || NETSTANDARD1_3_OR_GREATER || NET5_0_OR_GREATER
+#if NET45_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET5_0_OR_GREATER
             toType = toType.GenericTypeArguments[0];
 #elif NET20_OR_GREATER
             toType = toType.GetGenericArguments()[0];

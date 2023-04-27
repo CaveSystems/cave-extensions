@@ -3,7 +3,7 @@
 namespace Cave;
 
 /// <summary>Provides extensions to the <see cref="IHashingFunction" /> interface.</summary>
-public static class UserHashingFunctionExtension
+public static class IHashingFunctionExtension
 {
     #region Static
 

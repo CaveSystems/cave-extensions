@@ -22,7 +22,7 @@ public sealed class TimeZoneData
         }
 #if NET35_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
         throw new TimeZoneNotFoundException();
-#elif NET20_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#elif NET20_OR_GREATER || NETSTANDARD1_0_OR_GREATER
         throw new ArgumentException("Timezone not found!");
 #else
 #error No code defined for the current framework or NETXX version define missing!
