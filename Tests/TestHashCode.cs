@@ -55,7 +55,7 @@ public class TestHashCode
             hash.Add(i);
         }
         watch.Stop();
-        Console.WriteLine($"XxHash32: {HashCount} checksums: {HashCount * 1000.0 / watch.ElapsedMilliseconds:N3} /s");
+        Console.WriteLine($"XxHash32: {HashCount} checksums: {(HashCount * 1000.0) / watch.ElapsedMilliseconds:N3} /s");
     }
 
     [Test]
@@ -68,6 +68,6 @@ public class TestHashCode
             crc.Add(i);
         }
         watch.Stop();
-        Console.WriteLine($"FastCrc32: {HashCount} checksums: {HashCount * 1000.0 / watch.ElapsedMilliseconds:N3} /s");
+        Console.WriteLine($"FastCrc32: {HashCount} checksums: {(HashCount * 1000.0) / watch.ElapsedMilliseconds:N3} /s");
     }
 }

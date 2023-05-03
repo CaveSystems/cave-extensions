@@ -122,16 +122,4 @@ public sealed class HighPerformanceStopWatch : IStopWatch
     }
 
     #endregion
-
-    #region Overrides
-
-    /// <summary>Checks for equality with another stopwatch.</summary>
-    /// <param name="obj">The other stopwatch.</param>
-    /// <returns>True if the stopwatches are equal.</returns>
-    public override bool Equals(object obj) => obj is IStopWatch other && (other.StartDateTime == StartDateTime) && (other.IsRunning == IsRunning);
-
-    /// <inheritdoc />
-    public override int GetHashCode() => DefaultHashingFunction.Combine(StartDateTime, IsRunning);
-
-    #endregion
 }

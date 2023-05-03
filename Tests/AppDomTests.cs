@@ -2,17 +2,16 @@
 using Cave;
 using NUnit.Framework;
 
-namespace Test
+namespace Test;
+
+[TestFixture]
+class AppDomTests
 {
-    [TestFixture]
-    class AppDomTests
+    [Test]
+    public void SystemUri()
     {
-        [Test]
-        public void SystemUri()
-        {
-            var type = typeof(Uri);
-            var result = AppDom.FindType(type.AssemblyQualifiedName);
-            Assert.AreEqual(type, result);
-        }
+        var type = typeof(Uri);
+        var result = AppDom.FindType(type.AssemblyQualifiedName);
+        Assert.AreEqual(type, result);
     }
 }

@@ -6,7 +6,7 @@ namespace Cave;
 
 /// <summary>unix time stamp in seconds since epoch</summary>
 [StructLayout(LayoutKind.Sequential, Size = 8)]
-public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFormattable, IConvertible
+public readonly struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFormattable, IConvertible
 {
     /// <summary>Implements the operator ==.</summary>
     /// <param name="value1">The value1.</param>
@@ -47,19 +47,19 @@ public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFor
     /// <summary>Performs an implicit conversion from <see cref="uint" /> to <see cref="UnixTime64" />.</summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator UnixTime64(long value) => new() { TimeStamp = value };
+    public static implicit operator UnixTime64(long value) => new(value);
 
     /// <summary>Adds a <see cref="TimeSpan" /> to the <see cref="UnixTime64" />.</summary>
     /// <param name="value1">The first value.</param>
     /// <param name="value2">The second value.</param>
     /// <returns>The result of the calculation.</returns>
-    public static UnixTime64 operator +(UnixTime64 value1, TimeSpan value2) => new() { TimeStamp = value1.TimeStamp + (value2.Ticks / TimeSpan.TicksPerSecond) };
+    public static UnixTime64 operator +(UnixTime64 value1, TimeSpan value2) => new(value1.TimeStamp + (value2.Ticks / TimeSpan.TicksPerSecond));
 
-    /// <summary>Subtracts a <see cref="TimeSpan" /> from the <see cref="MicroSecondsDateTime64" />.</summary>
+    /// <summary>Subtracts a <see cref="TimeSpan" /> from the <see cref="UnixTime64" />.</summary>
     /// <param name="value1">The first value.</param>
     /// <param name="value2">The second value.</param>
     /// <returns>The result of the calculation.</returns>
-    public static UnixTime64 operator -(UnixTime64 value1, TimeSpan value2) => new() { TimeStamp = value1.TimeStamp - (value2.Ticks / TimeSpan.TicksPerSecond) };
+    public static UnixTime64 operator -(UnixTime64 value1, TimeSpan value2) => new(value1.TimeStamp - (value2.Ticks / TimeSpan.TicksPerSecond));
 
     /// <summary>Subtracts two <see cref="UnixTime64" /> values.</summary>
     /// <param name="value1">The first value.</param>
@@ -70,19 +70,18 @@ public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFor
     /// <summary>Parses a UnixTime64 previously converted to a string with ToString()</summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static UnixTime64 Parse(string value) => new()
-    {
-        DateTime = DateTime.ParseExact(value, StringExtensions.InterOpDateTimeFormat, CultureInfo.InvariantCulture)
-    };
+    public static UnixTime64 Parse(string value) => Parse(value, null);
 
     /// <summary>Parses a UnixTime64 previously converted to a string with ToString()</summary>
     /// <param name="value"></param>
     /// <param name="provider"></param>
     /// <returns></returns>
-    public static UnixTime64 Parse(string value, IFormatProvider provider) => new()
-    {
-        DateTime = DateTime.ParseExact(value, StringExtensions.InterOpDateTimeFormat, provider)
-    };
+    public static UnixTime64 Parse(string value, IFormatProvider provider)
+        => DateTime.TryParseExact(value, StringExtensions.InteropDateTimeFormat, provider ?? CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dateTime)
+        ? dateTime
+        : DateTime.TryParseExact(value, StringExtensions.InteropDateTimeFormatWithoutTimeZone, provider ?? CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out dateTime)
+        ? dateTime
+        : DateTime.Parse(value, provider ?? CultureInfo.CurrentCulture);
 
     /// <summary>Converts the specified date time.</summary>
     /// <param name="dateTime">The date time.</param>
@@ -130,25 +129,23 @@ public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFor
     /// <summary>Performs an implicit conversion from <see cref="DateTime" /> to <see cref="UnixTime64" />.</summary>
     /// <param name="dateTime">The date time.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator UnixTime64(DateTime dateTime) =>
-        new()
-        {
-            DateTime = dateTime
-        };
+    public static implicit operator UnixTime64(DateTime dateTime) => new(Convert(dateTime));
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="UnixTime64"/> structure.
+    /// </summary>
+    /// <param name="timestamp"></param>
+    public UnixTime64(long timestamp) => TimeStamp = timestamp;
 
     /// <summary>The time stamp in seconds since 1.1.1970</summary>
-    public long TimeStamp;
+    public readonly long TimeStamp;
 
     /// <summary>Gets or sets the date time.</summary>
     /// <value>The date time.</value>
-    public DateTime DateTime
-    {
-        get => Convert(TimeStamp, DateTimeKind.Unspecified);
-        set => TimeStamp = Convert(value);
-    }
+    public DateTime DateTime => Convert(TimeStamp, DateTimeKind.Unspecified);
 
     /// <inheritdoc />
-    public override string ToString() => DateTime.ToString(StringExtensions.InterOpDateTimeFormat);
+    public override string ToString() => ToString(null, null);
 
     /// <inheritdoc />
     public override int GetHashCode() => TimeStamp.GetHashCode();
@@ -220,7 +217,8 @@ public struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFor
     #region IFormattable
 
     /// <inheritdoc />
-    public string ToString(string format, IFormatProvider formatProvider) => DateTime.ToString(format, formatProvider);
+    public string ToString(string format, IFormatProvider formatProvider)
+        => DateTime.ToString(format ?? StringExtensions.InteropDateTimeFormat, formatProvider ?? CultureInfo.CurrentCulture);
 
     #endregion
 }

@@ -122,33 +122,4 @@ public sealed class DateTimeStopWatch : IStopWatch
     }
 
     #endregion
-
-    #region Overrides
-
-    /// <summary>Checks for equality with another stopwatch.</summary>
-    /// <param name="obj">The other stopwatch.</param>
-    /// <returns>True if the stopwatches are equal.</returns>
-    public override bool Equals(object obj) => obj is IStopWatch other && (other.StartDateTime == StartDateTime) && (other.IsRunning == IsRunning);
-
-    /// <inheritdoc />
-    public override int GetHashCode() => DefaultHashingFunction.Combine(StartDateTime, IsRunning);
-
-    #endregion
-
-    #region Members
-
-    /// <summary>Creates a copy of the <see cref="IStopWatch" />.</summary>
-    /// <returns>Returns a copy of the <see cref="IStopWatch" />.</returns>
-    public object Clone()
-    {
-        var result = new DateTimeStopWatch
-        {
-            StartDateTime = StartDateTime,
-            elapsed = elapsed,
-            IsRunning = IsRunning
-        };
-        return result;
-    }
-
-    #endregion
 }

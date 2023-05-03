@@ -26,7 +26,10 @@ public static class StringExtensions
     public const string FileNameDateTimeFormat = "yyyy'-'MM'-'dd' 'HHmmss";
 
     /// <summary>Gets the default date time string used when formatting date time variables for interop.</summary>
-    public const string InterOpDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff";
+    public const string InteropDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+    /// <summary>Gets the default date time string used when formatting date time variables for interop.</summary>
+    public const string InteropDateTimeFormatWithoutTimeZone = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff";
 
     /// <summary>Gets the default date string used when formatting date time variables for interop.</summary>
     public const string ShortDateFormat = "yyyy'-'MM'-'dd";
@@ -2572,7 +2575,7 @@ public static class StringExtensions
                 }
                 ;
             }
-            return dt.ToString(InterOpDateTimeFormat, formatProvider);
+            return dt.ToString(InteropDateTimeFormat, formatProvider);
         }
 
         if (value is IFormattable formattable)
@@ -2742,12 +2745,18 @@ public static class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
 
-    /// <summary>Parses a DateTime (Supported formats: <see cref="InterOpDateTimeFormat" />, <see cref="DisplayDateTimeFormat" />, default).</summary>
+    /// <summary>Parses a DateTime (Supported formats: <see cref="InteropDateTimeFormat" />, <see cref="DisplayDateTimeFormat" />, default).</summary>
     /// <param name="dateTime">String value to parse.</param>
     /// <param name="result">The parsed datetime.</param>
     /// <returns>True if the value could be parsed.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static bool TryParseDateTime(string dateTime, out DateTime result) => DateTime.TryParseExact(dateTime, InterOpDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result) || DateTime.TryParse(dateTime, out result);
+    public static bool TryParseDateTime(string dateTime, out DateTime result)
+        => DateTime.TryParseExact(dateTime, InteropDateTimeFormat, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out result)
+         || DateTime.TryParseExact(dateTime, InteropDateTimeFormatWithoutTimeZone, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result)
+         || DateTime.TryParseExact(dateTime, DisplayDateTimeWithTimeZoneFormat, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out result)
+         || DateTime.TryParseExact(dateTime, DisplayDateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out result)
+         || DateTime.TryParse(dateTime, out result)
+         || DateTimeParser.TryParseDateTime(dateTime, out result);
 
     /// <summary>Unboxes a string (removes strings from start end end).</summary>
     /// <param name="text">The string to be unboxed.</param>

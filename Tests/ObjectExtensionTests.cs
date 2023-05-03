@@ -9,13 +9,21 @@ class ObjectExtensionTests
 {
     class TestItem
     {
+        #region Properties
+
+        public string[] StringArray { get; set; } = { "1", "2", "3" };
         public string StringProperty { get; set; } = "1234";
-        public string[] StringArray { get; set; } = new[] { "1", "2", "3" };
+
+        #endregion
     }
 
     class TestRoot
     {
+        #region Properties
+
         public TestItem SubItem { get; } = new();
+
+        #endregion
     }
 
     [Test]
