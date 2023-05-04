@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Cave;
@@ -12,20 +13,30 @@ class MonotonicTimeTests
     [Test]
     public void MonotonicTest()
     {
+        Console.WriteLine("Properties:"); 
         Console.WriteLine($"Uptime: {MonotonicTime.Uptime}");
         Console.WriteLine($"Now: {(InteropDateTime)MonotonicTime.Now}");
         Console.WriteLine($"UtcNow: {(InteropDateTime)MonotonicTime.UtcNow}");
-        Console.WriteLine($"Drift: {MonotonicTime.Drift.FormatTime()}");
+        Console.WriteLine($"Drift: {MonotonicTime.GetDrift().FormatTime()}");
+        Console.WriteLine($"IsHighResolution: {MonotonicTime.IsHighResolution}");
 
-        Task.WaitAll(new[]
+        var result = MonotonicTime.Calibrate();
+        Console.WriteLine($"Drift after first Calibration: {result.FormatTime()}");
+
+        Console.WriteLine("---");
+        Console.WriteLine("Test:");
+        Console.WriteLine($"CalibrationCount: {calibrationCount}");
+
+        var tasks = new[]
         {
-            Task.Factory.StartNew(CalibrateTest),
             Task.Factory.StartNew(WatchTicks),
             Task.Factory.StartNew(WatchTime),
-        });
+        };
+        CalibrateTest();
+        Task.WaitAll(tasks);
     }
 
-    int calibrationCount = MonotonicTime.IsHighResolution ? 100 : 10;
+    int calibrationCount = MonotonicTime.IsHighResolution ? 50 : 10;
 
     void WatchTicks()
     {
@@ -56,6 +67,7 @@ class MonotonicTimeTests
             }
             for (int i = 0; i < times.Length - 1; i++)
             {
+                if (times[i] > times[i + 1]) Debugger.Break();
                 Assert.IsTrue(times[i] <= times[i + 1], $"UtcNow is not monotonic! {i}: {times[i].TimeOfDay.Ticks} > {times[i + 1].TimeOfDay.Ticks}");
             }
         }
@@ -63,13 +75,14 @@ class MonotonicTimeTests
 
     void CalibrateTest()
     {
+        var i = 0;
         while (calibrationCount > 0)
         {
             var accuracy = new TimeSpan((calibrationCount * TimeSpan.TicksPerMillisecond) / 10);
-            Assert.IsTrue(MonotonicTime.Calibrate(), "Calibration failed!");
-            var drift = MonotonicTime.Drift;
-            Console.WriteLine($"MonotonicTime calibrated to {accuracy.FormatTime()} current drift: {drift.FormatTime()}");
-            Assert.IsTrue(Math.Abs(drift.Ticks) < accuracy.Ticks, $"Drift > {accuracy.FormatTime()}");
+            Assert.IsTrue(MonotonicTime.Calibrate() < accuracy, $"Calibration failed! Drift > {accuracy.FormatTime()}");
+            var drift = MonotonicTime.GetDrift();
+            Assert.IsTrue(Math.Abs(drift.Ticks) < accuracy.Ticks, $"Drift < {accuracy.FormatTime()}: real {drift.Absolute().FormatTime()}");
+            Console.WriteLine($"Calibration Test {++i} drift {drift.FormatTime()} < {accuracy.FormatTime()}, current time {(InteropDateTime)MonotonicTime.Now}");
             calibrationCount--;
         }
     }

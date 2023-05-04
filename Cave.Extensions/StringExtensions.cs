@@ -528,19 +528,19 @@ public static class StringExtensions
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="timeSpan">TimeSpan to format.</param>
-    /// <param name="culture">Culture used to format the double value.</param>
-    /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
+    /// <param name="formatProvider">Culture used to format the double value.</param>
+    /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider culture = null)
+    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider formatProvider = null)
     {
-        if (culture == null)
+        if (formatProvider == null)
         {
-            culture = CultureInfo.InvariantCulture;
+            formatProvider = CultureInfo.InvariantCulture;
         }
 
         if (timeSpan < TimeSpan.Zero)
         {
-            return "-" + FormatTime(-timeSpan, culture);
+            return "-" + FormatTime(-timeSpan, formatProvider);
         }
 
         if (timeSpan == TimeSpan.Zero)
@@ -550,68 +550,75 @@ public static class StringExtensions
 
         if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
         {
-            var nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
-            return nano > 9.99 ? nano.ToString("0.0", culture) + "ns" : nano.ToString("0.00", culture) + "ns";
+            var micro = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
+            return micro > 9.99 ? micro.ToString("0.0", formatProvider) + "µs" : micro.ToString("0.00", formatProvider) + "µs";
         }
 
         if (timeSpan.Ticks < TimeSpan.TicksPerSecond)
         {
-            var msec = timeSpan.TotalMilliseconds;
-            return msec > 9.99 ? msec.ToString("0.0", culture) + "ms" : msec.ToString("0.00", culture) + "ms";
+            var milli = timeSpan.TotalMilliseconds;
+            return milli > 9.99 ? milli.ToString("0.0", formatProvider) + "ms" : milli.ToString("0.00", formatProvider) + "ms";
         }
 
         if (timeSpan.Ticks < TimeSpan.TicksPerMinute)
         {
             var sec = timeSpan.TotalSeconds;
-            return sec > 9.99 ? sec.ToString("0.0", culture) + "s" : sec.ToString("0.00", culture) + "s";
+            return sec > 9.99 ? sec.ToString("0.0", formatProvider) + "s" : sec.ToString("0.00", formatProvider) + "s";
         }
 
         if (timeSpan.Ticks < TimeSpan.TicksPerHour)
         {
             var min = timeSpan.TotalMinutes;
-            return min > 9.99 ? min.ToString("0.0", culture) + "min" : min.ToString("0.00", culture) + "min";
+            return min > 9.99 ? min.ToString("0.0", formatProvider) + "min" : min.ToString("0.00", formatProvider) + "min";
         }
 
         if (timeSpan.Ticks < TimeSpan.TicksPerDay)
         {
             var h = timeSpan.TotalHours;
-            return h > 9.99 ? h.ToString("0.0", culture) + "h" : h.ToString("0.00", culture) + "h";
+            return h > 9.99 ? h.ToString("0.0", formatProvider) + "h" : h.ToString("0.00", formatProvider) + "h";
         }
 
         var d = timeSpan.TotalDays;
         if (d >= 36525)
         {
-            return (d / 365.25).ToString("0", culture) + "a";
+            return (d / 365.25).ToString("0", formatProvider) + "a";
         }
 
         if (d >= 3652.5)
         {
-            return (d / 365.25).ToString("0.0", culture) + "a";
+            return (d / 365.25).ToString("0.0", formatProvider) + "a";
         }
 
         if (d > 99.9)
         {
-            return (d / 365.25).ToString("0.00", culture) + "a";
+            return (d / 365.25).ToString("0.00", formatProvider) + "a";
         }
 
-        return d > 9.99 ? d.ToString("0.0", culture) + "d" : d.ToString("0.00", culture) + "d";
+        return d > 9.99 ? d.ToString("0.0", formatProvider) + "d" : d.ToString("0.00", formatProvider) + "d";
     }
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    public static string FormatTicks(this long ticks, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), formatProvider);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    [Obsolete("Warning this method is ambiguous. Use FormatTicks() or FormatSeconds()")]
+    public static string FormatTime(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, formatProvider);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="seconds">Seconds to format.</param>
-    /// <param name="culture">Culture used to format the double value.</param>
+    /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this double seconds, IFormatProvider culture = null)
+    public static string FormatSeconds(this double seconds, IFormatProvider formatProvider = null)
     {
-        if (culture == null)
+        if (formatProvider == null)
         {
-            culture = CultureInfo.InvariantCulture;
+            formatProvider = CultureInfo.InvariantCulture;
         }
 
         if (seconds < 0)
         {
-            return "-" + FormatTime(-seconds);
+            return "-" + FormatSeconds(-seconds);
         }
 
         if (seconds == 0)
@@ -630,19 +637,19 @@ public static class StringExtensions
             part *= 1000.0;
             if (part > 9.99)
             {
-                return part.ToString("0.0", culture) + fraction + "s";
+                return part.ToString("0.0", formatProvider) + fraction + "s";
             }
 
             if (part > 0.999)
             {
-                return part.ToString("0.00", culture) + fraction + "s";
+                return part.ToString("0.00", formatProvider) + fraction + "s";
             }
         }
 
         return seconds + "s";
     }
 
-    /// <summary>Formats the specified timespan to [HH:]MM:SS.F.</summary>
+    /// <summary>Formats the specified timespan to [[d.]HH:]MM:SS.F.</summary>
     /// <param name="timeSpan">The time span.</param>
     /// <param name="millisecondDigits">The number of millisecond digits.</param>
     /// <returns>The formatted string.</returns>
@@ -651,9 +658,17 @@ public static class StringExtensions
     public static string FormatTimeSpan(this TimeSpan timeSpan, int millisecondDigits)
     {
         var result = new StringBuilder();
-        if (timeSpan.Hours > 0)
+
+        var ticks = timeSpan.Ticks;
+        if (timeSpan.Ticks > TimeSpan.TicksPerDay)
         {
-            result.Append($"{timeSpan.Ticks / TimeSpan.TicksPerHour:00}:");
+            result.Append($"{ticks / TimeSpan.TicksPerDay}:");
+            ticks %= TimeSpan.TicksPerDay;
+        }
+
+        if (ticks > TimeSpan.TicksPerHour)
+        {
+            result.Append($"{ticks / TimeSpan.TicksPerHour:00}:");
         }
 
         result.Append($"{timeSpan.Minutes:00}:");
