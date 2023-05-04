@@ -19,6 +19,11 @@ public static class MonotonicTime
     static long lastTicks;
     static long startTicks;
 
+    /// <summary>
+    /// Indicates whether the timer is based on a high-resolution performance counter.
+    /// </summary>
+    public static bool IsHighResolution { get; }
+
     /// <summary>Calibrates the system start time and the current time. This is needed if the <see cref="Drift" /> timer is used for a long time.</summary>
     /// <param name="accuracy"></param>
     /// <returns></returns>
@@ -26,10 +31,11 @@ public static class MonotonicTime
     {
         //minimum accuracy is 10 stamps
         var accuracyTicks = Math.Max(10 * stampToTicks, accuracy.Ticks);
-        var maxRounds = 1000000;
+        var maxRounds = IsHighResolution ? 1000000 : 1000;
+        var avgRounds = IsHighResolution ? 100 : 10;
         while (maxRounds-- > 0)
         {
-            var drift = (long)new Counter(0, 100).Select(_ => Drift.Ticks).Average();
+            var drift = (long)new Counter(0, avgRounds).Select(_ => Drift.Ticks).Average();
             if (Math.Abs(drift) < accuracyTicks)
             {
                 return true;
@@ -99,7 +105,7 @@ public static class MonotonicTime
         var stamp = Stopwatch.GetTimestamp();
         Thread.EndCriticalRegion();
         Thread.EndThreadAffinity();
-
+        IsHighResolution = Stopwatch.IsHighResolution;
         stampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
         lastTicks = (long)(stamp * stampToTicks);
         startTicks = now.Ticks - lastTicks;

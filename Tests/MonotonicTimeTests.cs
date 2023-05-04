@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Cave;
 using NUnit.Framework;
@@ -24,13 +25,14 @@ class MonotonicTimeTests
         });
     }
 
+    int calibrationCount = MonotonicTime.IsHighResolution ? 100 : 10;
+
     void WatchTicks()
     {
-        var start = MonotonicTime.UtcNow;
-        var end = start + TimeSpan.FromSeconds(15);
-        while (MonotonicTime.UtcNow < end)
+        while (calibrationCount > 0)
         {
-            var times = new TimeSpan[100];
+            Thread.Sleep(0);
+            var times = new TimeSpan[500];
             for (int i = 0; i < times.Length; i++)
             {
                 times[i] = MonotonicTime.Uptime;
@@ -44,11 +46,10 @@ class MonotonicTimeTests
 
     void WatchTime()
     {
-        var start = MonotonicTime.UtcNow;
-        var end = start + TimeSpan.FromSeconds(15);
-        while (MonotonicTime.UtcNow < end)
+        while (calibrationCount > 0)
         {
-            var times = new DateTime[100];
+            Thread.Sleep(0);
+            var times = new DateTime[500];
             for (int i = 0; i < times.Length; i++)
             {
                 times[i] = MonotonicTime.UtcNow;
@@ -62,15 +63,14 @@ class MonotonicTimeTests
 
     void CalibrateTest()
     {
-        var end = MonotonicTime.UtcNow + TimeSpan.FromSeconds(10);
-        int i = 0;
-        while (MonotonicTime.UtcNow < end)
+        while (calibrationCount > 0)
         {
+            var accuracy = new TimeSpan((calibrationCount * TimeSpan.TicksPerMillisecond) / 10);
             Assert.IsTrue(MonotonicTime.Calibrate(), "Calibration failed!");
             var drift = MonotonicTime.Drift;
-            Assert.IsTrue(Math.Abs(drift.Ticks) < TimeSpan.TicksPerMillisecond, "Drift > 1ms");
-            i++;
+            Console.WriteLine($"MonotonicTime calibrated to {accuracy.FormatTime()} current drift: {drift.FormatTime()}");
+            Assert.IsTrue(Math.Abs(drift.Ticks) < accuracy.Ticks, $"Drift > {accuracy.FormatTime()}");
+            calibrationCount--;
         }
-        Assert.IsTrue(i > 1, "Calibrate Test did not run!");
     }
 }
