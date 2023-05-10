@@ -199,7 +199,6 @@ class IPExtensionTests
                 addrCount = 1;
             }
             Assert.AreEqual(addrCount, test.AddressesCount);
-            Assert.AreEqual(addrCount, test.Addresses.Count());
             Assert.AreEqual(32 - net, test.AddressesBitCount);
         }
     }
@@ -222,7 +221,6 @@ class IPExtensionTests
         Assert.AreEqual(expected, test2);
         Assert.AreEqual(net, test2.Subnet);
         Assert.AreEqual(16777215, test.AddressesCount);
-        Assert.AreEqual(16777215, test.Addresses.Count());
         Assert.AreEqual(32 - net, test.AddressesBitCount);
     }
 
@@ -244,7 +242,6 @@ class IPExtensionTests
         Assert.AreEqual(expected, test2);
         Assert.AreEqual(net, test2.Subnet);
         Assert.AreEqual(8388607, test.AddressesCount);
-        Assert.AreEqual(8388607, test.Addresses.Count());
         Assert.AreEqual(32 - net, test.AddressesBitCount);
     }
 

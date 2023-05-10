@@ -243,6 +243,36 @@ public class StringExtensionsTests
     }
 
     [Test]
+    public void FormatTimeString()
+    {
+        var value = 1.234;
+        Assert.AreEqual("1.23ns", (value / 1000 / 1000 / 1000).FormatTime());
+        Assert.AreEqual("1.23µs", (value / 1000 / 1000).FormatTime());
+        Assert.AreEqual("1.23ms", (value / 1000).FormatTime());
+        Assert.AreEqual("1.23s", value.FormatTime());
+        Assert.AreEqual("1.23min", (value * 60).FormatTime());
+        Assert.AreEqual("1.23h", (value * 3600).FormatTime());
+        Assert.AreEqual("1.23d", (value * 3600 * 24).FormatTime());
+
+        value = 12.3678;
+        Assert.AreEqual("12.4ns", (value / 1000 / 1000 / 1000).FormatTime());
+        Assert.AreEqual("12.4µs", (value / 1000 / 1000).FormatTime());
+        Assert.AreEqual("12.4ms", (value / 1000).FormatTime());
+        Assert.AreEqual("12.4s", value.FormatTime());
+        Assert.AreEqual("12.4min", (value * 60).FormatTime());
+        Assert.AreEqual("12.4h", (value * 3600).FormatTime());
+        Assert.AreEqual("12.4d", (value * 3600 * 24).FormatTime());
+
+        Assert.AreEqual("12.3678ns", (value / 1000 / 1000 / 1000).FormatSeconds("g"));
+        Assert.AreEqual("12.3678µs", (value / 1000 / 1000).FormatSeconds("g"));
+        Assert.AreEqual("12.3678ms", (value / 1000).FormatSeconds("g"));
+        Assert.AreEqual("12.3678s", value.FormatSeconds("g"));
+        Assert.AreEqual("12.3678min", (value * 60).FormatSeconds("g"));
+        Assert.AreEqual("12.3678h", (value * 3600).FormatSeconds("g"));
+        Assert.AreEqual("12.3678d", (value * 3600 * 24).FormatSeconds("g"));
+    }
+
+    [Test]
     public void FormatTimeSpan()
     {
         var ticks = DateTime.Now.Ticks;

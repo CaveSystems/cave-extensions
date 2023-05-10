@@ -110,29 +110,20 @@ public static class TypeExtension
             {
                 str = s;
             }
+            else if (value is IFormattable formattable)
+            {
+                Trace.TraceInformation("Using IFormattable to convert to string!");
+                str = formattable.ToString(null, formatProvider);
+            }
+            else if (value is IConvertible convertible)
+            {
+                Trace.TraceInformation("Using IConvertible to convert to string!");
+                str = convertible.ToString(formatProvider);
+            }
             else
             {
-                Trace.TraceWarning("Try to find public ToString(IFormatProvider) method in class");
-                var method = value.GetType().GetMethod("ToString",
-                    BindingFlags.Public | BindingFlags.Instance,
-                    null,
-                    new[] { typeof(IFormatProvider) },
-                    null);
-                if (method != null)
-                {
-                    try
-                    {
-                        str = (string)method.Invoke(value, new object[] { formatProvider });
-                    }
-                    catch (TargetInvocationException ex)
-                    {
-                        throw ex.InnerException;
-                    }
-                }
-                else
-                {
-                    str = value.ToString();
-                }
+                Trace.TraceInformation("Using object.ToString() convert to string!");
+                str = value.ToString();
             }
         }
         if (toType == typeof(string))
@@ -183,7 +174,12 @@ public static class TypeExtension
 
                 if (str.EndsWith("ns", StringComparison.Ordinal))
                 {
-                    return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * (TimeSpan.TicksPerMillisecond / 1000)));
+                    return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * (TimeSpan.TicksPerMillisecond / 1000d / 1000d)));
+                }
+
+                if (str.EndsWith("µs", StringComparison.Ordinal))
+                {
+                    return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * (TimeSpan.TicksPerMillisecond / 1000d)));
                 }
 
                 if (str.EndsWith("ms", StringComparison.Ordinal))
@@ -225,12 +221,7 @@ public static class TypeExtension
         {
             // try to find public static Parse(string, IFormatProvider) method in class
             var errors = new List<Exception>();
-            var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[]
-                {
-                    typeof(string),
-                    typeof(IFormatProvider)
-                },
-                null);
+            var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string), typeof(IFormatProvider) }, null);
             if (method != null)
             {
                 try
@@ -258,6 +249,30 @@ public static class TypeExtension
                     errors.Add(ex.InnerException);
                 }
             }
+            var cctor = toType.GetConstructor(new[] { typeof(string), typeof(IFormatProvider) });
+            if (cctor != null)
+            {
+                try
+                {
+                    return cctor.Invoke(new object[] { str, formatProvider });
+                }
+                catch (TargetInvocationException ex)
+                {
+                    errors.Add(ex.InnerException);
+                }
+            }
+            cctor = toType.GetConstructor(new[] { typeof(string) });
+            if (cctor != null)
+            {
+                try
+                {
+                    return cctor.Invoke(new object[] { str });
+                }
+                catch (TargetInvocationException ex)
+                {
+                    errors.Add(ex.InnerException);
+                }
+            }
             method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
             if (method != null)
             {
@@ -270,25 +285,24 @@ public static class TypeExtension
                     errors.Add(ex.InnerException);
                 }
             }
-            var cctor = toType.GetConstructor(new[] { typeof(string) });
-            if (cctor != null)
+            method = toType.GetMethod("op_Explicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+            if (method != null)
             {
                 try
                 {
-                    return cctor.Invoke(new object[] { str });
+                    return method.Invoke(null, new object[] { str });
                 }
                 catch (TargetInvocationException ex)
                 {
                     errors.Add(ex.InnerException);
                 }
             }
-
             if (errors.Count > 0)
             {
                 throw new AggregateException(errors.ToArray());
             }
 
-            throw new MissingMethodException($"Type {toType} has no public static Parse(string, IFormatProvider), Parse(string) or cctor(string) method!");
+            throw new MissingMethodException($"Type {toType} has no public static Parse(string, IFormatProvider), Parse(string), cctor(string, IFormatProvider), cctor(string) or operator conversion method!");
         }
     }
 

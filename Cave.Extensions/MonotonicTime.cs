@@ -11,6 +11,46 @@ namespace Cave;
 /// <summary>Provides a fast and monotonic time implementation based on the systems high performance counter.</summary>
 public static class MonotonicTime
 {
+    public readonly struct Drift
+    {
+        public static implicit operator TimeSpan(Drift drift) => drift.Average;
+
+        internal Drift(double[] values, int count)
+        {
+            if (count < 1) throw new ArgumentOutOfRangeException(nameof(count));
+            var min = values[0];
+            var max = values[0];
+            var sum = 0.0;
+            for (var i = 0; i < count; i++)
+            {
+                min = Math.Min(values[i], min);
+                max = Math.Min(values[i], max);
+                sum += values[i];
+            }
+            //average
+            var avg = sum / count;
+
+            var stdDevSum = 0.0;
+            for (var i = 0; i < count; i++)
+            {
+                //add (deviation from mean)²
+                stdDevSum += Math.Pow(values[i] - avg, 2);
+            }
+            StdDev = new TimeSpan((long)Math.Sqrt(stdDevSum / (count + 1)));
+            Min = new TimeSpan((long)min);
+            Max = new TimeSpan((long)max);
+            Average = new TimeSpan((long)avg);
+        }
+
+        public TimeSpan Min { get; }
+
+        public TimeSpan Max { get; }
+
+        public TimeSpan Average { get; }
+
+        public TimeSpan StdDev { get; }
+    }
+
     class State
     {
         public static State Init()
@@ -75,38 +115,29 @@ public static class MonotonicTime
     static readonly double stampToTicks;
     static volatile State state;
 
-
     /// <summary>
     /// Indicates whether the timer is based on a high-resolution performance counter.
     /// </summary>
     public static bool IsHighResolution { get; }
 
     /// <summary>Calibrates the system start time and the current time. This is needed if the timer is used for a long time and the difference at <see cref="GetDrift" /> increases too much.</summary>
-    /// <param name="accuracy"></param>
     /// <returns></returns>
-    public static TimeSpan Calibrate(TimeSpan accuracy = default)
+    public static Drift Calibrate()
     {
-        //minimum accuracy is 100 stamps
-        var accuracyTicks = (long)Math.Max(100 * stampToTicks, accuracy.Ticks);
-        var maxRounds = IsHighResolution ? 20 : 10;
-        TimeSpan result;
-        for (var round = 1; ; round++)
+        Drift result = default;
+        for (var round = 1; round <= 3; round++)
         {
-            result = GetDrift();
-            Debug.WriteLine($"Calibrating with accuracy requirement {accuracyTicks.FormatTicks()}, current drift {result.FormatTime()}, round {round}.");
-            if (round > maxRounds) break;
-            if (Math.Abs(result.Ticks) < accuracyTicks)
-            {
-                Debug.WriteLine($"Calibration complete.");
-                return result;
-            }
+            // 10, 100, 1000 samples
+            result = GetDrift((int)Math.Pow(10, round));
+            Debug.WriteLine($"Calibrating... current drift {result.Average.FormatTime()}, round {round}.");
 
             lock (syncRoot)
             {
-                state = state.UpdateStartTime(state.Start + result.Ticks);
+                state = state.UpdateStartTime(state.Start + result.Average.Ticks);
             }
-            if (result > TimeSpan.Zero) Thread.Sleep(result);
+            if (result.Average > TimeSpan.Zero) Thread.Sleep(result.Average);
         }
+        Debug.WriteLine($"Calibration complete. StdDev {result.StdDev.FormatTime()}, average {result.Average.FormatTime()}, min {result.Min.FormatTime()}, max {result.Max.FormatTime()}");
         return result;
     }
 
@@ -114,31 +145,30 @@ public static class MonotonicTime
     /// Gets the drift between this instance and the system clock. This might increase over time (drift of performance counter / platform
     /// high performance timer) and jump on time synchronizations or user interaction with the system time and cannot be corrected.
     /// </summary>
-    public static TimeSpan GetDrift()
+    public static Drift GetDrift(int samples = 0)
     {
-        var drift = new List<long>(512);
-        while (true)
+        if (samples <= 1) samples = 1000;
+        Trace.WriteLineIf(samples < 10, "Less than 100 samples may result in very bad average values!");
+        var values = new double[samples];
+        var count = 0;
+
+        var last = DateTime.UtcNow;
+        for (; count < values.Length; count++)
         {
-            //add one block
-            for (var i = 0; i < 256; i++)
+            DateTime now;
+            State state;
+            for (; ; )
             {
-                var value = DateTime.UtcNow.Ticks - GetMonotonicState().Clock;
-                drift.Add(value);
+                now = DateTime.UtcNow;
+                state = GetMonotonicState();
+                //wait for tick
+                if (now > last) break;
             }
-            //calculate standard deviation
-            //average
-            var avg = drift.Average();
-            //deviation from mean
-            var dev = drift.Select(d => (d - avg)).Select(d => d * d);
-            //standard dev
-            var stdDev = Math.Sqrt(dev.Sum() / (drift.Count + 1));
-            //require a std dev < 0.01%
-            var maxStdDev = Math.Abs(avg / 10000);
-            if (stdDev < maxStdDev || drift.Count >= 10240)
-            {
-                return new TimeSpan((long)avg);
-            }
+            values[count] = now.Ticks - state.Clock;
+            if (count > samples) break;
+            last = now;
         }
+        return new Drift(values, count);
     }
 
     /// <summary>Gets the current monotonic advancing local time.</summary>
@@ -189,8 +219,7 @@ public static class MonotonicTime
                 Monitor.Exit(syncRoot);
             }
         }
-        lock(syncRoot)
-        return state;
+        lock (syncRoot) return state;
     }
 
     #endregion
