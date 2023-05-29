@@ -15,7 +15,9 @@ public static class DoubleExtension
     /// <returns>The formated string.</returns>
     public static string FormatPrice(this double price, CultureInfo culture = null)
     {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         culture ??= Thread.CurrentThread.CurrentCulture;
+#endif
 
         // maximum 5 digits
         var decimalValue = (long)Math.Round((price % 1) * 100000);

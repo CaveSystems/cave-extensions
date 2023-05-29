@@ -174,8 +174,10 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>
 
     #region Overrides
 
+#if !NET20 && !NETCOREAPP1_0_OR_GREATER && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
     /// <summary>Gets the value of the computed hash code.</summary>
     public override byte[] Hash => BitConverter.GetBytes(Value);
+#endif
 
     /// <summary>
     /// Computes the hash for the specified data. The caller needs to <see cref="Initialize" /> the <see cref="CRC64" /> first and call

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -111,3 +113,5 @@ public static class Shell
 
     #endregion
 }
+
+#endif

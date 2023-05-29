@@ -305,7 +305,7 @@ public class PBKDF2 : DeriveBytes
 
     #endregion Public Methods
 
-#if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
+#if NET40_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {

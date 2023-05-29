@@ -26,6 +26,7 @@ public static class MainAssembly
 
     static Assembly FindProgramAssembly()
     {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         if (Platform.Type == PlatformType.Android)
         {
             Debug.WriteLine("androidEntryPoint");
@@ -51,14 +52,18 @@ public static class MainAssembly
 
             return bestOnCreate != null ? bestOnCreate.Module.Assembly : first.Module.Assembly;
         }
+#endif
 
+#if !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
         Debug.WriteLine("GetEntryAssembly");
         var result = Assembly.GetEntryAssembly();
         if (result != null)
         {
             return result;
         }
+#endif
 
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         Debug.WriteLine("bestStatic");
         MethodInfo bestStatic = null;
         foreach (var frame in new StackTrace().GetFrames())
@@ -87,9 +92,9 @@ public static class MainAssembly
                 return a;
             }
         }
-
+#endif
         return null;
     }
 
-    #endregion
+#endregion
 }

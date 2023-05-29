@@ -538,18 +538,17 @@ public static class IEnumerableExtension
         {
             bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         }
-        long result = 0;
+        var hasher = DefaultHashingFunction.Create();
         var fields = typeof(T).GetFields(bindingFlags);
         foreach (var item in items)
         {
             foreach (var field in fields)
             {
-                result = result.BitwiseRotateLeft();
-                result ^= field.GetValue(item)?.GetHashCode() ?? 0;
+                hasher.Add(field.GetValue(item));
             }
         }
 
-        return result;
+        return hasher.ToHashCode();
     }
 
     /// <summary>Calculates the hash for all properties of the specified object.</summary>
@@ -568,15 +567,15 @@ public static class IEnumerableExtension
         {
             bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         }
-        long result = 0;
+        var hasher = DefaultHashingFunction.Create();
         var fields = typeof(T).GetFields(bindingFlags);
         foreach (var field in fields)
         {
-            result = result.BitwiseRotateLeft();
-            result ^= field.GetValue(obj)?.GetHashCode() ?? 0;
+            var val = field.GetValue(obj);
+            hasher.Add(val);
         }
 
-        return result;
+        return hasher.ToHashCode();
     }
 
     /// <summary>Calculates the hash for all properties of the specified items.</summary>
@@ -595,22 +594,24 @@ public static class IEnumerableExtension
         {
             bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         }
-        long result = 0;
         var properties = typeof(T).GetProperties(bindingFlags);
+        var hasher = DefaultHashingFunction.Create();
         foreach (var item in items)
         {
             foreach (var property in properties)
             {
-                result = result.BitwiseRotateLeft();
 #if NET20 || NET35 || NET40
-                result ^= property.GetValue(item, null)?.GetHashCode() ?? 0;
+                var val = property.GetValue(item, null);
+#elif (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_3_OR_GREATER)
+                var val = property.GetValueOf(item);
 #else
-                result ^= property.GetValue(item)?.GetHashCode() ?? 0;
+                var val = property.GetValue(item);
 #endif
+                hasher.Add(val);
             }
         }
 
-        return result;
+        return hasher.ToHashCode();
     }
 
     /// <summary>Calculates the hash for all properties of the specified items.</summary>
@@ -637,19 +638,20 @@ public static class IEnumerableExtension
         {
             bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         }
-        long result = 0;
-        var properties = typeof(T).GetProperties();
+        var hasher = DefaultHashingFunction.Create();
+        var properties = typeof(T).GetProperties(bindingFlags);
         foreach (var property in properties)
         {
-            result = result.BitwiseRotateLeft();
 #if NET20 || NET35 || NET40
-            result ^= property.GetValue(obj, null)?.GetHashCode() ?? 0;
+            hasher.Add(property.GetValue(obj, null));
+#elif (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_3_OR_GREATER)
+            hasher.Add(property.GetValueOf(obj));
 #else
-            result ^= property.GetValue(obj)?.GetHashCode() ?? 0;
+            hasher.Add(property.GetValue(obj));
 #endif
         }
 
-        return result;
+        return hasher.ToHashCode();
     }
 
     /// <summary>Runs an action for each item within the specified <paramref name="enumerable" />.</summary>

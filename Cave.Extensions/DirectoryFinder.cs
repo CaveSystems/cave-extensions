@@ -1,3 +1,5 @@
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -302,8 +304,10 @@ public class DirectoryFinder
     /// <summary>runs the current search.</summary>
     void SearchDirectories()
     {
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         Thread.CurrentThread.Priority = ThreadPriority.Lowest;
         Thread.CurrentThread.IsBackground = true;
+#endif
         Verbose($"Starting directory search at {BaseDirectory}");
         RecursiveSearch(new(BaseDirectory, "."));
         SearchRunning = false;
@@ -332,3 +336,5 @@ public class DirectoryFinder
 
     #endregion
 }
+
+#endif

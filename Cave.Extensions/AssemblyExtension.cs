@@ -22,7 +22,7 @@ namespace Cave
             {
                 throw new ArgumentNullException(nameof(assembly));
             }
-
+#if NETSTANDARD1_6_OR_GREATER
             {
                 var path = assembly.Location;
 
@@ -37,6 +37,7 @@ namespace Cave
                     return path;
                 }
             }
+#endif
             {
                 var path = assembly.ManifestModule.FullyQualifiedName;
                 if (ConnectionString.TryParse(path, out var connectionString))
@@ -109,6 +110,6 @@ namespace Cave
             return attributes.FirstOrDefault()?.Product ?? throw new ArgumentException("Product attribute unset!");
         }
 
-        #endregion
+#endregion
     }
 }

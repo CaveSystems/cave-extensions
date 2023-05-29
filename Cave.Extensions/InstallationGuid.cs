@@ -25,8 +25,16 @@ namespace Cave
                 {
                     var guidBytes = SystemGuid.ToByteArray();
                     long programLong =
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
                         (AppDomain.CurrentDomain.BaseDirectory?.GetHashCode() ?? 0) ^
+#else
+                        AppContext.BaseDirectory.GetHashCode() ^
+#endif
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
+                        0xDEAD << 32;
+#else
                         ((Assembly.GetEntryAssembly()?.FullName.GetHashCode() ?? 0) << 32);
+#endif               
                     var programBytes = BitConverter.GetBytes(programLong);
                     for (var i = 0; i < 8; i++)
                     {
@@ -46,7 +54,7 @@ namespace Cave
         {
             get
             {
-#if NETSTANDARD2_0_OR_GREATER || NET50
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET50
 #else
                 if (Platform.IsMicrosoft)
                 {
@@ -61,7 +69,11 @@ namespace Cave
                     return new(data);
                 }
 #endif
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+                var root = AppContext.BaseDirectory;
+#else
                 var root = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#endif
                 var fileName = Path.Combine(root, "system.guid");
                 if (!File.Exists(fileName))
                 {
@@ -73,6 +85,6 @@ namespace Cave
             }
         }
 
-        #endregion
+#endregion
     }
 }

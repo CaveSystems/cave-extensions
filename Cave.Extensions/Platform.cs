@@ -1,3 +1,5 @@
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -281,3 +283,5 @@ public static class Platform
 
     static bool GetIsAndroid() => AppDom.FindType("Android.Runtime", null, AppDom.LoadFlags.NoException) != null;
 }
+
+#endif

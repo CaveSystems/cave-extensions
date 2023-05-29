@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -133,17 +135,17 @@ public static class AppDom
             assemblies = assemblies.Where(a => a.GetName().Name == assemblyName);
             if (!assemblies.Any())
             {
-                Trace.TraceWarning("Could not find assembly <red>{0}", assemblyName);
+                Trace.TraceWarning($"Could not find assembly {assemblyName}");
             }
         }
 
         foreach (var assembly in assemblies)
         {
-            Trace.TraceInformation("Searching for type <cyan>{0}<default> in assembly <cyan>{1}", typeName, assembly);
+            Trace.TraceInformation($"Searching for type {typeName} in assembly {assembly}");
             var type = assembly.GetType(typeName, false);
             if (type != null)
             {
-                Trace.TraceInformation("Using type <green>{0}", type.FullName);
+                Trace.TraceInformation($"Using type {type.FullName}");
                 return type;
             }
         }
@@ -243,3 +245,5 @@ public static class AppDom
 }
 
 #pragma warning restore CS0618
+
+#endif
