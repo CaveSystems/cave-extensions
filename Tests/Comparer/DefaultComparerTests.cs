@@ -59,6 +59,7 @@ public class DefaultComparerTests
         Assert.AreEqual(false, DefaultComparer.Equals(o3, o1));
     }
 
+#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
     [Test]
     public void TestCultureEqual()
     {
@@ -97,4 +98,5 @@ public class DefaultComparerTests
         Thread.CurrentThread.CurrentCulture = savedCurrentCulture;
         Thread.CurrentThread.CurrentUICulture = savedCurrentUICulture;
     }
+#endif
 }

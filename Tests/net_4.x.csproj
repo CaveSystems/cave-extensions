@@ -1,7 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net40;net45;net46;net47;net48</TargetFrameworks>
+        <TargetFrameworks>
+            net40;
+            net45;
+            net451;
+            net452;
+            net46;
+            net461;
+            net462;
+            net47;
+            net471;
+            net472;
+            net48;
+        </TargetFrameworks>
         <IsPackable>false</IsPackable>
         <ApplicationIcon />
         <OutputType>Exe</OutputType>
@@ -12,12 +24,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.3" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NUnit" Version="3.13.2" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,8 +38,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' != 'net40'">
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.0.0" />
+        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.3.3" />
     </ItemGroup>
 
 </Project>

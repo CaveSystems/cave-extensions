@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Linq;
 
-#if NETCOREAPP1_0 || NETCOREAPP1_1
-using System.Collections.NonGeneric;
-#endif
-
 namespace Cave.Collections;
 
 /// <summary>Gets extensions to the IEnumerable interface.</summary>

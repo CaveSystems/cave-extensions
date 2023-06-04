@@ -1,6 +1,4 @@
-﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -346,5 +344,3 @@ public static class ObjectExtension
 
 #endregion
 }
-
-#endif

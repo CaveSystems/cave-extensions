@@ -389,15 +389,15 @@ public static class TypeExtension
         => type?.Assembly.GetCompanyName();
 #endif
 
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_5_OR_GREATER)
     /// <summary>Backport</summary>
     public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
-#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
         //todo obey parametermodifiers
         => type.GetTypeInfo().DeclaredMethods.SingleOrDefault(m => m.Name == name && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(types));
-#else
+#elif NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+    /// <summary>Backport</summary>
+    public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
         => type.GetTypeInfo().GetMethod(name, types, modifiers);
-#endif
 #endif
 
     /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
@@ -515,5 +515,5 @@ public static class TypeExtension
 #else
         => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
 #endif
-    #endregion
+#endregion
 }

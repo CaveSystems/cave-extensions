@@ -139,6 +139,16 @@ class PropertyEnumeratorTests
 
     static void TestType(Type type)
     {
+#if NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER
+        if (type.GetTypeInfo().IsAbstract)
+        {
+            return;
+        }
+        if (type.GetTypeInfo().ContainsGenericParameters)
+        {
+            return;
+        }
+#else
         if (type.IsAbstract)
         {
             return;
@@ -147,6 +157,7 @@ class PropertyEnumeratorTests
         {
             return;
         }
+#endif
         var constructor = type.GetConstructor(Type.EmptyTypes);
         if (constructor == null)
         {
@@ -161,9 +172,9 @@ class PropertyEnumeratorTests
         {
             return;
         }
-        var p1 = obj.GetProperties(withValue: true);
+        var p1 = obj.GetProperties(flags: PropertyFlags.FilterUnset);
         p1.ForEach(TestPropertyWithValue);
-        var p2 = obj.GetProperties(withValue: false);
+        var p2 = obj.GetProperties(flags: PropertyFlags.None);
         p1.ForEach(TestPropertyWithoutValue);
         var p1Count = p1.Count();
         var p2Count = p2.Count();
@@ -202,7 +213,7 @@ class PropertyEnumeratorTests
     public void GetProperties()
     {
         var root = new Root();
-        var sequence = root.GetProperties(withValue: true).OrderBy(p => p.FullPath);
+        var sequence = root.GetProperties(flags: PropertyFlags.FilterUnset | PropertyFlags.Recursive).OrderBy(p => p.FullPath);
         TestSequence(sequence, false);
         TestRoot(root);
         foreach (var property in sequence)
@@ -238,6 +249,19 @@ class PropertyEnumeratorTests
         }
     }
 
+#if NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER
+    [Test]
+    public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).GetTypeInfo().Assembly.GetExportedTypes());
+
+    [Test]
+    public void TestTypes_mscorlib() => TestTypes(typeof(int).GetTypeInfo().Assembly.GetExportedTypes());
+
+    [Test]
+    public void TestTypes_System() => TestTypes(typeof(Uri).GetTypeInfo().Assembly.GetExportedTypes());
+
+    [Test]
+    public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).GetTypeInfo().Assembly.GetExportedTypes());
+#else
     [Test]
     public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
 
@@ -252,4 +276,5 @@ class PropertyEnumeratorTests
 
     [Test]
     public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).Assembly.GetExportedTypes());
+#endif
 }

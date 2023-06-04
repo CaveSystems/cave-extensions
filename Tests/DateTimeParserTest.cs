@@ -30,6 +30,7 @@ class DateTimeParserTest
         }
     }
 
+#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
     [Test]
     public void DateTimeParserTests()
     {
@@ -41,4 +42,5 @@ class DateTimeParserTest
             Test(culture, DateTime.Now, StringExtensions.DisplayDateTimeFormat, TimeSpan.FromMilliseconds(1));
         }
     }
+#endif
 }
