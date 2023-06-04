@@ -1,4 +1,8 @@
-﻿namespace Cave.Progress;
+﻿#nullable enable
+
+using System;
+
+namespace Cave.Progress;
 
 /// <summary>Provides an interface for progress tracking.</summary>
 public interface IProgress
@@ -7,6 +11,9 @@ public interface IProgress
 
     /// <summary>Gets a value indicating whether the progress is completed or not.</summary>
     bool Completed { get; }
+
+    /// <summary>Gets the date and time the progress was created.</summary>
+    DateTime Created { get; }
 
     /// <summary>Gets the identifier (creation number) of this progress instance.</summary>
     int Identifier { get; }
@@ -24,6 +31,9 @@ public interface IProgress
 
     #region Members
 
+    /// <summary>Provides an event to be called on progress changes</summary>
+    event EventHandler<ProgressEventArgs>? Updated;
+
     /// <summary>Completes the progress.</summary>
     /// <remarks>
     /// This can only be called once and sets the <see cref="Value" /> property to 1.0f and <see cref="Completed" /> property to true.
@@ -34,8 +44,8 @@ public interface IProgress
 
     /// <summary>Updates the progress to a higher value (0..1) and optionally sets a new text.</summary>
     /// <param name="value">The new value (higher or equal to the current <see cref="Value" />).</param>
-    /// <param name="message">The progress text.</param>
-    void Update(float value, string message = null);
+    /// <param name="message">The progress text (optional). If unset the text will not be changed.</param>
+    void Update(float value, string? message = null);
 
     #endregion
 }

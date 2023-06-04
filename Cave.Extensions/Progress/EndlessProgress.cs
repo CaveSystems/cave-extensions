@@ -1,5 +1,7 @@
 ﻿namespace Cave.Progress;
 
+#nullable enable
+
 /// <summary>Provides an endless progress calculator (increasing slices all the time but never reaching 100%).</summary>
 public class EndlessProgress
 {
