@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Cave.Collections.Generic;
 
 namespace Cave;
@@ -11,8 +12,15 @@ namespace Cave;
 /// <summary>Provides a fast and monotonic time implementation based on the systems high performance counter.</summary>
 public static class MonotonicTime
 {
+    /// <summary>
+    /// Provides a structure representing the average drift of values to a reference.
+    /// </summary>
     public readonly struct Drift
     {
+        /// <summary>
+        /// Converts the drift to a timespan.
+        /// </summary>
+        /// <param name="drift"></param>
         public static implicit operator TimeSpan(Drift drift) => drift.Average;
 
         internal Drift(double[] values, int count)
@@ -42,12 +50,24 @@ public static class MonotonicTime
             Average = new TimeSpan((long)avg);
         }
 
+        /// <summary>
+        /// Gets the minimum drift within the range checked
+        /// </summary>
         public TimeSpan Min { get; }
 
+        /// <summary>
+        /// Gets the maximum drift within the range checked
+        /// </summary>
         public TimeSpan Max { get; }
 
+        /// <summary>
+        /// Gets the average drift within the range checked
+        /// </summary>
         public TimeSpan Average { get; }
 
+        /// <summary>
+        /// Gets the standard deviation within the range checked
+        /// </summary>
         public TimeSpan StdDev { get; }
     }
 
@@ -135,7 +155,14 @@ public static class MonotonicTime
             {
                 state = state.UpdateStartTime(state.Start + result.Average.Ticks);
             }
-            if (result.Average > TimeSpan.Zero) Thread.Sleep(result.Average);
+            if (result.Average > TimeSpan.Zero)
+            {
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+                Task.Delay(result.Average);
+#else
+                Thread.Sleep(result.Average);
+#endif
+            }
         }
         Debug.WriteLine($"Calibration complete. StdDev {result.StdDev.FormatTime()}, average {result.Average.FormatTime()}, min {result.Min.FormatTime()}, max {result.Max.FormatTime()}");
         return result;

@@ -1,3 +1,5 @@
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
 using System;
 using System.Globalization;
 using System.Reflection;
@@ -185,7 +187,7 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         return i;
     }
 
-    #endregion
+#endregion
 
     #region fields
 
@@ -351,3 +353,5 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         return true;
     }
 }
+
+#endif

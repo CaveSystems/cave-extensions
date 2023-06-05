@@ -535,6 +535,7 @@ public static class StringExtensions
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="timeSpan">TimeSpan to format.</param>
+    /// <param name="format">Numberformat</param>
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -617,6 +618,7 @@ public static class StringExtensions
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="seconds">Seconds to format.</param>
+    /// <param name="format">Numberformat</param>
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -1216,7 +1218,7 @@ public static class StringExtensions
                 continue;
             }
 
-            result.Append(char.ToUpper(t[0], culture));
+            result.Append(t[0].ToUpper(culture));
             if (t.Length > 1)
             {
                 result.Append(t[1..].ToLower(culture));
@@ -1252,7 +1254,7 @@ public static class StringExtensions
                 continue;
             }
 
-            result.Append(char.ToUpper(t[0], culture));
+            result.Append(t[0].ToUpper(culture));
             if (t.Length > 1)
             {
                 result.Append(t[1..].ToLower(culture));
@@ -1290,7 +1292,7 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append(char.ToUpper(t[0], culture));
+                result.Append(t[0].ToUpper(culture));
                 if (t.Length > 1)
                 {
                     result.Append(t[1..].ToLower(culture));
@@ -1304,6 +1306,50 @@ public static class StringExtensions
 
         return result.ToString();
     }
+
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+    /// <summary><see cref="char.ToLower(char)"/></summary>
+    /// <param name="c">Character</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the lowercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static char ToLower(this char c, CultureInfo culture) => char.ToLower(c);
+
+    /// <summary><see cref="char.ToUpper(char)"/></summary>
+    /// <param name="c">Character</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the uppercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static char ToUpper(this char c, CultureInfo culture) => char.ToUpper(c);
+
+    /// <summary><see cref="String.ToLower()"/></summary>
+    /// <param name="s">String</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the lowercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string ToLower(this string s, CultureInfo culture) => s.ToLower(culture);
+
+    /// <summary><see cref="String.ToUpper()"/></summary>
+    /// <param name="s">String</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the uppercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string ToUpper(this string s, CultureInfo culture) => s.ToUpper(culture);
+#else
+    /// <summary><see cref="char.ToLower(char, CultureInfo)"/></summary>
+    /// <param name="c">Character</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the lowercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static char ToLower(this char c, CultureInfo culture) => char.ToLower(c, culture);
+
+    /// <summary><see cref="char.ToUpper(char, CultureInfo)"/></summary>
+    /// <param name="c">Character</param>
+    /// <param name="culture">Culture to use</param>
+    /// <returns>Returns the uppercase character</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static char ToUpper(this char c, CultureInfo culture) => char.ToUpper(c, culture);
+#endif
 
     /// <summary>Joins the strings with camel casing.</summary>
     /// <param name="parts">The parts.</param>
@@ -1333,7 +1379,7 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append(char.ToUpper(t[0], culture));
+                result.Append(t[0].ToUpper(culture));
                 if (t.Length > 1)
                 {
                     result.Append(t[1..].ToLower(culture));

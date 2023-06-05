@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 
 namespace Cave;
 
@@ -25,3 +27,5 @@ public sealed class DirectoryItemEventArgs : EventArgs
 
     #endregion
 }
+
+#endif

@@ -68,8 +68,10 @@ public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
 
     #region Overrides
 
+#if !NET20 && !NETCOREAPP1_0_OR_GREATER && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
     /// <summary>Gets the value of the computed hash code.</summary>
     public override byte[] Hash => BitConverter.GetBytes(Value);
+#endif
 
     /// <summary>Routes data written to the object into the hash algorithm for computing the hash.</summary>
     /// <remarks>
@@ -85,7 +87,7 @@ public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
     /// <summary>Finalizes the hash computation after the last data is processed by the cryptographic stream object.</summary>
     /// <remarks>This method finalizes any partial computation and returns the correct hash value for the data stream.</remarks>
     /// <returns>The computed hash code.</returns>
-    protected override byte[] HashFinal() => Hash;
+    protected override byte[] HashFinal() => BitConverter.GetBytes(Value);
 
     /// <summary>Gets the size, in bits, of the computed hash code.</summary>
     public override int HashSize => 16;

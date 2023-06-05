@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -427,7 +429,7 @@ public sealed class FileFinder : IDisposable
             }
             else
             {
-                Trace.WriteLine(message);
+                Trace. WriteLine(message);
             }
         }
 
@@ -439,3 +441,5 @@ public sealed class FileFinder : IDisposable
 
     #endregion
 }
+
+#endif

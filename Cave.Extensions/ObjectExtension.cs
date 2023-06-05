@@ -14,32 +14,11 @@ public static class ObjectExtension
 
     /// <summary>Get a list of available properties.</summary>
     /// <param name="instance">Object instance to read.</param>
-    /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
-    /// <param name="withValue">List only sub-properties with values.</param>
-    /// <param name="noRecursion">Disable recursion.</param>
-    /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
-    [Obsolete("Use GetProperties(instance, flags, bindingFlags, filter) instead!")]
-    public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags, bool withValue, bool noRecursion)
-        => GetProperties(instance, bindingFlags, withValue, noRecursion, null);
-
-    /// <summary>Get a list of available properties.</summary>
-    /// <param name="instance">Object instance to read.</param>
-    /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
-    /// <param name="withValue">List only sub-properties with values.</param>
-    /// <param name="noRecursion">Disable recursion.</param>
-    /// <param name="filter">Allows to filter properties.</param>
-    /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
-    [Obsolete("Use GetProperties(instance, flags, bindingFlags, filter) instead!")]
-    public static IEnumerable<PropertyData> GetProperties(this object instance, BindingFlags bindingFlags = 0, bool withValue = false, bool noRecursion = false, PropertyDataFilter filter = null)
-        => GetProperties(instance, (withValue ? PropertyFlags.FilterUnset : 0) | (noRecursion ? 0 : PropertyFlags.Recursive), bindingFlags, filter);
-
-    /// <summary>Get a list of available properties.</summary>
-    /// <param name="instance">Object instance to read.</param>
     /// <param name="flags">Filter flags for property search.</param>
     /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
     /// <param name="filter">Allows to filter properties.</param>
     /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
-    public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = 0, PropertyDataFilter filter = null)
+    public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = BindingFlags.Default, PropertyDataFilter filter = null)
     {
         if (instance == null)
         {
@@ -59,8 +38,7 @@ public static class ObjectExtension
 
     /// <summary>Gets the specified property value.</summary>
     /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-    /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
     /// </remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
@@ -78,34 +56,15 @@ public static class ObjectExtension
         return GetPropertyValue(instance, fullPath);
     }
 
-    /// <summary>Gets the specified property value and checks the return value type.</summary>
-    /// <typeparam name="TValue">Value type.</typeparam>
-    /// <param name="instance">Instance to read from.</param>
-    /// <param name="fullPath">Full property path.</param>
-    /// <param name="noException">Ignore null value properties and missing fields.</param>
-    /// <returns>Returns the value of the specified property or default.</returns>
-    [Obsolete("Use TryGetPropertyValue instead!")]
-    public static TValue GetPropertyValue<TValue>(this object instance, string fullPath, bool noException)
-    {
-        if (noException)
-        {
-            TryGetPropertyValue<TValue>(instance, fullPath, out var value);
-            return value;
-        }
-
-        return GetPropertyValue<TValue>(instance, fullPath);
-    }
-
     /// <summary>Gets the specified property value.</summary>
     /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-    /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
     /// </remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns the value of the specified property or default.</returns>
-    public static object GetPropertyValue(this object instance, string fullPath, BindingFlags bindingFlags = 0)
+    public static object GetPropertyValue(this object instance, string fullPath, BindingFlags bindingFlags = BindingFlags.Default)
     {
         if (instance == null)
         {
@@ -164,11 +123,17 @@ public static class ObjectExtension
         var i = 0;
         foreach (var property in type.GetProperties())
         {
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_3_OR_GREATER)
+            if (!property.CanGetValue)
+            {
+                continue;
+            }
+#else
             if (!property.CanRead)
             {
                 continue;
             }
-
+#endif
             if ((ignoredByName != null) && ignoredByName.Contains(property.Name))
             {
                 continue;
@@ -210,21 +175,19 @@ public static class ObjectExtension
 
     /// <summary>Gets the specified property value.</summary>
     /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-    /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
     /// </remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="result">Returns the result value.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
-    public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = 0)
+    public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = BindingFlags.Default)
         => TryGetPropertyValue(instance, fullPath, out result, bindingFlags, false);
 
     /// <summary>Gets the specified property value.</summary>
     /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-    /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
     /// </remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
@@ -257,8 +220,7 @@ public static class ObjectExtension
 
     /// <summary>Gets the specified property value.</summary>
     /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" /> or use
-    /// <see cref="GetProperties(object, BindingFlags, bool, bool)" />.
+    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
     /// </remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
@@ -380,5 +342,5 @@ public static class ObjectExtension
         return GetPropertyValueError.None;
     }
 
-    #endregion
+#endregion
 }

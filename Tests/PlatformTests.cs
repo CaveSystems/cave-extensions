@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+
+using System;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
@@ -18,3 +20,5 @@ class PlatformTests
         Console.WriteLine($"Platform.SystemVersionString: {Cave.Platform.SystemVersionString}");
     }
 }
+
+#endif

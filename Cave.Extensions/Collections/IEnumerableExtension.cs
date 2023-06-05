@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 
 namespace Cave.Collections;
 
@@ -23,7 +24,6 @@ public static class IEnumerableExtension
     /// <summary>Converts to an array of <see cref="object" />.</summary>
     /// <param name="enumerable">The <see cref="IEnumerable" /> instance to convert.</param>
     /// <returns>Returns a new array of <see cref="object" /></returns>
-    public static object[] ToObjectArray(this IEnumerable enumerable) => ToArrayList(enumerable).ToArray();
-
+    public static object[] ToObjectArray(this IEnumerable enumerable) => enumerable.Cast<object>().ToArray();
     #endregion
 }

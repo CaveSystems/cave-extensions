@@ -249,15 +249,16 @@ public struct DefaultComparer
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     [Obsolete("Use DefaultComparer.Get(this.field1, other.field1, this.field2, other.field2, ... if possible!")]
-    public static int Combine(object[] first, object[] second)
+    public static int Combine<T>(T[] first, T[] second)
     {
+        var comparer = Comparer<T>.Default;
         if (first.Length != second.Length)
         {
             throw new ArgumentException();
         }
         for (var i = 0; i < first.Length; i++)
         {
-            var result = Comparer.Default.Compare(first[i], second[i]);
+            var result = comparer.Compare(first[i], second[i]);
             if (first[i] is not null && second[i] is not null && (first[i]?.GetType() != second[i]?.GetType()))
             {
                 throw new InvalidOperationException($"Item [{i}] does not match type between first and second array!");

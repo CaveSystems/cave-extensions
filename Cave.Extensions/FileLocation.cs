@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 using System.IO;
 
 namespace Cave;
@@ -146,3 +148,5 @@ public class FileLocation
 
     #endregion
 }
+
+#endif

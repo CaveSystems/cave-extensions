@@ -1,3 +1,5 @@
+#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -123,3 +125,5 @@ public sealed class HighPerformanceStopWatch : IStopWatch
 
     #endregion
 }
+
+#endif

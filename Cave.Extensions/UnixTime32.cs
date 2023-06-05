@@ -162,7 +162,7 @@ public readonly struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime
     #region IConvertible
 
     /// <inheritdoc />
-    public TypeCode GetTypeCode() => DateTime.GetTypeCode();
+    public TypeCode GetTypeCode() => TypeCode.DateTime;
 
     /// <inheritdoc />
     public bool ToBoolean(IFormatProvider provider) => ((IConvertible)DateTime).ToBoolean(provider);

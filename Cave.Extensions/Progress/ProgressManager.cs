@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace Cave.Progress;
@@ -8,10 +10,10 @@ public static class ProgressManager
 {
     #region Static
 
-    static IProgressManager globalInstance;
+    static IProgressManager instance;
 
     /// <summary>Provides an event for each progress update / completion</summary>
-    public static event EventHandler<ProgressEventArgs> Updated;
+    public static event EventHandler<ProgressEventArgs>? Updated;
 
     /// <summary>Creates a new progress object implementing the <see cref="IProgress" /> interface.</summary>
     /// <remarks>
@@ -20,12 +22,12 @@ public static class ProgressManager
     /// </remarks>
     /// <param name="source">Source object for the progress.</param>
     /// <returns>Returns a new instance implementing the <see cref="IProgress" /> interface.</returns>
-    public static IProgress CreateProgress(object source) => GlobalInstance.CreateProgress(source);
+    public static IProgress CreateProgress(object source) => Instance.CreateProgress(source);
 
     /// <summary>Allows to change the globally used instance.</summary>
     /// <remarks>All events of <see cref="IProgress" /> objects will be routed to the new global instance.</remarks>
     /// <param name="newGlobalInstance">New global instance to use.</param>
-    public static void SetGlobalInstance(IProgressManager newGlobalInstance)
+    static void SetGlobalInstance(IProgressManager newGlobalInstance)
     {
         lock (SyncRoot)
         {
@@ -34,46 +36,41 @@ public static class ProgressManager
                 throw new ArgumentNullException(nameof(newGlobalInstance));
             }
 
-            if (globalInstance == newGlobalInstance)
+            if (instance == newGlobalInstance)
             {
                 return;
             }
 
-            if (globalInstance != null)
+            if (instance != null)
             {
-                globalInstance.Updated -= OnUpdated;
+                instance.Updated -= OnUpdated;
             }
 
             newGlobalInstance.Updated += OnUpdated;
-            globalInstance = newGlobalInstance;
-        }
-    }
-
-    /// <summary>Gets the global static used instance.</summary>
-    public static IProgressManager GlobalInstance
-    {
-        get
-        {
-            if (globalInstance == null)
-            {
-                SetGlobalInstance(new DefaultProgressManager());
-            }
-
-            return globalInstance;
+            instance = newGlobalInstance;
         }
     }
 
     /// <summary>Gets the current progress items.</summary>
-    public static IEnumerable<IProgress> Items => GlobalInstance.Items;
+    public static IEnumerable<IProgress> Items => Instance.Items;
 
     /// <summary>Gets the global sync root.</summary>
     public static object SyncRoot { get; } = new();
 
-    static void OnUpdated(object sender, ProgressEventArgs e)
+    /// <summary>Gets the global static used instance.</summary>
+    public static IProgressManager Instance { get => instance; set => SetGlobalInstance(value); }
+
+    static ProgressManager()
+    {
+        instance = new DefaultProgressManager();
+        instance.Updated += OnUpdated;
+    }
+
+    static void OnUpdated(object? sender, ProgressEventArgs e)
     {
         lock (SyncRoot)
         {
-            Updated?.Invoke(GlobalInstance, e);
+            Updated?.Invoke(sender, e);
         }
     }
 

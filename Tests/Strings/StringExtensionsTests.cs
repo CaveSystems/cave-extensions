@@ -12,7 +12,12 @@ namespace Test.Strings;
 [TestFixture]
 public class StringExtensionsTests
 {
-    readonly IEnumerable<CultureInfo> allCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
+    readonly IEnumerable<CultureInfo> allCultures =
+#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+        CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
+#else
+        new[] { CultureInfo.CurrentCulture, new CultureInfo("de-DE"), new CultureInfo("en-US") };
+#endif
 
     [Test]
     public void CamelCaseTest()
@@ -289,17 +294,17 @@ public class StringExtensionsTests
         var data = "iupz<IUFGiudgsfpUIGFEIPUEGT/fiouazgsdiupzfi_ugsfFUZTGI%dUPfGisd";
         {
             var start = "<IUF";
-            var l_End = "/fio";
-            var l_Expected = "GiudgsfpUIGFEIPUEGT";
-            var l_String = data.GetString(-1, start, l_End);
-            Assert.AreEqual(l_Expected, l_String);
+            var end = "/fio";
+            var expected = "GiudgsfpUIGFEIPUEGT";
+            var str = data.GetString(-1, start, end);
+            Assert.AreEqual(expected, str);
         }
         {
             var start = '<';
-            var l_End = '/';
-            var l_Expected = "IUFGiudgsfpUIGFEIPUEGT";
-            var l_String = data.GetString(-1, start, l_End);
-            Assert.AreEqual(l_Expected, l_String);
+            var end = '/';
+            var expected = "IUFGiudgsfpUIGFEIPUEGT";
+            var str = data.GetString(-1, start, end);
+            Assert.AreEqual(expected, str);
         }
     }
 
@@ -472,7 +477,7 @@ public class StringExtensionsTests
     [Test]
     public void SplitKeepSeparators()
     {
-        var l_Expected = new[]
+        var expected = new[]
         {
             "Test1",
             "|",
@@ -482,14 +487,14 @@ public class StringExtensionsTests
             "Test3"
         };
         var l_String = "Test1|Test2||Test3";
-        CollectionAssert.AreEqual(l_Expected, l_String.SplitKeepSeparators('|'));
+        CollectionAssert.AreEqual(expected, l_String.SplitKeepSeparators('|'));
     }
 
     [Test]
     public void SplitNewLine()
     {
         var result = "Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End".SplitNewLine();
-        var l_Expected = new[]
+        var expected = new[]
         {
             "Test1",
             "Test2 Test3",
@@ -504,14 +509,14 @@ public class StringExtensionsTests
             "",
             "End"
         };
-        CollectionAssert.AreEqual(l_Expected, result);
+        CollectionAssert.AreEqual(expected, result);
     }
 
     [Test]
     public void SplitNewLine1()
     {
         var result = "Test1\r\nTest2 Test3\0TestTestTest4\rTest5\nTest6\0Test7\rTest8\n\r\0\r\n\0End".SplitNewLine(StringSplitOptions.RemoveEmptyEntries);
-        var l_Expected = new[]
+        var expected = new[]
         {
             "Test1",
             "Test2 Test3",
@@ -522,14 +527,14 @@ public class StringExtensionsTests
             "Test8",
             "End"
         };
-        CollectionAssert.AreEqual(l_Expected, result);
+        CollectionAssert.AreEqual(expected, result);
     }
 
     [Test]
     public void SplitNewLineAndLength()
     {
         var result = "Test1\r\nTest2 Test3\tTestTestTest4".SplitNewLineAndLength(6);
-        var l_Expected = new[]
+        var expected = new[]
         {
             "Test1",
             "Test2 ",
@@ -538,7 +543,7 @@ public class StringExtensionsTests
             "stTest",
             "4"
         };
-        CollectionAssert.AreEqual(l_Expected, result);
+        CollectionAssert.AreEqual(expected, result);
     }
 
     [Test]
@@ -629,7 +634,6 @@ public class StringExtensionsTests
         }
 
         var rnd = new Random();
-        var allCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
         foreach (var culture in allCultures)
         {
             if (culture.IsNeutralCulture)
@@ -643,54 +647,54 @@ public class StringExtensionsTests
                 continue;
             }
 
-            Test((float)rnd.NextDouble(), culture);
-            Test(rnd.NextDouble(), culture);
-            Test((decimal)rnd.NextDouble(), culture);
-            Test((sbyte)rnd.Next(), culture);
-            Test((byte)rnd.Next(), culture);
-            Test((short)rnd.Next(), culture);
-            Test((ushort)rnd.Next(), culture);
-            Test(rnd.Next(), culture);
-            Test((uint)rnd.Next(), culture);
-            Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
-            Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
-            TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            Test((float?)rnd.NextDouble(), culture);
-            Test((double?)rnd.NextDouble(), culture);
-            Test((decimal?)rnd.NextDouble(), culture);
-            Test((sbyte?)rnd.Next(), culture);
-            Test((byte?)rnd.Next(), culture);
-            Test((short?)rnd.Next(), culture);
-            Test((ushort?)rnd.Next(), culture);
-            Test((int?)rnd.Next(), culture);
-            Test((uint?)rnd.Next(), culture);
-            Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
-            TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            Test((float?)null, culture);
-            Test((double?)null, culture);
-            Test((decimal?)null, culture);
-            Test((sbyte?)null, culture);
-            Test((byte?)null, culture);
-            Test((short?)null, culture);
-            Test((ushort?)null, culture);
-            Test((int?)null, culture);
-            Test((uint?)null, culture);
-            Test((long?)null, culture);
-            Test((ulong?)null, culture);
-            Test((TimeSpan?)null, culture);
-            Test((DateTime?)null, culture);
-            var buf = new byte[50];
-            rnd.NextBytes(buf);
-            Test(buf, culture);
-            var arrayI = new[]
+            for (int i = 0; i < 10; i++)
             {
-                rnd.Next(),
-                rnd.Next()
-            };
-            Test(arrayI, culture);
+                double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
+                Test((float)NextDouble(), culture);
+                Test(NextDouble(), culture);
+                Test((decimal)(NextDouble() % 1d), culture);
+                Test((sbyte)rnd.Next(), culture);
+                Test((byte)rnd.Next(), culture);
+                Test((short)rnd.Next(), culture);
+                Test((ushort)rnd.Next(), culture);
+                Test(rnd.Next(), culture);
+                Test((uint)rnd.Next(), culture);
+                Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
+                Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
+                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test((float?)rnd.NextDouble(), culture);
+                Test((double?)rnd.NextDouble(), culture);
+                Test((decimal?)rnd.NextDouble(), culture);
+                Test((sbyte?)rnd.Next(), culture);
+                Test((byte?)rnd.Next(), culture);
+                Test((short?)rnd.Next(), culture);
+                Test((ushort?)rnd.Next(), culture);
+                Test((int?)rnd.Next(), culture);
+                Test((uint?)rnd.Next(), culture);
+                Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
+                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test((float?)null, culture);
+                Test((double?)null, culture);
+                Test((decimal?)null, culture);
+                Test((sbyte?)null, culture);
+                Test((byte?)null, culture);
+                Test((short?)null, culture);
+                Test((ushort?)null, culture);
+                Test((int?)null, culture);
+                Test((uint?)null, culture);
+                Test((long?)null, culture);
+                Test((ulong?)null, culture);
+                Test((TimeSpan?)null, culture);
+                Test((DateTime?)null, culture);
+                var buf = new byte[50];
+                rnd.NextBytes(buf);
+                Test(buf, culture);
+                var arrayI = new[] { rnd.Next(), rnd.Next() };
+                Test(arrayI, culture);
+            }
         }
     }
 

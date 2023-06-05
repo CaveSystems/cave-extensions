@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+
+using System;
 using Cave;
 using NUnit.Framework;
 
@@ -15,3 +17,5 @@ class AppDomTests
         Assert.AreEqual(type, result);
     }
 }
+
+#endif

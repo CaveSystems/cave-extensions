@@ -12,7 +12,10 @@ namespace Cave;
 /// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages /
 /// ascii based character sets.
 /// </summary>
-public sealed class UTF8 : IEnumerable<char>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>, ICloneable
+public sealed class UTF8 : IEnumerable<char>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
+#if !NETCOREAPP1_0_OR_GREATER && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+, ICloneable
+#endif
 {
     #region Static
 
@@ -129,7 +132,7 @@ public sealed class UTF8 : IEnumerable<char>, IComparable, IConvertible, ICompar
     #region IConvertible Members
 
     /// <inheritdoc />
-    public TypeCode GetTypeCode() => ToString().GetTypeCode();
+    public TypeCode GetTypeCode() => TypeCode.String;
 
     /// <inheritdoc />
     public bool ToBoolean(IFormatProvider provider) => ((IConvertible)ToString()).ToBoolean(provider);
@@ -184,10 +187,15 @@ public sealed class UTF8 : IEnumerable<char>, IComparable, IConvertible, ICompar
     #region IEnumerable<char> Members
 
     /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => ToString().GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+    /// <inheritdoc />
+    public IEnumerator<char> GetEnumerator() => ((IEnumerable<char>)ToString()).GetEnumerator();
+#else
     /// <inheritdoc />
     public IEnumerator<char> GetEnumerator() => ToString().GetEnumerator();
+#endif
 
     #endregion
 

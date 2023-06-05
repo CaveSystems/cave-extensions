@@ -229,15 +229,14 @@ public static class DateTimeParser
             }
         }
 
-        if ((string.Compare(match.Groups["ampm"].Value, "PM", true, CultureInfo.InvariantCulture) == 0) && (h < 12))
+        if (string.Equals(match.Groups["ampm"].Value, "PM", StringComparison.OrdinalIgnoreCase) && (h < 12))
         {
             h += 12;
         }
-        else if ((string.Compare(match.Groups["ampm"].Value, "AM", true, CultureInfo.InvariantCulture) == 0) && (h == 12))
+        else if (string.Equals(match.Groups["ampm"].Value, "AM", StringComparison.OrdinalIgnoreCase) && (h == 12))
         {
             h -= 12;
         }
-
         time = new(h, m, s);
 
         // Microsecond
@@ -397,5 +396,5 @@ public static class DateTimeParser
         return true;
     }
 
-    #endregion
+#endregion
 }

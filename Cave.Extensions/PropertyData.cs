@@ -78,7 +78,11 @@ public class PropertyData
         RootPath = rootPath ?? throw new ArgumentNullException(nameof(rootPath));
         PropertyInfo = propertyInfo ?? throw new ArgumentNullException(nameof(propertyInfo));
         Source = source;
-        CanGetValue = (Source != null) && PropertyInfo.CanRead && (PropertyInfo.GetGetMethod()?.GetParameters().Length == 0);
+#if NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER
+        CanGetValue = (source != null) && propertyInfo.CanRead && propertyInfo.GetMethod != null && propertyInfo.GetMethod.GetParameters().Length == 0;
+#else
+        CanGetValue = (Source != null) && propertyInfo.CanRead && (propertyInfo.GetGetMethod()?.GetParameters().Length == 0);
+#endif
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cave;
 
@@ -112,7 +113,11 @@ public sealed class DateTimeStopWatch : IStopWatch
             var waitTime = elapsed - Elapsed;
             if (waitTime > TimeSpan.Zero)
             {
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+                Task.Delay(waitTime);
+#else
                 Thread.Sleep(waitTime);
+#endif
             }
             else
             {
@@ -121,5 +126,5 @@ public sealed class DateTimeStopWatch : IStopWatch
         }
     }
 
-    #endregion
+#endregion
 }

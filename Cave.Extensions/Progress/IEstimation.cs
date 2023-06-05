@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 
 namespace Cave.Progress;
@@ -23,13 +25,13 @@ public interface IEstimation
     float ProgressPercent { get; }
 
     /// <summary>Gets the time the process was started.</summary>
-    DateTime StartTime { get; }
+    DateTime Started { get; }
 
     #endregion
 
     #region Members
 
-    /// <summary>Resets the progress, sets <see cref="StartTime" /> to <see cref="DateTime.UtcNow" /> and begins a new estimation.</summary>
+    /// <summary>Resets the progress, sets <see cref="Started" /> to <see cref="DateTime.UtcNow" /> and begins a new estimation.</summary>
     void Reset();
 
     /// <summary>Actualizes <see cref="EstimatedCompletionTime" /> by setting the progress.</summary>

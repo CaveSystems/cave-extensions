@@ -52,6 +52,10 @@
         <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
         <IncludeSymbols>true</IncludeSymbols>
+
+        <!-- Settings -->
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
+        <TargetLatestRuntimePatch>false</TargetLatestRuntimePatch>
     </PropertyGroup>
 
     <PropertyGroup>

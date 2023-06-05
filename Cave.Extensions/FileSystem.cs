@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -560,7 +562,8 @@ public static class FileSystem
         return results.ToArray();
     }
 #else
-    public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly) => Directory.GetFileSystemEntries(path, searchPattern, searchOption);
+    public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        => Directory.GetFileSystemEntries(path, searchPattern, searchOption);
 #endif
 
     /// <summary>Returns an absolute path from a relative path and a fully qualified base path.</summary>
@@ -1019,3 +1022,5 @@ public static class FileSystem
 
     #endregion
 }
+
+#endif
