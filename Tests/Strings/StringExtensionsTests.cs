@@ -647,54 +647,54 @@ public class StringExtensionsTests
                 continue;
             }
 
-            Test((float)rnd.NextDouble(), culture);
-            Test(rnd.NextDouble(), culture);
-            Test((decimal)rnd.NextDouble(), culture);
-            Test((sbyte)rnd.Next(), culture);
-            Test((byte)rnd.Next(), culture);
-            Test((short)rnd.Next(), culture);
-            Test((ushort)rnd.Next(), culture);
-            Test(rnd.Next(), culture);
-            Test((uint)rnd.Next(), culture);
-            Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
-            Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
-            TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            Test((float?)rnd.NextDouble(), culture);
-            Test((double?)rnd.NextDouble(), culture);
-            Test((decimal?)rnd.NextDouble(), culture);
-            Test((sbyte?)rnd.Next(), culture);
-            Test((byte?)rnd.Next(), culture);
-            Test((short?)rnd.Next(), culture);
-            Test((ushort?)rnd.Next(), culture);
-            Test((int?)rnd.Next(), culture);
-            Test((uint?)rnd.Next(), culture);
-            Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
-            TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            Test((float?)null, culture);
-            Test((double?)null, culture);
-            Test((decimal?)null, culture);
-            Test((sbyte?)null, culture);
-            Test((byte?)null, culture);
-            Test((short?)null, culture);
-            Test((ushort?)null, culture);
-            Test((int?)null, culture);
-            Test((uint?)null, culture);
-            Test((long?)null, culture);
-            Test((ulong?)null, culture);
-            Test((TimeSpan?)null, culture);
-            Test((DateTime?)null, culture);
-            var buf = new byte[50];
-            rnd.NextBytes(buf);
-            Test(buf, culture);
-            var arrayI = new[]
+            for (int i = 0; i < 10; i++)
             {
-                rnd.Next(),
-                rnd.Next()
-            };
-            Test(arrayI, culture);
+                double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
+                Test((float)NextDouble(), culture);
+                Test(NextDouble(), culture);
+                Test((decimal)(NextDouble() % 1d), culture);
+                Test((sbyte)rnd.Next(), culture);
+                Test((byte)rnd.Next(), culture);
+                Test((short)rnd.Next(), culture);
+                Test((ushort)rnd.Next(), culture);
+                Test(rnd.Next(), culture);
+                Test((uint)rnd.Next(), culture);
+                Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
+                Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
+                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test((float?)rnd.NextDouble(), culture);
+                Test((double?)rnd.NextDouble(), culture);
+                Test((decimal?)rnd.NextDouble(), culture);
+                Test((sbyte?)rnd.Next(), culture);
+                Test((byte?)rnd.Next(), culture);
+                Test((short?)rnd.Next(), culture);
+                Test((ushort?)rnd.Next(), culture);
+                Test((int?)rnd.Next(), culture);
+                Test((uint?)rnd.Next(), culture);
+                Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
+                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                Test((float?)null, culture);
+                Test((double?)null, culture);
+                Test((decimal?)null, culture);
+                Test((sbyte?)null, culture);
+                Test((byte?)null, culture);
+                Test((short?)null, culture);
+                Test((ushort?)null, culture);
+                Test((int?)null, culture);
+                Test((uint?)null, culture);
+                Test((long?)null, culture);
+                Test((ulong?)null, culture);
+                Test((TimeSpan?)null, culture);
+                Test((DateTime?)null, culture);
+                var buf = new byte[50];
+                rnd.NextBytes(buf);
+                Test(buf, culture);
+                var arrayI = new[] { rnd.Next(), rnd.Next() };
+                Test(arrayI, culture);
+            }
         }
     }
 

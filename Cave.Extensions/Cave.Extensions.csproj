@@ -34,7 +34,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cave.Backports" Version="3.0.4-ci-20230602-2" />
+        <PackageReference Include="Cave.Backports" Version="3.0.4" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
