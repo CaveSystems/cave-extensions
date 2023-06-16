@@ -8,6 +8,17 @@ public static class DefaultHashingFunction
 {
     #region Static
 
+    /// <summary>Calculates the hash for the specified byte buffer.</summary>
+    /// <param name="buffer">Buffer to hash</param>
+    /// <returns>Returns the hash code for the buffer.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static int Calculate(byte[] buffer)
+    {
+        var hash = Create();
+        hash.Feed(buffer);
+        return hash.ToHashCode();
+    }
+
     /// <summary>Combines the hashes of the specified instances.</summary>
     /// <returns>Returns the combined hashes of all specified instances.</returns>
     [MethodImpl((MethodImplOptions)256)]

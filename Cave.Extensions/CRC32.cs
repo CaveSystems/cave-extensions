@@ -225,6 +225,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     /// <summary>Gets or sets the checksum computed so far.</summary>
     public uint Value
     {
+        [MethodImpl((MethodImplOptions)0x0100)]
         get
         {
             if (ReflectOutput)
@@ -234,6 +235,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
 
             return ~currentCRC ^ FinalXor;
         }
+        [MethodImpl((MethodImplOptions)0x0100)]
         set => currentCRC = value;
     }
 
@@ -242,6 +244,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     #region IHashingFunction Members
 
     /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void Add<T>(T item)
     {
         var itemHash = (uint)(item?.GetHashCode() ?? 0);
@@ -264,6 +267,20 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
             currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
             itemHash >>= 8;
             currentCRC = (currentCRC << 8) ^ table[((currentCRC >> 24) ^ itemHash) & 0xFF];
+        }
+    }
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Feed(byte[] data) => HashCore(data, 0, data.Length);
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public unsafe void Feed(byte* data, int length)
+    {
+        for (var i = 0; i < length; i++)
+        {
+            HashCore(data[i]);
         }
     }
 
@@ -323,6 +340,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
 
     /// <summary>directly hashes one byte.</summary>
     /// <param name="b">The byte.</param>
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void HashCore(byte b)
     {
         if (ReflectInput)

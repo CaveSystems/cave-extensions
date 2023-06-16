@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace Cave;
 
 /// <summary>Provides a managed implementation of the Cyclic Redundancy Checksum with 64 bits.</summary>
-public class CRC64 : HashAlgorithm, IChecksum<ulong>
+public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
 {
     #region Static
 
@@ -50,22 +50,22 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>
 
     #region Fields
 
-    ulong currentCRC;
-
     /// <summary>The polynomial used to generate the table.</summary>
-    public ulong Polynomial;
+    public readonly ulong Polynomial;
 
     /// <summary>The initializer value.</summary>
-    public ulong Initializer;
+    public readonly ulong Initializer;
 
     /// <summary>The final xor value.</summary>
-    public ulong FinalXor;
+    public readonly ulong FinalXor;
 
     /// <summary>The reflect input flag.</summary>
-    public bool ReflectInput;
+    public readonly bool ReflectInput;
 
     /// <summary>The reflect output flag.</summary>
-    public bool ReflectOutput;
+    public readonly bool ReflectOutput;
+
+    ulong currentCRC;
 
     #endregion
 
@@ -151,7 +151,13 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>
 
     /// <summary>Adds one byte to the checksum.</summary>
     /// <param name="value">the byte to add. Only the lowest 8 bits will be used.</param>
-    public void Update(int value) => HashCore((byte)(value & 0xFF));
+    public void Update(int value)
+    {
+        unchecked
+        {
+            HashCore((byte)value);
+        }
+    }
 
     /// <summary>Updates the checksum with the specified byte array.</summary>
     /// <param name="buffer">The buffer containing the data.</param>
@@ -166,9 +172,46 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>
     /// <summary>Gets or sets the checksum computed so far.</summary>
     public ulong Value
     {
+        [MethodImpl((MethodImplOptions)0x0100)]
         get => currentCRC ^ FinalXor;
+        [MethodImpl((MethodImplOptions)0x0100)]
         set => currentCRC = value;
     }
+
+    #endregion
+
+    #region IHashingFunction Members
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Add<T>(T item)
+    {
+        var itemHash = item?.GetHashCode() ?? 0;
+        Update(itemHash);
+        itemHash >>= 8;
+        Update(itemHash);
+        itemHash >>= 8;
+        Update(itemHash);
+        itemHash >>= 8;
+        Update(itemHash);
+    }
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Feed(byte[] data) => HashCore(data, 0, data.Length);
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public unsafe void Feed(byte* data, int length)
+    {
+        for (var i = 0; i < length; i++)
+        {
+            HashCore(data[i]);
+        }
+    }
+
+    /// <inheritdoc />
+    public int ToHashCode() => (int)((Value >> 32) ^ (Value & 0xffffffff));
 
     #endregion
 
@@ -229,6 +272,7 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>
 
     /// <summary>directly hashes one byte.</summary>
     /// <param name="b">The byte.</param>
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void HashCore(byte b)
     {
         if (ReflectInput)

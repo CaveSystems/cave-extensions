@@ -93,69 +93,91 @@ public struct XxHash32 : IHashingFunction
         }
     }
 
-    /// <summary>Add a items hash to the hashcode.</summary>
-    /// <typeparam name="T">Type of the item to add (prevents unboxing).</typeparam>
-    /// <param name="value">Item to add.</param>
-    public void Add<T>(T value)
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public unsafe void Feed(byte[] data)
     {
+        fixed (byte* p = data)
+        {
+            var ptr = (uint*)p;
+            var len = data.Length / 4;
+            var rem = data.Length % 4;
+            for (var i = 0; i < len; i++)
+            {
+                Hash(ptr[i]);
+            }
+            if (rem == 1) Hash(data[^1]);
+            else if (rem == 2) Hash((uint)(data[^1] | (data[^2] << 8)));
+            else if (rem == 3) Hash((uint)(data[^1] | (data[^2] << 8) | (data[^3] << 16)));
+        }
+    }
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public unsafe void Feed(byte* data, int length)
+    {
+        var ptr = (uint*)data;
+        var len = length / 4;
+        var rem = length % 4;
+        for (var i = 0; i < len; i++)
+        {
+            Hash(ptr[i]);
+        }
+        if (rem > 0)
+        {
+            uint val = data[length - 1];
+            if (rem > 1) val |= (uint)(data[length - 2] << 8);
+            if (rem > 2) val |= (uint)(data[length - 3] << 16);
+            Hash(val);
+        }
+    }
+
+    [MethodImpl((MethodImplOptions)0x0100)]
+    void Hash(uint value)
+    {
+        // The original xxHash works as follows:
+        // 0. Initialize immediately. We can't do this in a struct (no
+        //    default ctor).
+        // 1. Accumulate blocks of length 16 (4 uints) into 4 accumulators.
+        // 2. Accumulate remaining blocks of length 4 (1 uint) into the
+        //    hash.
+        // 3. Accumulate remaining blocks of length 1 into the hash.
+
+        // There is no need for #3 as this type only accepts ints. _queue1,
+        // _queue2 and _queue3 are basically a buffer so that when
+        // ToHashCode is called we can execute #2 correctly.
+
+        // We need to initialize the xxHash32 state (_v1 to _v4) lazily (see
+        // #0) nd the last place that can be done if you look at the
+        // original code is just before the first block of 16 bytes is mixed
+        // in. The xxHash32 state is never used for streams containing fewer
+        // than 16 bytes.
+
+        // To see what's really going on here, have a look at the Combine
+        // methods.
         unchecked
         {
-            // The original xxHash works as follows:
-            // 0. Initialize immediately. We can't do this in a struct (no
-            //    default ctor).
-            // 1. Accumulate blocks of length 16 (4 uints) into 4 accumulators.
-            // 2. Accumulate remaining blocks of length 4 (1 uint) into the
-            //    hash.
-            // 3. Accumulate remaining blocks of length 1 into the hash.
-
-            // There is no need for #3 as this type only accepts ints. _queue1,
-            // _queue2 and _queue3 are basically a buffer so that when
-            // ToHashCode is called we can execute #2 correctly.
-
-            // We need to initialize the xxHash32 state (_v1 to _v4) lazily (see
-            // #0) nd the last place that can be done if you look at the
-            // original code is just before the first block of 16 bytes is mixed
-            // in. The xxHash32 state is never used for streams containing fewer
-            // than 16 bytes.
-
-            // To see what's really going on here, have a look at the Combine
-            // methods.
-
-            var val = (uint)(value?.GetHashCode() ?? 0);
-
-            // Storing the value of _length locally shaves of quite a few bytes
-            // in the resulting machine code.
             var previousLength = len++;
             var position = previousLength % 4;
-
-            // Switch can't be inlined.
-
-            if (position == 0)
-            {
-                q1 = val;
-            }
-            else if (position == 1)
-            {
-                q2 = val;
-            }
-            else if (position == 2)
-            {
-                q3 = val;
-            }
+            if (position == 0) q1 = value;
+            else if (position == 1) q2 = value;
+            else if (position == 2) q3 = value;
             else // position == 3
             {
-                if (previousLength == 3)
-                {
-                    Initialize(out v1, out v2, out v3, out v4);
-                }
-
+                if (previousLength == 3) Initialize(out v1, out v2, out v3, out v4);
                 v1 = Round(v1, q1);
                 v2 = Round(v2, q2);
                 v3 = Round(v3, q3);
-                v4 = Round(v4, val);
+                v4 = Round(v4, value);
             }
         }
     }
+
+    /// <summary>Add a items hash to the hashcode.</summary>
+    /// <typeparam name="T">Type of the item to add (prevents unboxing).</typeparam>
+    /// <param name="value">Item to add.</param>
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Add<T>(T value) => Hash((uint)(value?.GetHashCode() ?? 0));
 
     /// <summary>Returns the resulting hashcode.</summary>
     /// <returns></returns>

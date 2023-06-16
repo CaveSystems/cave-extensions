@@ -37,9 +37,14 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     public static uint[] Table => (uint[])table.Clone();
 
     /// <inheritdoc />
-    public uint Value => ~currentCRC;
+    public uint Value
+    {
+        [MethodImpl((MethodImplOptions)0x0100)]
+        get => ~currentCRC;
+    }
 
     /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
     public int ToHashCode() => (int)~currentCRC;
 
     #endregion
@@ -47,9 +52,24 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     #region Members
 
     /// <inheritdoc />
-    public void Add<T>(T value)
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Feed(byte[] data) => HashCore(data, 0, data.Length);
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public unsafe void Feed(byte* data, int length)
     {
-        var val = (uint)(value?.GetHashCode() ?? 0);
+        for (var i = 0; i < length; i++)
+        {
+            HashCore(data[i]);
+        }
+    }
+
+    /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Add<T>(T item)
+    {
+        var val = (uint)(item?.GetHashCode() ?? 0);
         HashCore(val & 0xFF);
         val >>= 8;
         HashCore(val & 0xFF);
@@ -59,7 +79,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
         HashCore(val & 0xFF);
     }
 
-    [MethodImpl((MethodImplOptions)256)]
+    [MethodImpl((MethodImplOptions)0x0100)]
     void HashCore(uint @byte)
     {
         var i = ((currentCRC >> 24) ^ @byte) & 0xFF;
@@ -67,6 +87,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     }
 
     /// <inheritdoc />
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void HashCore(byte[] data, int offset, int length)
     {
         for (var i = 0; i < length; i++)
