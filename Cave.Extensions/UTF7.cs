@@ -13,9 +13,6 @@ namespace Cave;
 /// ascii based character sets.
 /// </summary>
 public sealed class UTF7 : IEnumerable<char>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF7>, IEquatable<UTF7>
-#if !NETCOREAPP1_0_OR_GREATER && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-, ICloneable
-#endif
 {
     #region Static
 
@@ -177,46 +174,26 @@ public sealed class UTF7 : IEnumerable<char>, IComparable, IConvertible, ICompar
 
     #endregion
 
-    #region Fields
-
-    readonly byte[] data;
-
-    #endregion
-
     #region Constructors
 
-    UTF7(byte[] data, int length)
-    {
-        Length = length;
-        this.data = data;
-    }
-
-    /// <summary>Creates a new instance of the <see cref="UTF8" /> class.</summary>
+    /// <summary>Creates a new instance of the <see cref="UTF7" /> class.</summary>
     /// <param name="data">Content</param>
-    public UTF7(byte[] data) : this((byte[])data.Clone(), Encoding.UTF8.GetCharCount(data)) { }
+    public UTF7(byte[] data) => Data = data;
 
-    /// <summary>Creates a new instance of the <see cref="UTF8" /> class.</summary>
+    /// <summary>Creates a new instance of the <see cref="UTF7" /> class.</summary>
     /// <param name="text">Content</param>
-    public UTF7(string text)
-    {
-        Length = text.Length;
-        data = Encode(text);
-    }
+    public UTF7(string text) => Data = Encode(text);
 
     #endregion
 
     #region Properties
 
+    /// <summary>Gets the data bytes.</summary>
+    public byte[] Data { get; }
+
     /// <summary>Gets the length.</summary>
     /// <value>The length of the string.</value>
-    public int Length { get; }
-
-    #endregion
-
-    #region ICloneable Members
-
-    /// <inheritdoc />
-    public object Clone() => new UTF7(data, Length);
+    public int Length => ToString().Length;
 
     #endregion
 
@@ -328,7 +305,7 @@ public sealed class UTF7 : IEnumerable<char>, IComparable, IConvertible, ICompar
     #region IEquatable<UTF7> Members
 
     /// <inheritdoc />
-    public bool Equals(UTF7 other) => (Length == other.Length) && data.SequenceEqual(other.data);
+    public bool Equals(UTF7 other) => (Length == other.Length) && Data.SequenceEqual(other.Data);
 
     #endregion
 
@@ -338,10 +315,10 @@ public sealed class UTF7 : IEnumerable<char>, IComparable, IConvertible, ICompar
     public override bool Equals(object obj) => obj is UTF7 utf7 && Equals(utf7);
 
     /// <inheritdoc />
-    public override int GetHashCode() => ToString().GetHashCode();
+    public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
 
     /// <inheritdoc />
-    public override string ToString() => Encoding.UTF8.GetString(data);
+    public override string ToString() => Decode(Data);
 
     #endregion
 }

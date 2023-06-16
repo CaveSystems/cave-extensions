@@ -9,15 +9,12 @@ using System.Text;
 
 namespace Cave;
 
-/// <summary>
-/// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages /
-/// ascii based character sets.
-/// </summary>
-public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
+/// <summary>Provides a string encoded on the heap using utf32.</summary>
+public sealed class UTF32LE : IEnumerable<char>, IEnumerable<int>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF32LE>, IEquatable<UTF32LE>
 {
     #region Static
 
-    /// <summary>Converts the specified utf8 data to a csharp string.</summary>
+    /// <summary>Converts the specified utf32 data to a csharp string.</summary>
     /// <param name="data">Data to convert.</param>
     /// <returns>Returns a csharp string.</returns>
     /// <exception cref="ArgumentNullException"></exception>
@@ -35,123 +32,56 @@ public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, ICo
         return sb.ToString();
     }
 
-    /// <summary>Converts the specified utf8 data to unicode codepoints.</summary>
+    /// <summary>Converts the specified utf32 data to unicode codepoints.</summary>
     /// <param name="data">Data to convert.</param>
     /// <returns>Returns the unicode codepoints.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidDataException"></exception>
-    public static IEnumerable<int> ConvertToCodepoints(byte[] data)
+    public static int[] ConvertToCodepoints(byte[] data)
     {
         if (data is null)
         {
             throw new ArgumentNullException(nameof(data));
         }
-        var i = 0;
-        while (i < data.Length)
+        if (!BitConverter.IsLittleEndian)
         {
-            var b = data[i++];
-            if (b < 0x80)
-            {
-                yield return b;
-                continue;
-            }
-
-            if (i == data.Length)
-            {
-                throw new InvalidDataException("Incomplete character at end of buffer!");
-            }
-            var b2 = data[i++];
-            if ((b2 & 0x11000000) == 0x10000000)
-            {
-                throw new InvalidDataException("Invalid multibyte value!");
-            }
-            if (b < 0xE0)
-            {
-                yield return ((b & 0x1F) << 6) | (b2 & 0x3F);
-                continue;
-            }
-
-            if (i == data.Length)
-            {
-                throw new InvalidDataException("Incomplete character at end of buffer!");
-            }
-            var b3 = data[i++];
-            if ((b3 & 0x11000000) == 0x10000000)
-            {
-                throw new InvalidDataException("Invalid multibyte value!");
-            }
-            if (b < 0xF0)
-            {
-                yield return ((((b & 0xF) << 6) | (b2 & 0x3F)) << 6) | (b3 & 0x3F);
-                continue;
-            }
-
-            if (i == data.Length)
-            {
-                throw new InvalidDataException("Incomplete character at end of buffer!");
-            }
-            var b4 = data[i++];
-            if ((b4 & 0x11000000) == 0x10000000)
-            {
-                throw new InvalidDataException("Invalid multibyte value!");
-            }
-            if (b < 0xF8)
-            {
-                yield return ((((((b & 0x7) << 6) | (b2 & 0x3F)) << 6) | (b3 & 0x3F)) << 6) | (b4 & 0x3F);
-                continue;
-            }
-            //invalid codepoint
-            throw new InvalidDataException("Invalid codepoint at utf-8 encoding!");
+            data = (byte[])data.Clone();
+            data.SwapEndian32();
         }
+        var result = new int[data.Length / 4];
+        Buffer.BlockCopy(data, 0, result, 0, data.Length);
+        return result;
     }
 
-    /// <summary>Converts the specified <paramref name="text" /> to an <see cref="UTF8" /> instance.</summary>
+    /// <summary>Converts the specified <paramref name="text" /> to an <see cref="UTF32LE" /> instance.</summary>
     /// <param name="text">Text to convert.</param>
-    /// <returns>Returns a new <see cref="UTF8" /> instance.</returns>
+    /// <returns>Returns a new <see cref="UTF32LE" /> instance.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="NotImplementedException"></exception>
-    public static UTF8 ConvertFromString(string text)
+    public static unsafe UTF32LE ConvertFromString(string text)
     {
         if (text is null)
         {
             throw new ArgumentNullException(nameof(text));
         }
-        var i = 0;
         var data = new byte[text.Length * 4];
-        var len = 0;
-        while (i < text.Length)
+        fixed (byte* ptr = data)
         {
-            var codepoint = char.ConvertToUtf32(text, i);
-            i += char.IsHighSurrogate(text[i]) ? 2 : 1;
-            if (codepoint < 0x80)
+            var pointer = (int*)ptr;
+            var i = 0;
+            var len = 0;
+            while (i < text.Length)
             {
-                data[len++] = (byte)codepoint;
-                continue;
+                var codepoint = char.ConvertToUtf32(text, i);
+                i += char.IsHighSurrogate(text[i]) ? 2 : 1;
+                pointer[len++] = codepoint;
             }
-            if (codepoint < 0x800)
-            {
-                data[len++] = (byte)(0xC0 | (codepoint >> 6));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            if (codepoint < 0x10000)
-            {
-                data[len++] = (byte)(0xE0 | (codepoint >> 12));
-                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            if (codepoint < 0x110000)
-            {
-                data[len++] = (byte)(0xF0 | (codepoint >> 18));
-                data[len++] = (byte)(0x80 | ((codepoint >> 12) & 0x3F));
-                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            throw new NotImplementedException("Codepoints > 0x10ffff are not implemented!");
+            Array.Resize(ref data, len * 4);
         }
-        Array.Resize(ref data, len);
+        if (!BitConverter.IsLittleEndian)
+        {
+            data.SwapEndian32();
+        }
         return new(data);
     }
 
@@ -159,47 +89,43 @@ public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, ICo
     /// <param name="s1">The s1.</param>
     /// <param name="s2">The s2.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator ==(UTF8 s1, UTF8 s2) => s1 is null ? s2 is null : s1.Equals(s2);
+    public static bool operator ==(UTF32LE s1, UTF32LE s2) => s1 is null ? s2 is null : s1.Equals(s2);
 
     /// <inheritdoc />
-    public static bool operator >(UTF8 left, UTF8 right) => left is not null && (left.CompareTo(right) > 0);
+    public static bool operator >(UTF32LE left, UTF32LE right) => left is not null && (left.CompareTo(right) > 0);
 
     /// <inheritdoc />
-    public static bool operator >=(UTF8 left, UTF8 right) => left is null ? right is null : left.CompareTo(right) >= 0;
+    public static bool operator >=(UTF32LE left, UTF32LE right) => left is null ? right is null : left.CompareTo(right) >= 0;
 
-    /// <summary>Performs an implicit conversion from <see cref="UTF8" /> to <see cref="string" />.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="UTF32LE" /> to <see cref="string" />.</summary>
     /// <param name="s">The string.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator string(UTF8 s) => s?.ToString();
+    public static implicit operator string(UTF32LE s) => s?.ToString();
 
-    /// <summary>Performs an implicit conversion from <see cref="string" /> to <see cref="UTF8" />.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="string" /> to <see cref="UTF32LE" />.</summary>
     /// <param name="s">The string.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF8(string s) => s == null ? null : ConvertFromString(s);
+    public static implicit operator UTF32LE(string s) => s == null ? null : ConvertFromString(s);
 
     /// <summary>Implements the operator !=.</summary>
     /// <param name="s1">The s1.</param>
     /// <param name="s2">The s2.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator !=(UTF8 s1, UTF8 s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
+    public static bool operator !=(UTF32LE s1, UTF32LE s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
 
     /// <inheritdoc />
-    public static bool operator <(UTF8 left, UTF8 right) => left is null ? right is not null : left.CompareTo(right) < 0;
+    public static bool operator <(UTF32LE left, UTF32LE right) => left is null ? right is not null : left.CompareTo(right) < 0;
 
     /// <inheritdoc />
-    public static bool operator <=(UTF8 left, UTF8 right) => left is null || (left.CompareTo(right) <= 0);
-
-    #endregion
-
-    #region Fields
+    public static bool operator <=(UTF32LE left, UTF32LE right) => left is null || (left.CompareTo(right) <= 0);
 
     #endregion
 
     #region Constructors
 
-    /// <summary>Creates a new instance of the <see cref="UTF8" /> class.</summary>
+    /// <summary>Creates a new instance of the <see cref="UTF32LE" /> class.</summary>
     /// <param name="data">Content</param>
-    public UTF8(byte[] data) => Data = data;
+    public UTF32LE(byte[] data) => Data = data;
 
     #endregion
 
@@ -244,7 +170,7 @@ public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, ICo
     #region IComparable<UTF8> Members
 
     /// <inheritdoc />
-    public int CompareTo(UTF8 other) => ToString().CompareTo(other?.ToString());
+    public int CompareTo(UTF32LE other) => ToString().CompareTo(other?.ToString());
 
     #endregion
 
@@ -328,14 +254,14 @@ public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, ICo
     #region IEquatable<UTF8> Members
 
     /// <inheritdoc />
-    public bool Equals(UTF8 other) => other is not null && Data.SequenceEqual(other.Data);
+    public bool Equals(UTF32LE other) => other is not null && Data.SequenceEqual(other.Data);
 
     #endregion
 
     #region Overrides
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => obj is UTF8 utf8 && Equals(utf8);
+    public override bool Equals(object obj) => obj is UTF32LE utf32 && Equals(utf32);
 
     /// <inheritdoc />
     public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);

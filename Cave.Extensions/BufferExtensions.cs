@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace Cave;
@@ -108,6 +109,96 @@ public static class BufferExtensions
         finally
         {
             disposable?.Dispose();
+        }
+    }
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static ulong SwapEndian(this ulong value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static long SwapEndian(this long value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static uint SwapEndian(this uint value) => (value << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | (value >> 24);
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static int SwapEndian(this int value) => (value << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | (value >> 24);
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static ushort SwapEndian(this ushort value) => (ushort)((value << 8) | (value >> 8));
+
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <param name="value">Value to swap endianess at.</param>
+    /// <returns>Returns the value with swapped endianess.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static short SwapEndian(this short value) => (short)((value << 8) | (value >> 8));
+
+    /// <summary>Swaps low and high byte for a byte buffer containing 16 bit values inplace.</summary>
+    /// <param name="data">Buffer to change endianess at.</param>
+    public static unsafe void SwapEndian16(this byte[] data)
+    {
+        unchecked
+        {
+            fixed (byte* ptr = data)
+            {
+                var pointer = (ushort*)ptr;
+                var len = data.Length / 2;
+                for (var i = 0; i < len; i++)
+                {
+                    pointer[i] = SwapEndian(pointer[i]);
+                }
+            }
+        }
+    }
+
+    /// <summary>Swaps low and high byte for a byte buffer containing 32 bit values inplace.</summary>
+    /// <param name="data">Buffer to change endianess at.</param>
+    public static unsafe void SwapEndian32(this byte[] data)
+    {
+        unchecked
+        {
+            fixed (byte* ptr = data)
+            {
+                var pointer = (uint*)ptr;
+                var len = data.Length / 2;
+                for (var i = 0; i < len; i++)
+                {
+                    pointer[i] = SwapEndian(pointer[i]);
+                }
+            }
+        }
+    }
+
+    /// <summary>Swaps low and high byte for a byte buffer containing 64 bit values inplace.</summary>
+    /// <param name="data">Buffer to change endianess at.</param>
+    public static unsafe void SwapEndian64(this byte[] data)
+    {
+        unchecked
+        {
+            fixed (byte* ptr = data)
+            {
+                var pointer = (uint*)ptr;
+                var len = data.Length / 2;
+                for (var i = 0; i < len; i++)
+                {
+                    pointer[i] = SwapEndian(pointer[i]);
+                }
+            }
         }
     }
 
