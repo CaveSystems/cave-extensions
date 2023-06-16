@@ -79,7 +79,13 @@ class MonotonicTimeTests
         var i = 0;
         while (calibrationCount > 0)
         {
+#if NET20 || NET35
+            //net 2.0 and 3.5 use a 15msec timer for datetime. This affects our accuracy during tests.
+            //we might not be able to keep the accuracy in all cases below 1ms.
+            var accuracy = TimeSpan.FromMilliseconds(5);
+#else
             var accuracy = TimeSpan.FromMilliseconds(1);
+#endif
             Assert.IsTrue(MonotonicTime.Calibrate() < accuracy, $"Calibration failed! Drift > {accuracy.FormatTime()}");
             var drift = (TimeSpan)MonotonicTime.GetDrift();
             Assert.IsTrue(Math.Abs(drift.Ticks) < accuracy.Ticks, $"Drift < {accuracy.FormatTime()}: real {drift.Absolute().FormatTime()}");
