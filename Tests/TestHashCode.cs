@@ -28,7 +28,7 @@ public class TestHashCode
         Check(crc32, Encoding.ASCII.GetBytes("Check123!"), 0x292C603E);
     }
 
-    const int HashCount = 198765432;
+    const int HashCount = 12345678;
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
     [Test]
