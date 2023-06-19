@@ -9,7 +9,7 @@ using System.Linq;
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf16.</summary>
-public sealed class UTF16BE : IEnumerable<char>, IEnumerable<int>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF16BE>, IEquatable<UTF16BE>
+public sealed class UTF16BE : IUnicode, IComparable<UTF16BE>, IEquatable<UTF16BE>
 {
     #region Static
 

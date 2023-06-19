@@ -10,7 +10,7 @@ using System.Text;
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf32.</summary>
-public sealed class UTF32BE : IEnumerable<char>, IEnumerable<int>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF32BE>, IEquatable<UTF32BE>
+public sealed class UTF32BE : IUnicode, IComparable<UTF32BE>, IEquatable<UTF32BE>
 {
     #region Static
 

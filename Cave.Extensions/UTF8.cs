@@ -13,7 +13,7 @@ namespace Cave;
 /// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages /
 /// ascii based character sets.
 /// </summary>
-public sealed class UTF8 : IEnumerable<char>, IEnumerable<int>, IComparable, IConvertible, IComparable<string>, IEquatable<string>, IComparable<UTF8>, IEquatable<UTF8>
+public sealed class UTF8 : IUnicode, IComparable<UTF8>, IEquatable<UTF8>
 {
     #region Static
 
