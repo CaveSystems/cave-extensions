@@ -110,6 +110,6 @@ namespace Cave
             return attributes.FirstOrDefault()?.Product ?? throw new ArgumentException("Product attribute unset!");
         }
 
-#endregion
+        #endregion
     }
 }

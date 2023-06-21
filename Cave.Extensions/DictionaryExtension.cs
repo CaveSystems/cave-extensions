@@ -79,7 +79,7 @@ public static class DictionaryExtension
 
         foreach (var pair in pairs)
         {
-            TryAdd(dictionary, pair.Key, pair.Value);
+            _ = TryAdd(dictionary, pair.Key, pair.Value);
         }
     }
 
@@ -108,7 +108,7 @@ public static class DictionaryExtension
 
         foreach (var key in keys)
         {
-            TryAdd(dictionary, key, valueFunc);
+            _ = TryAdd(dictionary, key, valueFunc);
         }
     }
 
@@ -125,7 +125,7 @@ public static class DictionaryExtension
             throw new ArgumentNullException(nameof(dictionary));
         }
 
-        dictionary.TryGetValue(key, out var value);
+        _ = dictionary.TryGetValue(key, out var value);
         return value;
     }
 

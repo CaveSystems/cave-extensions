@@ -13,5 +13,5 @@ public class LinearEstimation : Estimation
     public override DateTime EstimatedCompletionTime => MonotonicTime.UtcNow + EstimatedTimeLeft;
 
     /// <inheritdoc/>
-    public override TimeSpan EstimatedTimeLeft => new TimeSpan((long)((MonotonicTime.UtcNow - Started).Ticks * (1 - Progress)));
+    public override TimeSpan EstimatedTimeLeft => new((long)((MonotonicTime.UtcNow - Started).Ticks * (1 - Progress)));
 }

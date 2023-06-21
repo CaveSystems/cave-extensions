@@ -18,7 +18,7 @@ public struct DefaultComparer
     #region Public Constructors
 
     /// <summary>Creates a new instance of the <see cref="DefaultComparer"/> structure.</summary>
-    public DefaultComparer() { value = 0; }
+    public DefaultComparer() => value = 0;
 
     #endregion Public Constructors
 

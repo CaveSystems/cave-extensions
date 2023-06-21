@@ -193,19 +193,19 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
             var optionString = option.ToString();
             if (result.Length > 0)
             {
-                result.Append(' ');
+                _ = result.Append(' ');
             }
 
             var containsSpace = optionString.IndexOf(' ') > -1;
             if (containsSpace)
             {
-                result.Append('"');
+                _ = result.Append('"');
             }
 
-            result.Append(optionString);
+            _ = result.Append(optionString);
             if (containsSpace)
             {
-                result.Append('"');
+                _ = result.Append('"');
             }
         }
 

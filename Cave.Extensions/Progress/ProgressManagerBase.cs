@@ -69,7 +69,7 @@ public abstract class ProgressManagerBase : IProgressManager
             e.Progress.Updated -= ItemUpdated;
             lock (items)
             {
-                items.TryRemove(e.Progress);
+                _ = items.TryRemove(e.Progress);
             }
         }
     }

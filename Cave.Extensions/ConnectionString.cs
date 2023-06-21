@@ -79,7 +79,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
         if (optionsIndex > -1)
         {
             options = connectionString[(optionsIndex + 1)..];
-            connectionString = connectionString.Substring(0, optionsIndex);
+            connectionString = connectionString[..optionsIndex];
         }
 
         // get protocol
@@ -107,7 +107,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
             else if (pathIndex > -1)
             {
                 path = server[(protocol == null ? pathIndex : pathIndex + 1)..];
-                server = server.Substring(0, pathIndex);
+                server = server[..pathIndex];
             }
         }
 
@@ -125,7 +125,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
                 var portString = server[(portIndex + 1)..];
                 if (ushort.TryParse(portString, out port))
                 {
-                    server = server.Substring(0, portIndex);
+                    server = server[..portIndex];
                 }
             }
         }
@@ -284,8 +284,8 @@ public struct ConnectionString : IEquatable<ConnectionString>
         // protocol
         if (((items & ConnectionStringPart.Protocol) != 0) && !string.IsNullOrEmpty(Protocol))
         {
-            result.Append(Protocol);
-            result.Append("://");
+            _ = result.Append(Protocol);
+            _ = result.Append("://");
         }
 
         // username and password
@@ -295,30 +295,30 @@ public struct ConnectionString : IEquatable<ConnectionString>
         {
             if (UserName == null)
             {
-                result.Append(string.Empty);
+                _ = result.Append(string.Empty);
             }
             else
             {
-                result.Append(UserName);
+                _ = result.Append(UserName);
             }
 
             if (password)
             {
-                result.Append(':');
-                result.Append(Password);
+                _ = result.Append(':');
+                _ = result.Append(Password);
             }
 
-            result.Append('@');
+            _ = result.Append('@');
         }
 
         // server
         {
             if (((items & ConnectionStringPart.Server) != 0) && (Server != null))
             {
-                result.Append(Server);
+                _ = result.Append(Server);
                 if (Port > 0)
                 {
-                    result.Append($":{Port}");
+                    _ = result.Append($":{Port}");
                 }
             }
         }
@@ -328,16 +328,16 @@ public struct ConnectionString : IEquatable<ConnectionString>
         {
             if (result.Length > 0)
             {
-                result.Append('/');
+                _ = result.Append('/');
             }
 
-            result.Append(Location);
+            _ = result.Append(Location);
         }
 
         if (((items & ConnectionStringPart.Options) != 0) && !string.IsNullOrEmpty(Options))
         {
-            result.Append('?');
-            result.Append(Options);
+            _ = result.Append('?');
+            _ = result.Append(Options);
         }
 
         return result.ToString();

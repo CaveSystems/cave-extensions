@@ -149,13 +149,13 @@ public static class BufferExtensions
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static ulong SwapEndian(this ulong value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
+    public static ulong SwapEndian(this ulong value) => (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
 
     /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static long SwapEndian(this long value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
+    public static long SwapEndian(this long value) => (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
 
     /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>

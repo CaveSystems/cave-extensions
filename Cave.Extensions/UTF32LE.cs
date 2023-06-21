@@ -24,7 +24,7 @@ public sealed class UTF32LE : IUnicode, IComparable<UTF32LE>, IEquatable<UTF32LE
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF32LE Empty { get; } = new UTF32LE(new byte[0]);
+    public static UTF32LE Empty { get; } = new UTF32LE(ArrayExtension.Empty<byte>());
 
     /// <summary>Gets the unicode codepoints.</summary>
     public int[] Codepoints => ConvertToCodepoints(Data).ToArray();
@@ -108,7 +108,7 @@ public sealed class UTF32LE : IUnicode, IComparable<UTF32LE>, IEquatable<UTF32LE
         var sb = new StringBuilder();
         foreach (var codepoint in ConvertToCodepoints(data))
         {
-            sb.Append(char.ConvertFromUtf32(codepoint));
+            _ = sb.Append(char.ConvertFromUtf32(codepoint));
         }
         return sb.ToString();
     }

@@ -143,7 +143,7 @@ public class SynchronizedSet<T> : IItemSet<T>
             }
             else
             {
-                newSet2.Remove(setItem);
+                _ = newSet2.Remove(setItem);
             }
         }
 

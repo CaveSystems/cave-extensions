@@ -2,4 +2,4 @@
 
 #nullable enable
 
-class DefaultProgressManager : ProgressManagerBase { }
+sealed class DefaultProgressManager : ProgressManagerBase { }

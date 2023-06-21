@@ -132,7 +132,7 @@ public readonly struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime
     /// <summary>Performs an implicit conversion from <see cref="DateTime"/> to <see cref="UnixTime32"/>.</summary>
     /// <param name="dateTime">The date time.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator UnixTime32(DateTime dateTime) => new UnixTime32(Convert(dateTime));
+    public static implicit operator UnixTime32(DateTime dateTime) => new(Convert(dateTime));
 
     /// <summary>Creates a new instance of the <see cref="UnixTime32"/> structure.</summary>
     /// <param name="timestamp"></param>

@@ -27,7 +27,7 @@ public sealed class UTF8 : IUnicode, IComparable<UTF8>, IEquatable<UTF8>
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF8 Empty { get; } = new UTF8(new byte[0]);
+    public static UTF8 Empty { get; } = new UTF8(ArrayExtension.Empty<byte>());
 
     /// <summary>Gets the unicode codepoints.</summary>
     public int[] Codepoints => ConvertToCodepoints(Data).ToArray();
@@ -178,7 +178,7 @@ public sealed class UTF8 : IUnicode, IComparable<UTF8>, IEquatable<UTF8>
         var sb = new StringBuilder();
         foreach (var codepoint in ConvertToCodepoints(data))
         {
-            sb.Append(char.ConvertFromUtf32(codepoint));
+            _ = sb.Append(char.ConvertFromUtf32(codepoint));
         }
         return sb.ToString();
     }

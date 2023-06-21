@@ -74,19 +74,11 @@ public static class TypeExtension
 
         if (toType == typeof(bool))
         {
-            switch (value.ToString().ToUpperInvariant())
+            return value.ToString().ToUpperInvariant() switch
             {
-                case "TRUE":
-                case "ON":
-                case "YES":
-                case "1":
-                    return true;
-                case "FALSE":
-                case "OFF":
-                case "NO":
-                case "0":
-                    return false;
-            }
+                "TRUE" or "ON" or "YES" or "1" => true,
+                _ => false,
+            };
         }
 
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
@@ -437,7 +429,7 @@ public static class TypeExtension
     /// <param name="inherit">Inherit attributes from parents.</param>
     /// <returns>Returns true if at least one attribute of the desired type could be found, false otherwise.</returns>
     public static bool HasAttribute(this Type type, Type attributeType, bool inherit = false) =>
-        type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a))
+        type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(attributeType.IsAssignableFrom)
      ?? throw new ArgumentNullException(nameof(type));
 
 #if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
@@ -515,5 +507,5 @@ public static class TypeExtension
 #else
         => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
 #endif
-#endregion
+    #endregion
 }

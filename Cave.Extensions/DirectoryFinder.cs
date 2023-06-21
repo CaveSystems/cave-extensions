@@ -114,7 +114,7 @@ public class DirectoryFinder
             {
                 while ((directoryList.Count == 0) && SearchRunning)
                 {
-                    Monitor.Wait(directoryList);
+                    _ = Monitor.Wait(directoryList);
                 }
             }
 
@@ -164,7 +164,7 @@ public class DirectoryFinder
 
                 if (waitAction == null)
                 {
-                    Monitor.Wait(directoryList);
+                    _ = Monitor.Wait(directoryList);
                 }
             }
 
@@ -270,7 +270,7 @@ public class DirectoryFinder
                                 break;
                             }
 
-                            Monitor.Wait(directoryList);
+                            _ = Monitor.Wait(directoryList);
                         }
                     }
 

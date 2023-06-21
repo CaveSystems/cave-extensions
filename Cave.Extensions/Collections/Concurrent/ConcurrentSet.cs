@@ -37,7 +37,7 @@ namespace Cave.Collections.Concurrent
             }
 
             var result = new ConcurrentSet<T>();
-            foreach (T itemsItem in set1)
+            foreach (var itemsItem in set1)
             {
                 if (set2.Contains(itemsItem))
                 {
@@ -71,7 +71,7 @@ namespace Cave.Collections.Concurrent
 
             var result = new ConcurrentSet<T>();
             result.AddRange(set2);
-            foreach (T item in set1)
+            foreach (var item in set1)
             {
                 if (set2.Contains(item))
                 {
@@ -104,7 +104,7 @@ namespace Cave.Collections.Concurrent
             }
 
             var result = new ConcurrentSet<T>();
-            foreach (T setItem in set1)
+            foreach (var setItem in set1)
             {
                 if (!set2.Contains(setItem))
                 {
@@ -138,7 +138,7 @@ namespace Cave.Collections.Concurrent
 
             var newSet2 = new LinkedList<T>(set2);
             var result = new ConcurrentSet<T>();
-            foreach (T setItem in set1)
+            foreach (var setItem in set1)
             {
                 if (!set2.Contains(setItem))
                 {
@@ -146,7 +146,7 @@ namespace Cave.Collections.Concurrent
                 }
                 else
                 {
-                    newSet2.Remove(setItem);
+                    _ = newSet2.Remove(setItem);
                 }
             }
 
@@ -228,7 +228,7 @@ namespace Cave.Collections.Concurrent
                 throw new ArgumentNullException(nameof(array));
             }
 
-            foreach (int item in this)
+            foreach (var item in this)
             {
                 array.SetValue(item, index++);
             }
@@ -271,10 +271,10 @@ namespace Cave.Collections.Concurrent
         }
 
         /// <inheritdoc />
-        public IEnumerator GetEnumerator() => list.Keys.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => list.Keys.GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => list.Keys.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => list.Keys.GetEnumerator();
 
         /// <inheritdoc />
         public bool Equals(IItemSet<T> other) => (other != null) && (other.Count == Count) && ContainsRange(other);

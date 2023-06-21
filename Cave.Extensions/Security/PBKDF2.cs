@@ -5,10 +5,7 @@ using System.Text;
 
 namespace Cave.Security;
 
-/// <summary>
-/// Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC
-/// algorithm.
-/// </summary>
+/// <summary>Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC algorithm.</summary>
 public class PBKDF2 : DeriveBytes
 #if NET20 || NET35
   , IDisposable
@@ -17,13 +14,9 @@ public class PBKDF2 : DeriveBytes
     #region Private Fields
 
     HMAC algorithm;
-
     byte[] buffer;
-
     int hashNumber;
-
     int iterations = 1000;
-
     byte[] salt;
 
     #endregion Private Fields
@@ -72,36 +65,74 @@ public class PBKDF2 : DeriveBytes
 
     #endregion Private Methods
 
+    #region Protected Methods
+
+#if NET40_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            (algorithm as IDisposable).Dispose();
+            algorithm = null;
+        }
+    }
+
+#else //NET20 || NET35
+
+    /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            (algorithm as IDisposable).Dispose();
+            algorithm = null;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+#endif
+
+    #endregion Protected Methods
+
     #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class using the default <see cref="HMACSHA512" /> algorithm.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class using the default <see cref="HMACSHA512"/> algorithm.</summary>
     public PBKDF2() : this(null) { }
 
-    /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
     /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
-    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512" />.</param>
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
     public PBKDF2(string password, byte[] salt, HMAC algorithm = null) : this(algorithm)
     {
         SetPassword(password);
         SetSalt(salt);
     }
 
-    /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
     /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
-    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512" />.</param>
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
     public PBKDF2(byte[] password, byte[] salt, HMAC algorithm = null) : this(algorithm)
     {
         SetPassword(password);
         SetSalt(salt);
     }
 
-    /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
     /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="iterations">The iterations. This value is not checked and allows invalid values!</param>
-    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512" />.</param>
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
     public PBKDF2(byte[] password, byte[] salt, int iterations, HMAC algorithm = null) : this(algorithm)
     {
         this.iterations = iterations;
@@ -109,11 +140,11 @@ public class PBKDF2 : DeriveBytes
         SetSalt(salt);
     }
 
-    /// <summary>Initializes a new instance of the <see cref="PBKDF2" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
     /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="iterations">The iterations. This value is not checked and allows invalid values!</param>
-    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512" />.</param>
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
     public PBKDF2(string password, byte[] salt, int iterations, HMAC algorithm = null) : this(algorithm)
     {
         this.iterations = iterations;
@@ -190,6 +221,9 @@ public class PBKDF2 : DeriveBytes
     [Obsolete("Use PasswordTest instead.")]
     public static int GuessComplexity(byte[] data) => PasswordTest.GuessComplexity(data);
 
+    /// <summary>Creates a new salt.</summary>
+    public void CreateSalt() => SetSalt(RNG.GetBytes(32));
+
     /// <summary>Returns the next pseudo-random one time pad with the specified number of bytes.</summary>
     /// <param name="cb">Length of the byte buffer to retrieve.</param>
     /// <returns></returns>
@@ -218,10 +252,7 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentOutOfRangeException(nameof(cb));
         }
 
-        if (buffer == null)
-        {
-            buffer = new byte[0];
-        }
+        buffer ??= ArrayExtension.Empty<byte>();
 
         //enough data present ?
         while (buffer.Length < cb)
@@ -271,9 +302,6 @@ public class PBKDF2 : DeriveBytes
         algorithm.Key = (byte[])password.Clone();
     }
 
-    /// <summary>Creates a new salt.</summary>
-    public void CreateSalt() => SetSalt(RNG.GetBytes(32));
-
     /// <summary>Sets the salt.</summary>
     /// <param name="salt">The salt.</param>
     public void SetSalt(string salt) => SetSalt(Encoding.UTF8.GetBytes(salt));
@@ -304,36 +332,4 @@ public class PBKDF2 : DeriveBytes
     }
 
     #endregion Public Methods
-
-#if NET40_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        if (disposing)
-        {
-            (algorithm as IDisposable).Dispose();
-            algorithm = null;
-        }
-    }
-
-#else //NET20 || NET35
-    /// <summary>Releases the unmanaged resources used by this instance and optionally releases the managed resources.</summary>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            (algorithm as IDisposable).Dispose();
-            algorithm = null;
-        }
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-#endif
 }

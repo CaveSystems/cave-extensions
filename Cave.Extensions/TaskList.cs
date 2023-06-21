@@ -124,7 +124,7 @@ public class TaskList
             {
                 lock (tasks)
                 {
-                    tasks.Remove(task);
+                    _ = tasks.Remove(task);
                 }
 
                 if (task is IDisposable disposable)

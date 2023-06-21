@@ -22,7 +22,7 @@ public class MovingAverageLong : IAverage<long>
     public void Add(long item)
     {
         total += item;
-        items.AddLast(item);
+        _ = items.AddLast(item);
         if (MaximumCount > 0)
         {
             while (items.Count > MaximumCount)

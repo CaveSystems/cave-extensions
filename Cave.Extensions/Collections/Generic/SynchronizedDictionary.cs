@@ -356,7 +356,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         {
             if (dict.ContainsKey(key))
             {
-                dict.Remove(key);
+                _ = dict.Remove(key);
                 removed = true;
             }
         }
@@ -375,7 +375,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         {
             if (dict.TryGetValue(key, out value))
             {
-                dict.Remove(key);
+                _ = dict.Remove(key);
                 removed = true;
             }
         }

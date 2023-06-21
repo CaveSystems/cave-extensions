@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Cave.Collections;
 
 #nullable enable
@@ -43,7 +44,7 @@ public sealed class UTF16BE : IUnicode, IComparable<UTF16BE>, IEquatable<UTF16BE
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF16BE Empty { get; } = new UTF16BE(new byte[0]);
+    public static UTF16BE Empty { get; } = new UTF16BE(ArrayExtension.Empty<byte>());
 
     /// <summary>Gets the unicode codepoints.</summary>
     public int[] Codepoints => ConvertToCodepoints(Data).ToArray();

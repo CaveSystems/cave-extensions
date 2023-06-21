@@ -35,12 +35,7 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         {
             if (programAssemblyVersionInfo == null)
             {
-                var a = MainAssembly.Get();
-                if (a == null)
-                {
-                    throw new InvalidOperationException("AppDomain inaccessible!");
-                }
-
+                var a = MainAssembly.Get() ?? throw new InvalidOperationException("AppDomain inaccessible!");
                 programAssemblyVersionInfo = FromAssembly(a);
             }
 
@@ -73,7 +68,7 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
 
         #region get assembly attributes
 
-        foreach (Attribute attribute in assembly.GetCustomAttributes(false))
+        foreach (var attribute in assembly.GetCustomAttributes(false))
         {
             {
                 if (attribute is AssemblyCompanyAttribute a)
@@ -113,7 +108,7 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
             {
                 if (attribute is AssemblyInformationalVersionAttribute a)
                 {
-                    SemVer.TryParse(a.InformationalVersion, false, out var iv);
+                    _ = SemVer.TryParse(a.InformationalVersion, false, out var iv);
                     i.InformalVersion = iv;
                     continue;
                 }
@@ -187,7 +182,7 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         return i;
     }
 
-#endregion
+    #endregion
 
     #region fields
 
@@ -314,10 +309,10 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
             case "X":
                 foreach (var field in typeof(AssemblyVersionInfo).GetFields())
                 {
-                    result.Append(field.Name);
-                    result.Append(": ");
-                    result.Append(field.GetValue(this));
-                    result.AppendLine();
+                    _ = result.Append(field.Name);
+                    _ = result.Append(": ");
+                    _ = result.Append(field.GetValue(this));
+                    _ = result.AppendLine();
                 }
 
                 break;

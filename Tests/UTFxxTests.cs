@@ -8,7 +8,7 @@ public class UTFxxTests
 {
     #region Private Fields
 
-    const string Violin = "\U0001D11E";
+    public const string Violin = "\U0001D11E";
 
     #endregion Private Fields
 

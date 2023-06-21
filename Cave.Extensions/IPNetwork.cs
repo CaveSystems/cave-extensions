@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -193,13 +194,6 @@ public class IPNetwork : IEquatable<IPNetwork>
             {
                 var mask = Mask.GetAddressBytes().Reverse().SelectMany(GetBits).ToArray();
                 var value = Address.GetAddressBytes().Reverse().SelectMany(GetBits).ToArray();
-#if DEBUG
-                var test = new IPAddress(GetBytes(value).Reverse().ToArray());
-                if (!Equals(Address, test))
-                {
-                    throw new("Adress roundtrip test failed!");
-                }
-#endif
                 while (true)
                 {
                     var done = false;

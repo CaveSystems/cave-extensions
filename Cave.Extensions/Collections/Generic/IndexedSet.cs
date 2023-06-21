@@ -36,7 +36,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
         }
 
         var result = new IndexedSet<T>();
-        foreach (T itemsItem in set1)
+        foreach (var itemsItem in set1)
         {
             if (set2.Contains(itemsItem))
             {
@@ -70,7 +70,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
 
         var result = new IndexedSet<T>();
         result.AddRange(set2);
-        foreach (T item in set1)
+        foreach (var item in set1)
         {
             if (set2.Contains(item))
             {
@@ -100,7 +100,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
         }
 
         var result = new IndexedSet<T>();
-        foreach (T setItem in set1)
+        foreach (var setItem in set1)
         {
             if (!set2.Contains(setItem))
             {
@@ -134,7 +134,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
 
         var newSet2 = new LinkedList<T>(set2);
         var result = new IndexedSet<T>();
-        foreach (T setItem in set1)
+        foreach (var setItem in set1)
         {
             if (!set2.Contains(setItem))
             {
@@ -142,7 +142,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
             }
             else
             {
-                newSet2.Remove(setItem);
+                _ = newSet2.Remove(setItem);
             }
         }
 
@@ -293,10 +293,10 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     }
 
     /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
-    public IEnumerator GetEnumerator() => items.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
     /// <summary>Gets an <see cref="IEnumerator" /> for this set.</summary>
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => items.GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
     /// <summary>Returns the zero-based index of the first occurrence of a value in the set.</summary>
     /// <param name="item">The object to locate in the set.</param>
@@ -474,7 +474,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
 
         foreach (var obj in collection)
         {
-            Remove(obj);
+            _ = Remove(obj);
         }
     }
 

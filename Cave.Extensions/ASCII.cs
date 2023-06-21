@@ -698,7 +698,7 @@ public static class ASCII
                 uint value = text[i];
                 if (termination && (value == 0))
                 {
-                    result.GetRange(0, i);
+                    return result.GetRange(0, i);
                 }
 
                 if (value > 127)

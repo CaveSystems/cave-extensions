@@ -2,7 +2,7 @@
 
 #pragma warning disable CS0162
 
-namespace Cave.CodeGen;
+namespace Cave;
 
 /// <summary>Provides a fast managed implementation of the Cyclic Redundancy Checksum with 32 bits without reflection.</summary>
 public struct FastCrc32 : IHashingFunction, IChecksum<uint>

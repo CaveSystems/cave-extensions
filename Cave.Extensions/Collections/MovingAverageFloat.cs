@@ -21,7 +21,7 @@ public class MovingAverageFloat : IAverage<float>
     public void Add(float item)
     {
         total += item;
-        items.AddLast(item);
+        _ = items.AddLast(item);
         if (MaximumCount > 0)
         {
             while (items.Count > MaximumCount)

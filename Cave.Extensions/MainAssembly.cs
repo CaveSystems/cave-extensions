@@ -96,5 +96,5 @@ public static class MainAssembly
         return null;
     }
 
-#endregion
+    #endregion
 }

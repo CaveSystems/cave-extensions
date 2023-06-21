@@ -14,7 +14,7 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
 {
     #region Nested type: EnumeratorB
 
-    class EnumeratorB : IEnumerator<TValue2>
+    sealed class EnumeratorB : IEnumerator<TValue2>
     {
         #region Fields
 

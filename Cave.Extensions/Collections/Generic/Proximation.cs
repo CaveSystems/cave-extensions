@@ -8,7 +8,7 @@ public class Proximation
 {
     #region Nested type: ProximationValue
 
-    class ProximationValue
+    sealed class ProximationValue
     {
         #region Fields
 
@@ -137,7 +137,7 @@ public class Proximation
     /// <param name="value">The value to add.</param>
     public void AddValue(long value)
     {
-        items.AddLast(new ProximationValue(value));
+        _ = items.AddLast(new ProximationValue(value));
         if (value > Maximum)
         {
             Maximum = value;
@@ -159,7 +159,7 @@ public class Proximation
             throw new ArgumentOutOfRangeException(nameof(timeStamp));
         }
 
-        items.AddLast(new ProximationValue(timeStamp, value));
+        _ = items.AddLast(new ProximationValue(timeStamp, value));
         if (value > Maximum)
         {
             Maximum = value;

@@ -12,9 +12,9 @@ using System.Text;
 namespace Cave;
 
 /// <summary>Gets string functions.</summary>
-public static class StringExtensions
+public static partial class StringExtensions
 {
-    #region Static
+    #region Public Fields
 
     /// <summary>Gets the default date time string used when formatting date time variables for display.</summary>
     public const string DisplayDateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff";
@@ -36,6 +36,10 @@ public static class StringExtensions
 
     /// <summary>Gets the default time string used when formatting date time variables for interop.</summary>
     public const string ShortTimeFormat = "HH':'mm':'ss'.'fff";
+
+    #endregion Public Fields
+
+    #region Public Methods
 
     /// <summary>Returns the string after the specified pattern.</summary>
     /// <param name="value">The string value.</param>
@@ -60,7 +64,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        var i = value?.IndexOf(pattern) ?? -1;
+        var i = value?.IndexOf(pattern, StringComparison.Ordinal) ?? -1;
         return i < 0 ? string.Empty : value[(i + pattern.Length)..];
     }
 
@@ -87,7 +91,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        var i = value?.LastIndexOf(pattern) ?? -1;
+        var i = value?.LastIndexOf(pattern, StringComparison.Ordinal) ?? -1;
         return i < 0 ? string.Empty : value[(i + pattern.Length)..];
     }
 
@@ -103,7 +107,7 @@ public static class StringExtensions
             return string.Empty;
         }
         var i = value.IndexOf(character);
-        return i < 0 ? value : value.Substring(0, i);
+        return i < 0 ? value : value[..i];
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -117,8 +121,8 @@ public static class StringExtensions
         {
             return string.Empty;
         }
-        var i = value.IndexOf(pattern);
-        return i < 0 ? value : value.Substring(0, i);
+        var i = value.IndexOf(pattern, StringComparison.Ordinal);
+        return i < 0 ? value : value[..i];
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -133,7 +137,7 @@ public static class StringExtensions
             return string.Empty;
         }
         var i = value.LastIndexOf(character);
-        return i < 0 ? value : value.Substring(0, i);
+        return i < 0 ? value : value[..i];
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -153,7 +157,7 @@ public static class StringExtensions
         }
 
         var i = value.LastIndexOf(pattern);
-        return i < 0 ? value : value.Substring(0, i);
+        return i < 0 ? value : value[..i];
     }
 
     /// <summary>Boxes the specified text with the given character.</summary>
@@ -177,17 +181,6 @@ public static class StringExtensions
     /// <returns>Returns a string starting and ending with the specified string.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string Box(this string text, string start, string end) => start + text + end;
-
-#if NET5_0_OR_GREATER
-#else
-    /// <summary>Returns a value indicating whether a specified character occurs within this string.</summary>
-    /// <param name="text">The text.</param>
-    /// <param name="c">The character to seek.</param>
-    /// <remarks>This method performs an ordinal (case-sensitive and culture-insensitive) comparison.</remarks>
-    /// <returns>true if the value parameter occurs within this string; otherwise, false.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static bool Contains(this string text, char c) => text.IndexOf(c) >= 0;
-#endif
 
     /// <summary>Tries to detect the used newline chars in the specified string.</summary>
     /// <param name="text">The text.</param>
@@ -230,34 +223,22 @@ public static class StringExtensions
             switch (c)
             {
                 case '\\':
-                case '"':
-                    sb.Append('\\');
-                    sb.Append(c);
-                    continue;
-                case '\b':
-                    sb.Append("\\b");
-                    continue;
-                case '\t':
-                    sb.Append("\\t");
-                    continue;
-                case '\n':
-                    sb.Append("\\n");
-                    continue;
-                case '\f':
-                    sb.Append("\\f");
-                    continue;
-                case '\r':
-                    sb.Append("\\r");
-                    continue;
+                case '"': _ = sb.Append('\\'); _ = sb.Append(c); continue;
+                case '\b': _ = sb.Append("\\b"); continue;
+                case '\t': _ = sb.Append("\\t"); continue;
+                case '\n': _ = sb.Append("\\n"); continue;
+                case '\f': _ = sb.Append("\\f"); continue;
+                case '\r': _ = sb.Append("\\r"); continue;
+                default: break;
             }
 
             if (c is < ' ' or > (char)127)
             {
-                sb.Append($"\\u{(int)c:x4}");
+                _ = sb.Append($"\\u{(int)c:x4}");
                 continue;
             }
 
-            sb.Append(c);
+            _ = sb.Append(c);
         }
 
         return sb.ToString();
@@ -280,34 +261,22 @@ public static class StringExtensions
             switch (c)
             {
                 case '\\':
-                case '"':
-                    sb.Append('\\');
-                    sb.Append(c);
-                    continue;
-                case '\b':
-                    sb.Append("\\b");
-                    continue;
-                case '\t':
-                    sb.Append("\\t");
-                    continue;
-                case '\n':
-                    sb.Append("\\n");
-                    continue;
-                case '\f':
-                    sb.Append("\\f");
-                    continue;
-                case '\r':
-                    sb.Append("\\r");
-                    continue;
+                case '"': _ = sb.Append('\\'); _ = sb.Append(c); continue;
+                case '\b': _ = sb.Append("\\b"); continue;
+                case '\t': _ = sb.Append("\\t"); continue;
+                case '\n': _ = sb.Append("\\n"); continue;
+                case '\f': _ = sb.Append("\\f"); continue;
+                case '\r': _ = sb.Append("\\r"); continue;
+                default: break;
             }
 
             if (c < ' ')
             {
-                sb.Append($"\\u{(int)c:x4}");
+                _ = sb.Append($"\\u{(int)c:x4}");
                 continue;
             }
 
-            sb.Append(c);
+            _ = sb.Append(c);
         }
 
         return sb.ToString();
@@ -349,7 +318,7 @@ public static class StringExtensions
 
         if (text.Length > maxLength)
         {
-            text = text.Substring(0, maxLength);
+            text = text[..maxLength];
         }
 
         return text;
@@ -363,7 +332,7 @@ public static class StringExtensions
     public static string ForceMaxLength(this string text, int maxLength)
     {
         text ??= string.Empty;
-        return text.Length > maxLength ? text.Substring(0, maxLength) : text;
+        return text.Length > maxLength ? text[..maxLength] : text;
     }
 
     /// <summary>Forces the maximum length.</summary>
@@ -379,7 +348,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(endReplacer));
         }
         text ??= string.Empty;
-        return text.Length > maxLength ? text.Substring(0, maxLength - endReplacer.Length) + endReplacer : text;
+        return text.Length > maxLength ? text[..(maxLength - endReplacer.Length)] + endReplacer : text;
     }
 
     /// <summary>Gets a fail save version of string.Format not supporting extended format options (simply replacing {index} with the arguments.</summary>
@@ -393,10 +362,7 @@ public static class StringExtensions
         {
             return string.Empty;
         }
-        if (args == null)
-        {
-            args = new object[0];
-        }
+        args ??= ArrayExtension.Empty<object>();
         var result = text;
         for (var i = 0; i < args.Length; i++)
         {
@@ -414,10 +380,7 @@ public static class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string FormatBinarySize(this float size, IFormatProvider culture = null)
     {
-        if (culture == null)
-        {
-            culture = CultureInfo.InvariantCulture;
-        }
+        culture ??= CultureInfo.InvariantCulture;
 
         var negative = size < 0;
         IecUnit unit = 0;
@@ -430,7 +393,7 @@ public static class StringExtensions
         var result = size.ToString("0.000", culture);
         if (result.Length > 5)
         {
-            result = result.Substring(0, 5);
+            result = result[..5];
         }
 
         return (negative ? "-" : string.Empty) + result + " " + unit;
@@ -463,151 +426,6 @@ public static class StringExtensions
     /// <returns>The formatted string.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string FormatBinarySize(this long value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this float size, IFormatProvider culture = null)
-    {
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
-
-        if (size < 0)
-        {
-            return "-" + FormatSize(-size);
-        }
-
-        var calc = size;
-        SiUnit unit = 0;
-        while (calc >= 1000)
-        {
-            calc /= 1000;
-            unit++;
-        }
-
-        var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
-        if (result.Length > 5)
-        {
-            result = result.Substring(0, 5);
-        }
-
-        return result + (unit == 0 ? string.Empty : " " + unit);
-    }
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float)size, culture);
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float)size, culture);
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float)size, culture);
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float)size, culture);
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    /// <param name="timeSpan">TimeSpan to format.</param>
-    /// <param name="formatProvider">Culture used to format the double value.</param>
-    /// <returns>Returns a string like: 10.23탎, 1.345ms, 102.3s, 10.2h, ...</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider formatProvider = null) => FormatTime(timeSpan, null, formatProvider);
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    /// <param name="timeSpan">TimeSpan to format.</param>
-    /// <param name="format">Numberformat</param>
-    /// <param name="formatProvider">Culture used to format the double value.</param>
-    /// <returns>Returns a string like: 10.23탎, 1.345ms, 102.3s, 10.2h, ...</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this TimeSpan timeSpan, string format, IFormatProvider formatProvider = null)
-    {
-        string Print(double value, string unit) => value.ToString(format ?? (Math.Round(value, 2) > 9.99 ? "0.0" : "0.00"), formatProvider) + unit;
-
-        if (formatProvider == null)
-        {
-            formatProvider = CultureInfo.InvariantCulture;
-        }
-
-        if (timeSpan < TimeSpan.Zero)
-        {
-            return "-" + FormatTime(-timeSpan, format, formatProvider);
-        }
-
-        if (timeSpan == TimeSpan.Zero)
-        {
-            return "0s";
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond / 1000)
-        {
-            var nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / (1000d * 1000));
-            return Print(nano, "ns");
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
-        {
-            var micro = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
-            return Print(micro, "탎");
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerSecond)
-        {
-            var milli = timeSpan.TotalMilliseconds;
-            return Print(milli, "ms");
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerMinute)
-        {
-            var sec = timeSpan.TotalSeconds;
-            return Print(sec, "s");
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerHour)
-        {
-            var min = timeSpan.TotalMinutes;
-            return Print(min, "min");
-        }
-
-        if (timeSpan.Ticks < TimeSpan.TicksPerDay)
-        {
-            var h = timeSpan.TotalHours;
-            return Print(h, "h");
-        }
-
-        var d = timeSpan.TotalDays;
-        return Print(d, "d");
-    }
-
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    public static string FormatTicks(this long ticks, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), null, formatProvider);
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    public static string FormatTicks(this long ticks, string format, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), format, formatProvider);
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    [Obsolete("Warning this method is ambiguous. Use FormatTicks() or FormatSeconds()")]
-    public static string FormatTime(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="seconds">Seconds to format.</param>
@@ -659,6 +477,144 @@ public static class StringExtensions
         return seconds.ToString(format, formatProvider) + "s";
     }
 
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this float size, IFormatProvider culture = null)
+    {
+        culture ??= CultureInfo.CurrentCulture;
+
+        if (size < 0)
+        {
+            return "-" + FormatSize(-size, culture);
+        }
+
+        var calc = size;
+        SiUnit unit = 0;
+        while (calc >= 1000)
+        {
+            calc /= 1000;
+            unit++;
+        }
+
+        var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
+        if (result.Length > 5)
+        {
+            result = result[..5];
+        }
+
+        return result + (unit == 0 ? string.Empty : " " + unit);
+    }
+
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    public static string FormatTicks(this long ticks, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), null, formatProvider);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    public static string FormatTicks(this long ticks, string format, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), format, formatProvider);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    /// <param name="timeSpan">TimeSpan to format.</param>
+    /// <param name="formatProvider">Culture used to format the double value.</param>
+    /// <returns>Returns a string like: 10.23탎, 1.345ms, 102.3s, 10.2h, ...</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider formatProvider = null) => FormatTime(timeSpan, null, formatProvider);
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    /// <param name="timeSpan">TimeSpan to format.</param>
+    /// <param name="format">Numberformat</param>
+    /// <param name="formatProvider">Culture used to format the double value.</param>
+    /// <returns>Returns a string like: 10.23탎, 1.345ms, 102.3s, 10.2h, ...</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatTime(this TimeSpan timeSpan, string format, IFormatProvider formatProvider = null)
+    {
+        string Print(double value, string unit) => value.ToString(format ?? (Math.Round(value, 2) > 9.99 ? "0.0" : "0.00"), formatProvider) + unit;
+
+        formatProvider ??= CultureInfo.InvariantCulture;
+
+        if (timeSpan < TimeSpan.Zero)
+        {
+            return "-" + FormatTime(-timeSpan, format, formatProvider);
+        }
+
+        if (timeSpan == TimeSpan.Zero)
+        {
+            return "0s";
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond / 1000)
+        {
+            var nano = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / (1000d * 1000));
+            return Print(nano, "ns");
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
+        {
+            var micro = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
+            return Print(micro, "탎");
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerSecond)
+        {
+            var milli = timeSpan.TotalMilliseconds;
+            return Print(milli, "ms");
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerMinute)
+        {
+            var sec = timeSpan.TotalSeconds;
+            return Print(sec, "s");
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerHour)
+        {
+            var min = timeSpan.TotalMinutes;
+            return Print(min, "min");
+        }
+
+        if (timeSpan.Ticks < TimeSpan.TicksPerDay)
+        {
+            var h = timeSpan.TotalHours;
+            return Print(h, "h");
+        }
+
+        var d = timeSpan.TotalDays;
+        return Print(d, "d");
+    }
+
+    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    [Obsolete("Warning this method is ambiguous. Use FormatTicks() or FormatSeconds()")]
+    public static string FormatTime(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, formatProvider);
+
     /// <summary>Formats the specified timespan to [[d.]HH:]MM:SS.F.</summary>
     /// <param name="timeSpan">The time span.</param>
     /// <param name="millisecondDigits">The number of millisecond digits.</param>
@@ -672,16 +628,16 @@ public static class StringExtensions
         var ticks = timeSpan.Ticks;
         if (timeSpan.Ticks > TimeSpan.TicksPerDay)
         {
-            result.Append($"{ticks / TimeSpan.TicksPerDay}:");
+            _ = result.Append($"{ticks / TimeSpan.TicksPerDay}:");
             ticks %= TimeSpan.TicksPerDay;
         }
 
         if (ticks > TimeSpan.TicksPerHour)
         {
-            result.Append($"{ticks / TimeSpan.TicksPerHour:00}:");
+            _ = result.Append($"{ticks / TimeSpan.TicksPerHour:00}:");
         }
 
-        result.Append($"{timeSpan.Minutes:00}:");
+        _ = result.Append($"{timeSpan.Minutes:00}:");
         var seconds = timeSpan.Seconds;
         switch (millisecondDigits)
         {
@@ -691,17 +647,21 @@ public static class StringExtensions
                     seconds++;
                 }
 
-                result.Append($"{seconds:00}");
+                _ = result.Append($"{seconds:00}");
                 break;
+
             case 1:
-                result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:0}");
+                _ = result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:0}");
                 break;
+
             case 2:
-                result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:00}");
+                _ = result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:00}");
                 break;
+
             case 3:
-                result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:000}");
+                _ = result.Append($"{seconds:00}.{timeSpan.Milliseconds / 100:000}");
                 break;
+
             default:
                 throw new NotSupportedException("Only 0-3 millisecond digits are supported!");
         }
@@ -727,6 +687,30 @@ public static class StringExtensions
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+
+    /// <summary>Retrieves only invalidated chars from a string.</summary>
+    /// <param name="text">The text.</param>
+    /// <param name="validChars">The string with the valid chars.</param>
+    /// <returns>Returns a new string containing only the invalid chars.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string GetInvalidChars(this string text, string validChars)
+    {
+        if ((text == null) || string.IsNullOrEmpty(validChars))
+        {
+            return string.Empty;
+        }
+
+        var result = new StringBuilder(text.Length);
+        foreach (var c in text)
+        {
+            if (validChars.IndexOf(c) < 0)
+            {
+                _ = result.Append(c);
+            }
+        }
+
+        return result.ToString();
+    }
 
     /// <summary>Builds a camel case name split at invalid characters and upper case letters.</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -854,7 +838,7 @@ public static class StringExtensions
 
         if (start < 0)
         {
-            start = data.IndexOf(startMark);
+            start = data.IndexOf(startMark, StringComparison.Ordinal);
         }
 
         if (start < 0)
@@ -867,7 +851,7 @@ public static class StringExtensions
             throw new ArgumentException("StartMark not found!");
         }
 
-        if (!data[start..].StartsWith(startMark))
+        if (!data[start..].StartsWith(startMark, StringComparison.Ordinal))
         {
             if (!throwException)
             {
@@ -878,7 +862,7 @@ public static class StringExtensions
         }
 
         start += startMark.Length;
-        var end = data.IndexOf(endMark, start + 1);
+        var end = data.IndexOf(endMark, start + 1, StringComparison.Ordinal);
         if (end <= start)
         {
             if (!throwException)
@@ -909,31 +893,7 @@ public static class StringExtensions
         {
             if (validChars.IndexOf(c) > -1)
             {
-                result.Append(c);
-            }
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Retrieves only invalidated chars from a string.</summary>
-    /// <param name="text">The text.</param>
-    /// <param name="validChars">The string with the valid chars.</param>
-    /// <returns>Returns a new string containing only the invalid chars.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string GetInvalidChars(this string text, string validChars)
-    {
-        if ((text == null) || string.IsNullOrEmpty(validChars))
-        {
-            return string.Empty;
-        }
-
-        var result = new StringBuilder(text.Length);
-        foreach (var c in text)
-        {
-            if (validChars.IndexOf(c) < 0)
-            {
-                result.Append(c);
+                _ = result.Append(c);
             }
         }
 
@@ -1069,7 +1029,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(marker));
         }
 
-        return text.StartsWith(marker) && text.EndsWith(marker);
+        return text.StartsWith(marker, StringComparison.Ordinal) && text.EndsWith(marker, StringComparison.Ordinal);
     }
 
     /// <summary>Checks whether a specified text is enclosed by some markers.</summary>
@@ -1095,7 +1055,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(end));
         }
 
-        return text.StartsWith(start) && text.EndsWith(end);
+        return text.StartsWith(start, StringComparison.Ordinal) && text.EndsWith(end, StringComparison.Ordinal);
     }
 
     /// <summary>Joins a collection to a string.</summary>
@@ -1111,10 +1071,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (formatProvider == null)
-        {
-            formatProvider = CultureInfo.CurrentCulture;
-        }
+        formatProvider ??= CultureInfo.CurrentCulture;
 
         if (separator == null)
         {
@@ -1126,10 +1083,10 @@ public static class StringExtensions
         {
             if (result.Length != 0)
             {
-                result.Append(separator);
+                _ = result.Append(separator);
             }
 
-            result.Append(ToString(obj, formatProvider));
+            _ = result.Append(ToString(obj, formatProvider));
         }
 
         return result.ToString();
@@ -1173,10 +1130,7 @@ public static class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string Join(this IEnumerable array, IFormatProvider formatProvider = null)
     {
-        if (formatProvider == null)
-        {
-            formatProvider = CultureInfo.CurrentCulture;
-        }
+        formatProvider ??= CultureInfo.CurrentCulture;
 
         if (array == null)
         {
@@ -1186,7 +1140,7 @@ public static class StringExtensions
         var result = new StringBuilder();
         foreach (var obj in array)
         {
-            result.Append(ToString(obj, formatProvider));
+            _ = result.Append(ToString(obj, formatProvider));
         }
 
         return result.ToString();
@@ -1204,10 +1158,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1218,10 +1169,10 @@ public static class StringExtensions
                 continue;
             }
 
-            result.Append(t[0].ToUpper(culture));
+            _ = result.Append(t[0].ToUpper(culture));
             if (t.Length > 1)
             {
-                result.Append(t[1..].ToLower(culture));
+                _ = result.Append(t[1..].ToLower(culture));
             }
         }
 
@@ -1240,10 +1191,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1254,10 +1202,10 @@ public static class StringExtensions
                 continue;
             }
 
-            result.Append(t[0].ToUpper(culture));
+            _ = result.Append(t[0].ToUpper(culture));
             if (t.Length > 1)
             {
-                result.Append(t[1..].ToLower(culture));
+                _ = result.Append(t[1..].ToLower(culture));
             }
         }
 
@@ -1276,10 +1224,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1292,64 +1237,20 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append(t[0].ToUpper(culture));
+                _ = result.Append(t[0].ToUpper(culture));
                 if (t.Length > 1)
                 {
-                    result.Append(t[1..].ToLower(culture));
+                    _ = result.Append(t[1..].ToLower(culture));
                 }
             }
             else
             {
-                result.Append(t.ToLower(culture));
+                _ = result.Append(t.ToLower(culture));
             }
         }
 
         return result.ToString();
     }
-
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-    /// <summary><see cref="char.ToLower(char)"/></summary>
-    /// <param name="c">Character</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the lowercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static char ToLower(this char c, CultureInfo culture) => char.ToLower(c);
-
-    /// <summary><see cref="char.ToUpper(char)"/></summary>
-    /// <param name="c">Character</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the uppercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static char ToUpper(this char c, CultureInfo culture) => char.ToUpper(c);
-
-    /// <summary><see cref="String.ToLower()"/></summary>
-    /// <param name="s">String</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the lowercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string ToLower(this string s, CultureInfo culture) => s.ToLower(culture);
-
-    /// <summary><see cref="String.ToUpper()"/></summary>
-    /// <param name="s">String</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the uppercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string ToUpper(this string s, CultureInfo culture) => s.ToUpper(culture);
-#else
-    /// <summary><see cref="char.ToLower(char, CultureInfo)"/></summary>
-    /// <param name="c">Character</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the lowercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static char ToLower(this char c, CultureInfo culture) => char.ToLower(c, culture);
-
-    /// <summary><see cref="char.ToUpper(char, CultureInfo)"/></summary>
-    /// <param name="c">Character</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the uppercase character</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static char ToUpper(this char c, CultureInfo culture) => char.ToUpper(c, culture);
-#endif
 
     /// <summary>Joins the strings with camel casing.</summary>
     /// <param name="parts">The parts.</param>
@@ -1363,10 +1264,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1379,15 +1277,15 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append(t[0].ToUpper(culture));
+                _ = result.Append(t[0].ToUpper(culture));
                 if (t.Length > 1)
                 {
-                    result.Append(t[1..].ToLower(culture));
+                    _ = result.Append(t[1..].ToLower(culture));
                 }
             }
             else
             {
-                result.Append(t.ToLower(culture));
+                _ = result.Append(t.ToLower(culture));
             }
         }
 
@@ -1398,13 +1296,13 @@ public static class StringExtensions
     /// <param name="texts">The string collection.</param>
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinNewLine(this string[] texts) => Join(texts, "\r\n");
+    public static string JoinNewLine(this string[] texts) => Join(texts, "\r\n", null);
 
     /// <summary>Joins a collection to a string with newlines for all systems.</summary>
     /// <param name="array">The string array.</param>
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n");
+    public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n", null);
 
     /// <summary>Joins the strings using snake case.</summary>
     /// <param name="parts">The parts.</param>
@@ -1418,10 +1316,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1434,10 +1329,10 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append('_');
+                _ = result.Append('_');
             }
 
-            result.Append(t.ToLower(culture));
+            _ = result.Append(t.ToLower(culture));
         }
 
         return result.ToString();
@@ -1455,10 +1350,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentCulture;
-        }
+        culture ??= CultureInfo.CurrentCulture;
 
         var result = new StringBuilder();
         foreach (var part in parts)
@@ -1471,21 +1363,18 @@ public static class StringExtensions
 
             if (result.Length > 0)
             {
-                result.Append('_');
+                _ = result.Append('_');
             }
 
-            result.Append(t.ToLower(culture));
+            _ = result.Append(t.ToLower(culture));
         }
 
         return result.ToString();
     }
 
-    /// <summary>
-    /// Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)" /> or
-    /// <see cref="FormatBinarySize(double, IFormatProvider)" />.
-    /// </summary>
+    /// <summary>Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)"/> or <see cref="FormatBinarySize(double, IFormatProvider)"/>.</summary>
     /// <param name="value">The value string.</param>
-    /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)" />.</returns>
+    /// <returns>Parses a value formatted using <see cref="FormatBinarySize(long, IFormatProvider)"/>.</returns>
     /// <exception cref="ArgumentNullException">value.</exception>
     /// <exception cref="ArgumentException">Invalid format in binary size. Expected 'value unit'. Example '15 MB'. Got ''.</exception>
     [MethodImpl((MethodImplOptions)256)]
@@ -1629,12 +1518,12 @@ public static class StringExtensions
             throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
         }
 
-        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
         }
 
-        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
         }
@@ -1679,22 +1568,22 @@ public static class StringExtensions
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
 
-        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X="))
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
 
-        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y="))
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
 
-        if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH="))
+        if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
 
-        if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
+        if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
@@ -1750,12 +1639,12 @@ public static class StringExtensions
             throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
         }
 
-        if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH="))
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
         }
 
-        if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT="))
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT=", StringComparison.Ordinal))
         {
             throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
         }
@@ -1787,10 +1676,7 @@ public static class StringExtensions
         return new(w, h);
     }
 
-    /// <summary>
-    /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)" />
-    /// method.
-    /// </summary>
+    /// <summary>Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)"/> method.</summary>
     /// <typeparam name="T">Type to convert to.</typeparam>
     /// <param name="value">String value to convert.</param>
     /// <param name="culture">An object that supplies culture-specific formatting information.</param>
@@ -1798,10 +1684,7 @@ public static class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static T ParseValue<T>(this string value, CultureInfo culture = null) => (T)typeof(T).ConvertValue(value, culture);
 
-    /// <summary>
-    /// Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)" />
-    /// method.
-    /// </summary>
+    /// <summary>Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)"/> method.</summary>
     /// <typeparam name="T">Type to convert to.</typeparam>
     /// <param name="value">String value to convert.</param>
     /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
@@ -1854,7 +1737,7 @@ public static class StringExtensions
             var size = index - pos;
             if (size > 0)
             {
-                result.Append(text.Substring(pos, size));
+                _ = result.Append(text.Substring(pos, size));
             }
 
             pos = index + 1;
@@ -1865,7 +1748,7 @@ public static class StringExtensions
             var size = text.Length - pos;
             if (size > 0)
             {
-                result.Append(text.Substring(pos, size));
+                _ = result.Append(text.Substring(pos, size));
             }
         }
         return result.ToString();
@@ -1907,7 +1790,7 @@ public static class StringExtensions
         var chars = new char[text.Length + maxChange];
         var count = 0;
         var start = 0;
-        var index = result.IndexOf(pattern);
+        var index = result.IndexOf(pattern, StringComparison.Ordinal);
         while (index != -1)
         {
             for (var i = start; i < index; i++)
@@ -1921,7 +1804,7 @@ public static class StringExtensions
             }
 
             start = index + pattern.Length;
-            index = result.IndexOf(pattern, start);
+            index = result.IndexOf(pattern, start, StringComparison.Ordinal);
         }
 
         if (start == 0)
@@ -1955,21 +1838,18 @@ public static class StringExtensions
             return text;
         }
 
-        if (replacer == null)
-        {
-            replacer = string.Empty;
-        }
+        replacer ??= string.Empty;
 
         var result = new StringBuilder(text.Length);
         foreach (var c in text)
         {
             if (Array.IndexOf(chars, c) > -1)
             {
-                result.Append(replacer);
+                _ = result.Append(replacer);
             }
             else
             {
-                result.Append(c);
+                _ = result.Append(c);
             }
         }
 
@@ -1994,21 +1874,18 @@ public static class StringExtensions
             return text;
         }
 
-        if (replacer == null)
-        {
-            replacer = string.Empty;
-        }
+        replacer ??= string.Empty;
 
         var sb = new StringBuilder(text.Length);
         foreach (var c in text)
         {
             if (chars.IndexOf(c) > -1)
             {
-                sb.Append(replacer);
+                _ = sb.Append(replacer);
             }
             else
             {
-                sb.Append(c);
+                _ = sb.Append(c);
             }
         }
 
@@ -2033,21 +1910,18 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (replacer == null)
-        {
-            replacer = string.Empty;
-        }
+        replacer ??= string.Empty;
 
         var sb = new StringBuilder(text.Length);
         foreach (var c in text)
         {
             if (Array.IndexOf(validChars, c) > -1)
             {
-                sb.Append(c);
+                _ = sb.Append(c);
             }
             else
             {
-                sb.Append(replacer);
+                _ = sb.Append(replacer);
             }
         }
 
@@ -2072,21 +1946,18 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        if (replacer == null)
-        {
-            replacer = string.Empty;
-        }
+        replacer ??= string.Empty;
 
         var sb = new StringBuilder(text.Length);
         foreach (var c in text)
         {
             if (validChars.IndexOf(c) > -1)
             {
-                sb.Append(c);
+                _ = sb.Append(c);
             }
             else
             {
-                sb.Append(replacer);
+                _ = sb.Append(replacer);
             }
         }
 
@@ -2137,7 +2008,7 @@ public static class StringExtensions
     {
         if (text == null)
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         if (indices == null)
@@ -2176,7 +2047,7 @@ public static class StringExtensions
     {
         if (text == null)
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var splits = new List<int>();
@@ -2208,7 +2079,7 @@ public static class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var result = new List<string>();
@@ -2245,7 +2116,7 @@ public static class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var result = new List<string>();
@@ -2282,7 +2153,7 @@ public static class StringExtensions
     {
         if (text == null)
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var result = new List<string>();
@@ -2370,15 +2241,15 @@ public static class StringExtensions
 
         if (textSplitOptions == StringSplitOptions.RemoveEmptyEntries)
         {
-            result.RemoveAll(s => string.IsNullOrEmpty(s));
+            _ = result.RemoveAll(string.IsNullOrEmpty);
         }
 
         return result.ToArray();
     }
 
     /// <summary>
-    /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0). Empty entries will be kept. (This equals
-    /// <see cref="SplitNewLine(string, StringSplitOptions)" /> with <see cref="StringSplitOptions.None" />).
+    /// Splits a string at platform independent newline markings (CR, LF, CRLF, #0). Empty entries will be kept. (This equals <see cref="SplitNewLine(string,
+    /// StringSplitOptions)"/> with <see cref="StringSplitOptions.None"/>).
     /// </summary>
     /// <param name="text">The text.</param>
     /// <returns>The string array.</returns>
@@ -2386,8 +2257,7 @@ public static class StringExtensions
     public static string[] SplitNewLine(this string text) => SplitNewLine(text, StringSplitOptions.None);
 
     /// <summary>
-    /// Splits a string at newline markings and after a specified length. Trys to split only at space and newline, but will split anywhere
-    /// else if its not possible.
+    /// Splits a string at newline markings and after a specified length. Trys to split only at space and newline, but will split anywhere else if its not possible.
     /// </summary>
     /// <param name="text">The text.</param>
     /// <param name="maxLength">The maximum length of the new strings.</param>
@@ -2418,12 +2288,12 @@ public static class StringExtensions
                 {
                     // textpart does not fit into this line and does not fit in an empty line
                     var partLength = maxLength - currentText.Length;
-                    currentText += textPart.Substring(0, partLength);
+                    currentText += textPart[..partLength];
                     array.Add(currentText);
                     currentText = textPart[partLength..];
                     while (currentText.Length > maxLength)
                     {
-                        array.Add(currentText.Substring(0, maxLength));
+                        array.Add(currentText[..maxLength]);
                         currentText = currentText[maxLength..];
                     }
                 }
@@ -2459,8 +2329,8 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Gets a substring from the end of the specified string. Positive values retrieve the number of characters from end. Negative values
-    /// retrieve everything in front of the specified len - count.
+    /// Gets a substring from the end of the specified string. Positive values retrieve the number of characters from end. Negative values retrieve everything
+    /// in front of the specified len - count.
     /// </summary>
     /// <param name="text">The string.</param>
     /// <param name="count">The number of characters at the end to be retrieved.</param>
@@ -2485,7 +2355,7 @@ public static class StringExtensions
         }
 
         // if count < 0
-        return text.Substring(0, len + count);
+        return text[..(len + count)];
     }
 
     /// <summary>Converts a string to a bool.</summary>
@@ -2568,7 +2438,7 @@ public static class StringExtensions
         var format = upperCase ? "X2" : "x2";
         for (var i = 0; i < data.Length; i++)
         {
-            stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
+            _ = stringBuilder.Append(data[i].ToString(format, CultureInfo.InvariantCulture));
         }
 
         return stringBuilder.ToString();
@@ -2614,10 +2484,7 @@ public static class StringExtensions
             return "<null>";
         }
 
-        if (formatProvider == null)
-        {
-            formatProvider = CultureInfo.InvariantCulture;
-        }
+        formatProvider ??= CultureInfo.InvariantCulture;
 
         // special handling for roundtrip types
         if (value is double d)
@@ -2694,7 +2561,7 @@ public static class StringExtensions
     }
 
     /// <summary>Converts a exception to a string array.</summary>
-    /// <param name="exception">The <see cref="Exception" />.</param>
+    /// <param name="exception">The <see cref="Exception"/>.</param>
     /// <param name="debug">Include debug information (stacktrace, data).</param>
     /// <returns>The string array.</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -2708,7 +2575,7 @@ public static class StringExtensions
 
         if (exception == null)
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var strings = new List<string>();
@@ -2801,7 +2668,7 @@ public static class StringExtensions
     }
 
     /// <summary>Converts a exception to a simple text message.</summary>
-    /// <param name="ex">The <see cref="Exception" />.</param>
+    /// <param name="ex">The <see cref="Exception"/>.</param>
     /// <param name="debug">Include debug information (stacktrace, data).</param>
     /// <returns>The text.</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -2814,7 +2681,7 @@ public static class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static uint ToUInt32(this string value, uint defaultValue = 0) => uint.TryParse(value, out var result) ? result : defaultValue;
 
-    /// <summary>Parses a DateTime (Supported formats: <see cref="InteropDateTimeFormat" />, <see cref="DisplayDateTimeFormat" />, default).</summary>
+    /// <summary>Parses a DateTime (Supported formats: <see cref="InteropDateTimeFormat"/>, <see cref="DisplayDateTimeFormat"/>, default).</summary>
     /// <param name="dateTime">String value to parse.</param>
     /// <param name="result">The parsed datetime.</param>
     /// <returns>True if the value could be parsed.</returns>
@@ -2851,7 +2718,7 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(end));
         }
 
-        if ((text.Length > start.Length) && text.StartsWith(start) && text.EndsWith(end))
+        if ((text.Length > start.Length) && text.StartsWith(start, StringComparison.Ordinal) && text.EndsWith(end, StringComparison.Ordinal))
         {
             return text.Substring(start.Length, text.Length - start.Length - end.Length);
         }
@@ -2884,7 +2751,7 @@ public static class StringExtensions
             return text;
         }
 
-        if ((text.Length > border.Length) && text.StartsWith(border) && text.EndsWith(border))
+        if ((text.Length > border.Length) && text.StartsWith(border, StringComparison.Ordinal) && text.EndsWith(border, StringComparison.Ordinal))
         {
             return text[border.Length..^border.Length];
         }
@@ -2968,17 +2835,17 @@ public static class StringExtensions
 
         if (text.Length > 1)
         {
-            if (text.StartsWith("(") && text.EndsWith(")"))
+            if (text.StartsWith("(", StringComparison.Ordinal) && text.EndsWith(")", StringComparison.Ordinal))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("[") && text.EndsWith("]"))
+            if (text.StartsWith("[", StringComparison.Ordinal) && text.EndsWith("]", StringComparison.Ordinal))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("{") && text.EndsWith("}"))
+            if (text.StartsWith("{", StringComparison.Ordinal) && text.EndsWith("}", StringComparison.Ordinal))
             {
                 return text[1..^1];
             }
@@ -3001,12 +2868,12 @@ public static class StringExtensions
 
         if (text.Length > 1)
         {
-            if (text.StartsWith("'") && text.EndsWith("'"))
+            if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("\"") && text.EndsWith("\""))
+            if (text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
             {
                 return text[1..^1];
             }
@@ -3049,32 +2916,18 @@ public static class StringExtensions
                 var c2 = text[i++];
                 switch (c2)
                 {
-                    case '"':
-                        sb.Append('"');
-                        continue;
-                    case '\\':
-                        sb.Append('\\');
-                        continue;
-                    case 'b':
-                        sb.Append('\b');
-                        continue;
-                    case 't':
-                        sb.Append('\t');
-                        continue;
-                    case 'n':
-                        sb.Append('\n');
-                        continue;
-                    case 'f':
-                        sb.Append('\f');
-                        continue;
-                    case 'r':
-                        sb.Append('\r');
-                        continue;
+                    case '"': _ = sb.Append('"'); continue;
+                    case '\\': _ = sb.Append('\\'); continue;
+                    case 'b': _ = sb.Append('\b'); continue;
+                    case 't': _ = sb.Append('\t'); continue;
+                    case 'n': _ = sb.Append('\n'); continue;
+                    case 'f': _ = sb.Append('\f'); continue;
+                    case 'r': _ = sb.Append('\r'); continue;
                     case 'u':
                         try
                         {
                             var code = text.Substring(i, 4);
-                            sb.Append((char)Convert.ToInt32(code, 16));
+                            _ = sb.Append((char)Convert.ToInt32(code, 16));
                             i += 4;
                         }
                         catch (Exception ex)
@@ -3084,26 +2937,25 @@ public static class StringExtensions
                                 throw new InvalidDataException($"Invalid escape code at '{text.Substring(i - 2, Math.Min(6, text.Length - i))}'.", ex);
                             }
 
-                            sb.Append("\\u");
+                            _ = sb.Append("\\u");
                         }
-
                         continue;
                     default:
                         if (throwOnInvalid)
                         {
                             throw new InvalidDataException("Invalid escape code.");
                         }
-                        sb.Append('\\');
-                        sb.Append(c2);
+                        _ = sb.Append('\\');
+                        _ = sb.Append(c2);
                         continue;
                 }
             }
 
-            sb.Append(c);
+            _ = sb.Append(c);
         }
 
         return sb.ToString();
     }
 
-    #endregion
+    #endregion Public Methods
 }

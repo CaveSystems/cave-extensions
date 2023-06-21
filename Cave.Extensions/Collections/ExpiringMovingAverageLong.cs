@@ -11,7 +11,7 @@ public class ExpiringMovingAverageLong : IAverage<long>
 {
     #region Nested type: Item
 
-    class Item
+    sealed class Item
     {
         #region Fields
 
@@ -45,11 +45,7 @@ public class ExpiringMovingAverageLong : IAverage<long>
     /// <param name="item">The item.</param>
     public void Add(long item)
     {
-        items.AddLast(new Item
-        {
-            DateTime = DateTime.UtcNow,
-            Long = item
-        });
+        _ = items.AddLast(new Item { DateTime = DateTime.UtcNow, Long = item });
         total += item;
         if (MaximumCount > 0)
         {

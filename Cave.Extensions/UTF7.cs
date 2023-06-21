@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Cave.Collections;
@@ -79,7 +80,7 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
                 if (data[i] == '-')
                 {
                     var chunk = DecodeChunk(code.ToArray());
-                    result.Append(chunk);
+                    _ = result.Append(chunk);
                     code = null;
                 }
                 else
@@ -93,7 +94,7 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
                 {
                     if (data[++i] == '-')
                     {
-                        result.Append('&');
+                        _ = result.Append('&');
                     }
                     else
                     {
@@ -102,7 +103,7 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
                 }
                 else
                 {
-                    result.Append(data[i]);
+                    _ = result.Append(data[i]);
                 }
             }
         }
@@ -129,21 +130,18 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
                     if (code != null)
                     {
                         var chunk = EncodeChunk(code.ToString());
-                        result.Append($"&{chunk}-&-");
+                        _ = result.Append($"&{chunk}-&-");
                         code = null;
                     }
                     else
                     {
-                        result.Append("&-");
+                        _ = result.Append("&-");
                     }
                 }
                 else
                 {
-                    if (code == null)
-                    {
-                        code = new();
-                    }
-                    code.Append(ch);
+                    code ??= new();
+                    _ = code.Append(ch);
                 }
             }
             else
@@ -151,19 +149,19 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
                 if (code != null)
                 {
                     var chunk = EncodeChunk(code.ToString());
-                    result.Append($"&{chunk}-{ch}");
+                    _ = result.Append($"&{chunk}-{ch}");
                     code = null;
                 }
                 else
                 {
-                    result.Append(ch);
+                    _ = result.Append(ch);
                 }
             }
         }
         if (code != null)
         {
             var chunk = EncodeChunk(code.ToString());
-            result.Append("&" + chunk + "-");
+            _ = result.Append("&" + chunk + "-");
         }
         return ASCII.GetBytes(result.ToString());
     }
@@ -240,9 +238,6 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
 
     /// <inheritdoc/>
     public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
-
-    /// <inheritdoc/>
-    public string ToString(IFormatProvider provider) => ToString();
 
     /// <inheritdoc/>
     public override string ToString() => Decode(Data);

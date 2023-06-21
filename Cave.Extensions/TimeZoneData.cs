@@ -34,7 +34,7 @@ public sealed class TimeZoneData
     /// <returns>The parsed timezone data.</returns>
     public static TimeZoneData Parse(string text)
     {
-        DateTimeParser.ParseTimeZone(text, out var result);
+        _ = DateTimeParser.ParseTimeZone(text, out var result);
         return result;
     }
 

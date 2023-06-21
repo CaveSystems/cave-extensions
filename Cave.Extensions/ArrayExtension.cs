@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Cave;
@@ -8,7 +9,7 @@ namespace Cave;
 /// <summary>Gets extensions to byte[], array and IEnumerable instances.</summary>
 public static class ArrayExtension
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Concatenates elements.</summary>
     /// <typeparam name="T">Item type.</typeparam>
@@ -67,6 +68,18 @@ public static class ArrayExtension
 
         return result;
     }
+
+    /// <summary>Provides an alternative (backport) to Array.Empty&lt;T&gt;()</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static T[] Empty<T>() =>
+#if NET2_0_OR_GREATER || NET46_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+        Array.Empty<T>();
+#else
+        new T[0];
+#endif
+
 
     /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
     /// <typeparam name="T">Item type.</typeparam>
@@ -173,7 +186,7 @@ public static class ArrayExtension
         return -1;
     }
 
-    /// <summary>Performs an <see cref="Array.IndexOf{T}(T[], T)" /> call and returns the result.</summary>
+    /// <summary>Performs an <see cref="Array.IndexOf{T}(T[], T)"/> call and returns the result.</summary>
     /// <typeparam name="T">Item type.</typeparam>
     /// <param name="array">The one-dimensional, zero-based array to search.</param>
     /// <param name="value">The object to locate in array.</param>
@@ -325,9 +338,9 @@ public static class ArrayExtension
             for (var i = 0; i < count; i++)
             {
                 var n = Math.Abs((i ^ seed).GetHashCode()) % count;
-                var t = result[i];
-                result[i] = result[n];
-                result[n] = t;
+                var swap = result[n];
+                result[n] = result[i];
+                result[i] = swap;
             }
 
             return result;
@@ -337,7 +350,7 @@ public static class ArrayExtension
     /// <summary>Checks whether data starts with the specified pattern or not.</summary>
     /// <param name="data">The data.</param>
     /// <param name="pattern">The pattern.</param>
-    /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8" />).</param>
+    /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8"/>).</param>
     /// <returns>True if data starts with the pattern.</returns>
     public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
     {
@@ -351,10 +364,7 @@ public static class ArrayExtension
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        if (encoding == null)
-        {
-            encoding = Encoding.UTF8;
-        }
+        encoding ??= Encoding.UTF8;
 
         var bytes = encoding.GetBytes(pattern);
         return StartsWith(data, bytes);
@@ -407,5 +417,5 @@ public static class ArrayExtension
     /// <returns>Returns a new array instance.</returns>
     public static IEnumerable<T> SubRange<T>(this IEnumerable<T> data, int index) => data.Where((v, i) => i >= index);
 
-    #endregion
+    #endregion Public Methods
 }

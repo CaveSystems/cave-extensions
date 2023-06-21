@@ -3,7 +3,7 @@ using System;
 namespace Cave;
 
 /// <summary>Gets a string search result containing start index an length.</summary>
-public struct SubStringResult : IEquatable<SubStringResult>
+public readonly struct SubStringResult : IEquatable<SubStringResult>
 {
     /// <summary>Checks two SubStringResult instances for equality.</summary>
     /// <param name="subStringResult1">The first substringResult.</param>

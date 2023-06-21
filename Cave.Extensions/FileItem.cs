@@ -95,7 +95,7 @@ public sealed class FileItem
                 '\\',
                 '/'
             });
-            return FullPath.Substring(0, i);
+            return FullPath[..i];
         }
     }
 

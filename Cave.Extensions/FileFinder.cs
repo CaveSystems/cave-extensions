@@ -165,7 +165,7 @@ public sealed class FileFinder : IDisposable
             {
                 while ((fileList.Count == 0) && FileSearchRunning)
                 {
-                    Monitor.Wait(fileList);
+                    _ = Monitor.Wait(fileList);
                 }
             }
 
@@ -219,7 +219,7 @@ public sealed class FileFinder : IDisposable
 
                 if (waitAction == null)
                 {
-                    Monitor.Wait(fileList);
+                    _ = Monitor.Wait(fileList);
                 }
             }
 
@@ -285,13 +285,13 @@ public sealed class FileFinder : IDisposable
     {
         lock (directoryList)
         {
-            directoryList.AddLast(BaseDirectory);
+            _ = directoryList.AddLast(BaseDirectory);
             Monitor.Pulse(directoryList);
         }
 
         var callback = FoundDirectory;
         var list = new LinkedList<string>();
-        list.AddFirst(BaseDirectory);
+        _ = list.AddFirst(BaseDirectory);
         while (list.Count > 0)
         {
             var currentDir = list.First.Value;
@@ -325,8 +325,8 @@ public sealed class FileFinder : IDisposable
             {
                 foreach (var dir in dirs)
                 {
-                    list.AddLast(dir);
-                    directoryList.AddLast(dir);
+                    _ = list.AddLast(dir);
+                    _ = directoryList.AddLast(dir);
                 }
 
                 Monitor.Pulse(directoryList);
@@ -355,7 +355,7 @@ public sealed class FileFinder : IDisposable
                         return;
                     }
 
-                    Monitor.Wait(directoryList);
+                    _ = Monitor.Wait(directoryList);
                 }
 
                 currentDir = directoryList.First.Value;
@@ -405,18 +405,16 @@ public sealed class FileFinder : IDisposable
                         if ((MaximumFilesQueued <= 0) || (fileList.Count < MaximumFilesQueued))
                         {
                             FilesSeen++;
-                            fileList.AddLast(file);
+                            _ = fileList.AddLast(file);
                             Monitor.Pulse(fileList);
                             break;
                         }
 
-                        Monitor.Wait(fileList);
+                        _ = Monitor.Wait(fileList);
                     }
                 }
             }
         }
-
-        throw new("THIS SHOULD NEVER HAPPEN");
     }
 
     void Verbose(string message, bool error = false)
@@ -429,7 +427,7 @@ public sealed class FileFinder : IDisposable
             }
             else
             {
-                Trace. WriteLine(message);
+                Trace.WriteLine(message);
             }
         }
 

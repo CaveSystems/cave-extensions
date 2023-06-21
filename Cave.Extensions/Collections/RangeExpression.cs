@@ -13,7 +13,7 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
 {
     #region Nested type: RangeEnumerator
 
-    class RangeEnumerator : IEnumerator<int>, IEnumerator
+    sealed class RangeEnumerator : IEnumerator<int>, IEnumerator
     {
         #region Fields
 
@@ -290,43 +290,43 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
         {
             if (result.Length > 0)
             {
-                result.Append(ValueSeparator);
+                _ = result.Append(ValueSeparator);
             }
 
             if (counter.Count <= 1)
             {
-                result.Append($"{counter.Start}");
+                _ = result.Append($"{counter.Start}");
                 continue;
             }
 
             if (counter.Step == 1)
             {
-                result.Append($"{counter.Start}{RangeSeparator}{counter.End}");
+                _ = result.Append($"{counter.Start}{RangeSeparator}{counter.End}");
                 continue;
             }
 
             if (counter.Start == Minimum)
             {
-                result.Append(AllValuesString + RepetitionSeparator + counter.Step);
+                _ = result.Append(AllValuesString + RepetitionSeparator + counter.Step);
                 continue;
             }
 
             if (counter.End == Maximum)
             {
-                result.Append($"{counter.Start}{RepetitionSeparator}{counter.Step}");
+                _ = result.Append($"{counter.Start}{RepetitionSeparator}{counter.Step}");
                 continue;
             }
 
-            result.Append($"{counter.Start}{RangeSeparator}{counter.End}{RepetitionSeparator}{counter.Step}");
+            _ = result.Append($"{counter.Start}{RangeSeparator}{counter.End}{RepetitionSeparator}{counter.Step}");
         }
 
         foreach (var value in values)
         {
             if (result.Length > 0)
             {
-                result.Append(ValueSeparator);
+                _ = result.Append(ValueSeparator);
             }
-            result.Append(value);
+            _ = result.Append(value);
         }
 
         currentString = $"{result}";
@@ -368,11 +368,11 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
 
         if (counter.Start < Minimum)
         {
-            throw new($"Counter {counter} undercuts minimum {Minimum}!");
+            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} undercuts minimum {Minimum}!");
         }
         if (counter.End > Maximum)
         {
-            throw new($"Counter {counter} exceeds maximum {Maximum}!");
+            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} exceeds maximum {Maximum}!");
         }
         currentString = null;
         counters.Add(counter);
@@ -453,7 +453,7 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
             }
         }
 
-        foreach (int value in counter)
+        foreach (var value in counter)
         {
             if (Contains(value))
             {
@@ -505,7 +505,7 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
             var repetition = 1;
             switch (parts.Length)
             {
-                case 0: throw new ArgumentException($"Invalid range {text}!");
+                default: throw new ArgumentException($"Invalid range {text}!");
                 case 1: break;
                 case 2:
                     repetition = int.Parse(parts[1], CultureInfo.InvariantCulture);

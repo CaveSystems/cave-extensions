@@ -95,7 +95,7 @@ public abstract class Estimation : IEstimation
         {
             lock (SyncRoot)
             {
-                return items[items.Count - 1].Progress;
+                return items[^1].Progress;
             }
         }
     }
@@ -154,8 +154,7 @@ public abstract class Estimation : IEstimation
 
     /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
     /// <returns>A <see cref="string" /> that represents this instance.</returns>
-    public override string ToString() =>
-        $"{ProgressPercent:N2}% - {Elapsed.FormatTime()} elapsed - {EstimatedTimeLeft.FormatTime()} remaining...";
+    public override string ToString() => $"{ProgressPercent:N2}% - {Elapsed.FormatTime()} elapsed - {EstimatedTimeLeft.FormatTime()} remaining...";
 
     #endregion
 
@@ -187,7 +186,7 @@ public abstract class Estimation : IEstimation
     {
         lock (SyncRoot)
         {
-            if (item.Progress <= items[items.Count - 1].Progress)
+            if (item.Progress <= items[^1].Progress)
             {
                 return;
             }

@@ -124,13 +124,13 @@ public static class IPAddressExtension
 
                 if (sb.Length > 0)
                 {
-                    sb.Append('.');
+                    _ = sb.Append('.');
                 }
 
-                sb.Append(bytes[i]);
+                _ = sb.Append(bytes[i]);
             }
 
-            sb.Append(".in-addr.arpa.");
+            _ = sb.Append(".in-addr.arpa.");
             return sb.ToString();
         }
 
@@ -147,7 +147,7 @@ public static class IPAddressExtension
                     continue;
                 }
 
-                sb.Append($"{nibble:x}.");
+                _ = sb.Append($"{nibble:x}.");
             }
 
             if (sb.Length == 0)
@@ -155,7 +155,7 @@ public static class IPAddressExtension
                 return "0.ip6.arpa.";
             }
 
-            sb.Append("ip6.arpa.");
+            _ = sb.Append("ip6.arpa.");
             return sb.ToString();
         }
 
@@ -271,5 +271,5 @@ public static class IPAddressExtension
         return new(bytes);
     }
 
-#endregion
+    #endregion
 }

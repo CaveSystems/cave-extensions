@@ -126,5 +126,5 @@ public sealed class DateTimeStopWatch : IStopWatch
         }
     }
 
-#endregion
+    #endregion
 }

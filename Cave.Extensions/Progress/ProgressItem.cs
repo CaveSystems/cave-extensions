@@ -4,7 +4,7 @@ using System;
 
 namespace Cave.Progress;
 
-class ProgressItem : IProgress
+sealed class ProgressItem : IProgress
 {
     #region Fields
 

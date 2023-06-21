@@ -51,7 +51,7 @@ public static class MemberInfoExtension
             throw new ArgumentNullException(nameof(attributeType));
         }
 
-        return member.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(a => attributeType.IsAssignableFrom(a));
+        return member.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(attributeType.IsAssignableFrom);
     }
 
     #endregion

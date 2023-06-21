@@ -33,6 +33,7 @@
 */
 
 using System;
+using System.CodeDom;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -40,7 +41,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cave;
 
-#pragma warning disable CS0809
+#pragma warning disable CS0809, CA2231
 
 /// <summary>Provides a fast hash algorithm without random seed (the .net hashcode class does not calculate deterministic hashes).</summary>
 public struct XxHash32 : IHashingFunction
@@ -142,9 +143,9 @@ public struct XxHash32 : IHashingFunction
 
     /// <summary>Add a items hash to the hashcode.</summary>
     /// <typeparam name="T">Type of the item to add (prevents unboxing).</typeparam>
-    /// <param name="value">Item to add.</param>
+    /// <param name="item">Item to add.</param>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public void Add<T>(T value) => Hash((uint)(value?.GetHashCode() ?? 0));
+    public void Add<T>(T item) => Hash((uint)(item?.GetHashCode() ?? 0));
 
     /// <summary>NotSupported</summary>
     /// <exception cref="NotSupportedException"></exception>
@@ -243,4 +244,4 @@ public struct XxHash32 : IHashingFunction
     #endregion Public Methods
 }
 
-#pragma warning restore CS0809
+#pragma warning restore CS0809, CA2231

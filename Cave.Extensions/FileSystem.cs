@@ -78,7 +78,7 @@ public static class FileSystem
                 type = PathType.ConnectionString;
                 separator = '/';
                 path = s.AfterFirst("://");
-                root = s.Substring(0, s.Length - path.Length);
+                root = s[..^path.Length];
                 type = PathType.Absolute;
             }
             else
@@ -110,7 +110,7 @@ public static class FileSystem
 
                         separator = pathSeparator;
                         resultParts.Clear();
-                        root = path.Substring(0, 2) + separator;
+                        root = path[..2] + separator;
                         path = path[2..].TrimStart((char[])PathSeparatorChars);
                         type = PathType.Absolute;
                     }
@@ -162,7 +162,7 @@ public static class FileSystem
 
                                 separator = pathSeparator;
                                 resultParts.Clear();
-                                root = path.Substring(0, 2) + separator;
+                                root = path[..2] + separator;
                                 path = path[2..].TrimStart((char[])PathSeparatorChars);
                             }
                         }
@@ -172,7 +172,7 @@ public static class FileSystem
                 }
             }
 
-            #endregion
+            #endregion handle rooted paths
 
             var parts = path.Split(new[]
             {
@@ -203,7 +203,7 @@ public static class FileSystem
                     root = null;
                 }
 
-                resultParts.AddLast(part);
+                _ = resultParts.AddLast(part);
             }
         }
 
@@ -225,14 +225,14 @@ public static class FileSystem
         while (Directory.Exists(Combine(basePath, $"{++number}"))) { }
 
         var result = Combine(basePath, $"{number}");
-        Directory.CreateDirectory(result);
+        _ = Directory.CreateDirectory(result);
         return result;
     }
 
     /// <summary>Remove any path root present in the path.</summary>
-    /// <param name="path">A <see cref="string" /> containing path information.</param>
+    /// <param name="path">A <see cref="string"/> containing path information.</param>
     /// <returns>The path with the root removed if it was present; path otherwise.</returns>
-    /// <remarks>Unlike the <see cref="System.IO.Path" /> class the path isnt otherwise checked for validity.</remarks>
+    /// <remarks>Unlike the <see cref="System.IO.Path"/> class the path isnt otherwise checked for validity.</remarks>
     public static string DropRoot(string path)
     {
         if (string.IsNullOrEmpty(path))
@@ -280,8 +280,8 @@ public static class FileSystem
     }
 
     /// <summary>
-    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative paths,
-    /// filenames or masks and the "|r" recurse subdirectories switch.
+    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative paths, filenames or masks and
+    /// the "|r" recurse subdirectories switch.
     /// </summary>
     /// <param name="directoryMaskList">The mask to apply.</param>
     /// <param name="mainPath">main path to begin relative searches.</param>
@@ -358,8 +358,8 @@ public static class FileSystem
     }
 
     /// <summary>
-    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative pathss,
-    /// filenames or masks and the "|r", ":r" recurse subdirectories switch.
+    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative pathss, filenames or masks and
+    /// the "|r", ":r" recurse subdirectories switch.
     /// </summary>
     /// <param name="fileMask">The file mask.</param>
     /// <param name="mainPath">main path to begin relative searches.</param>
@@ -371,8 +371,8 @@ public static class FileSystem
     public static ICollection<FileItem> FindFiles(string fileMask, string mainPath = null, bool recursive = false) => FindFiles(new[] { fileMask }, mainPath, recursive);
 
     /// <summary>
-    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative pathss,
-    /// filenames or masks and the "|r", ":r" recurse subdirectories switch.
+    /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative pathss, filenames or masks and
+    /// the "|r", ":r" recurse subdirectories switch.
     /// </summary>
     /// <param name="fileMaskList">The file mask list.</param>
     /// <param name="mainPath">main path to begin relative searches.</param>
@@ -489,7 +489,7 @@ public static class FileSystem
         var valueString = fieldValue ?? throw new ArgumentNullException(nameof(fieldValue));
         var lastWasWildcard = false;
         var sb = new StringBuilder();
-        sb.Append('^');
+        _ = sb.Append('^');
         foreach (var c in valueString)
         {
             switch (c)
@@ -502,12 +502,12 @@ public static class FileSystem
                     }
 
                     lastWasWildcard = true;
-                    sb.Append(".*");
+                    _ = sb.Append(".*");
                     continue;
                 }
                 case '?':
                 {
-                    sb.Append('.');
+                    _ = sb.Append('.');
                     continue;
                 }
                 case ' ':
@@ -525,16 +525,17 @@ public static class FileSystem
                 case '.':
                 case '#':
                 {
-                    sb.Append('\\');
+                    _ = sb.Append('\\');
                     break;
                 }
+                default: break;
             }
 
-            sb.Append(c);
+            _ = sb.Append(c);
             lastWasWildcard = false;
         }
 
-        sb.Append('$');
+        _ = sb.Append('$');
         var s = sb.ToString();
         return new(s, RegexOptions.IgnoreCase);
     }
@@ -542,18 +543,18 @@ public static class FileSystem
     /// <summary>Returns the names of all files and subdirectories that meet specified criteria.</summary>
     /// <param name="path">The relative or absolute path to the directory to search. This string is not case-sensitive.</param>
     /// <param name="searchPattern">
-    /// The search string to match against the names of subdirectories in path. This parameter can contain a
-    /// combination of valid literal and wildcard characters, but it doesn't support regular expressions.
+    /// The search string to match against the names of subdirectories in path. This parameter can contain a combination of valid literal and wildcard
+    /// characters, but it doesn't support regular expressions.
     /// </param>
     /// <param name="searchOption">
-    /// One of the enumeration values that specifies whether the search operation should include only the current
-    /// directory or should include all subdirectories. The default value is TopDirectoryOnly.
+    /// One of the enumeration values that specifies whether the search operation should include only the current directory or should include all
+    /// subdirectories. The default value is TopDirectoryOnly.
     /// </param>
     /// <returns>
-    /// An array of file the file names and directory names that match the specified search criteria, or an empty array if no files or
-    /// directories are found.
+    /// An array of file the file names and directory names that match the specified search criteria, or an empty array if no files or directories are found.
     /// </returns>
 #if NET35 || NET20
+
     public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         var results = new List<string>();
@@ -561,6 +562,7 @@ public static class FileSystem
         results.AddRange(Directory.GetFiles(path, searchPattern, searchOption));
         return results.ToArray();
     }
+
 #else
     public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
         => Directory.GetFileSystemEntries(path, searchPattern, searchOption);
@@ -577,10 +579,7 @@ public static class FileSystem
 
     /// <summary>Returns the date and time the specified file or directory was last accessed.</summary>
     /// <param name="filesystemEntry">The file or directory for which to obtain creation date and time information.</param>
-    /// <returns>
-    /// A DateTime structure set to the date and time that the specified file or directory was last accessed. This value is expressed in
-    /// local time.
-    /// </returns>
+    /// <returns>A DateTime structure set to the date and time that the specified file or directory was last accessed. This value is expressed in local time.</returns>
     public static DateTime GetLastAccessTime(string filesystemEntry) =>
         Directory.Exists(filesystemEntry)
             ? Directory.GetLastAccessTime(filesystemEntry)
@@ -590,10 +589,7 @@ public static class FileSystem
 
     /// <summary>Returns the date and time the specified file or directory was last accessed.</summary>
     /// <param name="filesystemEntry">The file or directory for which to obtain creation date and time information.</param>
-    /// <returns>
-    /// A DateTime structure set to the date and time that the specified file or directory was last accessed. This value is expressed in
-    /// utc time.
-    /// </returns>
+    /// <returns>A DateTime structure set to the date and time that the specified file or directory was last accessed. This value is expressed in utc time.</returns>
     public static DateTime GetLastAccessTimeUtc(string filesystemEntry) =>
         Directory.Exists(filesystemEntry)
             ? Directory.GetLastAccessTimeUtc(filesystemEntry)
@@ -604,8 +600,7 @@ public static class FileSystem
     /// <summary>Returns the date and time the specified file or directory was last written to.</summary>
     /// <param name="filesystemEntry">The file or directory for which to obtain write date and time information.</param>
     /// <returns>
-    /// A DateTime structure set to the date and time that the specified file or directory was last written to. This value is expressed in
-    /// local time.
+    /// A DateTime structure set to the date and time that the specified file or directory was last written to. This value is expressed in local time.
     /// </returns>
     public static DateTime GetLastWriteTime(string filesystemEntry)
     {
@@ -624,10 +619,7 @@ public static class FileSystem
 
     /// <summary>Returns the date and time the specified file or directory was last written to.</summary>
     /// <param name="filesystemEntry">The file or directory for which to obtain write date and time information.</param>
-    /// <returns>
-    /// A DateTime structure set to the date and time that the specified file or directory was last written to. This value is expressed in
-    /// utc time.
-    /// </returns>
+    /// <returns>A DateTime structure set to the date and time that the specified file or directory was last written to. This value is expressed in utc time.</returns>
     public static DateTime GetLastWriteTimeUtc(string filesystemEntry)
     {
         if (Directory.Exists(filesystemEntry))
@@ -650,9 +642,7 @@ public static class FileSystem
     public static string GetParent(string path) => Combine(path, "..");
 
     /*
-    /// <summary>
-    /// Returns the absolute path for the specified path string.
-    /// </summary>
+    /// <summary>Returns the absolute path for the specified path string.</summary>
     /// <param name="path">The file or directory for which to obtain absolute path information.</param>
     /// <returns>The fully qualified location of path.</returns>
     public static string GetFullPath(string path)
@@ -760,7 +750,7 @@ public static class FileSystem
             string.Join($"{Path.DirectorySeparatorChar}", relative, baseCheck.Length, relative.Length - baseCheck.Length);
     }
 
-    /// <summary>Gets a list of relative <see cref="FileItem" />s from a list of Paths.</summary>
+    /// <summary>Gets a list of relative <see cref="FileItem"/> s from a list of Paths.</summary>
     /// <param name="basePath">The parent or base path to use.</param>
     /// <param name="paths">The full paths relative to the base path.</param>
     /// <returns>Returns a list of file items.</returns>
@@ -837,7 +827,7 @@ public static class FileSystem
     {
         if (fullPath == null)
         {
-            return new string[0];
+            return ArrayExtension.Empty<string>();
         }
 
         var parts = fullPath.SplitKeepSeparators('\\', '/');
@@ -892,7 +882,7 @@ public static class FileSystem
             throw new ArgumentNullException(nameof(fileName));
         }
 
-        Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+        _ = Directory.CreateDirectory(Path.GetDirectoryName(fileName));
         File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite).Close();
     }
 
@@ -929,7 +919,7 @@ public static class FileSystem
             return true;
         }
 
-        TryDeleteDirectory(Path.GetDirectoryName(path));
+        _ = TryDeleteDirectory(Path.GetDirectoryName(path));
         return true;
     }
 
@@ -978,10 +968,7 @@ public static class FileSystem
     {
         get
         {
-            if (programFileName == null)
-            {
-                programFileName = GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
-            }
+            programFileName ??= GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
 
             return programFileName;
         }
@@ -1007,7 +994,7 @@ public static class FileSystem
         }
     }
 
-    /// <summary>Gets the configuration directory (this equals <see cref="UserAppData" />).</summary>
+    /// <summary>Gets the configuration directory (this equals <see cref="UserAppData"/>).</summary>
     public static string UserConfiguration => UserAppData;
 
     /// <summary>Gets the directory where the user stores his/her documents.</summary>
@@ -1020,7 +1007,7 @@ public static class FileSystem
         }
     }
 
-    #endregion
+    #endregion Static
 }
 
 #endif

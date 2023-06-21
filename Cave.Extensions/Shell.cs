@@ -46,7 +46,7 @@ public static class Shell
             }
             else
             {
-                errorWaitHandle.Set();
+                _ = errorWaitHandle.Set();
             }
         };
         process.OutputDataReceived += (sender, e) =>
@@ -57,7 +57,7 @@ public static class Shell
             }
             else
             {
-                outputWaitHandle.Set();
+                _ = outputWaitHandle.Set();
             }
         };
         process.BeginErrorReadLine();

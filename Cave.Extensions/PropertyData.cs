@@ -24,7 +24,7 @@ public class PropertyData
 
     static bool SkipNamespace(IList<string> skipNamespaces, string @namespace)
     {
-        bool Test(string skip) => (@namespace == skip) || @namespace.StartsWith(skip + '.');
+        bool Test(string skip) => (@namespace == skip) || @namespace.StartsWith(skip + '.', StringComparison.Ordinal);
         return skipNamespaces.Any(Test);
     }
 

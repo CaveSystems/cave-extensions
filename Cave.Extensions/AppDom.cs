@@ -10,10 +10,10 @@ using System.Reflection;
 
 namespace Cave;
 
-/// <summary>Gets <see cref="AppDomain" /> specific extensions.</summary>
+/// <summary>Gets <see cref="AppDomain"/> specific extensions.</summary>
 public static class AppDom
 {
-    #region LoadFlags enum
+    #region Public Enums
 
     /// <summary>Gets loader modes.</summary>
     [Flags]
@@ -30,9 +30,19 @@ public static class AppDom
         LoadAssemblies = 2
     }
 
-    #endregion
+    #endregion Public Enums
 
-    #region Static
+    #region Public Properties
+
+    /// <summary>Gets the installation identifier.</summary>
+    /// <value>The installation identifier.</value>
+    /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()"/> failes.</exception>
+    [Obsolete("Use InstallationGuid.ProgramGuid")]
+    public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Finds the loaded assembly with the specified name.</summary>
     /// <param name="name">The name of the assembly (this can be a full qualified or a short name).</param>
@@ -235,13 +245,7 @@ public static class AppDom
     [Obsolete("Use GetInstances() or FindTypes() instead.")]
     public static List<T> GetTypes<T>() => GetInstances<T>(true);
 
-    /// <summary>Gets the installation identifier.</summary>
-    /// <value>The installation identifier.</value>
-    /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()" /> failes.</exception>
-    [Obsolete("Use InstallationGuid.ProgramGuid")]
-    public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
-
-    #endregion
+    #endregion Public Methods
 }
 
 #pragma warning restore CS0618

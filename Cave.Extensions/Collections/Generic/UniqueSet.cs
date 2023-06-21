@@ -93,8 +93,8 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
 
         try
         {
-            lookupA.Remove(item.A);
-            lookupB.Remove(item.B);
+            _ = lookupA.Remove(item.A);
+            _ = lookupB.Remove(item.B);
             return list.Remove(item);
         }
         catch
@@ -186,7 +186,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
         }
         catch
         {
-            lookupA.Remove(item.A);
+            _ = lookupA.Remove(item.A);
             throw;
         }
 
@@ -276,7 +276,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
         }
         catch
         {
-            lookupA.Remove(key1);
+            _ = lookupA.Remove(key1);
             throw;
         }
 

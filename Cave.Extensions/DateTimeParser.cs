@@ -117,42 +117,19 @@ public static class DateTimeParser
         string month = null;
         switch (match.Groups["month"].Value.ToUpperInvariant())
         {
-            case "JAN":
-                month = "1";
-                break;
-            case "FEB":
-                month = "2";
-                break;
-            case "MAR":
-                month = "3";
-                break;
-            case "APR":
-                month = "4";
-                break;
-            case "MAY":
-                month = "5";
-                break;
-            case "JUN":
-                month = "6";
-                break;
-            case "JUL":
-                month = "7";
-                break;
-            case "AUG":
-                month = "8";
-                break;
-            case "SEP":
-                month = "9";
-                break;
-            case "OCT":
-                month = "10";
-                break;
-            case "NOV":
-                month = "11";
-                break;
-            case "DEC":
-                month = "12";
-                break;
+            case "JAN": month = "1"; break;
+            case "FEB": month = "2"; break;
+            case "MAR": month = "3"; break;
+            case "APR": month = "4"; break;
+            case "MAY": month = "5"; break;
+            case "JUN": month = "6"; break;
+            case "JUL": month = "7"; break;
+            case "AUG": month = "8"; break;
+            case "SEP": month = "9"; break;
+            case "OCT": month = "10"; break;
+            case "NOV": month = "11"; break;
+            case "DEC": month = "12"; break;
+            default: break;
         }
 
         var year = !string.IsNullOrEmpty(match.Groups["year"].Value) ? match.Groups["year"].Value : $"{Default.Year}";
@@ -396,5 +373,5 @@ public static class DateTimeParser
         return true;
     }
 
-#endregion
+    #endregion
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Cave.Collections;
@@ -43,7 +44,7 @@ public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF16LE Empty { get; } = new UTF16LE(new byte[0]);
+    public static UTF16LE Empty { get; } = new UTF16LE(ArrayExtension.Empty<byte>());
 
     /// <summary>Gets the unicode codepoints.</summary>
     public int[] Codepoints => ConvertToCodepoints(Data).ToArray();
@@ -191,58 +192,7 @@ public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE
     public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
 
     /// <inheritdoc/>
-    public TypeCode GetTypeCode() => TypeCode.String;
-
-    /// <inheritdoc/>
-    public bool ToBoolean(IFormatProvider provider) => ((IConvertible)ToString()).ToBoolean(provider);
-
-    /// <inheritdoc/>
-    public byte ToByte(IFormatProvider provider) => ((IConvertible)ToString()).ToByte(provider);
-
-    /// <inheritdoc/>
-    public char ToChar(IFormatProvider provider) => ((IConvertible)ToString()).ToChar(provider);
-
-    /// <inheritdoc/>
-    public DateTime ToDateTime(IFormatProvider provider) => ((IConvertible)ToString()).ToDateTime(provider);
-
-    /// <inheritdoc/>
-    public decimal ToDecimal(IFormatProvider provider) => ((IConvertible)ToString()).ToDecimal(provider);
-
-    /// <inheritdoc/>
-    public double ToDouble(IFormatProvider provider) => ((IConvertible)ToString()).ToDouble(provider);
-
-    /// <inheritdoc/>
-    public short ToInt16(IFormatProvider provider) => ((IConvertible)ToString()).ToInt16(provider);
-
-    /// <inheritdoc/>
-    public int ToInt32(IFormatProvider provider) => ((IConvertible)ToString()).ToInt32(provider);
-
-    /// <inheritdoc/>
-    public long ToInt64(IFormatProvider provider) => ((IConvertible)ToString()).ToInt64(provider);
-
-    /// <inheritdoc/>
-    public sbyte ToSByte(IFormatProvider provider) => ((IConvertible)ToString()).ToSByte(provider);
-
-    /// <inheritdoc/>
-    public float ToSingle(IFormatProvider provider) => ((IConvertible)ToString()).ToSingle(provider);
-
-    /// <inheritdoc/>
-    public string ToString(IFormatProvider provider) => ToString();
-
-    /// <inheritdoc/>
     public override string ToString() => ConvertToString(Data);
-
-    /// <inheritdoc/>
-    public object ToType(Type conversionType, IFormatProvider provider) => ((IConvertible)ToString()).ToType(conversionType, provider);
-
-    /// <inheritdoc/>
-    public ushort ToUInt16(IFormatProvider provider) => ((IConvertible)ToString()).ToUInt16(provider);
-
-    /// <inheritdoc/>
-    public uint ToUInt32(IFormatProvider provider) => ((IConvertible)ToString()).ToUInt32(provider);
-
-    /// <inheritdoc/>
-    public ulong ToUInt64(IFormatProvider provider) => ((IConvertible)ToString()).ToUInt64(provider);
 
     #endregion Public Methods
 }

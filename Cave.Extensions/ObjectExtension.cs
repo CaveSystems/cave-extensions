@@ -2,22 +2,150 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Cave;
 
 /// <summary>Provides extensions to object instances.</summary>
 public static class ObjectExtension
 {
-    #region Static
+    #region Private Methods
+
+    /// <summary>Gets the specified property value.</summary>
+    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
+    /// <param name="instance">Instance to read from.</param>
+    /// <param name="fullPath">Full property path.</param>
+    /// <param name="result">Returns the result value.</param>
+    /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
+    /// <param name="throwException">Throw exceptions instead of returning an error code.</param>
+    /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
+    static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags, bool throwException)
+    {
+        if (instance == null)
+        {
+            throw new ArgumentNullException(nameof(instance));
+        }
+
+        if (bindingFlags == 0)
+        {
+            bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+        }
+
+        IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? ArrayExtension.Empty<string>();
+        var current = instance;
+        for (var i = 0; i < path.Count; i++)
+        {
+            var part = path[i];
+            if (current == null)
+            {
+                if (throwException)
+                {
+                    throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
+                }
+                result = null;
+                return GetPropertyValueError.NullReference;
+            }
+
+            var namePart = part.BeforeFirst('[');
+            if (namePart.Length == 0)
+            {
+                //no sub item only indexer given
+            }
+            else
+            {
+                var property = current.GetType().GetProperty(namePart, bindingFlags);
+                if (property == null)
+                {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                    }
+                    result = null;
+                    return GetPropertyValueError.InvalidPath;
+                }
+
+                try
+                {
+                    current = property.GetValue(current, null);
+                }
+                catch
+                {
+                    if (throwException)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
+                    }
+                    result = null;
+                    return GetPropertyValueError.InvalidPath;
+                }
+            }
+
+            var indexer = part.AfterFirst('[');
+            try
+            {
+                if (indexer.Length > 0)
+                {
+                    var index = int.Parse(indexer.BeforeFirst(']'));
+                    if (current is IEnumerable enumerable)
+                    {
+                        current = enumerable.Cast<object>().Skip(index).FirstOrDefault();
+                    }
+                    else if (current is null)
+                    {
+                        if (throwException)
+                        {
+                            throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
+                        }
+                        result = null;
+                        return GetPropertyValueError.NullReference;
+                    }
+                    else
+                    {
+                        if (throwException)
+                        {
+                            throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is of invalid type {current.GetType()}!");
+                        }
+                        result = null;
+                        return GetPropertyValueError.InvalidType;
+                    }
+                }
+            }
+            catch (TargetParameterCountException)
+            {
+                if (throwException)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property {fullPath} requires multiple target parameters!");
+                }
+                result = null;
+                return GetPropertyValueError.ParameterRequired;
+            }
+            catch
+            {
+                if (throwException)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property index [{indexer}] of {fullPath} is out of valid range!");
+                }
+                result = null;
+                return GetPropertyValueError.InvalidPath;
+            }
+        }
+
+        result = current;
+        return GetPropertyValueError.None;
+    }
+
+    #endregion Private Methods
+
+    #region Public Methods
 
     /// <summary>Get a list of available properties.</summary>
     /// <param name="instance">Object instance to read.</param>
     /// <param name="flags">Filter flags for property search.</param>
     /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
     /// <param name="filter">Allows to filter properties.</param>
-    /// <returns>Returns an <see cref="IEnumerable{T}" /> with all properties of the specified instance.</returns>
+    /// <returns>Returns an <see cref="IEnumerable{T}"/> with all properties of the specified instance.</returns>
     public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = BindingFlags.Default, PropertyDataFilter filter = null)
     {
         if (instance == null)
@@ -37,9 +165,7 @@ public static class ObjectExtension
     }
 
     /// <summary>Gets the specified property value.</summary>
-    /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
-    /// </remarks>
+    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="noException">Ignore null value properties and missing fields.</param>
@@ -49,7 +175,7 @@ public static class ObjectExtension
     {
         if (noException)
         {
-            TryGetPropertyValue(instance, fullPath, out var value);
+            _ = TryGetPropertyValue(instance, fullPath, out var value);
             return value;
         }
 
@@ -57,9 +183,7 @@ public static class ObjectExtension
     }
 
     /// <summary>Gets the specified property value.</summary>
-    /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
-    /// </remarks>
+    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
@@ -71,7 +195,7 @@ public static class ObjectExtension
             throw new ArgumentNullException(nameof(instance));
         }
         var result = TryGetPropertyValue(instance, fullPath, out var value, bindingFlags, true);
-        return result == GetPropertyValueError.None ? value : throw new($"Unhandled error {result}!");
+        return result == GetPropertyValueError.None ? value : throw new InvalidOperationException($"Unhandled error {result}!");
     }
 
     /// <summary>Gets the specified property value and checks the return value type.</summary>
@@ -174,26 +298,22 @@ public static class ObjectExtension
     }
 
     /// <summary>Gets the specified property value.</summary>
-    /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
-    /// </remarks>
+    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="result">Returns the result value.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-    /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
+    /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
     public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = BindingFlags.Default)
         => TryGetPropertyValue(instance, fullPath, out result, bindingFlags, false);
 
     /// <summary>Gets the specified property value.</summary>
-    /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
-    /// </remarks>
+    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <param name="result">Returns the result value.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-    /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
+    /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
     public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = default)
     {
         var error = TryGetPropertyValue(instance, fullPath, out var obj, bindingFlags);
@@ -218,129 +338,5 @@ public static class ObjectExtension
         }
     }
 
-    /// <summary>Gets the specified property value.</summary>
-    /// <remarks>
-    /// See available full path items using <see cref="PropertyEnumerator" /> and <see cref="PropertyValueEnumerator" />.
-    /// </remarks>
-    /// <param name="instance">Instance to read from.</param>
-    /// <param name="fullPath">Full property path.</param>
-    /// <param name="result">Returns the result value.</param>
-    /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
-    /// <param name="throwException">Throw exceptions instead of returning an error code.</param>
-    /// <returns>Returns <see cref="GetPropertyValueError.None" /> on success or the error encountered.</returns>
-    static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags, bool throwException)
-    {
-        if (instance == null)
-        {
-            throw new ArgumentNullException(nameof(instance));
-        }
-
-        if (bindingFlags == 0)
-        {
-            bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-        }
-
-        IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-        var current = instance;
-        for (var i = 0; i < path.Count; i++)
-        {
-            var part = path[i];
-            if (current == null)
-            {
-                if (throwException)
-                {
-                    throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
-                }
-                result = null;
-                return GetPropertyValueError.NullReference;
-            }
-
-            var namePart = part.BeforeFirst('[');
-            if (namePart.Length == 0)
-            {
-                //no sub item only indexer given
-            }
-            else
-            {
-                var property = current.GetType().GetProperty(namePart, bindingFlags);
-                if (property == null)
-                {
-                    if (throwException)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
-                    }
-                    result = null;
-                    return GetPropertyValueError.InvalidPath;
-                }
-
-                try
-                {
-                    current = property.GetValue(current, null);
-                }
-                catch
-                {
-                    if (throwException)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property path {path.Take(i + 1).Join("/")} could not be found at specified instance!");
-                    }
-                    result = null;
-                    return GetPropertyValueError.InvalidPath;
-                }
-            }
-
-            var indexer = part.AfterFirst('[');
-            try
-            {
-                if (indexer.Length > 0)
-                {
-                    var index = int.Parse(indexer.BeforeFirst(']'));
-                    if (current is IEnumerable enumerable)
-                    {
-                        current = enumerable.Cast<object>().Skip(index).FirstOrDefault();
-                    }
-                    else if (current is null)
-                    {
-                        if (throwException)
-                        {
-                            throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is null!");
-                        }
-                        result = null;
-                        return GetPropertyValueError.NullReference;
-                    }
-                    else
-                    {
-                        if (throwException)
-                        {
-                            throw new NullReferenceException($"Property path {path.Take(i).Join("/")} is of invalid type {current.GetType()}!");
-                        }
-                        result = null;
-                        return GetPropertyValueError.InvalidType;
-                    }
-                }
-            }
-            catch (TargetParameterCountException)
-            {
-                if (throwException)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property {fullPath} requires multiple target parameters!");
-                }
-                result = null;
-                return GetPropertyValueError.ParameterRequired;
-            }
-            catch
-            {
-                if (throwException)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(fullPath), $"Property index [{indexer}] of {fullPath} is out of valid range!");
-                }
-                result = null;
-                return GetPropertyValueError.InvalidPath;
-            }
-        }
-
-        result = current;
-        return GetPropertyValueError.None;
-    }
-
-#endregion
+    #endregion Public Methods
 }

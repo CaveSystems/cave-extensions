@@ -114,19 +114,19 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
         {
             if (result.Length > 0)
             {
-                result.Append(' ');
+                _ = result.Append(' ');
             }
 
             var containsSpace = parameter.Contains(' ');
             if (containsSpace)
             {
-                result.Append('"');
+                _ = result.Append('"');
             }
 
-            result.Append(parameter);
+            _ = result.Append(parameter);
             if (containsSpace)
             {
-                result.Append('"');
+                _ = result.Append('"');
             }
         }
 

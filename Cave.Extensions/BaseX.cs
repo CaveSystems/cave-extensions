@@ -186,7 +186,7 @@ public abstract class BaseX
         while (value > 0)
         {
             var character = value & mask;
-            result.Append(EncodeCharacter((char)character));
+            _ = result.Append(EncodeCharacter((char)character));
             value >>= bits;
         }
 
@@ -209,7 +209,7 @@ public abstract class BaseX
         while (value > 0)
         {
             var character = value & mask;
-            result.Append(EncodeCharacter((char)character));
+            _ = result.Append(EncodeCharacter((char)character));
             value >>= bits;
         }
 

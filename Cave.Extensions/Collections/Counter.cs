@@ -7,7 +7,7 @@ namespace Cave.Collections;
 #pragma warning disable CA1710
 
 /// <summary>Gets an <see cref="IEnumerable" /> implementation for simple integer counting.</summary>
-public class Counter : IEnumerable<int>, IComparable, IEnumerable, IEquatable<Counter>
+public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
 {
     #region Static
 
@@ -148,11 +148,11 @@ public class Counter : IEnumerable<int>, IComparable, IEnumerable, IEquatable<Co
 
     /// <summary>Gets a <see cref="CountEnumerator" />.</summary>
     /// <returns>Returns a new IEnumerator instance.</returns>
-    public IEnumerator GetEnumerator() => new CountEnumerator(this);
+    IEnumerator IEnumerable.GetEnumerator() => new CountEnumerator(this);
 
     /// <summary>Gets a <see cref="CountEnumerator" />.</summary>
     /// <returns>Returns a new IEnumerator{int} instance.</returns>
-    IEnumerator<int> IEnumerable<int>.GetEnumerator() => new CountEnumerator(this);
+    public IEnumerator<int> GetEnumerator() => new CountEnumerator(this);
 
     #endregion
 

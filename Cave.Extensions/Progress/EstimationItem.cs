@@ -11,7 +11,7 @@ public sealed class EstimationItem
 
     /// <summary>Initializes a new instance of the <see cref="EstimationItem" /> class.</summary>
     /// <param name="progress">Current progress value (0..1).</param>
-    public EstimationItem(float progress) => Progress = (progress >= 0) && (progress <= 1) ? progress : throw new ArgumentOutOfRangeException(nameof(progress));
+    public EstimationItem(float progress) => Progress = progress is >= 0 and <= 1 ? progress : throw new ArgumentOutOfRangeException(nameof(progress));
 
     #endregion
 

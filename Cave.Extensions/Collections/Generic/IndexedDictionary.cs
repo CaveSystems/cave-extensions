@@ -13,7 +13,7 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 {
     #region Nested type: Enumerator
 
-    class Enumerator : IEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>
+    sealed class Enumerator : IEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>
     {
         #region Fields
 

@@ -74,8 +74,8 @@ public sealed class Set<T> : IItemSet<T>
         }
 
         var result = new Set<T>();
-        result.IncludeRange(set1);
-        result.IncludeRange(set2);
+        _ = result.IncludeRange(set1);
+        _ = result.IncludeRange(set2);
         return result;
     }
 
@@ -215,7 +215,7 @@ public sealed class Set<T> : IItemSet<T>
     {
         foreach (var items in blocks)
         {
-            IncludeRange(items);
+            _ = IncludeRange(items);
         }
     }
 
@@ -223,10 +223,10 @@ public sealed class Set<T> : IItemSet<T>
     public Set(T item, params IEnumerable<T>[] blocks)
         : this()
     {
-        Include(item);
+        _ = Include(item);
         foreach (var items in blocks)
         {
-            IncludeRange(items);
+            _ = IncludeRange(items);
         }
     }
 

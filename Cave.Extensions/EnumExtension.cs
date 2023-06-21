@@ -48,12 +48,12 @@ public static class EnumExtension
             {
                 if (sb.Length != 0)
                 {
-                    sb.Append(", ");
+                    _ = sb.Append(", ");
                 }
 
                 if (TryParse($"{check}", out TEnum flag))
                 {
-                    sb.Append(flag.ToString());
+                    _ = sb.Append(flag.ToString());
                 }
             }
         }

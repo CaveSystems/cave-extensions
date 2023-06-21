@@ -125,7 +125,7 @@ public static class StreamExtensions
 
         using (var buffer = new MemoryStream())
         {
-            CopyBlocksTo(source, buffer, -1, callback, userItem);
+            _ = CopyBlocksTo(source, buffer, -1, callback, userItem);
             return buffer.ToArray();
         }
     }

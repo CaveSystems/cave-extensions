@@ -23,7 +23,7 @@ public class FileLocation
             case RootLocation.AllUsersData:
             {
                 var path = FileSystem.Combine(ProgramDirectory, ".AllUsers");
-                Directory.CreateDirectory(path);
+                _ = Directory.CreateDirectory(path);
                 return path;
             }
             case RootLocation.LocalUserConfig:
@@ -32,7 +32,7 @@ public class FileLocation
             case RootLocation.RoamingUserData:
             {
                 var path = FileSystem.Combine(ProgramDirectory, ".User_" + Environment.UserName);
-                Directory.CreateDirectory(path);
+                _ = Directory.CreateDirectory(path);
                 return path;
             }
             case RootLocation.Program: return ProgramDirectory;
@@ -83,8 +83,9 @@ public class FileLocation
             case PlatformType.BSD:
             case PlatformType.Linux:
             case PlatformType.UnknownUnix:
-                FileName = fileName ?? AssemblyVersionInfo.Program.Product.ToLowerInvariant()
-                   .ReplaceInvalidChars(ASCII.Strings.Letters + ASCII.Strings.Digits, "-");
+#pragma warning disable CA1308
+                FileName = fileName ?? AssemblyVersionInfo.Program.Product.ToLowerInvariant().ReplaceInvalidChars(ASCII.Strings.Letters + ASCII.Strings.Digits, "-");
+#pragma warning restore CA1308
                 break;
             default:
                 CompanyName = companyName ?? AssemblyVersionInfo.Program.Company.ReplaceChars(Path.GetInvalidPathChars(), "_");

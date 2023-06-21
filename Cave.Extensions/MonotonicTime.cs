@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,16 +10,128 @@ namespace Cave;
 /// <summary>Provides a fast and monotonic time implementation based on the systems high performance counter.</summary>
 public static class MonotonicTime
 {
-    /// <summary>
-    /// Provides a structure representing the average drift of values to a reference.
-    /// </summary>
+    #region Private Classes
+
+    sealed class State
+    {
+        #region Private Constructors
+
+        State(long timer, long clock, long start)
+        {
+            Timer = timer;
+            Clock = clock;
+            Start = start;
+        }
+
+        #endregion Private Constructors
+
+        #region Public Fields
+
+        public readonly long Clock;
+
+        public readonly long Start;
+
+        public readonly long Timer;
+
+        #endregion Public Fields
+
+        #region Public Properties
+
+        public DateTime ClockTime
+        {
+            [MethodImpl((MethodImplOptions)256)]
+            get => new(Clock, DateTimeKind.Utc);
+        }
+
+        public DateTime StartTime
+        {
+            [MethodImpl((MethodImplOptions)256)]
+            get => new(Start, DateTimeKind.Utc);
+        }
+
+        public TimeSpan TimerTime
+        {
+            [MethodImpl((MethodImplOptions)256)]
+            get => new(Timer);
+        }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        public static State Init()
+        {
+            var now = DateTime.UtcNow;
+            var ticks = (long)(Stopwatch.GetTimestamp() * stampToTicks);
+            return new State(ticks, now.Ticks, now.Ticks - ticks);
+        }
+
+        [MethodImpl((MethodImplOptions)256)]
+        public State UpdateStartTime(long start)
+        {
+            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
+            var clock = Math.Max(Clock, start + timer);
+            var newState = new State(timer, clock, start);
+            if (timer < newState.Timer || clock < newState.Clock) throw new Exception();
+            return newState;
+        }
+
+        [MethodImpl((MethodImplOptions)256)]
+        public State UpdateTimeStamp()
+        {
+            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
+            var clock = Math.Max(Clock, Start + timer);
+            var newState = new State(timer, clock, Start);
+            if (timer < newState.Timer || clock < newState.Clock) throw new InvalidDataException("Systemclock is moving backwards in time!");
+            return newState;
+        }
+
+        #endregion Public Methods
+    }
+
+    #endregion Private Classes
+
+    #region Private Fields
+
+    static readonly TimeSpan offset;
+
+    static readonly double stampToTicks;
+
+    static readonly object syncRoot = new();
+
+    static volatile State state;
+
+    #endregion Private Fields
+
+    #region Private Methods
+
+    [MethodImpl((MethodImplOptions)256)]
+    static State GetMonotonicState()
+    {
+        //one writer only
+        if (Monitor.TryEnter(syncRoot))
+        {
+            try
+            {
+                state = state.UpdateTimeStamp();
+                return state;
+            }
+            finally
+            {
+                Monitor.Exit(syncRoot);
+            }
+        }
+        lock (syncRoot) return state;
+    }
+
+    #endregion Private Methods
+
+    #region Public Structs
+
+    /// <summary>Provides a structure representing the average drift of values to a reference.</summary>
     public readonly struct Drift
     {
-        /// <summary>
-        /// Converts the drift to a timespan.
-        /// </summary>
-        /// <param name="drift"></param>
-        public static implicit operator TimeSpan(Drift drift) => drift.Average;
+        #region Internal Constructors
 
         internal Drift(double[] values, int count)
         {
@@ -47,97 +160,84 @@ public static class MonotonicTime
             Average = new TimeSpan((long)avg);
         }
 
-        /// <summary>
-        /// Gets the minimum drift within the range checked
-        /// </summary>
-        public TimeSpan Min { get; }
+        #endregion Internal Constructors
 
-        /// <summary>
-        /// Gets the maximum drift within the range checked
-        /// </summary>
-        public TimeSpan Max { get; }
+        #region Public Properties
 
-        /// <summary>
-        /// Gets the average drift within the range checked
-        /// </summary>
+        /// <summary>Gets the average drift within the range checked</summary>
         public TimeSpan Average { get; }
 
-        /// <summary>
-        /// Gets the standard deviation within the range checked
-        /// </summary>
+        /// <summary>Gets the maximum drift within the range checked</summary>
+        public TimeSpan Max { get; }
+
+        /// <summary>Gets the minimum drift within the range checked</summary>
+        public TimeSpan Min { get; }
+
+        /// <summary>Gets the standard deviation within the range checked</summary>
         public TimeSpan StdDev { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>Converts the drift to a timespan.</summary>
+        /// <param name="drift"></param>
+        public static implicit operator TimeSpan(Drift drift) => drift.Average;
+
+        #endregion Public Methods
     }
 
-    class State
+    #endregion Public Structs
+
+    #region Public Constructors
+
+    static MonotonicTime()
     {
-        public static State Init()
-        {
-            var now = DateTime.UtcNow;
-            var ticks = (long)(Stopwatch.GetTimestamp() * stampToTicks);
-            return new State(ticks, now.Ticks, now.Ticks - ticks);
-        }
-
-        State(long timer, long clock, long start)
-        {
-            Timer = timer;
-            Clock = clock;
-            Start = start;
-        }
-        public readonly long Clock;
-        public readonly long Timer;
-        public readonly long Start;
-
-        public TimeSpan TimerTime
-        {
-            [MethodImpl((MethodImplOptions)256)]
-            get => new TimeSpan(Timer);
-        }
-
-        public DateTime ClockTime
-        {
-            [MethodImpl((MethodImplOptions)256)]
-            get => new DateTime(Clock, DateTimeKind.Utc);
-        }
-
-        public DateTime StartTime
-        {
-            [MethodImpl((MethodImplOptions)256)]
-            get => new DateTime(Start, DateTimeKind.Utc);
-        }
-
-        [MethodImpl((MethodImplOptions)256)]
-        public State UpdateTimeStamp()
-        {
-            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
-            var clock = Math.Max(Clock, Start + timer);
-            var newState = new State(timer, clock, Start);
-            if (timer < newState.Timer || clock < newState.Clock) throw new Exception();
-            return newState;
-        }
-
-        [MethodImpl((MethodImplOptions)256)]
-        public State UpdateStartTime(long start)
-        {
-            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
-            var clock = Math.Max(Clock, start + timer);
-            var newState = new State(timer, clock, start);
-            if (timer < newState.Timer || clock < newState.Clock) throw new Exception();
-            return newState;
-        }
+        IsHighResolution = Stopwatch.IsHighResolution;
+        stampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
+        state = State.Init();
+        offset = state.ClockTime.ToLocalTime() - state.ClockTime;
     }
-    #region Static
 
-    static readonly object syncRoot = new();
-    static readonly TimeSpan offset;
-    static readonly double stampToTicks;
-    static volatile State state;
+    #endregion Public Constructors
 
-    /// <summary>
-    /// Indicates whether the timer is based on a high-resolution performance counter.
-    /// </summary>
+    #region Public Properties
+
+    /// <summary>Indicates whether the timer is based on a high-resolution performance counter.</summary>
     public static bool IsHighResolution { get; }
 
-    /// <summary>Calibrates the system start time and the current time. This is needed if the timer is used for a long time and the difference at <see cref="GetDrift" /> increases too much.</summary>
+    /// <summary>Gets the current monotonic advancing local time.</summary>
+    public static DateTime Now
+    {
+        [MethodImpl((MethodImplOptions)256)]
+        get => new(GetMonotonicState().Clock + offset.Ticks, DateTimeKind.Local);
+    }
+
+    /// <summary>Gets the systems start time.</summary>
+    public static DateTime StartTime => GetMonotonicState().StartTime;
+
+    /// <summary>Gets the current uptime.</summary>
+    public static TimeSpan Uptime
+    {
+        [MethodImpl((MethodImplOptions)256)]
+        get => GetMonotonicState().TimerTime;
+    }
+
+    /// <summary>Gets the current monotonic advancing utc time.</summary>
+    public static DateTime UtcNow
+    {
+        [MethodImpl((MethodImplOptions)256)]
+        get => GetMonotonicState().ClockTime;
+    }
+
+    #endregion Public Properties
+
+    #region Public Methods
+
+    /// <summary>
+    /// Calibrates the system start time and the current time. This is needed if the timer is used for a long time and the difference at <see cref="GetDrift"/>
+    /// increases too much.
+    /// </summary>
     /// <returns></returns>
     public static Drift Calibrate()
     {
@@ -166,8 +266,8 @@ public static class MonotonicTime
     }
 
     /// <summary>
-    /// Gets the drift between this instance and the system clock. This might increase over time (drift of performance counter / platform
-    /// high performance timer) and jump on time synchronizations or user interaction with the system time and cannot be corrected.
+    /// Gets the drift between this instance and the system clock. This might increase over time (drift of performance counter / platform high performance
+    /// timer) and jump on time synchronizations or user interaction with the system time and cannot be corrected.
     /// </summary>
     public static Drift GetDrift(int samples = 0)
     {
@@ -195,56 +295,5 @@ public static class MonotonicTime
         return new Drift(values, count);
     }
 
-    /// <summary>Gets the current monotonic advancing local time.</summary>
-    public static DateTime Now
-    {
-        [MethodImpl((MethodImplOptions)256)]
-        get => new(GetMonotonicState().Clock + offset.Ticks, DateTimeKind.Local);
-    }
-
-    /// <summary>Gets the systems start time.</summary>
-    public static DateTime StartTime => GetMonotonicState().StartTime;
-
-    /// <summary>Gets the current uptime.</summary>
-    public static TimeSpan Uptime
-    {
-        [MethodImpl((MethodImplOptions)256)]
-        get => GetMonotonicState().TimerTime;
-    }
-
-    /// <summary>Gets the current monotonic advancing utc time.</summary>
-    public static DateTime UtcNow
-    {
-        [MethodImpl((MethodImplOptions)256)]
-        get => GetMonotonicState().ClockTime;
-    }
-
-    static MonotonicTime()
-    {
-        IsHighResolution = Stopwatch.IsHighResolution;
-        stampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
-        state = State.Init();
-        offset = state.ClockTime.ToLocalTime() - state.ClockTime;
-    }
-
-    [MethodImpl((MethodImplOptions)256)]
-    static State GetMonotonicState()
-    {
-        //one writer only
-        if (Monitor.TryEnter(syncRoot))
-        {
-            try
-            {
-                state = state.UpdateTimeStamp();
-                return state;
-            }
-            finally
-            {
-                Monitor.Exit(syncRoot);
-            }
-        }
-        lock (syncRoot) return state;
-    }
-
-    #endregion
+    #endregion Public Methods
 }

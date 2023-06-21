@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Cave.Collections;
@@ -11,6 +12,7 @@ public static class IEnumerableExtension
     /// <summary>Converts to a list.</summary>
     /// <param name="enumerable">The <see cref="IEnumerable" /> instance to convert.</param>
     /// <returns>Returns a new <see cref="ArrayList" /> instance.</returns>
+    [SuppressMessage("Style", "IDE0058:Expression value is never used")]
     public static ArrayList ToArrayList(this IEnumerable enumerable)
     {
         var result = new ArrayList();
