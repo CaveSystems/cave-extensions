@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 using Cave.Collections;
 using NUnit.Framework;
 
@@ -9,6 +10,8 @@ namespace Test.Comparer;
 [TestFixture]
 public class DefaultComparerTests
 {
+    #region Public Methods
+
     [Test]
     public void EqualsArray()
     {
@@ -59,18 +62,34 @@ public class DefaultComparerTests
         Assert.AreEqual(false, DefaultComparer.Equals(o3, o1));
     }
 
-#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+    [Test]
+    public void IntegerArrayTest()
+    {
+        var a2 = new int[] { 1, 2 };
+        var a3 = new int[] { 1, 2, 3 };
+        var b2 = new int[] { 1, 2 };
+        Assert.IsTrue(DefaultComparer.Combine(a2, a3) < 0);
+        Assert.IsTrue(DefaultComparer.Combine(a3, a2) > 0);
+        Assert.IsTrue(DefaultComparer.Combine(a2, a2) == 0);
+        Assert.IsTrue(DefaultComparer.Combine(a2, b2) == 0);
+        Assert.IsTrue(DefaultComparer.Equals(a2, a2));
+        Assert.IsTrue(DefaultComparer.Equals(a2, b2));
+        Assert.IsFalse(DefaultComparer.Equals(a2, a3));
+    }
+
     [Test]
     public void TestCultureEqual()
     {
+#if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
         var savedCurrentCulture = CultureInfo.CurrentCulture;
         var savedCurrentUICulture = CultureInfo.CurrentUICulture;
         var rnd = new Random();
-        foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+        Parallel.ForEach(cultures, culture =>
         {
             if (culture.IsNeutralCulture)
             {
-                continue;
+                return;
             }
 
             if (Program.Verbose)
@@ -93,10 +112,12 @@ public class DefaultComparerTests
                 Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToLocalTime(), dt2.ToUniversalTime()));
                 Assert.AreEqual(true, DefaultComparer.Equals(dt2.ToUniversalTime(), dt2.ToLocalTime()));
             }
-        }
+        });
 
         Thread.CurrentThread.CurrentCulture = savedCurrentCulture;
         Thread.CurrentThread.CurrentUICulture = savedCurrentUICulture;
-    }
 #endif
+    }
+
+    #endregion Public Methods
 }

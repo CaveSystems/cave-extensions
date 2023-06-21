@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -10,6 +11,38 @@ namespace Cave;
 public static class BufferExtensions
 {
     #region Static
+
+    /// <summary>Concatenates buffers.</summary>
+    /// <param name="block1">First block</param>
+    /// <param name="array">Blocks to add.</param>
+    /// <returns>Returns a new buffer.</returns>
+    public static byte[] Concat(this byte[] block1, params byte[][] array)
+    {
+        var len = block1.Length + array.Sum(a => a.Length);
+        var result = new byte[len];
+
+        Buffer.BlockCopy(block1, 0, result, 0, block1.Length);
+        len = block1.Length;
+
+        foreach (var block in array)
+        {
+            Buffer.BlockCopy(block, 0, result, len, block.Length);
+            len += block.Length;
+        }
+        return result;
+    }
+
+    /// <summary>Concatenates buffers.</summary>
+    /// <param name="block1">First block</param>
+    /// <param name="block2">Second block.</param>
+    /// <returns>Returns a new buffer.</returns>
+    public static byte[] Concat(this byte[] block1, byte[] block2)
+    {
+        var result = new byte[block1.Length + block2.Length];
+        Buffer.BlockCopy(block1, 0, result, 0, block1.Length);
+        Buffer.BlockCopy(block2, 0, result, block1.Length, block2.Length);
+        return result;
+    }
 
     /// <summary>Deobfuscates a byte buffer.</summary>
     /// <param name="data">Byte buffer to deobfuscate.</param>
@@ -112,37 +145,37 @@ public static class BufferExtensions
         }
     }
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static ulong SwapEndian(this ulong value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static long SwapEndian(this long value) => value = (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static uint SwapEndian(this uint value) => (value << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | (value >> 24);
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static int SwapEndian(this int value) => (value << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | (value >> 24);
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static ushort SwapEndian(this ushort value) => (ushort)((value << 8) | (value >> 8));
 
-    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value" />.</summary>
+    /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -202,5 +235,5 @@ public static class BufferExtensions
         }
     }
 
-    #endregion
+    #endregion Static
 }

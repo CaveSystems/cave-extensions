@@ -6,32 +6,13 @@ namespace Test;
 
 public class UTFxxTests
 {
-    [Test]
-    public void Utf7Test()
-    {
-        for (int codepoint = 1; codepoint < 0x10FFFF; codepoint = codepoint * 3 + 7)
-        {
-            var character = char.ConvertFromUtf32(codepoint);
-            var test = (UTF7)character;
-            Assert.AreEqual(character, test.ToString());
-            Assert.AreEqual(character.Length, test.Length);
-        }
-    }
-
-    [Test]
-    public void Utf8Test()
-    {
-        for (int codepoint = 1; codepoint < 0x10FFFF; codepoint = codepoint * 3 + 7)
-        {
-            var character = char.ConvertFromUtf32(codepoint);
-            var test = (UTF8)character;
-            Assert.AreEqual(codepoint, test.Codepoints.Single());
-            Assert.AreEqual(character, test.ToString());
-            Assert.AreEqual(character.Length, test.Length);
-        }
-    }
+    #region Private Fields
 
     const string Violin = "\U0001D11E";
+
+    #endregion Private Fields
+
+    #region Public Methods
 
     [Test]
     public void Utf16Test()
@@ -58,6 +39,16 @@ public class UTFxxTests
             var data = testLe.Data;
             data.SwapEndian16();
             CollectionAssert.AreEqual(testBe.Data, data);
+        }
+        {
+            var concat = ((UTF16BE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+            Assert.AreEqual((UTF16BE)"TextWithMultipleParts", concat);
+            Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+        }
+        {
+            var concat = ((UTF16LE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+            Assert.AreEqual((UTF16LE)"TextWithMultipleParts", concat);
+            Assert.AreEqual("TextWithMultipleParts", concat.ToString());
         }
     }
 
@@ -87,5 +78,48 @@ public class UTFxxTests
             data.SwapEndian32();
             CollectionAssert.AreEqual(testBe.Data, data);
         }
+        {
+            var concat = ((UTF32BE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+            Assert.AreEqual((UTF32BE)"TextWithMultipleParts", concat);
+            Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+        }
+        {
+            var concat = ((UTF32LE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+            Assert.AreEqual((UTF32LE)"TextWithMultipleParts", concat);
+            Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+        }
     }
+
+    [Test]
+    public void Utf7Test()
+    {
+        for (int codepoint = 1; codepoint < 0x10FFFF; codepoint = codepoint * 3 + 7)
+        {
+            var character = char.ConvertFromUtf32(codepoint);
+            var test = (UTF7)character;
+            Assert.AreEqual(character, test.ToString());
+            Assert.AreEqual(character.Length, test.Length);
+        }
+        var concat = ((UTF7)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+        Assert.AreEqual((UTF7)"TextWithMultipleParts", concat);
+        Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+    }
+
+    [Test]
+    public void Utf8Test()
+    {
+        for (int codepoint = 1; codepoint < 0x10FFFF; codepoint = codepoint * 3 + 7)
+        {
+            var character = char.ConvertFromUtf32(codepoint);
+            var test = (UTF8)character;
+            Assert.AreEqual(codepoint, test.Codepoints.Single());
+            Assert.AreEqual(character, test.ToString());
+            Assert.AreEqual(character.Length, test.Length);
+        }
+        var concat = ((UTF8)"Text").Concat("With").Concat("Multiple").Concat("Parts");
+        Assert.AreEqual((UTF8)"TextWithMultipleParts", concat);
+        Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+    }
+
+    #endregion Public Methods
 }

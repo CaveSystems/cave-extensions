@@ -1,5 +1,6 @@
 ﻿using System;
 using Cave;
+using Cave.Collections;
 using Cave.Security;
 using NUnit.Framework;
 
@@ -8,6 +9,8 @@ namespace Test;
 [TestFixture]
 class PasswordTestTest
 {
+    #region Public Methods
+
     [Test]
     public void PBKDF2Test1()
     {
@@ -47,4 +50,6 @@ class PasswordTestTest
         test = PasswordTest.GuessBruteForceTime("göödPaßwörd!");
         Assert.IsTrue(test > TimeSpan.FromDays(30 * 365));
     }
+
+    #endregion Public Methods
 }

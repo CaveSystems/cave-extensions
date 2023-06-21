@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Cave;
+﻿namespace Cave;
 
 /// <summary>Provides an interface for hashing functions</summary>
 public interface IHashingFunction

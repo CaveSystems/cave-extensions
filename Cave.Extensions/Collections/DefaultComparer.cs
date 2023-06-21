@@ -8,7 +8,42 @@ namespace Cave.Collections;
 /// <summary>Gets a default comparer.</summary>
 public struct DefaultComparer
 {
-    #region Static
+    #region Private Fields
+
+    /// <summary>Provides access to the current comparer value.</summary>
+    int value;
+
+    #endregion Private Fields
+
+    #region Public Constructors
+
+    /// <summary>Creates a new instance of the <see cref="DefaultComparer"/> structure.</summary>
+    public DefaultComparer() { value = 0; }
+
+    #endregion Public Constructors
+
+    #region Public Methods
+
+    /// <summary>
+    /// This function compares each item in the first array to the item at the same index at the second array. The types of all items need to match and the
+    /// first comparison not matching returns the result.
+    /// </summary>
+    /// <param name="first">First array</param>
+    /// <param name="second">Second array</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static int Combine<T>(T[] first, T[] second) where T : struct
+    {
+        if (ReferenceEquals(first, second)) return 0;
+        var comparer = Comparer<T>.Default;
+        for (var i = 0; i < first.Length; i++)
+        {
+            if (i >= second.Length) return 1;
+            var result = comparer.Compare(first[i], second[i]);
+            if (result != 0) return result;
+        }
+        return first.Length - second.Length;
+    }
 
     /// <summary>Compares two byte arrays as fast as possible using the native bit size.</summary>
     /// <param name="array1">The first byte array to check for equality.</param>
@@ -116,12 +151,9 @@ public struct DefaultComparer
         }
     }
 
-    /// <summary>
-    /// Compares two objects by type and if they are arrays item by item. Otherwise the objs1 equals function is used to compare it to
-    /// obj2.
-    /// </summary>
-    /// <param name="value1">The first <see cref="object" /> to check for equality.</param>
-    /// <param name="value2">The second <see cref="object" /> to check for equality.</param>
+    /// <summary>Compares two objects by type and if they are arrays item by item. Otherwise the objs1 equals function is used to compare it to obj2.</summary>
+    /// <param name="value1">The first <see cref="object"/> to check for equality.</param>
+    /// <param name="value2">The second <see cref="object"/> to check for equality.</param>
     /// <returns>Returns true if the object equal each other.</returns>
     public static new bool Equals(object value1, object value2)
     {
@@ -199,80 +231,7 @@ public struct DefaultComparer
         return array2 is not null && ItemsEqual(array1, array2);
     }
 
-    /// <summary>Compares items of two arrays item by item without checking the type of the array.</summary>
-    /// <param name="array1">The first array its items are compared.</param>
-    /// <param name="array2">The second array its items are compared.</param>
-    /// <returns>Returns true if all items in both array equal each other and the number of items equals, too.</returns>
-    public static bool ItemsEqual(IEnumerable array1, IEnumerable array2)
-    {
-        if (array1 is null)
-        {
-            throw new ArgumentNullException(nameof(array1));
-        }
-
-        if (array2 is null)
-        {
-            throw new ArgumentNullException(nameof(array2));
-        }
-
-        var enumerator1 = array1.GetEnumerator();
-        var enumerator2 = array2.GetEnumerator();
-        enumerator1.Reset();
-        enumerator2.Reset();
-        while (true)
-        {
-            var moved1 = enumerator1.MoveNext();
-            var moved2 = enumerator2.MoveNext();
-            if (moved1 != moved2)
-            {
-                return false;
-            }
-
-            if (!moved1)
-            {
-                return true;
-            }
-
-            if (!object.Equals(enumerator1.Current, enumerator2.Current))
-            {
-                return false;
-            }
-        }
-    }
-
-    /// <summary>
-    /// This function compares each item in the first array to the item at the same index at the second array. The types of all items need
-    /// to match and the first comparison not matching returns the result.
-    /// </summary>
-    /// <param name="first">First array</param>
-    /// <param name="second">Second array</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    [Obsolete("Use DefaultComparer.Get(this.field1, other.field1, this.field2, other.field2, ... if possible!")]
-    public static int Combine<T>(T[] first, T[] second)
-    {
-        var comparer = Comparer<T>.Default;
-        if (first.Length != second.Length)
-        {
-            throw new ArgumentException();
-        }
-        for (var i = 0; i < first.Length; i++)
-        {
-            var result = comparer.Compare(first[i], second[i]);
-            if (first[i] is not null && second[i] is not null && (first[i]?.GetType() != second[i]?.GetType()))
-            {
-                throw new InvalidOperationException($"Item [{i}] does not match type between first and second array!");
-            }
-            if (result == 0)
-            {
-                continue;
-            }
-            return result < 0 ? -1 : 1;
-        }
-        return 0;
-    }
-
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -284,7 +243,7 @@ public struct DefaultComparer
         return result == 0 ? 0 : result < 0 ? -1 : 1;
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -299,7 +258,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i2, o2);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -317,7 +276,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i3, o3);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -338,7 +297,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i3, o3, i4, o4);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -362,7 +321,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i3, o3, i4, o4, i5, o5);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -389,7 +348,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i4, o4, i5, o5, i6, o6);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -419,7 +378,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i4, o4, i5, o5, i6, o6, i7, o7);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -452,7 +411,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i5, o5, i6, o6, i7, o7, i8, o8);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -489,7 +448,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i5, o5, i6, o6, i7, o7, i8, o8, i9, o9);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -529,7 +488,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i6, o6, i7, o7, i8, o8, i9, o9, i10, o10);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -572,7 +531,7 @@ public struct DefaultComparer
         return result != 0 ? result : Get(i6, o6, i7, o7, i8, o8, i9, o9, i10, o10, i11, o11);
     }
 
-    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}" /> on each pair and returns on the first difference.</summary>
+    /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
@@ -623,23 +582,46 @@ public struct DefaultComparer
     [MethodImpl((MethodImplOptions)256)]
     public static implicit operator int(DefaultComparer comparer) => comparer.value;
 
-    #endregion
+    /// <summary>Compares items of two arrays item by item without checking the type of the array.</summary>
+    /// <param name="array1">The first array its items are compared.</param>
+    /// <param name="array2">The second array its items are compared.</param>
+    /// <returns>Returns true if all items in both array equal each other and the number of items equals, too.</returns>
+    public static bool ItemsEqual(IEnumerable array1, IEnumerable array2)
+    {
+        if (array1 is null)
+        {
+            throw new ArgumentNullException(nameof(array1));
+        }
 
-    #region Fields
+        if (array2 is null)
+        {
+            throw new ArgumentNullException(nameof(array2));
+        }
 
-    /// <summary>Provides access to the current comparer value.</summary>
-    int value;
+        var enumerator1 = array1.GetEnumerator();
+        var enumerator2 = array2.GetEnumerator();
+        enumerator1.Reset();
+        enumerator2.Reset();
+        while (true)
+        {
+            var moved1 = enumerator1.MoveNext();
+            var moved2 = enumerator2.MoveNext();
+            if (moved1 != moved2)
+            {
+                return false;
+            }
 
-    #endregion
+            if (!moved1)
+            {
+                return true;
+            }
 
-    #region Constructors
-
-    /// <summary>Creates a new instance of the <see cref="DefaultComparer" /> structure.</summary>
-    public DefaultComparer() { value = 0; }
-
-    #endregion
-
-    #region Members
+            if (!object.Equals(enumerator1.Current, enumerator2.Current))
+            {
+                return false;
+            }
+        }
+    }
 
     /// <summary>Calculates the comparison and returns whether a difference is found or not.</summary>
     /// <typeparam name="T">Type to compare.</typeparam>
@@ -657,5 +639,5 @@ public struct DefaultComparer
         return value != 0;
     }
 
-    #endregion
+    #endregion Public Methods
 }

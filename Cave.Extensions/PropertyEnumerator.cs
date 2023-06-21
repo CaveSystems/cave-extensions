@@ -88,7 +88,7 @@ public class PropertyEnumerator : IEnumerator<PropertyData>, IEnumerable<Propert
         Current = stack.Pop() ?? throw new InvalidOperationException();
         if (Recursive)
         {
-            AddProperties(Current, Current.FullPath, Current.PropertyInfo.PropertyType, Current.CanGetValue ? Current.TryGetValue() : null);
+            AddProperties(Current, Current.PropertyInfo.PropertyType, Current.CanGetValue ? Current.TryGetValue() : null);
         }
 
         return true;
@@ -98,7 +98,7 @@ public class PropertyEnumerator : IEnumerator<PropertyData>, IEnumerable<Propert
     public void Reset()
     {
         stack = new();
-        AddProperties(null, string.Empty, RootType, RootObject);
+        AddProperties(null, RootType, RootObject);
     }
 
     /// <inheritdoc />
@@ -108,7 +108,7 @@ public class PropertyEnumerator : IEnumerator<PropertyData>, IEnumerable<Propert
 
     #region Members
 
-    void AddProperties(PropertyData parent, string rootPath, Type type, object instance)
+    void AddProperties(PropertyData parent, Type type, object instance)
     {
         foreach (var property in type.GetProperties(BindingFlags))
         {
@@ -118,7 +118,7 @@ public class PropertyEnumerator : IEnumerator<PropertyData>, IEnumerable<Propert
                 continue;
             }
 
-            var data = new PropertyData(parent, rootPath, property, instance);
+            var data = new PropertyData(parent, property, instance);
             if ((Filter != null) && Filter(data))
             {
                 continue;

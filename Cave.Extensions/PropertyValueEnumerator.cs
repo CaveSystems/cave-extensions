@@ -95,7 +95,7 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
                     /* getter throws error */
                 }
             }
-            AddProperties(current, current.FullPath, value);
+            AddProperties(current, value);
         }
 
         Current = current;
@@ -106,7 +106,7 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
     public void Reset()
     {
         stack = new();
-        AddProperties(null, string.Empty, Root);
+        AddProperties(null, Root);
     }
 
     /// <inheritdoc />
@@ -116,17 +116,10 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
 
     #region Members
 
-    void AddProperties(PropertyData parent, string rootPath, object instance)
+    void AddProperties(PropertyData parent, object instance)
     {
-        if (instance == null)
-        {
-            return;
-        }
-
-        if (instance is string)
-        {
-            return;
-        }
+        if (instance == null) return;
+        if (instance is string) return;
 
         var instanceType = instance.GetType();
         foreach (var propertyInfo in instanceType.GetProperties(BindingFlags))
@@ -142,7 +135,7 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
                 continue;
             }
 
-            var data = new PropertyData(parent, rootPath, propertyInfo, instance);
+            var data = new PropertyData(parent, propertyInfo, instance);
             if ((Filter != null) && Filter(data))
             {
                 continue;
@@ -155,13 +148,13 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
         {
             try
             {
-                HandleEnumerable(parent, rootPath, enumerable);
+                HandleEnumerable(parent, enumerable);
             }
             catch { }
         }
     }
 
-    void HandleEnumerable(PropertyData parent, string rootPath, IEnumerable enumerable)
+    void HandleEnumerable(PropertyData parent, IEnumerable enumerable)
     {
         var i = -1;
         foreach (var item in enumerable)
@@ -172,7 +165,6 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
                 continue;
             }
             var type = item.GetType();
-
             foreach (var property in type.GetProperties(BindingFlags))
             {
                 // skip nested
@@ -181,7 +173,7 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
                     continue;
                 }
 
-                var data = new PropertyData(parent, rootPath + $"[{i}]", property, item);
+                var data = new PropertyData(parent, property, item, i);
                 if ((Filter != null) && Filter(data))
                 {
                     continue;

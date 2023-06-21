@@ -116,6 +116,7 @@ class PropertyEnumeratorTests
             };
             var items = sequence.ToList();
             Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence1));
+            Assert.IsTrue(items.All(i => i.PropertyInfo != null));
         }
         else
         {
@@ -134,6 +135,8 @@ class PropertyEnumeratorTests
             };
             var items = sequence.ToList();
             Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence2));
+            Assert.IsTrue(items.All(i => i.PropertyInfo != null));
+            Assert.IsTrue(items.All(i => i.Source != null));
         }
     }
 
