@@ -31,11 +31,11 @@ public class UTFxxTests
             var testBe = (UTF16BE)character;
             Assert.AreEqual(codepoint, testBe.Codepoints.Single());
             Assert.AreEqual(character, testBe.ToString());
-            Assert.AreEqual(character.Length, testBe.Length);
+            Assert.AreEqual(1, testBe.Codepoints.Length);
             var testLe = (UTF16LE)character;
             Assert.AreEqual(codepoint, testLe.Codepoints.Single());
             Assert.AreEqual(character, testLe.ToString());
-            Assert.AreEqual(character.Length, testLe.Length);
+            Assert.AreEqual(1, testLe.Codepoints.Length);
             var data = testLe.Data;
             data.SwapEndian16();
             CollectionAssert.AreEqual(testBe.Data, data);
@@ -69,11 +69,11 @@ public class UTFxxTests
             var testBe = (UTF32BE)character;
             Assert.AreEqual(codepoint, testBe.Codepoints.Single());
             Assert.AreEqual(character, testBe.ToString());
-            Assert.AreEqual(character.Length, testBe.Length);
+            Assert.AreEqual(1, testBe.Codepoints.Length);
             var testLe = (UTF32LE)character;
             Assert.AreEqual(codepoint, testLe.Codepoints.Single());
             Assert.AreEqual(character, testLe.ToString());
-            Assert.AreEqual(character.Length, testLe.Length);
+            Assert.AreEqual(1, testLe.Codepoints.Length);
             var data = testLe.Data;
             data.SwapEndian32();
             CollectionAssert.AreEqual(testBe.Data, data);
@@ -98,7 +98,7 @@ public class UTFxxTests
             var character = char.ConvertFromUtf32(codepoint);
             var test = (UTF7)character;
             Assert.AreEqual(character, test.ToString());
-            Assert.AreEqual(character.Length, test.Length);
+            Assert.AreEqual(1, test.Codepoints.Length);
         }
         var concat = ((UTF7)"Text").Concat("With").Concat("Multiple").Concat("Parts");
         Assert.AreEqual((UTF7)"TextWithMultipleParts", concat);
@@ -114,7 +114,7 @@ public class UTFxxTests
             var test = (UTF8)character;
             Assert.AreEqual(codepoint, test.Codepoints.Single());
             Assert.AreEqual(character, test.ToString());
-            Assert.AreEqual(character.Length, test.Length);
+            Assert.AreEqual(1, test.Codepoints.Length);
         }
         var concat = ((UTF8)"Text").Concat("With").Concat("Multiple").Concat("Parts");
         Assert.AreEqual((UTF8)"TextWithMultipleParts", concat);

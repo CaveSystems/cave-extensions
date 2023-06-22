@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using Cave.Collections;
-
 #nullable enable
 
-#pragma warning disable CA1710
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Cave;
 
 /// <summary>
 /// Provides a string encoded on the heap using utf7. This will reduce the memory usage by about 40-50% on most western languages / ascii based character sets.
 /// </summary>
-public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
+public sealed class UTF7 : Unicode<UTF7>
 {
     #region Private Methods
 
@@ -34,27 +30,68 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
 
     #region Public Constructors
 
+    /// <summary>Creates a new empty instance of the <see cref="UTF7"/> class.</summary>
+    public UTF7() : base() { }
+
     /// <summary>Creates a new instance of the <see cref="UTF7"/> class.</summary>
     /// <param name="data">Content</param>
-    public UTF7(byte[] data) => Data = data;
+    public UTF7(byte[] data) : base(data) { }
 
     /// <summary>Creates a new instance of the <see cref="UTF7"/> class.</summary>
     /// <param name="text">Content</param>
-    public UTF7(string text) => Data = Encode(text);
+    public UTF7(string text) : base(Encode(text)) { }
 
     #endregion Public Constructors
 
     #region Public Properties
 
     /// <inheritdoc/>
-    public int[] Codepoints => ((UTF32LE)ToString()).Codepoints;
-
-    /// <summary>Gets the data bytes.</summary>
-    public byte[] Data { get; }
-
-    /// <summary>Gets the length.</summary>
-    /// <value>The length of the string.</value>
-    public int Length => ToString().Length;
+    public override int[] Codepoints
+    {
+        get
+        {
+            var data = Data;
+            var result = new int[data.Length];
+            var len = 0;
+            List<byte>? code = null;
+            for (var i = 0; i < data.Length; i++)
+            {
+                if (code != null)
+                {
+                    if (data[i] == '-')
+                    {
+                        var chunk = DecodeChunk(code.ToArray());
+                        result[len++] = char.ConvertToUtf32(chunk, 0);
+                        code = null;
+                    }
+                    else
+                    {
+                        code.Add(data[i]);
+                    }
+                }
+                else
+                {
+                    if (data[i] == '&')
+                    {
+                        if (data[++i] == '-')
+                        {
+                            result[len++] = '&';
+                        }
+                        else
+                        {
+                            code = new() { data[i] };
+                        }
+                    }
+                    else
+                    {
+                        result[len++] = data[i];
+                    }
+                }
+            }
+            Array.Resize(ref result, len);
+            return result;
+        }
+    }
 
     #endregion Public Properties
 
@@ -176,12 +213,6 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
     /// <returns>The result of the conversion.</returns>
     public static implicit operator UTF7(string s) => new(s);
 
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(UTF7 s1, UTF7 s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
-
     /// <summary>Concatenates two strings.</summary>
     /// <param name="left">First string.</param>
     /// <param name="right">Second string.</param>
@@ -189,55 +220,13 @@ public sealed class UTF7 : IUnicode, IComparable<UTF7>, IEquatable<UTF7>
     public static UTF7 operator +(UTF7 left, UTF7 right) => new(Encode(left.ToString() + right.ToString()));
 
     /// <inheritdoc/>
-    public static bool operator <(UTF7 left, UTF7 right) => left is null ? right is not null : left.CompareTo(right) < 0;
+    public override UTF7 FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
 
     /// <inheritdoc/>
-    public static bool operator <=(UTF7 left, UTF7 right) => left is null || (left.CompareTo(right) <= 0);
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(UTF7 s1, UTF7 s2) => s1 is null ? s2 is null : s1.Equals(s2);
+    public override UTF7 FromCodepoints(int[] codepoints, int start = 0, int length = -1) => new(ToString(codepoints.GetRange(start, length)));
 
     /// <inheritdoc/>
-    public static bool operator >(UTF7 left, UTF7 right) => left is not null && (left.CompareTo(right) > 0);
-
-    /// <inheritdoc/>
-    public static bool operator >=(UTF7 left, UTF7 right) => left is null ? right is null : left.CompareTo(right) >= 0;
-
-    /// <inheritdoc/>
-    public int CompareTo(object? obj) => obj is null ? 1 : CompareTo(obj.ToString());
-
-    /// <inheritdoc/>
-    public int CompareTo(string? other) => other is null ? 1 : ToString().CompareTo(other);
-
-    /// <inheritdoc/>
-    public int CompareTo(UTF7? other) => ToString().CompareTo(other?.ToString());
-
-    /// <inheritdoc/>
-    public int CompareTo(IUnicode? other) => other is null ? 1 : DefaultComparer.Combine(Codepoints, other.Codepoints);
-
-    /// <inheritdoc/>
-    public IUnicode Concat(string text) => text is null ? this : this + text;
-
-    /// <inheritdoc/>
-    public bool Equals(IUnicode? other) => other is not null && Codepoints.Equals(other.Codepoints);
-
-    /// <inheritdoc/>
-    public bool Equals(string? other) => ToString().Equals(other, StringComparison.Ordinal);
-
-    /// <inheritdoc/>
-    public bool Equals(UTF7? other) => (Length == other?.Length) && Data.SequenceEqual(other.Data);
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UTF7 utf7 && Equals(utf7);
-
-    /// <inheritdoc/>
-    public IEnumerator<char> GetEnumerator() => ((IEnumerable<char>)ToString()).GetEnumerator();
-
-    /// <inheritdoc/>
-    public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
+    public override UTF7 FromString(string text) => new(text);
 
     /// <inheritdoc/>
     public override string ToString() => Decode(Data);

@@ -78,8 +78,8 @@ public static class ArrayExtension
         Array.Empty<T>();
 #else
         new T[0];
-#endif
 
+#endif
 
     /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
     /// <typeparam name="T">Item type.</typeparam>
@@ -89,6 +89,12 @@ public static class ArrayExtension
     /// <returns>Returns a new array instance.</returns>
     public static T[] GetRange<T>(this T[] data, int index, int count)
     {
+        if (count == 0) return Empty<T>();
+        if (count < 0)
+        {
+            if (index == 0) return data;
+            count = data.Length - index + 1;
+        }
         var result = new T[count];
         Array.Copy(data, index, result, 0, count);
         return result;

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Cave.Collections;
 
 #nullable enable
 
@@ -12,13 +7,16 @@ using Cave.Collections;
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf32.</summary>
-public sealed class UTF32BE : IUnicode, IComparable<UTF32BE>, IEquatable<UTF32BE>
+public sealed class UTF32BE : Unicode<UTF32BE>
 {
     #region Public Constructors
 
+    /// <summary>Creates a new empty instance of the <see cref="UTF32BE"/> class.</summary>
+    public UTF32BE() : base() { }
+
     /// <summary>Creates a new instance of the <see cref="UTF32BE"/> class.</summary>
     /// <param name="data">Content</param>
-    public UTF32BE(byte[] data) => Data = data;
+    public UTF32BE(byte[] data) : base(data) { }
 
     #endregion Public Constructors
 
@@ -27,28 +25,10 @@ public sealed class UTF32BE : IUnicode, IComparable<UTF32BE>, IEquatable<UTF32BE
     /// <summary>Gets the empty instance.</summary>
     public static UTF32BE Empty { get; } = new UTF32BE(ArrayExtension.Empty<byte>());
 
-    /// <summary>Gets the unicode codepoints.</summary>
-    public int[] Codepoints => ConvertToCodepoints(Data).ToArray();
-
-    /// <summary>Gets the data bytes.</summary>
-    public byte[] Data { get; }
-
-    /// <summary>Gets the string length or csharp character count.</summary>
-    /// <remarks>
-    /// This is not the number of unicode characters since csharp uses utf16 with high and low surrogate pairs to represent non BMP (Basic Multilingual Plane) characters.
-    /// </remarks>
-    public int Length => ToString().Length;
-
     #endregion Public Properties
 
-    #region Public Methods
-
-    /// <summary>Converts the specified <paramref name="text"/> to an <see cref="UTF32BE"/> instance.</summary>
-    /// <param name="text">Text to convert.</param>
-    /// <returns>Returns a new <see cref="UTF32BE"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="NotImplementedException"></exception>
-    public static unsafe UTF32BE ConvertFromString(string text)
+    /// <inheritdoc/>
+    public override unsafe UTF32BE FromString(string text)
     {
         if (text is null)
         {
@@ -75,43 +55,37 @@ public sealed class UTF32BE : IUnicode, IComparable<UTF32BE>, IEquatable<UTF32BE
         return new(data);
     }
 
-    /// <summary>Converts the specified utf32 data to unicode codepoints.</summary>
-    /// <param name="data">Data to convert.</param>
-    /// <returns>Returns the unicode codepoints.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidDataException"></exception>
-    public static int[] ConvertToCodepoints(byte[] data)
+    /// <inheritdoc/>
+    public override int[] Codepoints
     {
-        if (data is null)
+        get
         {
-            throw new ArgumentNullException(nameof(data));
+            var data = Data;
+            if (BitConverter.IsLittleEndian)
+            {
+                data = (byte[])data.Clone();
+                data.SwapEndian32();
+            }
+            var result = new int[data.Length / 4];
+            Buffer.BlockCopy(data, 0, result, 0, data.Length);
+            return result;
         }
-        if (BitConverter.IsLittleEndian)
-        {
-            data = (byte[])data.Clone();
-            data.SwapEndian32();
-        }
-        var result = new int[data.Length / 4];
-        Buffer.BlockCopy(data, 0, result, 0, data.Length);
-        return result;
     }
 
-    /// <summary>Converts the specified utf32 data to a csharp string.</summary>
-    /// <param name="data">Data to convert.</param>
-    /// <returns>Returns a csharp string.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static string ConvertToString(byte[] data)
+    /// <inheritdoc/>
+    public override UTF32BE FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
+
+    /// <inheritdoc/>
+    public override UTF32BE FromCodepoints(int[] codepoints, int start = 0, int length = -1)
     {
-        if (data is null)
+        codepoints = codepoints.GetRange(start, length);
+        var data = new byte[codepoints.Length * 4];
+        Buffer.BlockCopy(codepoints, 0, data, 0, data.Length);
+        if (BitConverter.IsLittleEndian)
         {
-            throw new ArgumentNullException(nameof(data));
+            data.SwapEndian32();
         }
-        var sb = new StringBuilder();
-        foreach (var codepoint in ConvertToCodepoints(data))
-        {
-            _ = sb.Append(char.ConvertFromUtf32(codepoint));
-        }
-        return sb.ToString();
+        return new UTF32BE(data);
     }
 
     /// <summary>Performs an implicit conversion from <see cref="UTF32BE"/> to <see cref="string"/>.</summary>
@@ -122,70 +96,11 @@ public sealed class UTF32BE : IUnicode, IComparable<UTF32BE>, IEquatable<UTF32BE
     /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF32BE"/>.</summary>
     /// <param name="s">The string.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF32BE(string s) => s == null ? UTF32BE.Empty : ConvertFromString(s);
-
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(UTF32BE s1, UTF32BE s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
+    public static implicit operator UTF32BE(string s) => s == null ? UTF32BE.Empty : Empty.FromString(s);
 
     /// <summary>Concatenates two strings.</summary>
     /// <param name="left">First string.</param>
     /// <param name="right">Second string.</param>
     /// <returns>Returns a new instance.</returns>
     public static UTF32BE operator +(UTF32BE left, UTF32BE right) => new(left.Data.Concat(right.Data));
-
-    /// <inheritdoc/>
-    public static bool operator <(UTF32BE left, UTF32BE right) => left is null ? right is not null : left.CompareTo(right) < 0;
-
-    /// <inheritdoc/>
-    public static bool operator <=(UTF32BE left, UTF32BE right) => left is null || (left.CompareTo(right) <= 0);
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(UTF32BE s1, UTF32BE s2) => s1 is null ? s2 is null : s1.Equals(s2);
-
-    /// <inheritdoc/>
-    public static bool operator >(UTF32BE left, UTF32BE right) => left is not null && (left.CompareTo(right) > 0);
-
-    /// <inheritdoc/>
-    public static bool operator >=(UTF32BE left, UTF32BE right) => left is null ? right is null : left.CompareTo(right) >= 0;
-
-    /// <inheritdoc/>
-    public int CompareTo(IUnicode? other) => other is null ? 1 : DefaultComparer.Combine(Codepoints, other.Codepoints);
-
-    /// <inheritdoc/>
-    public int CompareTo(object? obj) => obj is null ? 1 : CompareTo(obj.ToString());
-
-    /// <inheritdoc/>
-    public int CompareTo(string? other) => other is null ? 1 : ToString().CompareTo(other);
-
-    /// <inheritdoc/>
-    public int CompareTo(UTF32BE? other) => other is null ? 1 : ToString().CompareTo(other.ToString());
-
-    /// <inheritdoc/>
-    public IUnicode Concat(string text) => text is null ? this : this + text;
-
-    /// <inheritdoc/>
-    public bool Equals(IUnicode? other) => other is not null && Codepoints.Equals(other.Codepoints);
-
-    /// <inheritdoc/>
-    public bool Equals(string? other) => ToString().Equals(other);
-
-    /// <inheritdoc/>
-    public bool Equals(UTF32BE? other) => other is not null && Data.SequenceEqual(other.Data);
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UTF32BE utf32 && Equals(utf32);
-
-    /// <inheritdoc/>
-    public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
-
-    /// <inheritdoc/>
-    public override string ToString() => ConvertToString(Data);
-
-    #endregion Public Methods
 }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using Cave.Collections;
+﻿#nullable enable
 
-#nullable enable
-
-#pragma warning disable CA1710
+using System;
 
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf16.</summary>
-public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE>
+public sealed class UTF16LE : Unicode<UTF16LE>
 {
     #region Private Methods
 
@@ -35,9 +29,12 @@ public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE
 
     #region Public Constructors
 
+    /// <summary>Creates a new empty instance of the <see cref="UTF8"/> class.</summary>
+    public UTF16LE() : base() { }
+
     /// <summary>Creates a new instance of the <see cref="UTF8"/> class.</summary>
     /// <param name="data">Content</param>
-    public UTF16LE(byte[] data) => Data = data;
+    public UTF16LE(byte[] data) : base(data) { }
 
     #endregion Public Constructors
 
@@ -46,28 +43,61 @@ public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE
     /// <summary>Gets the empty instance.</summary>
     public static UTF16LE Empty { get; } = new UTF16LE(ArrayExtension.Empty<byte>());
 
-    /// <summary>Gets the unicode codepoints.</summary>
-    public int[] Codepoints => ConvertToCodepoints(Data).ToArray();
-
-    /// <summary>Gets the data bytes.</summary>
-    public byte[] Data { get; }
-
-    /// <summary>Gets the string length or csharp character count.</summary>
-    /// <remarks>
-    /// This is not the number of unicode characters since csharp uses utf16 with high and low surrogate pairs to represent non BMP (Basic Multilingual Plane) characters.
-    /// </remarks>
-    public int Length => ToString().Length;
+    /// <inheritdoc/>
+    public override int[] Codepoints
+    {
+        get
+        {
+            var data = Data;
+            var chars = ConvertToChars(data);
+            var result = new int[chars.Length];
+            var len = 0;
+            for (var i = 0; i < chars.Length;)
+            {
+                int codepoint = chars[i++];
+                if (codepoint is >= 0xD800 and < 0xDFFF)
+                {
+                    int lowSurrogate = chars[i++];
+                    codepoint = 0x10000 + (((codepoint & 0x3FF) << 10) | (lowSurrogate & 0x3FF));
+                }
+                result[len++] = codepoint;
+            }
+            if (len != result.Length)
+            {
+                Array.Resize(ref result, len);
+            }
+            return result;
+        }
+    }
 
     #endregion Public Properties
 
     #region Public Methods
 
-    /// <summary>Converts the specified <paramref name="text"/> to an <see cref="UTF16LE"/> instance.</summary>
-    /// <param name="text">Text to convert.</param>
-    /// <returns>Returns a new <see cref="UTF16LE"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="NotImplementedException"></exception>
-    public static UTF16LE ConvertFromString(string text)
+    /// <summary>Performs an implicit conversion from <see cref="UTF16LE"/> to <see cref="string"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator string(UTF16LE s) => s.ToString();
+
+    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF32BE"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator UTF16LE(string s) => s == null ? Empty : Empty.FromString(s);
+
+    /// <summary>Concatenates two strings.</summary>
+    /// <param name="left">First string.</param>
+    /// <param name="right">Second string.</param>
+    /// <returns>Returns a new instance.</returns>
+    public static UTF16LE operator +(UTF16LE left, UTF16LE right) => new(left.Data.Concat(right.Data));
+
+    /// <inheritdoc/>
+    public override UTF16LE FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
+
+    /// <inheritdoc/>
+    public override UTF16LE FromCodepoints(int[] codepoints, int start = 0, int length = -1) => FromString(ToString(codepoints.GetRange(start, length)));
+
+    /// <inheritdoc/>
+    public override UTF16LE FromString(string text)
     {
         if (text is null)
         {
@@ -83,116 +113,6 @@ public sealed class UTF16LE : IUnicode, IComparable<UTF16LE>, IEquatable<UTF16LE
         }
         return new(data);
     }
-
-    /// <summary>Converts the specified utf16 data to unicode codepoints.</summary>
-    /// <param name="data">Data to convert.</param>
-    /// <returns>Returns the unicode codepoints.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidDataException"></exception>
-    public static int[] ConvertToCodepoints(byte[] data)
-    {
-        if (data is null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
-        var chars = ConvertToChars(data);
-        var result = new int[chars.Length];
-        var len = 0;
-        for (var i = 0; i < chars.Length;)
-        {
-            int codepoint = chars[i++];
-            if (codepoint is >= 0xD800 and < 0xDFFF)
-            {
-                int lowSurrogate = chars[i++];
-                codepoint = 0x10000 + (((codepoint & 0x3FF) << 10) | (lowSurrogate & 0x3FF));
-            }
-            result[len++] = codepoint;
-        }
-        if (len != result.Length)
-        {
-            Array.Resize(ref result, len);
-        }
-        return result;
-    }
-
-    /// <summary>Converts the specified utf16 data to a csharp string.</summary>
-    /// <param name="data">Data to convert.</param>
-    /// <returns>Returns a csharp string.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static string ConvertToString(byte[] data) => new(ConvertToChars(data));
-
-    /// <summary>Performs an implicit conversion from <see cref="UTF16LE"/> to <see cref="string"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator string(UTF16LE s) => s.ToString();
-
-    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF32BE"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF16LE(string s) => s == null ? Empty : ConvertFromString(s);
-
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(UTF16LE s1, UTF16LE s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
-
-    /// <summary>Concatenates two strings.</summary>
-    /// <param name="left">First string.</param>
-    /// <param name="right">Second string.</param>
-    /// <returns>Returns a new instance.</returns>
-    public static UTF16LE operator +(UTF16LE left, UTF16LE right) => new(left.Data.Concat(right.Data));
-
-    /// <inheritdoc/>
-    public static bool operator <(UTF16LE left, UTF16LE right) => left is null ? right is not null : left.CompareTo(right) < 0;
-
-    /// <inheritdoc/>
-    public static bool operator <=(UTF16LE left, UTF16LE right) => left is null || (left.CompareTo(right) <= 0);
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(UTF16LE s1, UTF16LE s2) => s1 is null ? s2 is null : s1.Equals(s2);
-
-    /// <inheritdoc/>
-    public static bool operator >(UTF16LE left, UTF16LE right) => left is not null && (left.CompareTo(right) > 0);
-
-    /// <inheritdoc/>
-    public static bool operator >=(UTF16LE left, UTF16LE right) => left is null ? right is null : left.CompareTo(right) >= 0;
-
-    /// <inheritdoc/>
-    public int CompareTo(object? obj) => obj is null ? 1 : CompareTo(obj.ToString());
-
-    /// <inheritdoc/>
-    public int CompareTo(string? other) => other is null ? 1 : ToString().CompareTo(other);
-
-    /// <inheritdoc/>
-    public int CompareTo(UTF16LE? other) => other is null ? 1 : ToString().CompareTo(other.ToString());
-
-    /// <inheritdoc/>
-    public int CompareTo(IUnicode? other) => other is null ? 1 : DefaultComparer.Combine(Codepoints, other.Codepoints);
-
-    /// <inheritdoc/>
-    public IUnicode Concat(string text) => text is null ? this : this + text;
-
-    /// <inheritdoc/>
-    public bool Equals(string? other) => other is not null && ToString().Equals(other);
-
-    /// <inheritdoc/>
-    public bool Equals(UTF16LE? other) => other is not null && Data.SequenceEqual(other.Data);
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UTF16LE utf16 && Equals(utf16);
-
-    /// <inheritdoc/>
-    public bool Equals(IUnicode? other) => other is not null && Codepoints.Equals(other.Codepoints);
-
-    /// <inheritdoc/>
-    public override int GetHashCode() => DefaultHashingFunction.Calculate(Data);
-
-    /// <inheritdoc/>
-    public override string ToString() => ConvertToString(Data);
 
     #endregion Public Methods
 }

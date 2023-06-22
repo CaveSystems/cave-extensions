@@ -7,7 +7,7 @@ namespace Cave.Security;
 
 /// <summary>Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC algorithm.</summary>
 public class PBKDF2 : DeriveBytes
-#if NET20 || NET35
+#if NET20 || NET35 || NETCOREAPP1_0 || NETCOREAPP1_1
   , IDisposable
 #endif
 {
