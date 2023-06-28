@@ -17,6 +17,7 @@ public class StringExtensionsTests
         CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
 #else
         new[] { CultureInfo.CurrentCulture, new CultureInfo("de-DE"), new CultureInfo("en-US") };
+
 #endif
 
     [Test]
@@ -607,7 +608,15 @@ public class StringExtensionsTests
         {
             var str = StringExtensions.ToString(value, culture);
             var read = typeof(T).ConvertValue(str, culture);
-            Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+            if (culture.Name.Contains("-SS") && typeof(T) == typeof(double))
+            {
+                //Bug in some ToString(CultureInfo("*-SS"), "R") implementations
+                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+            }
+            else
+            {
+                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+            }
         }
 
         void TestDateTime(DateTime? value, CultureInfo culture)

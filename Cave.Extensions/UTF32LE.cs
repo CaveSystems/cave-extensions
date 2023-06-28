@@ -5,7 +5,7 @@ using System;
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf32.</summary>
-public sealed class UTF32LE : Unicode<UTF32LE>
+public sealed class UTF32LE : Unicode
 {
     #region Public Constructors
 
@@ -44,40 +44,8 @@ public sealed class UTF32LE : Unicode<UTF32LE>
 
     #region Public Methods
 
-    /// <summary>Performs an implicit conversion from <see cref="UTF32LE"/> to <see cref="string"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator string(UTF32LE s) => s.ToString();
-
-    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF32LE"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF32LE(string? s) => s == null ? UTF32LE.Empty : Empty.FromString(s);
-
-    /// <summary>Concatenates two strings.</summary>
-    /// <param name="left">First string.</param>
-    /// <param name="right">Second string.</param>
-    /// <returns>Returns a new instance.</returns>
-    public static UTF32LE operator +(UTF32LE left, UTF32LE right) => new(left.Data.Concat(right.Data));
-
     /// <inheritdoc/>
-    public override UTF32LE FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
-
-    /// <inheritdoc/>
-    public override UTF32LE FromCodepoints(int[] codepoints, int start = 0, int length = -1)
-    {
-        codepoints = codepoints.GetRange(start, length);
-        var data = new byte[codepoints.Length * 4];
-        Buffer.BlockCopy(codepoints, 0, data, 0, data.Length);
-        if (!BitConverter.IsLittleEndian)
-        {
-            data.SwapEndian32();
-        }
-        return new UTF32LE(data);
-    }
-
-    /// <inheritdoc/>
-    public override unsafe UTF32LE FromString(string? text)
+    public static unsafe UTF32LE ConvertFromString(string text)
     {
         if (text is null)
         {
@@ -103,6 +71,41 @@ public sealed class UTF32LE : Unicode<UTF32LE>
         }
         return new(data);
     }
+
+    /// <summary>Performs an implicit conversion from <see cref="UTF32LE"/> to <see cref="string"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator string(UTF32LE s) => s.ToString();
+
+    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF32LE"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator UTF32LE(string? s) => s == null ? UTF32LE.Empty : ConvertFromString(s);
+
+    /// <summary>Concatenates two strings.</summary>
+    /// <param name="left">First string.</param>
+    /// <param name="right">Second string.</param>
+    /// <returns>Returns a new instance.</returns>
+    public static UTF32LE operator +(UTF32LE left, UTF32LE right) => new(left.Data.Concat(right.Data));
+
+    /// <inheritdoc/>
+    public override IUnicode FromArray(byte[] data, int start = 0, int length = -1) => new UTF32LE(data.GetRange(start, length));
+
+    /// <inheritdoc/>
+    public override IUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1)
+    {
+        codepoints = codepoints.GetRange(start, length);
+        var data = new byte[codepoints.Length * 4];
+        Buffer.BlockCopy(codepoints, 0, data, 0, data.Length);
+        if (!BitConverter.IsLittleEndian)
+        {
+            data.SwapEndian32();
+        }
+        return new UTF32LE(data);
+    }
+
+    /// <inheritdoc/>
+    public override IUnicode FromString(string text) => ConvertFromString(text);
 
     #endregion Public Methods
 }

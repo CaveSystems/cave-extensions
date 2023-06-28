@@ -10,7 +10,7 @@ namespace Cave;
 /// <summary>
 /// Provides a string encoded on the heap using utf7. This will reduce the memory usage by about 40-50% on most western languages / ascii based character sets.
 /// </summary>
-public sealed class UTF7 : Unicode<UTF7>
+public sealed class UTF7 : Unicode
 {
     #region Private Methods
 
@@ -220,13 +220,13 @@ public sealed class UTF7 : Unicode<UTF7>
     public static UTF7 operator +(UTF7 left, UTF7 right) => new(Encode(left.ToString() + right.ToString()));
 
     /// <inheritdoc/>
-    public override UTF7 FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
+    public override IUnicode FromArray(byte[] data, int start = 0, int length = -1) => new UTF7(data.GetRange(start, length));
 
     /// <inheritdoc/>
-    public override UTF7 FromCodepoints(int[] codepoints, int start = 0, int length = -1) => new(ToString(codepoints.GetRange(start, length)));
+    public override IUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1) => new UTF7(ToString(codepoints.GetRange(start, length)));
 
     /// <inheritdoc/>
-    public override UTF7 FromString(string text) => new(text);
+    public override IUnicode FromString(string text) => new UTF7(text);
 
     /// <inheritdoc/>
     public override string ToString() => Decode(Data);

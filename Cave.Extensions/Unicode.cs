@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Cave.Collections;
 
@@ -81,22 +82,9 @@ public abstract class Unicode : IUnicode
 
     /// <inheritdoc/>
     public IEnumerator<char> GetEnumerator() => ((IEnumerable<char>)ToString()).GetEnumerator();
-}
-
-/// <summary>Provides unicode base implementations</summary>
-/// <typeparam name="TUnicode"></typeparam>
-public abstract class Unicode<TUnicode> : Unicode, IUnicode<TUnicode>
-    where TUnicode : IUnicode
-{
-    /// <summary>Creates a new empty instance.</summary>
-    public Unicode() : base() { }
-
-    /// <summary>Creates a new instance</summary>
-    /// <param name="data">Content</param>
-    public Unicode(byte[] data) : base(data) { }
 
     /// <inheritdoc/>
-    public abstract TUnicode FromString(string text);
+    public abstract IUnicode FromString(string text);
 
     /// <inheritdoc/>
     public int CompareTo(string? other) => other is null ? 1 : CompareTo(FromString(other));
@@ -105,14 +93,17 @@ public abstract class Unicode<TUnicode> : Unicode, IUnicode<TUnicode>
     public bool Equals(string? other) => other is not null && Equals(FromString(other));
 
     /// <inheritdoc/>
-    public abstract TUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1);
+    public abstract IUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1);
 
     /// <inheritdoc/>
-    public abstract TUnicode FromArray(byte[] data, int start = 0, int length = -1);
+    public abstract IUnicode FromArray(byte[] data, int start = 0, int length = -1);
 
     /// <inheritdoc/>
-    public TUnicode Substring(int start = 0, int length = -1) => FromCodepoints(Codepoints, start, length);
+    public IUnicode Substring(int start = 0, int length = -1) => FromCodepoints(Codepoints, start, length);
 
     /// <inheritdoc/>
-    public TUnicode Concat(TUnicode other) => FromCodepoints(Codepoints.Concat(other.Codepoints));
+    public IUnicode Concat(IUnicode other) => FromCodepoints(Codepoints.Concat(other.Codepoints));
+
+    /// <inheritdoc/>
+    public IUnicode Concat(string other) => Concat(FromString(other));
 }

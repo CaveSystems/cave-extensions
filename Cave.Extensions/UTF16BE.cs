@@ -5,7 +5,7 @@ using System;
 namespace Cave;
 
 /// <summary>Provides a string encoded on the heap using utf16.</summary>
-public sealed class UTF16BE : Unicode<UTF16BE>
+public sealed class UTF16BE : Unicode
 {
     #region Private Methods
 
@@ -73,30 +73,7 @@ public sealed class UTF16BE : Unicode<UTF16BE>
 
     #region Public Methods
 
-    /// <summary>Performs an implicit conversion from <see cref="UTF16BE"/> to <see cref="string"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator string(UTF16BE s) => s.ToString();
-
-    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF16LE"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF16BE(string s) => s == null ? Empty : Empty.FromString(s);
-
-    /// <summary>Concatenates two strings.</summary>
-    /// <param name="left">First string.</param>
-    /// <param name="right">Second string.</param>
-    /// <returns>Returns a new instance.</returns>
-    public static UTF16BE operator +(UTF16BE left, UTF16BE right) => new(left.Data.Concat(right.Data));
-
-    /// <inheritdoc/>
-    public override UTF16BE FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
-
-    /// <inheritdoc/>
-    public override UTF16BE FromCodepoints(int[] codepoints, int start = 0, int length = -1) => FromString(ToString(codepoints.GetRange(start, length)));
-
-    /// <inheritdoc/>
-    public override UTF16BE FromString(string text)
+    public static UTF16BE ConvertFromString(string text)
     {
         var chars = text.ToCharArray();
         var data = new byte[chars.Length * 2];
@@ -105,8 +82,33 @@ public sealed class UTF16BE : Unicode<UTF16BE>
         {
             data.SwapEndian16();
         }
-        return new(data);
+        return new UTF16BE(data);
     }
+
+    /// <summary>Performs an implicit conversion from <see cref="UTF16BE"/> to <see cref="string"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator string(UTF16BE s) => s.ToString();
+
+    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF16LE"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator UTF16BE(string s) => s == null ? Empty : ConvertFromString(s);
+
+    /// <summary>Concatenates two strings.</summary>
+    /// <param name="left">First string.</param>
+    /// <param name="right">Second string.</param>
+    /// <returns>Returns a new instance.</returns>
+    public static UTF16BE operator +(UTF16BE left, UTF16BE right) => new(left.Data.Concat(right.Data));
+
+    /// <inheritdoc/>
+    public override IUnicode FromArray(byte[] data, int start = 0, int length = -1) => new UTF16BE(data.GetRange(start, length));
+
+    /// <inheritdoc/>
+    public override IUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1) => ConvertFromString(ToString(codepoints.GetRange(start, length)));
+
+    /// <inheritdoc/>
+    public override IUnicode FromString(string text) => ConvertFromString(text);
 
     #endregion Public Methods
 }

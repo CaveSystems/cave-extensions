@@ -8,7 +8,7 @@ namespace Cave;
 /// <summary>
 /// Provides a string encoded on the heap using utf8. This will reduce the memory usage by about 40-50% on most western languages / ascii based character sets.
 /// </summary>
-public sealed class UTF8 : Unicode<UTF8>
+public sealed class UTF8 : Unicode
 {
     #region Public Constructors
 
@@ -106,72 +106,8 @@ public sealed class UTF8 : Unicode<UTF8>
 
     #region Public Methods
 
-    /// <summary>Performs an implicit conversion from <see cref="UTF8"/> to <see cref="string"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator string(UTF8 s) => s.ToString();
-
-    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF8"/>.</summary>
-    /// <param name="s">The string.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator UTF8(string? s) => s == null ? new() : Empty.FromString(s);
-
-    /// <summary>Concatenates two strings.</summary>
-    /// <param name="left">First string.</param>
-    /// <param name="right">Second string.</param>
-    /// <returns>Returns a new instance.</returns>
-    public static UTF8 operator +(UTF8 left, UTF8 right) => new(left.Data.Concat(right.Data));
-
     /// <inheritdoc/>
-    public override UTF8 FromArray(byte[] data, int start = 0, int length = -1) => new(data.GetRange(start, length));
-
-    /// <inheritdoc/>
-    public override UTF8 FromCodepoints(int[] codepoints, int start = 0, int length = -1)
-    {
-        if (codepoints is null)
-        {
-            throw new ArgumentNullException(nameof(codepoints));
-        }
-        codepoints = codepoints.GetRange(start, length);
-        var data = new byte[codepoints.Length * 4];
-        var len = 0;
-        for (var i = 0; i < codepoints.Length; i++)
-        {
-            var codepoint = codepoints[i];
-            if (codepoint < 0x80)
-            {
-                data[len++] = (byte)codepoint;
-                continue;
-            }
-            if (codepoint < 0x800)
-            {
-                data[len++] = (byte)(0xC0 | (codepoint >> 6));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            if (codepoint < 0x10000)
-            {
-                data[len++] = (byte)(0xE0 | (codepoint >> 12));
-                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            if (codepoint < 0x110000)
-            {
-                data[len++] = (byte)(0xF0 | (codepoint >> 18));
-                data[len++] = (byte)(0x80 | ((codepoint >> 12) & 0x3F));
-                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
-                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
-                continue;
-            }
-            throw new NotImplementedException("Codepoints > 0x10ffff are not implemented!");
-        }
-        Array.Resize(ref data, len);
-        return new(data);
-    }
-
-    /// <inheritdoc/>
-    public override UTF8 FromString(string text)
+    public static UTF8 ConvertFromString(string text)
     {
         if (text is null)
         {
@@ -215,6 +151,73 @@ public sealed class UTF8 : Unicode<UTF8>
         Array.Resize(ref data, len);
         return new(data);
     }
+
+    /// <summary>Performs an implicit conversion from <see cref="UTF8"/> to <see cref="string"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator string(UTF8 s) => s.ToString();
+
+    /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF8"/>.</summary>
+    /// <param name="s">The string.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator UTF8(string? s) => s == null ? Empty : ConvertFromString(s);
+
+    /// <summary>Concatenates two strings.</summary>
+    /// <param name="left">First string.</param>
+    /// <param name="right">Second string.</param>
+    /// <returns>Returns a new instance.</returns>
+    public static UTF8 operator +(UTF8 left, UTF8 right) => new(left.Data.Concat(right.Data));
+
+    /// <inheritdoc/>
+    public override IUnicode FromArray(byte[] data, int start = 0, int length = -1) => new UTF8(data.GetRange(start, length));
+
+    /// <inheritdoc/>
+    public override IUnicode FromCodepoints(int[] codepoints, int start = 0, int length = -1)
+    {
+        if (codepoints is null)
+        {
+            throw new ArgumentNullException(nameof(codepoints));
+        }
+        codepoints = codepoints.GetRange(start, length);
+        var data = new byte[codepoints.Length * 4];
+        var len = 0;
+        for (var i = 0; i < codepoints.Length; i++)
+        {
+            var codepoint = codepoints[i];
+            if (codepoint < 0x80)
+            {
+                data[len++] = (byte)codepoint;
+                continue;
+            }
+            if (codepoint < 0x800)
+            {
+                data[len++] = (byte)(0xC0 | (codepoint >> 6));
+                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
+                continue;
+            }
+            if (codepoint < 0x10000)
+            {
+                data[len++] = (byte)(0xE0 | (codepoint >> 12));
+                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
+                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
+                continue;
+            }
+            if (codepoint < 0x110000)
+            {
+                data[len++] = (byte)(0xF0 | (codepoint >> 18));
+                data[len++] = (byte)(0x80 | ((codepoint >> 12) & 0x3F));
+                data[len++] = (byte)(0x80 | ((codepoint >> 6) & 0x3F));
+                data[len++] = (byte)(0x80 | (codepoint & 0x3F));
+                continue;
+            }
+            throw new NotImplementedException("Codepoints > 0x10ffff are not implemented!");
+        }
+        Array.Resize(ref data, len);
+        return new UTF8(data);
+    }
+
+    /// <inheritdoc/>
+    public override IUnicode FromString(string text) => ConvertFromString(text);
 
     #endregion Public Methods
 }
