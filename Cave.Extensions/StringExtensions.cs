@@ -182,6 +182,40 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string Box(this string text, string start, string end) => start + text + end;
 
+    /// <summary>Counts the unicode codepoints of the specified characters</summary>
+    /// <param name="text">Csharp string</param>
+    /// <returns>Returns the number of unicode codepoints.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static int CountCodepoints(this string text)
+    {
+        var result = 0;
+        int index;
+        for (index = 0; index < text.Length;)
+        {
+            result++;
+            index += char.IsHighSurrogate(text[index]) ? 2 : 1;
+        }
+        return result - (index - text.Length);
+    }
+
+    /// <summary>Counts the unicode codepoints of the specified characters</summary>
+    /// <param name="chars">Csharp characters</param>
+    /// <param name="usedChars">Optional: number of items used at the <paramref name="chars"/> array.</param>
+    /// <returns>Returns the number of unicode codepoints.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static int CountCodepoints(this char[] chars, int usedChars = -1)
+    {
+        if (usedChars < 0) usedChars = chars.Length;
+        var result = 0;
+        int index;
+        for (index = 0; index < usedChars;)
+        {
+            result++;
+            index += char.IsHighSurrogate(chars[index]) ? 2 : 1;
+        }
+        return result - (index - usedChars);
+    }
+
     /// <summary>Tries to detect the used newline chars in the specified string.</summary>
     /// <param name="text">The text.</param>
     /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
