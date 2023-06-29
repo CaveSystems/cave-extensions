@@ -7,27 +7,9 @@ using System.Text;
 
 namespace Cave;
 
-/// <summary>
-/// Provides a string encoded on the heap using utf7. This will reduce the memory usage by about 40-50% on most western languages / ascii based character sets.
-/// </summary>
+/// <summary>Provides a string encoded on the heap using utf7.</summary>
 public sealed class UTF7 : Unicode
 {
-    #region Private Methods
-
-    static string DecodeChunk(byte[] code)
-    {
-        var data = Base64.NoPadding.Decode(code);
-        return Encoding.BigEndianUnicode.GetString(data);
-    }
-
-    static string EncodeChunk(string text)
-    {
-        var data = Encoding.BigEndianUnicode.GetBytes(text);
-        return Base64.NoPadding.Encode(data);
-    }
-
-    #endregion Private Methods
-
     #region Public Constructors
 
     /// <summary>Creates a new empty instance of the <see cref="UTF7"/> class.</summary>
@@ -147,6 +129,13 @@ public sealed class UTF7 : Unicode
         return result.ToString();
     }
 
+    /// <summary>Provides extended UTF-7 decoding (rfc 3501)</summary>
+    public static string DecodeChunk(byte[] code)
+    {
+        var data = Base64.NoPadding.Decode(code);
+        return Encoding.BigEndianUnicode.GetString(data);
+    }
+
     /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
     public static byte[] Encode(string text)
     {
@@ -201,6 +190,13 @@ public sealed class UTF7 : Unicode
             _ = result.Append("&" + chunk + "-");
         }
         return ASCII.GetBytes(result.ToString());
+    }
+
+    /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
+    public static string EncodeChunk(string text)
+    {
+        var data = Encoding.BigEndianUnicode.GetBytes(text);
+        return Base64.NoPadding.Encode(data);
     }
 
     /// <summary>Performs an implicit conversion from <see cref="UTF7"/> to <see cref="string"/>.</summary>

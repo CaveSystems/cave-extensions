@@ -7,26 +7,6 @@ namespace Cave;
 /// <summary>Provides a string encoded on the heap using utf16.</summary>
 public sealed class UTF16LE : Unicode
 {
-    #region Private Methods
-
-    static char[] ConvertToChars(byte[] data)
-    {
-        if (data is null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
-        if (!BitConverter.IsLittleEndian)
-        {
-            data = (byte[])data.Clone();
-            data.SwapEndian16();
-        }
-        var chars = new char[data.Length / 2];
-        Buffer.BlockCopy(data, 0, chars, 0, data.Length);
-        return chars;
-    }
-
-    #endregion Private Methods
-
     #region Public Constructors
 
     /// <summary>Creates a new empty instance of the <see cref="UTF8"/> class.</summary>
@@ -44,29 +24,35 @@ public sealed class UTF16LE : Unicode
     public static UTF16LE Empty { get; } = new UTF16LE(ArrayExtension.Empty<byte>());
 
     /// <inheritdoc/>
-    public override int[] Codepoints
+    public override unsafe int[] Codepoints
     {
         get
         {
+            int len = Data.Length / 2, count = 0;
+            var codepoints = new int[len];
             var data = Data;
-            var chars = ConvertToChars(data);
-            var result = new int[chars.Length];
-            var len = 0;
-            for (var i = 0; i < chars.Length;)
+            fixed (byte* p = Data)
             {
-                int codepoint = chars[i++];
-                if (codepoint is >= 0xD800 and < 0xDFFF)
+                var ptr = (ushort*)p;
+                for (var i = 0; i < len;)
                 {
-                    int lowSurrogate = chars[i++];
-                    codepoint = 0x10000 + (((codepoint & 0x3FF) << 10) | (lowSurrogate & 0x3FF));
+                    char GetChar() => (char)(BitConverter.IsLittleEndian ? ptr[i] : ptr[i].SwapEndian());
+                    var c1 = GetChar();
+                    i++;
+                    if (char.IsHighSurrogate(c1))
+                    {
+                        var c2 = GetChar();
+                        i++;
+                        codepoints[count++] = char.ConvertToUtf32(c1, c2);
+                    }
+                    else
+                    {
+                        codepoints[count++] = c1;
+                    }
                 }
-                result[len++] = codepoint;
             }
-            if (len != result.Length)
-            {
-                Array.Resize(ref result, len);
-            }
-            return result;
+            Array.Resize(ref codepoints, count);
+            return codepoints;
         }
     }
 

@@ -35,7 +35,7 @@ public sealed class UTF32LE : Unicode
                 data.SwapEndian32();
             }
             var result = new int[data.Length / 4];
-            Buffer.BlockCopy(data, 0, result, 0, data.Length);
+            Buffer.BlockCopy(data, 0, result, 0, result.Length * 4);
             return result;
         }
     }
