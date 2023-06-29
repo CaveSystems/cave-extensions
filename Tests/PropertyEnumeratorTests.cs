@@ -21,7 +21,9 @@ class PropertyEnumeratorTests
 
         public long TestLong { get; } = rnd.Next() * (long)rnd.Next();
 
-        #endregion
+        public SomeStruct TestStruct { get; set; }
+
+        #endregion Properties
     }
 
     class Item
@@ -30,7 +32,7 @@ class PropertyEnumeratorTests
 
         public int TestInt { get; } = rnd.Next();
 
-        #endregion
+        #endregion Properties
     }
 
     class Root
@@ -45,7 +47,14 @@ class PropertyEnumeratorTests
 
         public object TestRandom { get; } = rnd;
 
-        #endregion
+        #endregion Properties
+    }
+
+    struct SomeStruct
+    {
+        public int IntField;
+
+        public int IntProperty { get => IntField; set => IntField = value; }
     }
 
     static readonly Random rnd = new();
@@ -69,6 +78,9 @@ class PropertyEnumeratorTests
         Assert.AreEqual(GetPropertyValueError.NullReference, root.TryGetPropertyValue("EmptyIntermediate.EmptyItem.TestInt", out int emptyItemTestInt));
         Assert.AreEqual(root.EmptyIntermediate?.EmptyItem?.TestInt ?? default, emptyItemTestInt);
         Assert.AreEqual(root.Intermediate, root.GetPropertyValue<Intermediate>("/Intermediate"));
+        Assert.AreEqual(root.Intermediate.ItemArray[0], root.GetPropertyValue<Item>("/Intermediate/ItemArray[0]"));
+        Assert.AreEqual(root.Intermediate.ItemArray[1], root.GetPropertyValue<Item>("/Intermediate/ItemArray[1]"));
+        Assert.AreEqual(root.Intermediate.ItemArray[2], root.GetPropertyValue<Item>("/Intermediate/ItemArray[2]"));
         Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue("Intermediate.TestLong"));
         Assert.AreEqual(root.Intermediate.TestLong, root.GetPropertyValue<object>("Intermediate.TestLong"));
         Assert.AreEqual(root.Intermediate.EmptyItem, root.GetPropertyValue("Intermediate.EmptyItem"));
@@ -94,50 +106,54 @@ class PropertyEnumeratorTests
         Assert.AreEqual(root.TestItem.TestInt, root.GetPropertyValue<int>("TestItem/TestInt"));
     }
 
-    static void TestSequence(IOrderedEnumerable<PropertyData> sequence, bool fullSequence)
+    static void TestFullSequenceNoSource(IOrderedEnumerable<PropertyData> sequence, Root root)
     {
-        if (fullSequence)
+        var sequence1 = new[]
         {
-            var sequence1 = new[]
-            {
-                "/EmptyIntermediate",
-                "/EmptyIntermediate/EmptyItem",
-                "/EmptyIntermediate/EmptyItem/TestInt",
-                "/EmptyIntermediate/ItemArray",
-                "/EmptyIntermediate/TestLong",
-                "/Intermediate",
-                "/Intermediate/EmptyItem",
-                "/Intermediate/EmptyItem/TestInt",
-                "/Intermediate/ItemArray",
-                "/Intermediate/TestLong",
-                "/TestItem",
-                "/TestItem/TestInt",
-                "/TestRandom"
-            };
-            var items = sequence.ToList();
-            Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence1));
-            Assert.IsTrue(items.All(i => i.PropertyInfo != null));
-        }
-        else
+            "/EmptyIntermediate",
+            "/EmptyIntermediate/EmptyItem",
+            "/EmptyIntermediate/EmptyItem/TestInt",
+            "/EmptyIntermediate/ItemArray",
+            "/EmptyIntermediate/TestLong",
+            "/EmptyIntermediate/TestStruct",
+            "/EmptyIntermediate/TestStruct/IntProperty",
+            "/Intermediate",
+            "/Intermediate/EmptyItem",
+            "/Intermediate/EmptyItem/TestInt",
+            "/Intermediate/ItemArray",
+            "/Intermediate/TestLong",
+            "/Intermediate/TestStruct",
+            "/Intermediate/TestStruct/IntProperty",
+            "/TestItem",
+            "/TestItem/TestInt",
+            "/TestRandom"
+        };
+        var items = sequence.ToList();
+        Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence1));
+        Assert.IsTrue(items.All(i => i.PropertyInfo != null));
+    }
+
+    static void TestSequenceWithSource(IOrderedEnumerable<PropertyData> sequence)
+    {
+        var sequence2 = new[]
         {
-            var sequence2 = new[]
-            {
-                "/EmptyIntermediate",
-                "/Intermediate",
-                "/Intermediate/EmptyItem",
-                "/Intermediate/ItemArray",
-                "/Intermediate/ItemArray[0]/TestInt",
-                "/Intermediate/ItemArray[2]/TestInt",
-                "/Intermediate/TestLong",
-                "/TestItem",
-                "/TestItem/TestInt",
-                "/TestRandom"
-            };
-            var items = sequence.ToList();
-            Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence2));
-            Assert.IsTrue(items.All(i => i.PropertyInfo != null));
-            Assert.IsTrue(items.All(i => i.Source != null));
-        }
+            "/EmptyIntermediate",
+            "/Intermediate",
+            "/Intermediate/EmptyItem",
+            "/Intermediate/ItemArray",
+            "/Intermediate/ItemArray[0]/TestInt",
+            "/Intermediate/ItemArray[2]/TestInt",
+            "/Intermediate/TestLong",
+            "/Intermediate/TestStruct",
+            "/Intermediate/TestStruct/IntProperty",
+            "/TestItem",
+            "/TestItem/TestInt",
+            "/TestRandom"
+        };
+        var items = sequence.ToList();
+        Assert.IsTrue(items.Select(p => p.FullPath).SequenceEqual(sequence2));
+        Assert.IsTrue(items.All(i => i.PropertyInfo != null));
+        Assert.IsTrue(items.All(i => i.Source != null));
     }
 
     static void TestType(Type type)
@@ -217,7 +233,7 @@ class PropertyEnumeratorTests
     {
         var root = new Root();
         var sequence = root.GetProperties(flags: PropertyFlags.FilterUnset | PropertyFlags.Recursive).OrderBy(p => p.FullPath);
-        TestSequence(sequence, false);
+        TestSequenceWithSource(sequence);
         TestRoot(root);
         foreach (var property in sequence)
         {
@@ -234,7 +250,7 @@ class PropertyEnumeratorTests
         var root = new Root();
         var enumerator = new PropertyEnumerator(typeof(Root), root, BindingFlags.Public | BindingFlags.Instance, true);
         var sequence = enumerator.OrderBy(p => p.FullPath);
-        TestSequence(sequence, true);
+        TestFullSequenceNoSource(sequence, root);
         TestRoot(root);
     }
 
@@ -244,7 +260,7 @@ class PropertyEnumeratorTests
         var root = new Root();
         var enumerator = new PropertyValueEnumerator(root, BindingFlags.Public | BindingFlags.Instance, true);
         var sequence = enumerator.OrderBy(p => p.FullPath);
-        TestSequence(sequence, false);
+        TestSequenceWithSource(sequence);
         TestRoot(root);
         foreach (var property in sequence)
         {
@@ -265,6 +281,7 @@ class PropertyEnumeratorTests
     [Test]
     public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).GetTypeInfo().Assembly.GetExportedTypes());
 #else
+
     [Test]
     public void TestTypes_Cave() => TestTypes(typeof(StringExtensions).Assembly.GetExportedTypes());
 
@@ -279,5 +296,6 @@ class PropertyEnumeratorTests
 
     [Test]
     public void TestTypes_SystemXml() => TestTypes(typeof(XmlDocument).Assembly.GetExportedTypes());
+
 #endif
 }
