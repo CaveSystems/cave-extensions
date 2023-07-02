@@ -17,6 +17,9 @@ public interface IUnicode : IComparable, IComparable<IUnicode>, IEquatable<IUnic
     /// <summary>Gets the data bytes.</summary>
     byte[] Data { get; }
 
+    /// <summary>Gets the unicode byte order mark.</summary>
+    byte[] ByteOrderMark { get; }
+
     /// <summary>Creates the <see cref="IUnicode"/> instance from the specified <paramref name="text"/> by ignoring all errors and incomplete/invalid characters.</summary>
     /// <param name="text">Csharp string instance</param>
     /// <returns>Returns a new <see cref="IUnicode"/> instance</returns>

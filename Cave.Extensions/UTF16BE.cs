@@ -23,6 +23,9 @@ public sealed class UTF16BE : Unicode
     /// <summary>Gets the empty instance.</summary>
     public static UTF16BE Empty { get; } = new UTF16BE(ArrayExtension.Empty<byte>());
 
+    /// <inheritdoc/>
+    public override byte[] ByteOrderMark => new byte[] { 0xFE, 0xFF };
+
     /// <summary>Gets the unicode codepoints.</summary>
     public override unsafe int[] Codepoints
     {

@@ -43,11 +43,14 @@ public abstract class Unicode : IUnicode
     /// <param name="data">Content</param>
     public Unicode(byte[] data) => Data = data;
 
-    /// <summary>Gets the unicode codepoints.</summary>
+    /// <inheritdoc/>
     public abstract int[] Codepoints { get; }
 
-    /// <summary>Gets the data bytes.</summary>
+    /// <inheritdoc/>
     public byte[] Data { get; }
+
+    /// <inheritdoc/>
+    public abstract byte[] ByteOrderMark { get; }
 
     /// <inheritdoc/>
     public int CompareTo(object? obj) => obj is not IUnicode unicode ? 1 : CompareTo(unicode);

@@ -24,6 +24,9 @@ public sealed class UTF32BE : Unicode
     public static UTF32BE Empty { get; } = new UTF32BE(ArrayExtension.Empty<byte>());
 
     /// <inheritdoc/>
+    public override byte[] ByteOrderMark => new byte[] { 0x00, 0x00, 0xFE, 0xFF };
+
+    /// <inheritdoc/>
     public override int[] Codepoints
     {
         get

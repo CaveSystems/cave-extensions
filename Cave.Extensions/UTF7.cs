@@ -28,6 +28,9 @@ public sealed class UTF7 : Unicode
     #region Public Properties
 
     /// <inheritdoc/>
+    public override byte[] ByteOrderMark => new byte[] { 0x2B, 0x2F, 0x76 };
+
+    /// <inheritdoc/>
     public override int[] Codepoints
     {
         get
@@ -53,11 +56,11 @@ public sealed class UTF7 : Unicode
                 }
                 else
                 {
-                    if (data[i] == '&')
+                    if (data[i] == '+')
                     {
                         if (data[++i] == '-')
                         {
-                            result[len++] = '&';
+                            result[len++] = '+';
                         }
                         else
                         {
@@ -86,7 +89,7 @@ public sealed class UTF7 : Unicode
         {
             throw new ArgumentNullException(nameof(data));
         }
-        if (!data.Contains((byte)'&'))
+        if (!data.Contains((byte)'+'))
         {
             return ASCII.GetString(data);
         }
@@ -109,11 +112,11 @@ public sealed class UTF7 : Unicode
             }
             else
             {
-                if (data[i] == '&')
+                if (data[i] == '+')
                 {
                     if (data[++i] == '-')
                     {
-                        _ = result.Append('&');
+                        _ = result.Append('+');
                     }
                     else
                     {
@@ -122,7 +125,7 @@ public sealed class UTF7 : Unicode
                 }
                 else
                 {
-                    _ = result.Append(data[i]);
+                    _ = result.Append((char)data[i]);
                 }
             }
         }
@@ -133,7 +136,7 @@ public sealed class UTF7 : Unicode
     public static string DecodeChunk(byte[] code)
     {
         var data = Base64.NoPadding.Decode(code);
-        return Encoding.BigEndianUnicode.GetString(data);
+        return new UTF16BE(data).ToString();
     }
 
     /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
@@ -148,20 +151,20 @@ public sealed class UTF7 : Unicode
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
-            var isCodeChar = ch is (< (char)0x20 or > (char)0x25) and (< (char)0x27 or > (char)0x7e);
+            var isCodeChar = ((int)ch) is < 0x20 or (> 0x20 and < 0x30) or > 0x7b;
             if (isCodeChar)
             {
-                if (ch == '&')
+                if (ch == '+')
                 {
                     if (code != null)
                     {
                         var chunk = EncodeChunk(code.ToString());
-                        _ = result.Append($"&{chunk}-&-");
+                        _ = result.Append($"+{chunk}-+-");
                         code = null;
                     }
                     else
                     {
-                        _ = result.Append("&-");
+                        _ = result.Append("+-");
                     }
                 }
                 else
@@ -175,7 +178,7 @@ public sealed class UTF7 : Unicode
                 if (code != null)
                 {
                     var chunk = EncodeChunk(code.ToString());
-                    _ = result.Append($"&{chunk}-{ch}");
+                    _ = result.Append($"+{chunk}-{ch}");
                     code = null;
                 }
                 else
@@ -187,7 +190,7 @@ public sealed class UTF7 : Unicode
         if (code != null)
         {
             var chunk = EncodeChunk(code.ToString());
-            _ = result.Append("&" + chunk + "-");
+            _ = result.Append($"+{chunk}-");
         }
         return ASCII.GetBytes(result.ToString());
     }
@@ -195,7 +198,7 @@ public sealed class UTF7 : Unicode
     /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
     public static string EncodeChunk(string text)
     {
-        var data = Encoding.BigEndianUnicode.GetBytes(text);
+        var data = ((UTF16BE)text).Data;
         return Base64.NoPadding.Encode(data);
     }
 

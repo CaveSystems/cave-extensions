@@ -27,6 +27,9 @@ public sealed class UTF8 : Unicode
     public static UTF8 Empty { get; } = new();
 
     /// <inheritdoc/>
+    public override byte[] ByteOrderMark => new byte[] { 0xEF, 0xBB, 0xBF };
+
+    /// <inheritdoc/>
     public override int[] Codepoints
     {
         get

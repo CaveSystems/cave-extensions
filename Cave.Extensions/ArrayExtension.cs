@@ -93,7 +93,7 @@ public static class ArrayExtension
         if (count < 0)
         {
             if (index == 0) return data;
-            count = data.Length - index + 1;
+            count = data.Length - index;
         }
         var result = new T[count];
         Array.Copy(data, index, result, 0, count);

@@ -6,11 +6,26 @@ namespace Test;
 
 public class UTFxxTests
 {
-    #region Private Fields
+    #region Private Methods
+
+    void TestBOM(IUnicode instance)
+    {
+        var withBOM = instance.AddByteOrderMark();
+        var withoutBOM = instance.RemoveByteOrderMark();
+        Assert.AreNotEqual(withBOM, withoutBOM);
+        Assert.AreEqual(withBOM, withoutBOM.AddByteOrderMark());
+        Assert.AreEqual(withoutBOM, withBOM.RemoveByteOrderMark());
+        Assert.AreSame(withBOM, withBOM.AddByteOrderMark());
+        Assert.AreSame(withoutBOM, withoutBOM.RemoveByteOrderMark());
+    }
+
+    #endregion Private Methods
+
+    #region Public Fields
 
     public const string Violin = "\U0001D11E";
 
-    #endregion Private Fields
+    #endregion Public Fields
 
     #region Public Methods
 
@@ -44,11 +59,13 @@ public class UTFxxTests
             var concat = ((UTF16BE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
             Assert.AreEqual((UTF16BE)"TextWithMultipleParts", concat);
             Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+            TestBOM((UTF16BE)concat + Violin);
         }
         {
             var concat = ((UTF16LE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
             Assert.AreEqual((UTF16LE)"TextWithMultipleParts", concat);
             Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+            TestBOM((UTF16LE)concat + Violin);
         }
     }
 
@@ -82,17 +99,22 @@ public class UTFxxTests
             var concat = ((UTF32BE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
             Assert.AreEqual((UTF32BE)"TextWithMultipleParts", concat);
             Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+            TestBOM((UTF32BE)concat + Violin);
         }
         {
             var concat = ((UTF32LE)"Text").Concat("With").Concat("Multiple").Concat("Parts");
             Assert.AreEqual((UTF32LE)"TextWithMultipleParts", concat);
             Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+            TestBOM((UTF32LE)concat + Violin);
         }
     }
 
     [Test]
     public void Utf7Test()
     {
+        Assert.AreEqual("+ANw-bergr+APYA3w-e+-+-", ASCII.GetString(UTF7.Encode("Übergröße++")));
+        Assert.AreEqual("Übergröße++", UTF7.Decode(ASCII.GetBytes("+ANw-bergr+APYA3w-e+-+-")));
+
         for (int codepoint = 1; codepoint < 0x10FFFF; codepoint = codepoint * 3 + 7)
         {
             var character = char.ConvertFromUtf32(codepoint);
@@ -119,6 +141,7 @@ public class UTFxxTests
         var concat = ((UTF8)"Text").Concat("With").Concat("Multiple").Concat("Parts");
         Assert.AreEqual((UTF8)"TextWithMultipleParts", concat);
         Assert.AreEqual("TextWithMultipleParts", concat.ToString());
+        TestBOM((UTF8)concat + Violin);
     }
 
     #endregion Public Methods
