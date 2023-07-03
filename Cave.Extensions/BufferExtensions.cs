@@ -155,7 +155,7 @@ public static class BufferExtensions
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static long SwapEndian(this long value) => (value << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000) << 8) | ((value >> 8) & 0xFF000000) | ((value >> 24) & 0xFF0000) | ((value >> 40) & 0xFF00) | (value >> 56);
+    public static long SwapEndian(this long value) => (long)SwapEndian((ulong)value);
 
     /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
@@ -167,7 +167,7 @@ public static class BufferExtensions
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static int SwapEndian(this int value) => (value << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | (value >> 24);
+    public static int SwapEndian(this int value) => (int)SwapEndian((uint)value);
 
     /// <summary>Returns a value with swapped endianess of the specified <paramref name="value"/>.</summary>
     /// <param name="value">Value to swap endianess at.</param>
@@ -179,12 +179,13 @@ public static class BufferExtensions
     /// <param name="value">Value to swap endianess at.</param>
     /// <returns>Returns the value with swapped endianess.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static short SwapEndian(this short value) => (short)((value << 8) | (value >> 8));
+    public static short SwapEndian(this short value) => (short)SwapEndian((ushort)value);
 
     /// <summary>Swaps low and high byte for a byte buffer containing 16 bit values inplace.</summary>
     /// <param name="data">Buffer to change endianess at.</param>
     public static unsafe void SwapEndian16(this byte[] data)
     {
+        if ((data.Length & 0b1) != 0) throw new ArgumentOutOfRangeException(nameof(data), "Array length does not match 16 bit data!");
         unchecked
         {
             fixed (byte* ptr = data)
@@ -203,12 +204,13 @@ public static class BufferExtensions
     /// <param name="data">Buffer to change endianess at.</param>
     public static unsafe void SwapEndian32(this byte[] data)
     {
+        if ((data.Length & 0b11) != 0) throw new ArgumentOutOfRangeException(nameof(data), "Array length does not match 32 bit data!");
         unchecked
         {
             fixed (byte* ptr = data)
             {
                 var pointer = (uint*)ptr;
-                var len = data.Length / 2;
+                var len = data.Length / 4;
                 for (var i = 0; i < len; i++)
                 {
                     pointer[i] = SwapEndian(pointer[i]);
@@ -221,12 +223,13 @@ public static class BufferExtensions
     /// <param name="data">Buffer to change endianess at.</param>
     public static unsafe void SwapEndian64(this byte[] data)
     {
+        if ((data.Length & 0b111) != 0) throw new ArgumentOutOfRangeException(nameof(data), "Array length does not match 64 bit data!");
         unchecked
         {
             fixed (byte* ptr = data)
             {
-                var pointer = (uint*)ptr;
-                var len = data.Length / 2;
+                var pointer = (ulong*)ptr;
+                var len = data.Length / 8;
                 for (var i = 0; i < len; i++)
                 {
                     pointer[i] = SwapEndian(pointer[i]);

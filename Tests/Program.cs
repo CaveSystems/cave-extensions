@@ -32,10 +32,9 @@ class Program
 #endif
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(frameworkVersion);
-        Console.WriteLine();
+        Console.ResetColor();
         foreach (var type in types)
         {
-            Console.ResetColor();
 #if ALTERNATE_CODE
             var attrib = type.GetTypeInfo().GetCustomAttribute<TestFixtureAttribute>();
             if (attrib is not TestFixtureAttribute) continue;
@@ -48,7 +47,9 @@ class Program
             }
 #endif
 
-            Console.WriteLine("Create " + type);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Program.cs: info TI0000: Create {type}: {frameworkVersion}");
+            Console.ResetColor();
             var instance = Activator.CreateInstance(type);
             var methods = type.GetMethods();
             foreach (var method in methods)
@@ -67,9 +68,7 @@ class Program
 
                 GC.Collect(999, GCCollectionMode.Forced);
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name}: {frameworkVersion}");
-                Console.ResetColor();
                 try
                 {
                     method.Invoke(instance, null);
@@ -79,26 +78,24 @@ class Program
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: {ex.Message}: {frameworkVersion}");
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: Error {method.Name}: {frameworkVersion}: {ex.Message}");
                     Console.WriteLine(ex.ToString());
                     Console.WriteLine(ex.StackTrace);
                     Console.ResetColor();
                     errors++;
                 }
-                Console.WriteLine("---");
             }
         }
         if (errors == 0)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"---: info TI9999: All tests successfully completed: {frameworkVersion}");
+            Console.WriteLine($"Program.cs: info TI9999: All tests successfully completed: {frameworkVersion}");
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"---: error TE9999: {errors} tests failed: {frameworkVersion}");
+            Console.WriteLine($"Program.cs: error TE9999: {errors} tests failed: {frameworkVersion}");
         }
         Console.ResetColor();
         if (Debugger.IsAttached)
@@ -112,6 +109,7 @@ class Program
 #if ALTERNATE_CODE
     static void WaitExit() { }
 #else
+
     static void WaitExit()
     {
         Console.Write("--- press enter to exit ---");
@@ -120,5 +118,6 @@ class Program
             ;
         }
     }
+
 #endif
 }

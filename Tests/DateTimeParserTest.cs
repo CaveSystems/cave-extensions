@@ -16,7 +16,7 @@ class DateTimeParserTest
     {
         if (ci.Calendar is not GregorianCalendar)
         {
-            Debug.WriteLine($"Cannot test culture {ci} and format {format}!");
+            Console.WriteLine($"Cannot test culture {ci} and format {format}!");
             return;
         }
         var text = dt.ToString(format, ci);
@@ -36,6 +36,7 @@ class DateTimeParserTest
     #endregion Private Methods
 
 #if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+
     [Test]
     public void DateTimeParserTests()
     {
@@ -48,5 +49,6 @@ class DateTimeParserTest
             Test(culture, DateTime.Now, StringExtensions.DisplayDateTimeFormat, TimeSpan.FromMilliseconds(1));
         });
     }
+
 #endif
 }
