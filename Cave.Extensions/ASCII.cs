@@ -8,12 +8,12 @@ namespace Cave;
 /// <summary>Gets access to ASCII chars / bytes.</summary>
 public static class ASCII
 {
-    #region Nested type: Bytes
+    #region Public Classes
 
     /// <summary>Gets access to ASCII.Bytes.</summary>
     public static class Bytes
     {
-        #region Static
+        #region Public Fields
 
         /// <summary>Carriage return = 0x13.</summary>
         public const byte CR = 0x0d;
@@ -23,6 +23,10 @@ public static class ASCII
 
         /// <summary>Gets space [ ].</summary>
         public const byte Space = 0x20;
+
+        #endregion Public Fields
+
+        #region Public Properties
 
         /// <summary>Gets arithmetic operators.</summary>
         public static IList<byte> ArithmeticOperators =>
@@ -417,17 +421,13 @@ public static class ASCII
                 0xbf
             };
 
-        #endregion
+        #endregion Public Properties
     }
-
-    #endregion
-
-    #region Nested type: Strings
 
     /// <summary>Gets access to ASCII.Strings.</summary>
     public static class Strings
     {
-        #region Static
+        #region Public Fields
 
         /// <summary>arithmetic operators [+-*/=^].</summary>
         public const string ArithmeticOperators = "+-*/=^";
@@ -438,9 +438,7 @@ public static class ASCII
         /// <summary>Carriage return = 0x13.</summary>
         public const string CR = "\r";
 
-        /// <summary>
-        /// Carriage return <![CDATA[&]]> line feed.
-        /// </summary>
+        /// <summary>Carriage return <![CDATA[&]]> line feed.</summary>
         public const string CRLF = "\r\n";
 
         /// <summary>digits [0-9].</summary>
@@ -489,12 +487,12 @@ public static class ASCII
         /// <summary>utf8 bom.</summary>
         public const string UTF8BOM = "\xef\xbb\xbf";
 
-        #endregion
+        #endregion Public Fields
     }
 
-    #endregion
+    #endregion Public Classes
 
-    #region Static
+    #region Public Methods
 
     /// <summary>Cleans a string from all non ascii and control characters by replacing invalid chars.</summary>
     /// <param name="text">The string to clean.</param>
@@ -633,9 +631,7 @@ public static class ASCII
         return new(result.ToArray());
     }
 
-    /// <summary>
-    /// Escapes the character by its hexadecimal representation (<![CDATA[\'x'YY]]> or <![CDATA[\'u'YYYY]]> depending on the charset).
-    /// </summary>
+    /// <summary>Escapes the character by its hexadecimal representation ( <![CDATA[\'x'YY]]> or <![CDATA[\'u'YYYY]]> depending on the charset).</summary>
     /// <param name="c">The character.</param>
     /// <param name="escapeCharacter">The escape character.</param>
     /// <returns>The char array.</returns>
@@ -865,13 +861,13 @@ public static class ASCII
         return end <= start ? throw new ArgumentOutOfRangeException(nameof(endMark)) : GetString(data, start + 1, end - start - 1);
     }
 
-    /// <summary>Gets whether the string contains non ASCII chars (0, &gt;<paramref name="maxCharacterCode" />).</summary>
+    /// <summary>Gets whether the string contains non ASCII chars (&gt; <paramref name="maxCharacterCode"/>).</summary>
     /// <param name="text">The string.</param>
     /// <param name="maxCharacterCode">The maximum allowed character code.</param>
     /// <returns>True if the string does not contain any character outside the valid range.</returns>
-    public static bool IsClean(string text, int maxCharacterCode = 127) => text != null ? !text.Any(c => (c < 1) || (c > maxCharacterCode)) : throw new ArgumentNullException(nameof(text));
+    public static bool IsClean(string text, int maxCharacterCode = 127) => text != null ? !text.Any(c => c > maxCharacterCode) : throw new ArgumentNullException(nameof(text));
 
-    /// <summary>Gets whether the string contains non printable ASCII chars (&lt;32, &gt;<paramref name="maxCharacterCode" />).</summary>
+    /// <summary>Gets whether the string contains non printable ASCII chars (&lt;32, &gt; <paramref name="maxCharacterCode"/>).</summary>
     /// <param name="text">The string.</param>
     /// <param name="maxCharacterCode">The maximum allowed character code.</param>
     /// <returns>True if the string does not contain any character outside the valid range.</returns>
@@ -885,7 +881,7 @@ public static class ASCII
             ? !text.Any(c => c is < (char)32 or > (char)127 or ';' or '\\')
             : throw new ArgumentNullException(nameof(text));
 
-    /// <summary>Reverts a previous <see cref="Escape(string, char)" />.</summary>
+    /// <summary>Reverts a previous <see cref="Escape(string, char)"/>.</summary>
     /// <param name="text">The text.</param>
     /// <param name="escapeCharacter">The escape character.</param>
     /// <returns>The string.</returns>
@@ -912,35 +908,45 @@ public static class ASCII
                         case 'a':
                             result.Add('\a');
                             break;
+
                         case 'b':
                             result.Add('\b');
                             break;
+
                         case 'f':
                             result.Add('\f');
                             break;
+
                         case 't':
                             result.Add('\t');
                             break;
+
                         case 'n':
                             result.Add('\n');
                             break;
+
                         case 'r':
                             result.Add('\r');
                             break;
+
                         case 'v':
                             result.Add('\v');
                             break;
+
                         case '\\':
                             result.Add('\\');
                             break;
+
                         case 'x':
                             result.Add((char)Convert.ToInt32(text.Substring(i + 1, 2), 16));
                             i += 2;
                             break;
+
                         case 'u':
                             result.Add((char)Convert.ToInt32(text.Substring(i + 1, 4), 16));
                             i += 4;
                             break;
+
                         default: throw new InvalidDataException();
                     }
 
@@ -954,5 +960,5 @@ public static class ASCII
         return new(result.ToArray());
     }
 
-    #endregion
+    #endregion Public Methods
 }
