@@ -139,8 +139,14 @@ public sealed class UTF7 : Unicode
         return new UTF16BE(data).ToString();
     }
 
-    /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
-    public static byte[] Encode(string text)
+    /// <summary>Provides extended UTF-7 encoding (rfc 2152)</summary>
+    /// <param name="text">Text to be encoded</param>
+    public static byte[] Encode(string text) => Encode(text, false);
+
+    /// <summary>Provides extended UTF-7 encoding (rfc 2152)</summary>
+    /// <param name="text">Text to be encoded</param>
+    /// <param name="encodeOptionalCharacters">Obey (rfc 3501) restrictions on utf-7 text used at mail headers</param>
+    public static byte[] Encode(string text, bool encodeOptionalCharacters)
     {
         if (text == null)
         {
@@ -151,8 +157,10 @@ public sealed class UTF7 : Unicode
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
-            var isCodeChar = ((int)ch) is < 0x20 or (> 0x20 and < 0x30) or > 0x7b;
-            if (isCodeChar)
+            var encodeChar = encodeOptionalCharacters ?
+                (int)ch is (>= 39 and <= 41) or (>= 44 and <= 58) or 63 or (>= 65 and <= 90) or (>= 97 and <= 122) :
+                (int)ch is (>= 32 and <= 42) or (>= 44 and <= 125);
+            if (!encodeChar)
             {
                 if (ch == '+')
                 {
