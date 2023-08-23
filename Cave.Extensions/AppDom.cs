@@ -151,11 +151,9 @@ public static class AppDom
 
         foreach (var assembly in assemblies)
         {
-            Trace.TraceInformation($"Searching for type {typeName} in assembly {assembly}");
             var type = assembly.GetType(typeName, false);
             if (type != null)
             {
-                Trace.TraceInformation($"Using type {type.FullName}");
                 return type;
             }
         }
@@ -166,17 +164,16 @@ public static class AppDom
             var assembly = Assembly.LoadWithPartialName(assemblyName);
             if (assembly != null)
             {
-                Trace.TraceInformation("<red>(Insecure)<default> loaded assembly <yellow>{0}", assembly);
+                Trace.TraceWarning("Insecure Assembly.LoadWithPartialName {0}", assembly);
                 var type = assembly.GetType(typeName, false);
                 if (type != null)
                 {
-                    Trace.TraceInformation("Using type <yellow>{0}", type.FullName);
                     return type;
                 }
             }
         }
 
-        Trace.TraceError("Could not find type <red>{0}", typeName);
+        Trace.TraceError("Could not find type {0}", typeName);
         if ((mode & LoadFlags.NoException) == 0)
         {
             throw new TypeLoadException($"Cannot load type {typeName}");
