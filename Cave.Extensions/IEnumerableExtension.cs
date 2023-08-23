@@ -514,6 +514,17 @@ public static class IEnumerableExtension
         return value;
     }
 
+    /// <summary>Combines the hashes of all items using the items <see cref="object.GetHashCode"/> function.</summary>
+    /// <typeparam name="T">The item type.</typeparam>
+    /// <param name="items">The items.</param>
+    /// <returns>Returns the combined hashcode for hashes of all items.</returns>
+    public static long CombineHashes<T>(this IEnumerable<T> items)
+    {
+        var hasher = DefaultHashingFunction.Create();
+        foreach (var item in items) hasher.Add(item);
+        return hasher.ToHashCode();
+    }
+
     /// <summary>Calculates the hash for all fields of the specified items.</summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <param name="items">The items.</param>
@@ -654,7 +665,7 @@ public static class IEnumerableExtension
         return hasher.ToHashCode();
     }
 
-    /// <summary>Runs an action for each item within the specified <paramref name="enumerable" />.</summary>
+    /// <summary>Runs an action for each item within the specified <paramref name="enumerable"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">Items to enumerate</param>
     /// <param name="action">Action to run.</param>
@@ -666,5 +677,5 @@ public static class IEnumerableExtension
         }
     }
 
-    #endregion
+    #endregion Static
 }
