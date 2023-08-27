@@ -47,7 +47,10 @@ public sealed class UTF32LE : Unicode
 
     #region Public Methods
 
-    /// <inheritdoc/>
+    /// <summary>Converts from string to a new <see cref="UTF32LE"/> instance.</summary>
+    /// <param name="text">String to convert.</param>
+    /// <returns>Returns a new <see cref="UTF32LE"/> instance.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static unsafe UTF32LE ConvertFromString(string text)
     {
         if (text is null)

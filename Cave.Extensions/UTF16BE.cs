@@ -63,6 +63,10 @@ public sealed class UTF16BE : Unicode
 
     #region Public Methods
 
+    /// <summary>Converts from string to a new <see cref="UTF16BE"/> instance.</summary>
+    /// <param name="text">String to convert.</param>
+    /// <returns>Returns a new <see cref="UTF16BE"/> instance.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static UTF16BE ConvertFromString(string text)
     {
         var chars = text.ToCharArray();
