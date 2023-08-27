@@ -109,7 +109,10 @@ public sealed class UTF8 : Unicode
 
     #region Public Methods
 
-    /// <inheritdoc/>
+    /// <summary>Converts from string to a new <see cref="UTF8"/> instance.</summary>
+    /// <param name="text">String to convert.</param>
+    /// <returns>Returns a new <see cref="UTF8"/> instance.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static UTF8 ConvertFromString(string text)
     {
         if (text is null)
