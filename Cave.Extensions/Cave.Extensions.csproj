@@ -8,7 +8,7 @@
             net45;net451;net452;
             net46;net461;net462;
             net47;net471;net472;
-            net48;
+            net48;net481;
             netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;
             netstandard2.0;netstandard2.1;
             net5.0;net6.0;net7.0;
@@ -34,12 +34,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cave.Backports" Version="3.0.6" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp1'))">
