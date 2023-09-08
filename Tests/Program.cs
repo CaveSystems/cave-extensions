@@ -8,7 +8,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
+using Cave;
 using NUnit.Framework;
+using Test.BaseX;
 
 namespace Test;
 
@@ -69,17 +72,22 @@ class Program
                 GC.Collect(999, GCCollectionMode.Forced);
 
                 Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name}: {frameworkVersion}");
+                var watch = StopWatch.StartNew();
                 try
                 {
-                    method.Invoke(instance, null);
+                    var task = Task.Factory.StartNew(() => method.Invoke(instance, null));
+                    while (!task.Wait(120 * 1000))
+                    {
+                        if (!Debugger.IsAttached) throw new TimeoutException($"Timeout of test after {watch.Elapsed.FormatTime()}");
+                    }
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name}: {frameworkVersion}");
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name} {watch.Elapsed.FormatTime()}: {frameworkVersion}");
                     Console.ResetColor();
                 }
                 catch (Exception ex)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: Error {method.Name}: {frameworkVersion}: {ex.Message}");
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: Error {method.Name} {watch.Elapsed.FormatTime()}: {frameworkVersion}: {ex.Message}");
                     Console.WriteLine(ex.ToString());
                     Console.WriteLine(ex.StackTrace);
                     Console.ResetColor();

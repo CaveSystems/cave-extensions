@@ -7,6 +7,8 @@ namespace Test.BaseX;
 [TestFixture]
 public class Base64Tests
 {
+    #region Public Methods
+
     [Test]
     public void Base64Test()
     {
@@ -28,6 +30,15 @@ public class Base64Tests
                 Assert.AreEqual(value, BitConverter.ToUInt64(b.Decode(b.Encode(BitConverter.GetBytes(value))), 0));
             }
         }
+    }
+
+    [Test]
+    public void Base64TestValues()
+    {
+        var encoded = Base64.Default.Encode(1000);
+        Assert.AreEqual("6AM=", encoded);
+        var decoded = Base64.Default.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
     }
 
     [Test]
@@ -72,4 +83,6 @@ public class Base64Tests
         Assert.AreEqual(uint.MaxValue, Base64.Default.DecodeUInt32(Base64.Default.Encode(uint.MaxValue)));
         Assert.AreEqual(ulong.MaxValue, Base64.Default.DecodeUInt64(Base64.Default.Encode(ulong.MaxValue)));
     }
+
+    #endregion Public Methods
 }

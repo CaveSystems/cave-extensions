@@ -163,6 +163,10 @@ public sealed class UTF8 : Unicode
     /// <returns>The result of the conversion.</returns>
     public static explicit operator string(UTF8 s) => s.ToString();
 
+    public static byte[] GetBytes(string str) => ConvertFromString(str).Data;
+
+    public static string GetString(byte[] buffer, int offset = 0, int length = -1) => new UTF8(buffer.GetRange(offset, length)).ToString();
+
     /// <summary>Performs an implicit conversion from <see cref="string"/> to <see cref="UTF8"/>.</summary>
     /// <param name="s">The string.</param>
     /// <returns>The result of the conversion.</returns>

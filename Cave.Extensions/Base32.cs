@@ -1,60 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cave;
 
 /// <summary>Gets Base32 en-/decoding.</summary>
-public class Base32 : BaseX
+public class Base32 : BaseWithFixedBits
 {
-    #region Static
+    #region Private Fields
 
     const int bitCount = 5;
 
-    /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
-    public static Base32 Default => new(new("0123456789ABCDEFGHIJKLMNOPQRSTUV"), '=');
+    #endregion Private Fields
 
-    /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
-    public static Base32 NoPadding => new(new("0123456789ABCDEFGHIJKLMNOPQRSTUV"), null);
+    #region Protected Constructors
 
-    /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
-    public static Base32 OTP => new(new("abcdefghijklmnopqrstuvwxyz234567"), null);
-
-    /// <summary>Gets the url safe dictatable (no i,l,v,0) charset for Base32 en-/decoding (no padding).</summary>
-    public static Base32 Safe => new(new("abcdefghjkmnopqrstuwxyz123456789"), null);
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>Initializes a new instance of the <see cref="Base32" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Base32"/> class.</summary>
     /// <param name="dictionary">The dictionary containing 64 ascii characters used for encoding.</param>
     /// <param name="padding">The padding (use null to skip padding).</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    public Base32(CharacterDictionary dictionary, char? padding)
-        : base(dictionary, bitCount)
-    {
-        Padding = padding;
-        if (Padding != null)
-        {
-            int paddingChar = (char)Padding;
-            if (paddingChar is < 0 or > 127)
-            {
-                throw new ArgumentOutOfRangeException(nameof(padding));
-            }
-        }
-    }
+    protected Base32(CharacterDictionary dictionary, char? padding) : base(dictionary, bitCount, padding) { }
 
-    #endregion
+    #endregion Protected Constructors
 
-    #region Properties
+    #region Public Fields
 
-    /// <summary>Gets the used padding character or null.</summary>
-    public char? Padding { get; }
+    /// <summary>Gets the characters used by <see cref="Default"/> encoding.</summary>
+    public const string CharactersDefault = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
-    #endregion
+    /// <summary>Gets the characters used by <see cref="OTP"/> encoding.</summary>
+    public const string CharactersOTP = "abcdefghijklmnopqrstuvwxyz234567";
 
-    #region Overrides
+    /// <summary>Gets the characters used by <see cref="Safe"/> encoding.</summary>
+    public const string CharactersSafe = "abcdefghjkmnopqrstuwxyz123456789";
+
+    #endregion Public Fields
+
+    #region Public Properties
+
+    /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
+    public static Base32 Default => new(new(CharactersDefault, false), '=');
+
+    /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
+    public static Base32 NoPadding => new(new(CharactersDefault, false), null);
+
+    /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
+    public static Base32 OTP => new(new(CharactersOTP, true), null);
+
+    /// <summary>Gets the url safe dictatable (no i,l,v,0) charset for Base32 en-/decoding (no padding).</summary>
+    public static Base32 Safe => new(new(CharactersSafe, false), null);
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Decodes a Base32 data array.</summary>
     /// <param name="data">The Base32 data to decode.</param>
@@ -101,7 +100,6 @@ public class Base32 : BaseX
                 result.Add((byte)outValue);
             }
         }
-
         return result.ToArray();
     }
 
@@ -159,5 +157,5 @@ public class Base32 : BaseX
         return new(result.ToArray());
     }
 
-    #endregion
+    #endregion Public Methods
 }

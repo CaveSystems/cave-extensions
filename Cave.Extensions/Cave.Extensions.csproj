@@ -54,5 +54,4 @@
     <PropertyGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
         <RollForward>LatestMinor</RollForward>
     </PropertyGroup>
-
 </Project>
