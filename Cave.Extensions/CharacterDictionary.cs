@@ -3,22 +3,34 @@ using System.Collections.Generic;
 
 namespace Cave;
 
-/// <summary>Gets a ascii character dictionary (this is used for example at the <see cref="Base64" /> implementation).</summary>
+/// <summary>Gets a ascii character dictionary (this is used for example at the <see cref="Base64"/> implementation).</summary>
 public sealed class CharacterDictionary
 {
-    #region Fields
+    #region Private Fields
 
     readonly char[] charset;
-    readonly int[] values = new int[128];
+    readonly byte[] values = new byte[128];
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Private Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="CharacterDictionary" /> class.</summary>
-    /// <param name="charset">Characters to use as charset.</param>
-    public CharacterDictionary(string charset)
+    CharacterDictionary(CharacterDictionary cloneData)
     {
+        charset = (char[])cloneData.charset.Clone();
+        values = (byte[])cloneData.values.Clone();
+    }
+
+    #endregion Private Constructors
+
+    #region Public Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="CharacterDictionary"/> class.</summary>
+    /// <param name="charset">Characters to use as charset.</param>
+    /// <param name="obeyCasing">Obey character case</param>
+    public CharacterDictionary(string charset, bool obeyCasing)
+    {
+        ObeyCasing = obeyCasing;
         if (charset == null)
         {
             throw new ArgumentNullException(nameof(charset));
@@ -31,35 +43,32 @@ public sealed class CharacterDictionary
 
         for (var i = 0; i < 128; i++)
         {
-            values[i] = -1;
+            values[i] = 0xFF;
         }
 
         this.charset = charset.ToCharArray();
         for (var i = 0; i < this.charset.Length; i++)
         {
-            values[this.charset[i]] = i;
+            values[this.charset[i]] = (byte)i;
         }
     }
 
-    CharacterDictionary(CharacterDictionary cloneData)
-    {
-        charset = (char[])cloneData.charset.Clone();
-        values = (int[])cloneData.values.Clone();
-    }
+    #endregion Public Constructors
 
-    #endregion
-
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the length.</summary>
     /// <value>The length.</value>
     public int Length => charset.Length;
 
-    #endregion
+    /// <summary>Gets a value indicating whether the character case has to be obeyed.</summary>
+    public bool ObeyCasing { get; }
 
-    #region Members
+    #endregion Public Properties
 
-    /// <summary>Clones the <see cref="CharacterDictionary" />.</summary>
+    #region Public Methods
+
+    /// <summary>Clones the <see cref="CharacterDictionary"/>.</summary>
     /// <returns>Returns a copy.</returns>
     public CharacterDictionary Clone() => new(this);
 
@@ -69,17 +78,20 @@ public sealed class CharacterDictionary
     public char GetCharacter(int value) => charset[value];
 
     /// <summary>Gets the value for the specified character.</summary>
-    /// <param name="character">The <see cref="char" /> to look up.</param>
+    /// <param name="character">The <see cref="char"/> to look up.</param>
     /// <returns>Returns the value (index) for the char.</returns>
     /// <exception cref="KeyNotFoundException">Thrown if the symbol could not be found.</exception>
-    public int GetValue(char character)
+    public byte GetValue(char character)
     {
         var result = values[character];
-        if (result < 0)
+        if (result > 128 && !ObeyCasing)
+        {
+            result = char.IsUpper(character) ? values[char.ToLowerInvariant(character)] : values[char.ToUpperInvariant(character)];
+        }
+        if (result > 128)
         {
             throw new KeyNotFoundException($"Invalid symbol '{character}'!");
         }
-
         return result;
     }
 
@@ -89,14 +101,18 @@ public sealed class CharacterDictionary
     /// <returns></returns>
     public int TryGetValue(char character, int defaultValue)
     {
-        if ((character < 0) || (character >= values.Length))
+        if ((character > 128) || (character >= values.Length))
         {
             return defaultValue;
         }
 
         var result = values[character];
-        return result < 0 ? defaultValue : result;
+        if (result > 128 && !ObeyCasing)
+        {
+            result = char.IsUpper(character) ? values[char.ToLowerInvariant(character)] : values[char.ToUpperInvariant(character)];
+        }
+        return result > 128 ? defaultValue : result;
     }
 
-    #endregion
+    #endregion Public Methods
 }

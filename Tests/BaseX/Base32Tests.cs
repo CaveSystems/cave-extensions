@@ -7,6 +7,8 @@ namespace Test.BaseX;
 [TestFixture]
 public class Base32Tests
 {
+    #region Public Methods
+
     [Test]
     public void Base32Test()
     {
@@ -25,6 +27,15 @@ public class Base32Tests
                 Assert.AreEqual(value, BitConverter.ToUInt64(b2, 0));
             }
         }
+    }
+
+    [Test]
+    public void Base32TestValues()
+    {
+        var encoded = Base32.OTP.Encode(1000);
+        Assert.AreEqual("5abq", encoded);
+        var decoded = Base32.OTP.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
     }
 
     [Test]
@@ -69,4 +80,6 @@ public class Base32Tests
         Assert.AreEqual(uint.MaxValue, Base32.Default.DecodeUInt32(Base32.Default.Encode(uint.MaxValue)));
         Assert.AreEqual(ulong.MaxValue, Base32.Default.DecodeUInt64(Base32.Default.Encode(ulong.MaxValue)));
     }
+
+    #endregion Public Methods
 }

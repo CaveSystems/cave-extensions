@@ -1,235 +1,118 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using System.Numerics;
 
 namespace Cave;
 
-/// <summary>Gets abstract functions for all fixed base (32, 64, ...) conversions.</summary>
-public abstract class BaseX
+/// <summary>Provides abstract functions for all base x (1..128) conversions.</summary>
+public abstract class BaseX : IBaseX
 {
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="BaseX" /> class.</summary>
-    /// <param name="dictionary">The dictionary.</param>
-    /// <param name="bitCount">The bit count.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Invalid dictionary length or bit count.</exception>
-    protected BaseX(CharacterDictionary dictionary, int bitCount)
+    /// <summary>Creates a new instance of the <see cref="BaseX"/> class.</summary>
+    /// <param name="characters">Character set</param>
+    /// <param name="obeyCasing">Obey case during decoding</param>
+    /// <param name="padding">Padding character to use</param>
+    public BaseX(string characters, bool obeyCasing, char? padding) : this(new CharacterDictionary(characters, obeyCasing), padding) { }
+
+    /// <summary>Creates a new instance of the <see cref="BaseX"/> class.</summary>
+    /// <param name="characterDictionary">Character set</param>
+    /// <param name="padding">Padding character to use</param>
+    public BaseX(CharacterDictionary characterDictionary, char? padding)
     {
-        if (bitCount is < 1 or > 32)
+        CharacterDictionary = characterDictionary;
+        if (padding != null)
         {
-            throw new ArgumentOutOfRangeException(nameof(bitCount), "BitCount in range 1..32 required!");
-        }
-
-        CharacterDictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
-        BitsPerCharacter = bitCount;
-        if (dictionary.Length != (1 << bitCount))
-        {
-            throw new ArgumentOutOfRangeException(nameof(dictionary), "Invalid dictionary length!");
+            int paddingChar = (char)padding;
+            if (paddingChar is < 0 or > 127)
+            {
+                throw new ArgumentOutOfRangeException(nameof(padding));
+            }
+            Padding = padding;
         }
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
-    /// <summary>Gets the bits per character.</summary>
-    /// <value>The bits per character.</value>
-    public int BitsPerCharacter { get; }
-
-    /// <summary>Gets the character dictionary.</summary>
-    /// <value>The character dictionary.</value>
+    /// <inheritdoc/>
     public CharacterDictionary CharacterDictionary { get; }
 
-    #endregion
+    /// <inheritdoc/>
+    public char? Padding { get; }
 
-    #region Members
+    #endregion Public Properties
 
-    /// <summary>Decodes a data string.</summary>
-    /// <param name="value">The data to decode.</param>
-    public byte[] Decode(string value) => Decode(Encoding.ASCII.GetBytes(value));
+    #region Public Methods
 
-    /// <summary>Decodes the specified data.</summary>
-    /// <param name="data">The data.</param>
-    /// <returns>Returns the decoded data.</returns>
+    /// <inheritdoc/>
     public abstract byte[] Decode(byte[] data);
 
-    /// <summary>Decodes the character.</summary>
-    /// <param name="character">The character.</param>
-    /// <returns>Returns the value for the specified character.</returns>
-    public int DecodeCharacter(char character) => CharacterDictionary.GetValue(character);
+    /// <inheritdoc/>
+    public byte DecodeCharacter(char character) => CharacterDictionary.GetValue(character);
 
-    /// <summary>Decodes the int16.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public short DecodeInt16(string value) => unchecked((short)DecodeUInt32(value));
-
-    /// <summary>Decodes the int32.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public int DecodeInt32(string value) => unchecked((int)DecodeUInt32(value));
-
-    /// <summary>Decodes the int64.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public long DecodeInt64(string value) => unchecked((long)DecodeUInt64(value));
-
-    /// <summary>Decodes the int8.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public sbyte DecodeInt8(string value) => unchecked((sbyte)DecodeUInt32(value));
-
-    /// <summary>Decodes the u int16.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public ushort DecodeUInt16(string value) => unchecked((ushort)DecodeUInt32(value));
-
-    /// <summary>Decodes the u int32.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public uint DecodeUInt32(string value)
+#if !NET20 && !NET35
+    /// <inheritdoc/>
+    public virtual BigInteger DecodeValue(byte[] baseXdata)
     {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        var data = Decode(baseXdata);
+        if (!BitConverter.IsLittleEndian) Array.Reverse(data);
+        return new BigInteger(data);
+    }
+#else
 
-        uint result = 0;
-        var bitPosition = 0;
-        foreach (var character in value)
-        {
-            var bits = (uint)DecodeCharacter(character);
-            bits <<= bitPosition;
-            result |= bits;
-            bitPosition += BitsPerCharacter;
-        }
-
-        return result;
+    /// <inheritdoc/>
+    public virtual long DecodeValue(byte[] baseXdata)
+    {
+        var data = Decode(baseXdata);
+        if (!BitConverter.IsLittleEndian) Array.Reverse(data);
+        var neg = (data[^1] & 0x80) != 0;
+        var offset = data.Length;
+        Array.Resize(ref data, 8);
+        if (neg) while (offset < data.Length) data[offset++] = 0xFF;
+        return BitConverter.ToInt64(data, 0);
     }
 
-    /// <summary>Decodes the u int64.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public ulong DecodeUInt64(string value)
-    {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+#endif
 
-        ulong result = 0;
-        var bitPosition = 0;
-        foreach (var character in value)
-        {
-            var bits = (ulong)DecodeCharacter(character);
-            bits <<= bitPosition;
-            result |= bits;
-            bitPosition += BitsPerCharacter;
-        }
-
-        return result;
-    }
-
-    /// <summary>Decodes the u int8.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidDataException"></exception>
-    public byte DecodeUInt8(string value) => unchecked((byte)DecodeUInt32(value));
-
-    /// <summary>Decodes a data string and converts the result to utf8.</summary>
-    /// <param name="value">The data to decode.</param>
-    public string DecodeUtf8(string value) => Encoding.UTF8.GetString(Decode(value));
-
-    /// <summary>Decodes data and converts the result to utf8.</summary>
-    /// <param name="value">The data to decode.</param>
-    public string DecodeUtf8(byte[] value) => Encoding.UTF8.GetString(Decode(value));
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(byte value) => Encode((uint)value);
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(sbyte value) => unchecked(Encode((uint)value));
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(ushort value) => Encode((uint)value);
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(short value) => unchecked(Encode((uint)value));
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(int value) => unchecked(Encode((uint)value));
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(uint value)
-    {
-        var result = new StringBuilder();
-        var bits = BitsPerCharacter;
-        var mask = 0xFFFFFFFF >> (32 - bits);
-        while (value > 0)
-        {
-            var character = value & mask;
-            _ = result.Append(EncodeCharacter((char)character));
-            value >>= bits;
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(long value) => unchecked(Encode((ulong)value));
-
-    /// <summary>Encodes the specified value.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(ulong value)
-    {
-        var result = new StringBuilder();
-        var bits = BitsPerCharacter;
-        ulong mask = 0xFFFFFFFF >> (32 - bits);
-        while (value > 0)
-        {
-            var character = value & mask;
-            _ = result.Append(EncodeCharacter((char)character));
-            value >>= bits;
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Encodes the specified string.</summary>
-    /// <param name="data">The data to encode.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
-    public string Encode(string data) => Encode(Encoding.UTF8.GetBytes(data));
-
-    /// <summary>Encodes the specified data.</summary>
-    /// <param name="data">The data.</param>
-    /// <returns>Returns the BaseX encoded string.</returns>
+    /// <inheritdoc/>
     public abstract string Encode(byte[] data);
 
-    /// <summary>Encodes the specified value in range 0..X.</summary>
-    /// <param name="value">The value.</param>
-    /// <returns>Returns the BaseX encoded character.</returns>
+    /// <inheritdoc/>
     public char EncodeCharacter(int value) => CharacterDictionary.GetCharacter(value);
 
-    #endregion
+#if !NET20 && !NET35
+
+    /// <inheritdoc/>
+    public virtual string EncodeValue(BigInteger value)
+    {
+        var data = value.ToByteArray();
+        if (!BitConverter.IsLittleEndian) Array.Reverse(data);
+        return Encode(data);
+    }
+#else
+
+    /// <inheritdoc/>
+    public virtual string EncodeValue(ulong value) => EncodeValue((long)value);
+
+    /// <inheritdoc/>
+    public virtual string EncodeValue(long value)
+    {
+        var data = BitConverter.GetBytes(value);
+        if (!BitConverter.IsLittleEndian) Array.Reverse(data);
+        var length = data.Length;
+        if (value < 0)
+        {
+            while (length > 1 && (data[length - 2] & 0x80) != 0 && data[length - 1] == 0xff) length--;
+        }
+        else
+        {
+            while (length > 1 && (data[length - 2] & 0x80) == 0 && data[length - 1] == 0) length--;
+        }
+        return Encode(data.GetRange(0, length));
+    }
+
+#endif
+
+    #endregion Public Methods
 }

@@ -4,54 +4,49 @@ using System.Collections.Generic;
 namespace Cave;
 
 /// <summary>Gets Base64 en-/decoding.</summary>
-public class Base64 : BaseX
+public class Base64 : BaseWithFixedBits
 {
-    #region Static
+    #region Private Fields
 
     const int bitCount = 6;
 
-    /// <summary>Gets the default charset for base64 en-/decoding with padding.</summary>
-    public static Base64 Default => new(new("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), '=');
+    #endregion Private Fields
 
-    /// <summary>Gets the default charset for base64 en-/decoding without padding.</summary>
-    public static Base64 NoPadding => new(new("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), null);
+    #region Public Fields
 
-    /// <summary>Gets the url safe charset for base64 en-/decoding (no padding).</summary>
-    public static Base64 UrlChars => new(new("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"), null);
+    /// <summary>Gets the characters used by <see cref="Default"/> encoding.</summary>
+    public const string CharactersDefault = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    #endregion
+    /// <summary>Gets the characters used by <see cref="UrlChars"/> encoding.</summary>
+    public const string CharactersUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-    #region Constructors
+    #endregion Public Fields
 
-    /// <summary>Initializes a new instance of the <see cref="Base64" /> class.</summary>
+    #region Public Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="Base64"/> class.</summary>
     /// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
     /// <param name="padding">The padding (use null to skip padding).</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <exception cref="ArgumentException">Invalid padding character.</exception>
-    public Base64(CharacterDictionary dict, char? padding)
-        : base(dict, bitCount)
-    {
-        Padding = padding;
-        if (Padding != null)
-        {
-            int paddingChar = (char)Padding;
-            if (paddingChar is < 0 or > 127)
-            {
-                throw new ArgumentOutOfRangeException(nameof(padding));
-            }
-        }
-    }
+    public Base64(CharacterDictionary dict, char? padding) : base(dict, bitCount, padding) { }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
-    /// <summary>Gets the padding character.</summary>
-    public char? Padding { get; }
+    /// <summary>Gets the default charset for base64 en-/decoding with padding.</summary>
+    public static Base64 Default => new(new(CharactersDefault, true), '=');
 
-    #endregion
+    /// <summary>Gets the default charset for base64 en-/decoding without padding.</summary>
+    public static Base64 NoPadding => new(new(CharactersDefault, true), null);
 
-    #region Overrides
+    /// <summary>Gets the url safe charset for base64 en-/decoding (no padding).</summary>
+    public static Base64 UrlChars => new(new(CharactersUrl, true), null);
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Decodes a base64 data array.</summary>
     /// <param name="data">The base64 data to decode.</param>
@@ -88,12 +83,11 @@ public class Base64 : BaseX
             if (bits >= 8)
             {
                 bits -= 8;
-                var l_Out = value >> bits;
+                var outValue = value >> bits;
                 value &= ~(0xFFFF << bits);
-                result.Add((byte)l_Out);
+                result.Add((byte)outValue);
             }
         }
-
         return result.ToArray();
     }
 
@@ -105,7 +99,6 @@ public class Base64 : BaseX
         {
             throw new ArgumentNullException(nameof(data));
         }
-
         var result = new List<char>(data.Length * 2);
         var value = 0;
         var bits = 0;
@@ -151,5 +144,5 @@ public class Base64 : BaseX
         return new(result.ToArray());
     }
 
-    #endregion
+    #endregion Public Methods
 }
