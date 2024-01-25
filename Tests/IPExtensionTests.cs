@@ -2,12 +2,15 @@
 using System.Net;
 using Cave;
 using NUnit.Framework;
+using IPNetwork = Cave.IPNetwork;
 
 namespace Test.Extensions;
 
 [TestFixture]
 class IPExtensionTests
 {
+    #region Public Methods
+
     [Test]
     public void IPNetwork_IPv4_10()
     {
@@ -313,4 +316,6 @@ class IPExtensionTests
         Assert.AreEqual(-1, test.Subnet);
         Assert.AreEqual($"{result}/{network}", test.ToString());
     }
+
+    #endregion Public Methods
 }
