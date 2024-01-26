@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Cave;
 using NUnit.Framework;
@@ -55,6 +56,18 @@ public class StringExtensionsTests
         Assert.AreEqual(expected, new[] { "test", "Id" }.JoinCamelCase());
         Assert.AreEqual(expected, new[] { "test", "id" }.JoinCamelCase());
         Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinCamelCase());
+    }
+
+    [Test]
+    public void PascalCaseTest()
+    {
+        const string expected = "TestId";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinPascalCase());
     }
 
     [Test]
@@ -624,16 +637,28 @@ public class StringExtensionsTests
     {
         void Test<T>(T value, CultureInfo culture)
         {
+            var type = typeof(T);
+#if NETCOREAPP1_0 || NETCOREAPP1_1
+            var typeInfo = type.GetTypeInfo();
+            var isGeneric = typeInfo.IsGenericType;
+            var valueType = isGeneric ? typeInfo.GetGenericArguments().Single() : null;
+            var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
+#else
+            var isGeneric = type.IsGenericType;
+            var valueType = isGeneric ? type.GetGenericArguments().Single() : null;
+            var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
+#endif
+
             var str = StringExtensions.ToString(value, culture);
             var read = typeof(T).ConvertValue(str, culture);
-            if (culture.Name.Contains("-SS") && typeof(T) == typeof(double))
+            if (value is not null && culture.Name.Contains("-SS") && valueType == typeof(double))
             {
                 //Bug in some ToString(CultureInfo("*-SS"), "R") implementations
-                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
             }
             else
             {
-                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
             }
         }
 
