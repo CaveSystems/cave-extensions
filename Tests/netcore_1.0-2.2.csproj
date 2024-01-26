@@ -11,6 +11,7 @@
         <AssemblyName>ManualTest</AssemblyName>
         <WarningLevel>0</WarningLevel>
         <StartupObject>Test.Program</StartupObject>
+        <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
