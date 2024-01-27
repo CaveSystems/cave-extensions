@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Cave;
 using NUnit.Framework;
@@ -15,64 +16,94 @@ public class StringExtensionsTests
     readonly IEnumerable<CultureInfo> allCultures =
 #if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
         CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
+
 #else
         new[] { CultureInfo.CurrentCulture, new CultureInfo("de-DE"), new CultureInfo("en-US") };
 
 #endif
 
     [Test]
+    public void SplitCasingTest()
+    {
+        Assert.AreEqual(new[] { "Test", "ID" }.Join('|'), "TestID".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "Test", "Id" }.Join('|'), "TestId".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "test", "ID" }.Join('|'), "testID".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "test", "Id" }.Join('|'), "testId".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "Test", "ID", "123" }.Join('|'), "TestID123".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "Test", "Id", "123" }.Join('|'), "TestId123".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "test", "ID", "123" }.Join('|'), "testID123".SplitCamelCase().Join('|'));
+        Assert.AreEqual(new[] { "test", "Id", "123" }.Join('|'), "testId123".SplitCamelCase().Join('|'));
+
+        Assert.AreEqual(new[] { "Test", "ID" }.Join('|'), "TestID".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "Test", "Id" }.Join('|'), "TestId".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "test", "ID" }.Join('|'), "testID".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "test", "Id" }.Join('|'), "testId".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "Test", "ID", "123" }.Join('|'), "TestID123".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "Test", "Id", "123" }.Join('|'), "TestId123".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "test", "ID", "123" }.Join('|'), "testID123".SplitCasing().Join('|'));
+        Assert.AreEqual(new[] { "test", "Id", "123" }.Join('|'), "testId123".SplitCasing().Join('|'));
+
+        Assert.AreEqual(new[] { "Test", "ID", "123", "Special", "2", "splits" }.Join('|'), "TestID123Special2splits".SplitCasing().Join('|'));
+    }
+
+    [Test]
     public void CamelCaseTest()
     {
-        Assert.AreEqual("TestID".SplitCamelCase().Join('|'), new[]
-        {
-            "Test",
-            "ID"
-        }.Join('|'));
-        Assert.AreEqual("TestId".SplitCamelCase().Join('|'), new[]
-        {
-            "Test",
-            "Id"
-        }.Join('|'));
-        Assert.AreEqual("testID".SplitCamelCase().Join('|'), new[]
-        {
-            "test",
-            "ID"
-        }.Join('|'));
-        Assert.AreEqual("testId".SplitCamelCase().Join('|'), new[]
-        {
-            "test",
-            "Id"
-        }.Join('|'));
-        Assert.AreEqual("TestId", new[]
-        {
-            "Test",
-            "ID"
-        }.JoinCamelCase());
-        Assert.AreEqual("TestId", new[]
-        {
-            "Test",
-            "Id"
-        }.JoinCamelCase());
-        Assert.AreEqual("TestId", new[]
-        {
-            "test",
-            "ID"
-        }.JoinCamelCase());
-        Assert.AreEqual("TestId", new[]
-        {
-            "test",
-            "Id"
-        }.JoinCamelCase());
-        Assert.AreEqual("TestId", new[]
-        {
-            "test",
-            "id"
-        }.JoinCamelCase());
-        Assert.AreEqual("TestId", new[]
-        {
-            "teSt",
-            "iD"
-        }.JoinCamelCase());
+        const string expected = "TestId";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinCamelCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinCamelCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinCamelCase());
+    }
+
+    [Test]
+    public void PascalCaseTest()
+    {
+        const string expected = "TestId";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinPascalCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinPascalCase());
+    }
+
+    [Test]
+    public void SnakeCaseTest()
+    {
+        const string expected = "test_id";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinSnakeCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinSnakeCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinSnakeCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinSnakeCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinSnakeCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinSnakeCase());
+    }
+
+    [Test]
+    public void KebabCaseTest()
+    {
+        const string expected = "test-id";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinKebabCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinKebabCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinKebabCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinKebabCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinKebabCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinKebabCase());
+    }
+
+    [Test]
+    public void LowerCamelCaseTest()
+    {
+        const string expected = "testId";
+        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinLowerCamelCase());
+        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinLowerCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinLowerCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinLowerCamelCase());
+        Assert.AreEqual(expected, new[] { "test", "id" }.JoinLowerCamelCase());
+        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinLowerCamelCase());
     }
 
     [Test]
@@ -606,16 +637,28 @@ public class StringExtensionsTests
     {
         void Test<T>(T value, CultureInfo culture)
         {
+            var type = typeof(T);
+#if NETCOREAPP1_0 || NETCOREAPP1_1
+            var typeInfo = type.GetTypeInfo();
+            var isGeneric = typeInfo.IsGenericType;
+            var valueType = isGeneric ? typeInfo.GetGenericArguments().Single() : null;
+            var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
+#else
+            var isGeneric = type.IsGenericType;
+            var valueType = isGeneric ? type.GetGenericArguments().Single() : null;
+            var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
+#endif
+
             var str = StringExtensions.ToString(value, culture);
             var read = typeof(T).ConvertValue(str, culture);
-            if (culture.Name.Contains("-SS") && typeof(T) == typeof(double))
+            if (value is not null && culture.Name.Contains("-SS") && valueType == typeof(double))
             {
                 //Bug in some ToString(CultureInfo("*-SS"), "R") implementations
-                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
             }
             else
             {
-                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeof(T).Name} and culture {culture.Name}!");
+                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
             }
         }
 

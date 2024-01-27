@@ -30,9 +30,16 @@ public interface IBaseX
     byte DecodeCharacter(char baseXcharacter);
 
 #if !NET20 && !NET35
+
+    /// <summary>Decodes the specified <paramref name="baseXdata"/>.</summary>
+    /// <param name="baseXdata">The data to decode.</param>
+    /// <returns>Returns the decoded value.</returns>
     BigInteger DecodeValue(byte[] baseXdata);
 #else
 
+    /// <summary>Decodes the specified <paramref name="baseXdata"/>.</summary>
+    /// <param name="baseXdata">The data to decode.</param>
+    /// <returns>Returns the decoded value.</returns>
     long DecodeValue(byte[] baseXdata);
 
 #endif
@@ -48,11 +55,20 @@ public interface IBaseX
     char EncodeCharacter(int baseXvalue);
 
 #if !NET20 && !NET35
+    /// <summary>Encodes the specified value to an encoded string.</summary>
+    /// <param name="value">The value to encode.</param>
+    /// <returns>Returns the encoded string.</returns>
     string EncodeValue(BigInteger value);
 #else
 
+    /// <summary>Encodes the specified value to an encoded string.</summary>
+    /// <param name="value">The value to encode.</param>
+    /// <returns>Returns the encoded string.</returns>
     string EncodeValue(long value);
 
+    /// <summary>Encodes the specified value to an encoded string.</summary>
+    /// <param name="value">The value to encode.</param>
+    /// <returns>Returns the encoded string.</returns>
     string EncodeValue(ulong value);
 
 #endif

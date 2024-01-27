@@ -2,6 +2,7 @@
 
 namespace Cave;
 
+/// <summary>Provides extensions to <see cref="IBaseX"/> interfaces.</summary>
 public static class IBaseXExtensions
 {
     #region Public Methods
@@ -73,10 +74,18 @@ public static class IBaseXExtensions
     public static string DecodeUtf8(this IBaseX baseX, string baseXstring) => UTF8.GetString(baseX.Decode(baseXstring));
 
 #if !NET20 && !NET35
-    public static BigInteger DecodeValue(this IBaseX baseX, string baseXdata) => baseX.DecodeValue(ASCII.GetBytes(baseXdata));
+    /// <summary>Decodes the specified BaseX string using binary encoding.</summary>
+    /// <param name="baseX">Instance to use</param>
+    /// <param name="baseXstring">BaseX string value</param>
+    /// <returns>Returns the decoded string</returns>
+    public static BigInteger DecodeValue(this IBaseX baseX, string baseXstring) => baseX.DecodeValue(ASCII.GetBytes(baseXstring));
 #else
 
-    public static long DecodeValue(this IBaseX baseX, string baseXdata) => baseX.DecodeValue(ASCII.GetBytes(baseXdata));
+    /// <summary>Decodes the specified BaseX string using binary encoding.</summary>
+    /// <param name="baseX">Instance to use</param>
+    /// <param name="baseXstring">BaseX string value</param>
+    /// <returns>Returns the decoded string</returns>
+    public static long DecodeValue(this IBaseX baseX, string baseXstring) => baseX.DecodeValue(ASCII.GetBytes(baseXstring));
 
 #endif
 

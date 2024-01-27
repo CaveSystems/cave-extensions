@@ -22,6 +22,7 @@
         <RootNamespace>Test</RootNamespace>
         <AssemblyName>Test</AssemblyName>
         <WarningLevel>0</WarningLevel>
+        <RollForward>LatestMinor</RollForward>
     </PropertyGroup>
 
     <ItemGroup>
