@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using System.Text;
 
 namespace Cave;
 
@@ -78,16 +80,14 @@ public static class IBaseXExtensions
     /// <param name="baseX">Instance to use</param>
     /// <param name="baseXstring">BaseX string value</param>
     /// <returns>Returns the decoded string</returns>
-    public static BigInteger DecodeValue(this IBaseX baseX, string baseXstring) => baseX.DecodeValue(ASCII.GetBytes(baseXstring));
-#else
+    public static BigInteger DecodeBigInteger(this IBaseX baseX, string baseXstring) => baseX.DecodeBigInteger(ASCII.GetBytes(baseXstring));
+#endif
 
     /// <summary>Decodes the specified BaseX string using binary encoding.</summary>
     /// <param name="baseX">Instance to use</param>
     /// <param name="baseXstring">BaseX string value</param>
     /// <returns>Returns the decoded string</returns>
     public static long DecodeValue(this IBaseX baseX, string baseXstring) => baseX.DecodeValue(ASCII.GetBytes(baseXstring));
-
-#endif
 
     /// <summary>Encodes the specified value.</summary>
     /// <param name="baseX">Instance to use</param>

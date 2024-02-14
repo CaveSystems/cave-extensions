@@ -52,14 +52,16 @@ public abstract class BaseX : IBaseX
     public byte DecodeCharacter(char character) => CharacterDictionary.GetValue(character);
 
 #if !NET20 && !NET35
+
     /// <inheritdoc/>
-    public virtual BigInteger DecodeValue(byte[] baseXdata)
+    public virtual BigInteger DecodeBigInteger(byte[] baseXdata)
     {
         var data = Decode(baseXdata);
         if (!BitConverter.IsLittleEndian) Array.Reverse(data);
         return new BigInteger(data);
     }
-#else
+
+#endif
 
     /// <inheritdoc/>
     public virtual long DecodeValue(byte[] baseXdata)
@@ -73,8 +75,6 @@ public abstract class BaseX : IBaseX
         return BitConverter.ToInt64(data, 0);
     }
 
-#endif
-
     /// <inheritdoc/>
     public abstract string Encode(byte[] data);
 
@@ -84,13 +84,13 @@ public abstract class BaseX : IBaseX
 #if !NET20 && !NET35
 
     /// <inheritdoc/>
-    public virtual string EncodeValue(BigInteger value)
+    public virtual string EncodeBigInteger(BigInteger value)
     {
         var data = value.ToByteArray();
         if (!BitConverter.IsLittleEndian) Array.Reverse(data);
         return Encode(data);
     }
-#else
+#endif
 
     /// <inheritdoc/>
     public virtual string EncodeValue(ulong value) => EncodeValue((long)value);
@@ -111,8 +111,6 @@ public abstract class BaseX : IBaseX
         }
         return Encode(data.GetRange(0, length));
     }
-
-#endif
 
     #endregion Public Methods
 }
