@@ -12,12 +12,15 @@ public class BaseDynamic : BaseX
     #region Public Fields
 
     /// <summary>Gets the characters used by <see cref="Base36"/> encoding.</summary>
-    public const string Base36Characters = "0123456789AbCdeFGHiJkLmNoPqRsTuVwxYz";
+    public const string Base36Characters = "0123456789AbCdeFGHiJkLmNoPqRsTuVwxyz";
 
     /// <summary>Gets the padding character</summary>
     public const char Base36PaddingCharacter = '~';
 
     #endregion Public Fields
+
+    /// <summary>Gets the current base</summary>
+    public int Base { get; }
 
     #region Public Constructors
 
@@ -25,7 +28,7 @@ public class BaseDynamic : BaseX
     /// <param name="characters">Character set</param>
     /// <param name="obeyCasing">Obey case during decoding</param>
     /// <param name="padding">Padding character to use</param>
-    public BaseDynamic(string characters, bool obeyCasing, char? padding) : base(characters, obeyCasing, padding) { }
+    public BaseDynamic(string characters, bool obeyCasing, char? padding) : base(characters, obeyCasing, padding) => Base = CharacterDictionary.Length;
 
     #endregion Public Constructors
 
@@ -44,9 +47,8 @@ public class BaseDynamic : BaseX
     /// <inheritdoc/>
     public override byte[] Decode(byte[] data)
     {
-        var currentBase = CharacterDictionary.Length;
         var decode = data.Select(b => DecodeCharacter((char)b)).ToArray();
-        var realSize = (int)(decode.Length / Math.Log(256, currentBase));
+        var realSize = (int)(decode.Length / Math.Log(256, Base));
         Array.Reverse(decode);
         var result = new byte[realSize];
         {
@@ -55,7 +57,7 @@ public class BaseDynamic : BaseX
                 var overflow = (int)symbol;
                 for (var i = result.Length - 1; i >= 0; i--)
                 {
-                    var value = result[i] * currentBase + overflow;
+                    var value = result[i] * Base + overflow;
                     overflow = value >> 8;
                     result[i] = (byte)value;
                 }
@@ -66,7 +68,7 @@ public class BaseDynamic : BaseX
 
 #if !NET20 && !NET35
     /// <inheritdoc/>
-    public override BigInteger DecodeValue(byte[] data)
+    public override BigInteger DecodeBigInteger(byte[] data)
     {
         BigInteger value = 0;
         foreach (var b in data)
@@ -76,11 +78,11 @@ public class BaseDynamic : BaseX
             {
                 break;
             }
-            value = value * 36 + (int)DecodeCharacter(c);
+            value = value * Base + (int)DecodeCharacter(c);
         }
         return value;
     }
-#else
+#endif
 
     /// <inheritdoc/>
     public override long DecodeValue(byte[] data)
@@ -93,12 +95,10 @@ public class BaseDynamic : BaseX
             {
                 break;
             }
-            value = value * 36 + (int)DecodeCharacter(c);
+            value = value * Base + (int)DecodeCharacter(c);
         }
         return value;
     }
-
-#endif
 
     /// <inheritdoc/>
     public override string Encode(byte[] data)
@@ -125,7 +125,7 @@ public class BaseDynamic : BaseX
 
 #if !NET20 && !NET35
     /// <inheritdoc/>
-    public override string EncodeValue(BigInteger value)
+    public override string EncodeBigInteger(BigInteger value)
     {
         var currentBase = CharacterDictionary.Length;
         var result = new List<char>();
@@ -139,7 +139,7 @@ public class BaseDynamic : BaseX
         if (Padding is char padding) { result.Add(padding); }
         return new(result.ToArray());
     }
-#else
+#endif
 
     /// <inheritdoc/>
     public override string EncodeValue(long value) => EncodeValue((ulong)value);
@@ -159,8 +159,6 @@ public class BaseDynamic : BaseX
         if (Padding is char padding) { result.Add(padding); }
         return new(result.ToArray());
     }
-
-#endif
 
     #endregion Public Methods
 }

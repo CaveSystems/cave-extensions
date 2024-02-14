@@ -34,15 +34,13 @@ public interface IBaseX
     /// <summary>Decodes the specified <paramref name="baseXdata"/>.</summary>
     /// <param name="baseXdata">The data to decode.</param>
     /// <returns>Returns the decoded value.</returns>
-    BigInteger DecodeValue(byte[] baseXdata);
-#else
+    BigInteger DecodeBigInteger(byte[] baseXdata);
+#endif
 
     /// <summary>Decodes the specified <paramref name="baseXdata"/>.</summary>
     /// <param name="baseXdata">The data to decode.</param>
     /// <returns>Returns the decoded value.</returns>
     long DecodeValue(byte[] baseXdata);
-
-#endif
 
     /// <summary>Encodes the specified data.</summary>
     /// <param name="data">The data to encode.</param>
@@ -58,8 +56,8 @@ public interface IBaseX
     /// <summary>Encodes the specified value to an encoded string.</summary>
     /// <param name="value">The value to encode.</param>
     /// <returns>Returns the encoded string.</returns>
-    string EncodeValue(BigInteger value);
-#else
+    string EncodeBigInteger(BigInteger value);
+#endif
 
     /// <summary>Encodes the specified value to an encoded string.</summary>
     /// <param name="value">The value to encode.</param>
@@ -70,8 +68,6 @@ public interface IBaseX
     /// <param name="value">The value to encode.</param>
     /// <returns>Returns the encoded string.</returns>
     string EncodeValue(ulong value);
-
-#endif
 
     #endregion Public Methods
 }
