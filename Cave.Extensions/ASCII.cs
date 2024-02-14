@@ -469,6 +469,9 @@ public static class ASCII
         /// <summary>punctuation marks [!.,:;?"].</summary>
         public const string PunctuationMarks = "!.,:;?";
 
+        /// <summary>Characters for safe url names RFC 952.</summary>
+        public const string SafeHostName = Letters + Digits + "-.";
+
         /// <summary>Characters for safe names (usable as filesystem item, database item, ...)</summary>
         public const string SafeName = Letters + Digits + " #()+-.=@_";
 
