@@ -40,7 +40,7 @@ public class BaseDynamicTests
             var characters = ASCII.Strings.Printable.Substring(0, i);
             var b = new BaseDynamic(characters, false, null);
 
-            for (int n = 1; n <= i; n++)
+            for (int n = 1; n < i; n++)
             {
                 var value = n;
                 var encoded = new[]
@@ -56,8 +56,8 @@ public class BaseDynamicTests
                 };
                 var decoded = b.DecodeValue(encoded[0]);
                 Assert.AreEqual(value, decoded);
-                Assert.IsTrue(encoded.All(a => a.Length == 1));
-                Assert.IsTrue(encoded.All(a => a.Equals(encoded[0])));
+                Assert.IsTrue(encoded.All(a => a.Length == 1), $"Not all encoded values are of length 1! ({encoded.Select(e => e.Length).Join(',')})");
+                Assert.IsTrue(encoded.All(a => a.Equals(encoded[0])), $"Not all encoded values match!\n{encoded.JoinNewLine()}");
             }
         }
     }
