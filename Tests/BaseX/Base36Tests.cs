@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Cave;
 using Cave.Collections;
 using NUnit.Framework;
@@ -75,8 +76,8 @@ public class Base36Tests
     {
 #if !NET20 && !NET35
         BigInteger bigValue = BigInteger.Parse("34766967346521604105876783743698741175");
-        Assert.AreEqual(bigValue, BaseDynamic.Base36.DecodeValue("1jqu2wy81psrshxd2dp313x6f~"));
-        Assert.AreEqual("1jqu2wy81psrshxd2dp313x6f~", BaseDynamic.Base36.EncodeValue(bigValue).ToLower());
+        Assert.AreEqual(bigValue, BaseDynamic.Base36.DecodeBigInteger("1jqu2wy81psrshxd2dp313x6f~"));
+        Assert.AreEqual("1jqu2wy81psrshxd2dp313x6f~", BaseDynamic.Base36.EncodeBigInteger(bigValue).ToLower());
 #endif
     }
 
