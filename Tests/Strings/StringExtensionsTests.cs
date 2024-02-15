@@ -23,6 +23,16 @@ public class StringExtensionsTests
 #endif
 
     [Test]
+    public void GetCasingTest()
+    {
+        Assert.AreEqual("testText123", "Test Text 123".GetCamelCaseName());
+        Assert.AreEqual("testText123", "Test Text 123".GetLowerCamelCaseName());
+        Assert.AreEqual("TestText123", "Test Text 123".GetPascalCaseName());
+        Assert.AreEqual("test_text_123", "Test Text 123".GetSnakeCaseName());
+        Assert.AreEqual("test-text-123", "Test Text 123".GetKebabCaseName());
+    }
+
+    [Test]
     public void SplitCasingTest()
     {
         Assert.AreEqual(new[] { "Test", "ID" }.Join('|'), "TestID".SplitCamelCase().Join('|'));

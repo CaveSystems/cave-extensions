@@ -11,7 +11,27 @@ namespace Cave;
 /// <summary>Gets string functions.</summary>
 public static partial class StringExtensions
 {
+    #region Private Fields
+
+    const string ValidCharsCasing = ASCII.Strings.Letters + ASCII.Strings.Digits;
+
+    #endregion Private Fields
+
     #region Public Methods
+
+    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
+    /// <param name="text">The text to use.</param>
+    /// <returns>A camel case version of text.</returns>
+    [Obsolete("Use GetLowerCamelCaseName or GetPascalCase instead!")]
+    public static string GetCamelCaseName(this string text) => GetLowerCamelCaseName(text);
+
+    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
+    /// <param name="validChars">Valid characters.</param>
+    /// <param name="splitter">Character used to split parts.</param>
+    /// <param name="text">The text to use.</param>
+    /// <returns>A camel case version of text.</returns>
+    [Obsolete("Use GetLowerCamelCaseName or GetPascalCase instead!")]
+    public static string GetCamelCaseName(this string text, string validChars, char splitter) => GetLowerCamelCaseName(text, validChars, splitter);
 
     /// <summary>Builds a kebab case name split at invalid characters and upper case letters. Example: this-is-a-kebab-case-name</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -30,7 +50,7 @@ public static partial class StringExtensions
     /// <param name="text">The text to use.</param>
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string GetKebabCaseName(this string text) => GetKebabCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '-');
+    public static string GetKebabCaseName(this string text) => GetKebabCaseName(text, ValidCharsCasing, '-');
 
     /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -49,7 +69,7 @@ public static partial class StringExtensions
     /// <param name="text">The text to use.</param>
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string GetLowerCamelCaseName(this string text) => GetLowerCamelCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+    public static string GetLowerCamelCaseName(this string text) => GetLowerCamelCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Builds a pascal case name split at invalid characters and upper case letters. Example: ThisIsAPascalCaseName</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -68,7 +88,7 @@ public static partial class StringExtensions
     /// <param name="text">The text to use.</param>
     /// <returns>A pascal case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string GetPascalCaseName(this string text) => GetPascalCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+    public static string GetPascalCaseName(this string text) => GetPascalCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Builds a snake case name split at invalid characters and upper case letters. Example: this_is_a_snake_case_name</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -88,7 +108,7 @@ public static partial class StringExtensions
     /// <param name="text">The text to use.</param>
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ASCII.Strings.Letters + ASCII.Strings.Digits, '_');
+    public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Joins the strings with (upper) camel casing. Example: ThisIsACamelCaseName</summary>
     /// <param name="parts">The parts.</param>
