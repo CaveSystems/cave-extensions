@@ -191,7 +191,7 @@ public abstract class Estimation : IEstimation
                 return;
             }
             items.Add(item);
-            while (items.Count > MaximumItems)
+            while (MaximumItems > 0 && items.Count > MaximumItems)
             {
                 RemoveOneProgressItem();
             }
