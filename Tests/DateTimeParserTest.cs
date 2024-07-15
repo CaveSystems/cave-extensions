@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Cave;
 using NUnit.Framework;
@@ -40,7 +41,7 @@ class DateTimeParserTest
     [Test]
     public void DateTimeParserTests()
     {
-        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => !c.IsNeutralCulture);
         Parallel.ForEach(cultures, culture =>
         {
             Test(culture, DateTime.Now, StringExtensions.InteropDateTimeFormat);

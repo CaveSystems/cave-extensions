@@ -820,6 +820,12 @@ public static class FileSystem
         return true;
     }
 
+    /// <summary>Checks two paths for equality.</summary>
+    /// <param name="path1">First path to compare</param>
+    /// <param name="path2">Second path to compare</param>
+    /// <returns>Returns true is the paths are equal, false otherwise</returns>
+    public static bool PathEquals(string path1, string path2) => SplitPath(Path.GetFullPath(path1)).SequenceEqual(SplitPath(Path.GetFullPath(path2)));
+
     /// <summary>Splits the specified full path.</summary>
     /// <param name="fullPath">The full path.</param>
     /// <returns>Returns a list of path parts.</returns>
@@ -964,15 +970,7 @@ public static class FileSystem
     public static string ProgramDirectory => Path.GetDirectoryName(ProgramFileName);
 
     /// <summary>Gets the full program fileName with path and extension.</summary>
-    public static string ProgramFileName
-    {
-        get
-        {
-            programFileName ??= GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
-
-            return programFileName;
-        }
-    }
+    public static string ProgramFileName => programFileName ??= GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
 
     /// <summary>Gets the program files base path (this may be process dependent on 64 bit os!).</summary>
     public static string ProgramFiles

@@ -31,7 +31,7 @@ namespace Cave
                         AppContext.BaseDirectory.GetHashCode() ^
 #endif
 #if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
-                        0xDEAD << 32;
+                        (0xDEAD << 32);
 #else
                         ((Assembly.GetEntryAssembly()?.FullName.GetHashCode() ?? 0) << 32);
 #endif               

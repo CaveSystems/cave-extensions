@@ -57,7 +57,7 @@ public class BaseDynamic : BaseX
                 var overflow = (int)symbol;
                 for (var i = result.Length - 1; i >= 0; i--)
                 {
-                    var value = result[i] * Base + overflow;
+                    var value = (result[i] * Base) + overflow;
                     overflow = value >> 8;
                     result[i] = (byte)value;
                 }
@@ -78,7 +78,7 @@ public class BaseDynamic : BaseX
             {
                 break;
             }
-            value = value * Base + (int)DecodeCharacter(c);
+            value = (value * Base) + (int)DecodeCharacter(c);
         }
         return value;
     }
@@ -95,7 +95,7 @@ public class BaseDynamic : BaseX
             {
                 break;
             }
-            value = value * Base + (int)DecodeCharacter(c);
+            value = (value * Base) + (int)DecodeCharacter(c);
         }
         return value;
     }

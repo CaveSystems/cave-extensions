@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Cave.Collections.Generic;
 
 namespace Cave;
 
@@ -9,6 +12,74 @@ namespace Cave;
 public static class IEnumerableExtension
 {
     #region Static
+
+    /// <summary>
+    /// Returns all items after the specified <paramref name="item"/>.
+    /// Items are checked using <see cref="object.Equals(object, object)"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable">The items to iterate</param>
+    /// <param name="item">Item to find</param>
+    /// <returns>A new sequence of items.</returns>
+    public static IEnumerable<T> After<T>(this IEnumerable<T> enumerable, T item)
+    {
+        //don't throw exception Skip(1) throws on empty list
+        var first = true;
+        foreach (var result in AfterInclusive(enumerable, item))
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                yield return result;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns all items after the specified <paramref name="item"/> including the first matching item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable">The items to iterate</param>
+    /// <param name="item">Item to find</param>
+    /// <returns>A new sequence of items.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static IEnumerable<T> AfterInclusive<T>(this IEnumerable<T> enumerable, T item) => enumerable.SkipWhile(i => !Equals(item, i));
+
+    /// <summary>Returns a read-only wrapper for the specified list.</summary>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
+    /// <param name="items">The items to wrap in a read-only wrapper.</param>
+    /// <returns>A read-only wrapper for the specified array.</returns>
+    public static IList<T> AsReadOnly<T>(this IEnumerable<T> items) => items is IList<T> list ? list.AsReadOnly() : items.AsList().AsReadOnly();
+
+    /// <summary>
+    /// Returns all items after the specified <paramref name="item"/>.
+    /// Items are checked using <see cref="object.Equals(object, object)"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable">The items to iterate</param>
+    /// <param name="item">Item to find</param>
+    /// <returns>A new sequence of items.</returns>
+    public static IEnumerable<T> Before<T>(this IEnumerable<T> enumerable, T item) => enumerable.TakeWhile(i => !Equals(i, item));
+
+    /// <summary>
+    /// Returns all items after the specified <paramref name="item"/> including item.
+    /// Items are checked using <see cref="object.Equals(object, object)"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable">The items to iterate</param>
+    /// <param name="item">Item to find</param>
+    /// <returns>A new sequence of items.</returns>
+    public static IEnumerable<T> BeforeInclusive<T>(this IEnumerable<T> enumerable, T item)
+    {
+        foreach (var i in enumerable)
+        {
+            yield return i;
+            if (Equals(i, item)) break;
+        }
+    }
 
     /// <summary>Computes the binary and result of a sequence of numeric values.</summary>
     /// <typeparam name="T">The type of the items.</typeparam>
@@ -514,17 +585,6 @@ public static class IEnumerableExtension
         return value;
     }
 
-    /// <summary>Combines the hashes of all items using the items <see cref="object.GetHashCode"/> function.</summary>
-    /// <typeparam name="T">The item type.</typeparam>
-    /// <param name="items">The items.</param>
-    /// <returns>Returns the combined hashcode for hashes of all items.</returns>
-    public static long CombineHashes<T>(this IEnumerable<T> items)
-    {
-        var hasher = DefaultHashingFunction.Create();
-        foreach (var item in items) hasher.Add(item);
-        return hasher.ToHashCode();
-    }
-
     /// <summary>Calculates the hash for all fields of the specified items.</summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <param name="items">The items.</param>
@@ -663,6 +723,30 @@ public static class IEnumerableExtension
         }
 
         return hasher.ToHashCode();
+    }
+
+    /// <summary>Combines the hashes of all items using the items <see cref="object.GetHashCode"/> function.</summary>
+    /// <typeparam name="T">The item type.</typeparam>
+    /// <param name="items">The items.</param>
+    /// <returns>Returns the combined hashcode for hashes of all items.</returns>
+    public static long CombineHashes<T>(this IEnumerable<T> items)
+    {
+        var hasher = DefaultHashingFunction.Create();
+        foreach (var item in items) hasher.Add(item);
+        return hasher.ToHashCode();
+    }
+
+    /// <summary>
+    /// Iterates the enumeration to get the count of items.
+    /// </summary>
+    /// <param name="enumerable"></param>
+    /// <returns>Returns the number of items.</returns>
+    public static int Count(this IEnumerable enumerable)
+    {
+        var enumerator = enumerable.GetEnumerator();
+        int count = 0;
+        while (enumerator.MoveNext()) count++;
+        return count;
     }
 
     /// <summary>Runs an action for each item within the specified <paramref name="enumerable"/>.</summary>

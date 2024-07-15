@@ -9,7 +9,7 @@ namespace Cave;
 /// <summary>Provides thread safe hashing.</summary>
 public static class Hash
 {
-    #region Type enum
+    #region Public Enums
 
     /// <summary>Available hash types.</summary>
     public enum Type
@@ -39,9 +39,9 @@ public static class Hash
         SHA512
     }
 
-    #endregion
+    #endregion Public Enums
 
-    #region Static
+    #region Public Methods
 
     /// <summary>Creates a hash of the specified type.</summary>
     /// <param name="type">The type.</param>
@@ -96,7 +96,7 @@ public static class Hash
         return algorithm.ComputeHash(data, index, count);
     }
 
-    /// <summary>Obtains the hash code for a specified <see cref="Stream" /> string at the current position and reading to the end of the stream.</summary>
+    /// <summary>Obtains the hash code for a specified <see cref="Stream"/> string at the current position and reading to the end of the stream.</summary>
     /// <param name="type">The type.</param>
     /// <param name="stream">The stream to hash.</param>
     /// <returns>A new byte[] containing the hash for the specified data.</returns>
@@ -144,5 +144,5 @@ public static class Hash
         return FromArray(type, Encoding.UTF8.GetBytes(data));
     }
 
-    #endregion
+    #endregion Public Methods
 }

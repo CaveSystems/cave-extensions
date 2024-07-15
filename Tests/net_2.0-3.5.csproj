@@ -13,6 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Cave.Console" Version="3.0.0" />
         <PackageReference Include="NUnit" Version="2.6.4" />
         <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />
     </ItemGroup>

@@ -14,15 +14,7 @@ public static class MainAssembly
 
     /// <summary>Gets the MainAssembly.</summary>
     /// <returns>Returns the main assembly instance.</returns>
-    public static Assembly Get()
-    {
-        if (mainAssembly == null)
-        {
-            mainAssembly = FindProgramAssembly();
-        }
-
-        return mainAssembly;
-    }
+    public static Assembly Get() => mainAssembly ??= FindProgramAssembly();
 
     static Assembly FindProgramAssembly()
     {
@@ -96,5 +88,5 @@ public static class MainAssembly
         return null;
     }
 
-    #endregion
+    #endregion Static
 }

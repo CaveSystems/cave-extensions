@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <!-- TODO netstandard1.0;netstandard1.1;netstandard1.2; -->
         <TargetFrameworks>
             net20;net35;
             net40;
@@ -9,12 +8,9 @@
             net46;net461;net462;
             net47;net471;net472;
             net48;net481;
-            netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;
             netstandard2.0;netstandard2.1;
             net5.0;net6.0;net7.0;net8.0;
             netcoreapp3.0;netcoreapp3.1;
-            netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;
-            netcoreapp1.0;netcoreapp1.1;
         </TargetFrameworks>
 
         <!--project-->

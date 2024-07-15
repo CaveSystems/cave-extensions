@@ -4,9 +4,10 @@ using System.Linq;
 namespace Cave.Collections.Generic;
 
 /// <summary>Gets extensions to the IEnumerable interface.</summary>
+// todo: move this to Cave.IEnumerableExtension in v4.0
 public static class IEnumerableExtension
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Converts to a list.</summary>
     /// <param name="items">The items.</param>
@@ -39,5 +40,5 @@ public static class IEnumerableExtension
     /// <returns></returns>
     public static IItemSet<T> ToSet<T>(this IEnumerable<T> items) => new Set<T>(items);
 
-    #endregion
+    #endregion Public Methods
 }

@@ -620,7 +620,7 @@ public static partial class StringExtensions
         if (timeSpan.Ticks < TimeSpan.TicksPerMillisecond)
         {
             var micro = timeSpan.Ticks / (double)(TimeSpan.TicksPerMillisecond / 1000);
-            return Print(micro, "µs");
+            return Print(micro, "us");
         }
 
         if (timeSpan.Ticks < TimeSpan.TicksPerSecond)

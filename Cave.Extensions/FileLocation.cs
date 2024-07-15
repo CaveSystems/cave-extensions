@@ -6,11 +6,11 @@ using System.IO;
 namespace Cave;
 
 /// <summary>Gets access to a file location.</summary>
-public class FileLocation
+public class FileLocation : IEquatable<FileLocation>
 {
     #region Static
 
-    /// <summary>Performs an implicit conversion from <see cref="FileLocation" /> to <see cref="string" />.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="FileLocation"/> to <see cref="string"/>.</summary>
     /// <param name="location">The location.</param>
     /// <returns>The result of the conversion.</returns>
     public static implicit operator string(FileLocation location) => location?.ToString();
@@ -62,81 +62,105 @@ public class FileLocation
     /// <summary>Gets the program directory.</summary>
     static string ProgramDirectory => Path.GetDirectoryName(MainAssembly.Get().GetAssemblyFilePath());
 
-    #endregion
+    #endregion Static
+
+    /// <summary>Gets or sets the valid characters used at auto generated file locations (from assemblies product and company name).</summary>
+    public static string ValidChars { get; set; } = ASCII.Strings.Letters + ASCII.Strings.Digits;
+
+    /// <summary>Creates the default location used to store files for the current assembly.</summary>
+    /// <remarks>See <see cref="ValidChars"/> for name conversion.</remarks>
+    /// <param name="root">Root location to use</param>
+    /// <param name="fileNameWithExtension">Filename and extension to use</param>
+    /// <returns>Returns a new <see cref="FileLocation"/> instance</returns>
+    public static FileLocation CreateDefault(RootLocation root = RootLocation.LocalUserConfig, string fileNameWithExtension = null)
+    {
+        var asm = AssemblyVersionInfo.Program;
+        var folder = FileSystem.Combine(
+            asm.Company.ReplaceInvalidChars(ValidChars, "/").Split('/').JoinPascalCase(),
+            asm.Product.ReplaceInvalidChars(ValidChars, "/").Split('/').JoinPascalCase());
+        return Create(root, folder, fileNameWithExtension);
+    }
+
+    /// <summary>Creates the default location used to store files.</summary>
+    /// <remarks>See <see cref="ValidChars"/> for name conversion.</remarks>
+    /// <param name="root">Root location to use</param>
+    /// <param name="companyName">Company name to use. This will default to the current assemblies <see cref="AssemblyVersionInfo.Company"/>.</param>
+    /// <param name="productName">Product name to use. This will default to the current assemblies <see cref="AssemblyVersionInfo.Product"/>.</param>
+    /// <param name="fileNameWithExtension">Filename and extension to use</param>
+    /// <returns>Returns a new <see cref="FileLocation"/> instance</returns>
+    public static FileLocation Create(RootLocation root = RootLocation.LocalUserConfig, string companyName = null, string productName = null, string fileNameWithExtension = null) => Create(root, companyName, productName, fileNameWithExtension is null ? null : Path.GetFileNameWithoutExtension(fileNameWithExtension), fileNameWithExtension is null ? null : Path.GetExtension(fileNameWithExtension));
+
+    /// <summary>Creates the default location used to store files.</summary>
+    /// <remarks>See <see cref="ValidChars"/> for name conversion.</remarks>
+    /// <param name="root">Root location to use</param>
+    /// <param name="companyName">Company name to use. This will default to the current assemblies <see cref="AssemblyVersionInfo.Company"/>.</param>
+    /// <param name="productName">Product name to use. This will default to the current assemblies <see cref="AssemblyVersionInfo.Product"/>.</param>
+    /// <param name="fileName">Filename to use.</param>
+    /// <param name="extension">Extzension to use.</param>
+    /// <returns>Returns a new <see cref="FileLocation"/> instance</returns>
+    public static FileLocation Create(RootLocation root = RootLocation.LocalUserConfig, string companyName = null, string productName = null, string fileName = null, string extension = null)
+    {
+        var fileNameWithExtension = fileName is null && extension is null ? null : $"{fileName}{extension}";
+        return Create(root: root, subFolders: FileSystem.Combine(companyName, productName), fileNameWithExtension: fileNameWithExtension);
+    }
+
+    /// <summary>Creates the default location used to store files.</summary>
+    /// <remarks>See <see cref="ValidChars"/> for name conversion.</remarks>
+    /// <param name="root">Root location to use</param>
+    /// <param name="subFolders">The sub folders.</param>
+    /// <param name="fileNameWithExtension">Filename and extension to use</param>
+    /// <returns>Returns a new <see cref="FileLocation"/> instance</returns>
+    public static FileLocation Create(RootLocation root = RootLocation.LocalUserConfig, string subFolders = null, string fileNameWithExtension = null) => new(root: root, subFolders: subFolders, fileName: fileNameWithExtension is null ? null : Path.GetFileNameWithoutExtension(fileNameWithExtension), extension: fileNameWithExtension is null ? null : Path.GetExtension(fileNameWithExtension));
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="FileLocation" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="FileLocation"/> class.</summary>
     /// <param name="root">The root folder. Is unset, this will be set to roaming user.</param>
-    /// <param name="companyName">Name of the company. If unset, this will be set to the assemblies company name.</param>
-    /// <param name="subFolder">The sub folder.</param>
+    /// <param name="subFolders">The sub folders.</param>
     /// <param name="fileName">Name of the file. If unset, this will be set to the assemblies product name.</param>
     /// <param name="extension">The extension.</param>
-    public FileLocation(RootLocation root = RootLocation.Program, string companyName = null, string subFolder = null, string fileName = null,
-        string extension = null)
+    public FileLocation(RootLocation root, string subFolders, string fileName, string extension)
     {
+        if (extension is not null && !extension.StartsWith(".")) throw new ArgumentOutOfRangeException(nameof(extension), "Extension needs to start with a point!");
         Root = root;
-        SubFolder = subFolder;
+        SubFolders = subFolders ?? "";
         Extension = extension;
-        switch (Platform.Type)
-        {
-            case PlatformType.BSD:
-            case PlatformType.Linux:
-            case PlatformType.UnknownUnix:
-#pragma warning disable CA1308
-                FileName = fileName ?? AssemblyVersionInfo.Program.Product.ToLowerInvariant().ReplaceInvalidChars(ASCII.Strings.Letters + ASCII.Strings.Digits, "-");
-#pragma warning restore CA1308
-                break;
-            default:
-                CompanyName = companyName ?? AssemblyVersionInfo.Program.Company.ReplaceChars(Path.GetInvalidPathChars(), "_");
-                FileName = fileName ?? AssemblyVersionInfo.Program.Product.ReplaceChars(Path.GetInvalidFileNameChars(), "_");
-                break;
-        }
+        FileName = fileName;
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
     /// <summary>Gets the folder.</summary>
     /// <value>The folder.</value>
-    public string Folder =>
-        Root == RootLocation.Program
-            ? FileSystem.Combine(GetRoot(), SubFolder)
-            : FileSystem.Combine(GetRoot(), CompanyName, SubFolder);
-
-    /// <summary>Gets or sets the name of the company.</summary>
-    /// <value>The name of the company.</value>
-    public string CompanyName { get; set; }
+    public string Folder => FileSystem.Combine(GetRoot(), SubFolders);
 
     /// <summary>Gets or sets the extension.</summary>
     /// <value>The extension.</value>
-    public string Extension { get; set; }
+    public string Extension { get; init; }
 
     /// <summary>Gets or sets the name of the file.</summary>
     /// <value>The name of the file.</value>
-    public string FileName { get; set; }
+    public string FileName { get; init; }
 
     /// <summary>Gets or sets the root.</summary>
     /// <value>The root.</value>
-    public RootLocation Root { get; set; }
+    public RootLocation Root { get; init; }
 
-    /// <summary>Gets or sets the sub folder to use.</summary>
-    /// <value>The sub folder.</value>
-    public string SubFolder { get; set; }
+    /// <summary>Gets or sets the sub folders to use.</summary>
+    /// <value>The sub folders.</value>
+    public string SubFolders { get; init; }
 
-    #endregion
+    #endregion Properties
 
     #region Overrides
 
-    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
-    /// <returns>A <see cref="string" /> that represents this instance.</returns>
-    public override string ToString() =>
-        Root == RootLocation.Program
-            ? FileSystem.Combine(GetRoot(), SubFolder, FileName + Extension)
-            : FileSystem.Combine(GetRoot(), CompanyName, SubFolder, FileName + Extension);
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
+    public override string ToString() => FileSystem.Combine(GetRoot(), SubFolders, FileName + Extension);
 
-    #endregion
+    #endregion Overrides
 
     #region Members
 
@@ -147,7 +171,16 @@ public class FileLocation
         _ => GetRootUnix(Root)
     };
 
-    #endregion
+    /// <inheritdoc/>
+    public bool Equals(FileLocation other) => FileSystem.PathEquals(this, other);
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj) => obj is FileLocation fileLocation && Equals(fileLocation);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => ToString().GetHashCode();
+
+    #endregion Members
 }
 
 #endif

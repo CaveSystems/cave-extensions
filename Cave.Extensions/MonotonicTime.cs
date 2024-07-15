@@ -61,7 +61,7 @@ public static class MonotonicTime
 
         public static State Init()
         {
-            var now = DateTime.UtcNow;
+            var now = GetSystemUtcDateTime();
             var ticks = (long)(Stopwatch.GetTimestamp() * stampToTicks);
             return new State(ticks, now.Ticks, now.Ticks - ticks);
         }
@@ -121,7 +121,7 @@ public static class MonotonicTime
                 Monitor.Exit(syncRoot);
             }
         }
-        lock (syncRoot) return state;
+        return state;
     }
 
     #endregion Private Methods
@@ -213,10 +213,10 @@ public static class MonotonicTime
         get => new(GetMonotonicState().Clock + offset.Ticks, DateTimeKind.Local);
     }
 
-    /// <summary>Gets the systems start time.</summary>
+    /// <summary>Gets the monotonic time systems start time.</summary>
     public static DateTime StartTime => GetMonotonicState().StartTime;
 
-    /// <summary>Gets the current uptime.</summary>
+    /// <summary>Gets the monotonic time systems uptime since last resync.</summary>
     public static TimeSpan Uptime
     {
         [MethodImpl((MethodImplOptions)256)]
@@ -233,6 +233,11 @@ public static class MonotonicTime
     #endregion Public Properties
 
     #region Public Methods
+
+    /// <summary>
+    /// Function to be used when synchronizing and calibrating (<see cref="Resync"/>, <see cref="Calibrate"/>).
+    /// </summary>
+    public static Func<DateTime> GetSystemUtcDateTime { get; set; } = () => DateTime.UtcNow;
 
     /// <summary>
     /// Calibrates the system start time and the current time. This is needed if the timer is used for a long time and the difference at <see cref="GetDrift"/>
@@ -276,14 +281,14 @@ public static class MonotonicTime
         var values = new double[samples];
         var count = 0;
 
-        var last = DateTime.UtcNow;
+        var last = GetSystemUtcDateTime();
         for (; count < values.Length; count++)
         {
             DateTime now;
             State state;
             for (; ; )
             {
-                now = DateTime.UtcNow;
+                now = GetSystemUtcDateTime();
                 state = GetMonotonicState();
                 //wait for tick
                 if (now > last) break;
@@ -293,6 +298,22 @@ public static class MonotonicTime
             last = now;
         }
         return new Drift(values, count);
+    }
+
+    /// <summary>
+    /// Restarts the monotonic time system resulting in a resync of the start time and the current time.
+    /// </summary>
+    /// <returns></returns>
+    public static Drift Resync()
+    {
+        Drift result = default;
+        lock (syncRoot)
+        {
+            state = State.Init();
+            result = GetDrift(10);
+        }
+        Debug.WriteLine($"Resync complete. StdDev {result.StdDev.FormatTime()}, average {result.Average.FormatTime()}, min {result.Min.FormatTime()}, max {result.Max.FormatTime()}");
+        return result;
     }
 
     #endregion Public Methods

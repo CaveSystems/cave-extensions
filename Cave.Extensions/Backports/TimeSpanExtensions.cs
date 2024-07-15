@@ -61,7 +61,7 @@ public static class TimeSpanExtensions
                     }
                     if (count < 7)
                     {
-                        sb.Append(fraction.Substring(0, count));
+                        sb.Append(fraction[..count]);
                     }
                     else
                     {
