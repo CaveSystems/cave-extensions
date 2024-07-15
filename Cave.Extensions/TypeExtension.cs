@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Cave;
 
-/// <summary>Gets extensions for the <see cref="Type" /> class.</summary>
+/// <summary>Gets extensions for the <see cref="Type"/> class.</summary>
 public static class TypeExtension
 {
     #region Static
@@ -188,7 +188,7 @@ public static class TypeExtension
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * (TimeSpan.TicksPerMillisecond / 1000d / 1000d)));
                 }
 
-                if (str.EndsWith("µs", StringComparison.Ordinal))
+                if (str.EndsWith("µs", StringComparison.Ordinal) || str.EndsWith("us", StringComparison.Ordinal))
                 {
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * (TimeSpan.TicksPerMillisecond / 1000d)));
                 }
@@ -318,7 +318,7 @@ public static class TypeExtension
         }
     }
 
-    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
+    /// <summary>Gets a specific <see cref="Attribute"/> present at the type. If the attribute type cannot be found null is returned.</summary>
     /// <typeparam name="T">The attribute type to check for.</typeparam>
     /// <param name="type">The type to check.</param>
     /// <param name="inherit">Inherit attributes from parents.</param>
@@ -328,9 +328,7 @@ public static class TypeExtension
         (T)GetAttribute(type, typeof(T), inherit);
 
 #if NETCOREAPP1_0 || NETCOREAPP1_1
-    /// <summary>
-    /// Backport for netstandard 1 and netcore 1: TODO obey inherit!
-    /// </summary>
+    /// <summary>Backport for netstandard 1 and netcore 1: TODO obey inherit!</summary>
     /// <param name="type"></param>
     /// <param name="inherit"></param>
     /// <returns></returns>
@@ -338,7 +336,7 @@ public static class TypeExtension
         => type.GetTypeInfo().CustomAttributes.Select(c => c.Constructor.Invoke(c.ConstructorArguments.Select(a => a.Value).ToArray())).ToArray();
 #endif
 
-    /// <summary>Gets a specific <see cref="Attribute" /> present at the type. If the attribute type cannot be found null is returned.</summary>
+    /// <summary>Gets a specific <see cref="Attribute"/> present at the type. If the attribute type cannot be found null is returned.</summary>
     /// <param name="type">The type to check.</param>
     /// <param name="attributeType">The attribute type to check for.</param>
     /// <param name="inherit">Inherit attributes from parents.</param>
@@ -348,8 +346,7 @@ public static class TypeExtension
      ?? throw new ArgumentNullException(nameof(type));
 
     /// <summary>
-    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
-    /// empty list is returned.
+    /// Gets all attributes of a specific <see cref="Attribute"/> type present at the type. If the attribute type cannot be found an empty list is returned.
     /// </summary>
     /// <typeparam name="T">The attribute type to check for.</typeparam>
     /// <param name="type">The type to check.</param>
@@ -360,8 +357,7 @@ public static class TypeExtension
         GetAttributes(type, typeof(T), inherit).Cast<T>();
 
     /// <summary>
-    /// Gets all attributes of a specific <see cref="Attribute" /> type present at the type. If the attribute type cannot be found an
-    /// empty list is returned.
+    /// Gets all attributes of a specific <see cref="Attribute"/> type present at the type. If the attribute type cannot be found an empty list is returned.
     /// </summary>
     /// <param name="type">The type to check.</param>
     /// <param name="attributeType">The attribute type to check for.</param>
@@ -371,7 +367,7 @@ public static class TypeExtension
         type?.GetCustomAttributes(inherit).Where(a => attributeType.IsAssignableFrom(a.GetType()))
      ?? throw new ArgumentNullException(nameof(type));
 
-    /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
+    /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute"/>.</summary>
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The company name.</returns>
     public static string GetCompanyName(this Type type)
@@ -379,6 +375,7 @@ public static class TypeExtension
         => type?.GetTypeInfo().Assembly.GetCompanyName();
 #else
         => type?.Assembly.GetCompanyName();
+
 #endif
 
 #if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_5_OR_GREATER)
@@ -392,7 +389,7 @@ public static class TypeExtension
         => type.GetTypeInfo().GetMethod(name, types, modifiers);
 #endif
 
-    /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
+    /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.</summary>
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The product name.</returns>
     public static string GetProductName(this Type type)
@@ -400,6 +397,7 @@ public static class TypeExtension
         => type?.GetTypeInfo().Assembly.GetProductName();
 #else
         => type?.Assembly.GetProductName();
+
 #endif
 
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
@@ -414,7 +412,7 @@ public static class TypeExtension
     public static PropertyInfo[] GetProperties(this TypeInfo typeInfo, BindingFlags bindingFlags) => typeInfo.DeclaredProperties.ToArray();
 #endif
 
-    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
+    /// <summary>Checks a type for presence of a specific <see cref="Attribute"/> instance.</summary>
     /// <typeparam name="T">The attribute type to check for.</typeparam>
     /// <param name="type">The type to check.</param>
     /// <param name="inherit">Inherit attributes from parents.</param>
@@ -423,7 +421,7 @@ public static class TypeExtension
         where T : Attribute =>
         HasAttribute(type, typeof(T), inherit);
 
-    /// <summary>Checks a type for presence of a specific <see cref="Attribute" /> instance.</summary>
+    /// <summary>Checks a type for presence of a specific <see cref="Attribute"/> instance.</summary>
     /// <param name="type">The type to check.</param>
     /// <param name="attributeType">The attribute type to check for.</param>
     /// <param name="inherit">Inherit attributes from parents.</param>
@@ -495,10 +493,7 @@ public static class TypeExtension
 #endif
 #endif
 
-    /// <summary>
-    /// Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp;
-    /// !type.IsEnum.
-    /// </summary>
+    /// <summary>Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp; !type.IsEnum.</summary>
     /// <param name="type">The type to check.</param>
     /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
     public static bool IsStruct(this Type type)
@@ -506,6 +501,8 @@ public static class TypeExtension
         => (type?.GetTypeInfo().IsValueType == true) && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
 #else
         => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
+
 #endif
-    #endregion
+
+    #endregion Static
 }
