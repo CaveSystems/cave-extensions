@@ -13,7 +13,7 @@ namespace Cave;
 [ExcludeFromCodeCoverage]
 public static class Platform
 {
-    /// <summary>Gets the <see cref="PlatformType" /> of the current platform.</summary>
+    /// <summary>Gets the <see cref="PlatformType"/> of the current platform.</summary>
     public static PlatformType Type => GetCached(nameof(Type), GetPlatformType);
 
     /// <summary>Gets the system version string.</summary>
@@ -50,8 +50,10 @@ public static class Platform
             case 1: /*Win32NT*/
             case 2: /*Win32Windows*/
                 return PlatformType.Windows;
+
             case 3: /*Windows CE / Compact Framework*/
                 return PlatformType.CompactFramework;
+
             case 4: /*Unix, mono returns this on all platforms except windows*/
                 if (AppDom.FindAssembly("Mono.Android", false) != null)
                 {
@@ -104,12 +106,16 @@ public static class Platform
                 }
 
                 return PlatformType.UnknownUnix;
+
             case 5: /*Xbox*/
                 return PlatformType.Xbox;
+
             case 6: /*MacOSX*/
                 return PlatformType.MacOS;
+
             case 128:
                 return PlatformType.UnknownUnix;
+
             default:
                 return PlatformType.Unknown;
         }
@@ -164,6 +170,7 @@ public static class Platform
             case 3: /*Windows CE / Compact Framework*/
             case 5: /*Xbox*/
                 return true;
+
             default:
             case 4: /*Unix*/
             case 6: /*MacOSX*/

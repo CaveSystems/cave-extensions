@@ -26,6 +26,12 @@ public class Task : IDisposable
 
     public static class Factory
     {
+        static Factory()
+        {
+            ThreadPool.SetMaxThreads(1000, 1000);
+            ThreadPool.SetMinThreads(100, 100);
+        }
+
         #region Static
 
         public static Task<TResult> StartNew<TResult>(Func<TResult> func, TaskCreationOptions options = TaskCreationOptions.None)
@@ -58,12 +64,6 @@ public class Task : IDisposable
 
         public static Task StartNew<T>(Action<T> action, object state, TaskCreationOptions options = TaskCreationOptions.None)
             => StartNew(o => action((T)o), state, options);
-
-        static Factory()
-        {
-            ThreadPool.SetMaxThreads(1000, 1000);
-            ThreadPool.SetMinThreads(100, 100);
-        }
 
         #endregion Static
     }

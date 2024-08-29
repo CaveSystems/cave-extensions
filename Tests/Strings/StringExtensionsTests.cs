@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Cave;
 using NUnit.Framework;
 
@@ -642,122 +644,126 @@ public class StringExtensionsTests
         CollectionAssert.AreEqual(expected, array.ToStringArray());
     }
 
-    [Test]
-    public void ToStringParse()
+    static void ToStringParseTestValue<T>(T value, CultureInfo culture)
     {
-        void Test<T>(T value, CultureInfo culture)
-        {
-            var type = typeof(T);
+        var type = typeof(T);
 #if NETCOREAPP1_0 || NETCOREAPP1_1
             var typeInfo = type.GetTypeInfo();
             var isGeneric = typeInfo.IsGenericType;
             var valueType = isGeneric ? typeInfo.GetGenericArguments().Single() : null;
             var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
 #else
-            var isGeneric = type.IsGenericType;
-            var valueType = isGeneric ? type.GetGenericArguments().Single() : null;
-            var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
+        var isGeneric = type.IsGenericType;
+        var valueType = isGeneric ? type.GetGenericArguments().Single() : null;
+        var typeName = isGeneric ? type.Name + $" ({valueType.Name})" : type.Name;
 #endif
 
-            var str = StringExtensions.ToString(value, culture);
-            var read = typeof(T).ConvertValue(str, culture);
-            if (value is not null && culture.Name.Contains("-SS") && valueType == typeof(double))
-            {
-                //Bug in some ToString(CultureInfo("*-SS"), "R") implementations
-                Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
-            }
-            else
-            {
-                Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
-            }
-        }
-
-        void TestDateTime(DateTime? value, CultureInfo culture)
+        var str = StringExtensions.ToString(value, culture);
+        var read = typeof(T).ConvertValue(str, culture);
+        if (value is not null && culture.Name.Contains("-SS") && valueType == typeof(double))
         {
-            if (value is DateTime dt)
+            //Bug in some ToString(CultureInfo("*-SS"), "R") implementations
+            Assert.AreEqual(Convert.ToDouble(value), (double)read, 0.0000000000001d, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
+        }
+        else
+        {
+            Assert.AreEqual(value, read, $"Roundtrip ToString->ConvertValue not successful at type {typeName} and culture {culture.Name}!");
+        }
+    }
+
+    static void ToStringParseTestDateTime(DateTime? value, CultureInfo culture)
+    {
+        if (value is DateTime dt)
+        {
+            var test = new DateTime(dt.Ticks - (dt.Ticks % TimeSpan.TicksPerSecond));
+            var str = StringExtensions.ToString(test, culture);
+            var read = typeof(DateTime).ConvertValue(str, culture);
+            if (!Equals(read, test))
             {
-                var test = new DateTime(dt.Ticks - (dt.Ticks % TimeSpan.TicksPerSecond));
-                var str = StringExtensions.ToString(test, culture);
-                var read = typeof(DateTime).ConvertValue(str, culture);
-                if (!Equals(read, test))
+                if (Equals(new CultureInfo("mi-NZ"), culture))
                 {
-                    if (Equals(new CultureInfo("mi-NZ"), culture))
-                    {
-                        Assert.Inconclusive("NET Framework bug. Culture mi-NZ fails AM / PM test when converting to and from string.");
-                        return;
-                    }
-                    Assert.Fail($"Roundtrip ToString->ConvertValue not successful at type DateTime and culture {culture.Name}! '{test}' is not equal to '{read}' (string '{str}')!");
+                    Assert.Inconclusive("NET Framework bug. Culture mi-NZ fails AM / PM test when converting to and from string.");
+                    return;
                 }
-            }
-            else
-            {
-                Test(value, culture);
+                Assert.Fail($"Roundtrip ToString->ConvertValue not successful at type DateTime and culture {culture.Name}! '{test}' is not equal to '{read}' (string '{str}')!");
             }
         }
-
-        var rnd = new Random();
-        foreach (var culture in allCultures)
+        else
         {
-            if (culture.IsNeutralCulture)
-            {
-                continue;
-            }
-
-            if (culture.Calendar is GregorianCalendar) { }
-            else
-            {
-                continue;
-            }
-
-            for (int i = 0; i < 10; i++)
-            {
-                double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
-                Test((float)NextDouble(), culture);
-                Test(NextDouble(), culture);
-                Test((decimal)(NextDouble() % 1d), culture);
-                Test((sbyte)rnd.Next(), culture);
-                Test((byte)rnd.Next(), culture);
-                Test((short)rnd.Next(), culture);
-                Test((ushort)rnd.Next(), culture);
-                Test(rnd.Next(), culture);
-                Test((uint)rnd.Next(), culture);
-                Test(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
-                Test((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-                Test(TimeSpan.FromDays(rnd.NextDouble()), culture);
-                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-                Test((float?)rnd.NextDouble(), culture);
-                Test((double?)rnd.NextDouble(), culture);
-                Test((decimal?)rnd.NextDouble(), culture);
-                Test((sbyte?)rnd.Next(), culture);
-                Test((byte?)rnd.Next(), culture);
-                Test((short?)rnd.Next(), culture);
-                Test((ushort?)rnd.Next(), culture);
-                Test((int?)rnd.Next(), culture);
-                Test((uint?)rnd.Next(), culture);
-                Test((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-                Test((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-                Test((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
-                TestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-                Test((float?)null, culture);
-                Test((double?)null, culture);
-                Test((decimal?)null, culture);
-                Test((sbyte?)null, culture);
-                Test((byte?)null, culture);
-                Test((short?)null, culture);
-                Test((ushort?)null, culture);
-                Test((int?)null, culture);
-                Test((uint?)null, culture);
-                Test((long?)null, culture);
-                Test((ulong?)null, culture);
-                Test((TimeSpan?)null, culture);
-                Test((DateTime?)null, culture);
-                var buf = new byte[50];
-                rnd.NextBytes(buf);
-                Test(buf, culture);
-                var arrayI = new[] { rnd.Next(), rnd.Next() };
-                Test(arrayI, culture);
-            }
+            ToStringParseTestValue(value, culture);
         }
+    }
+
+    static void ToStringParseTestCulture(CultureInfo culture)
+    {
+        var rnd = new Random(1337);
+        if (culture.IsNeutralCulture)
+        {
+            return;
+        }
+
+        if (culture.Calendar is GregorianCalendar) { }
+        else
+        {
+            return;
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
+            ToStringParseTestValue((float)NextDouble(), culture);
+            ToStringParseTestValue(NextDouble(), culture);
+            ToStringParseTestValue((decimal)(NextDouble() % 1d), culture);
+            ToStringParseTestValue((sbyte)rnd.Next(), culture);
+            ToStringParseTestValue((byte)rnd.Next(), culture);
+            ToStringParseTestValue((short)rnd.Next(), culture);
+            ToStringParseTestValue((ushort)rnd.Next(), culture);
+            ToStringParseTestValue(rnd.Next(), culture);
+            ToStringParseTestValue((uint)rnd.Next(), culture);
+            ToStringParseTestValue(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
+            ToStringParseTestValue((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+            ToStringParseTestValue(TimeSpan.FromDays(rnd.NextDouble()), culture);
+            ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+            ToStringParseTestValue((float?)rnd.NextDouble(), culture);
+            ToStringParseTestValue((double?)rnd.NextDouble(), culture);
+            ToStringParseTestValue((decimal?)rnd.NextDouble(), culture);
+            ToStringParseTestValue((sbyte?)rnd.Next(), culture);
+            ToStringParseTestValue((byte?)rnd.Next(), culture);
+            ToStringParseTestValue((short?)rnd.Next(), culture);
+            ToStringParseTestValue((ushort?)rnd.Next(), culture);
+            ToStringParseTestValue((int?)rnd.Next(), culture);
+            ToStringParseTestValue((uint?)rnd.Next(), culture);
+            ToStringParseTestValue((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+            ToStringParseTestValue((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+            ToStringParseTestValue((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
+            ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+            ToStringParseTestValue((float?)null, culture);
+            ToStringParseTestValue((double?)null, culture);
+            ToStringParseTestValue((decimal?)null, culture);
+            ToStringParseTestValue((sbyte?)null, culture);
+            ToStringParseTestValue((byte?)null, culture);
+            ToStringParseTestValue((short?)null, culture);
+            ToStringParseTestValue((ushort?)null, culture);
+            ToStringParseTestValue((int?)null, culture);
+            ToStringParseTestValue((uint?)null, culture);
+            ToStringParseTestValue((long?)null, culture);
+            ToStringParseTestValue((ulong?)null, culture);
+            ToStringParseTestValue((TimeSpan?)null, culture);
+            ToStringParseTestValue((DateTime?)null, culture);
+            var buf = new byte[50];
+            rnd.NextBytes(buf);
+            ToStringParseTestValue(buf, culture);
+            var arrayI = new[] { rnd.Next(), rnd.Next() };
+            ToStringParseTestValue(arrayI, culture);
+        }
+    }
+
+    [Test]
+    public void ToStringParse()
+    {
+        ThreadPool.SetMaxThreads(1000, 1000);
+        ThreadPool.SetMinThreads(100, 100);
+        Parallel.ForEach(allCultures, ToStringParseTestCulture);
     }
 
     [Test]

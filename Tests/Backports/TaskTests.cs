@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Cave;
+using Cave.Console;
 using NUnit.Framework;
 
 namespace Test.Backports;
@@ -11,6 +14,8 @@ class TaskTests
 {
     static TaskTests()
     {
+        ThreadPool.SetMaxThreads(1000, 1000);
+        ThreadPool.SetMinThreads(100, 100);
     }
 
     static void TestSleep(int number) => Thread.Sleep(1000 - number);
@@ -94,6 +99,10 @@ class TaskTests
     [Test]
     public void ParallelConcurrrentTest()
     {
+        ThreadPool.SetMaxThreads(1000, 1000);
+        ThreadPool.SetMinThreads(200, 200);
+
+        var watch = StopWatch.StartNew();
         var started = 0;
         var startSignal = new ManualResetEvent(false);
 
@@ -108,11 +117,19 @@ class TaskTests
 
         for (int i = 0; started < 100; i++)
         {
-            Thread.Sleep(100);
-            if (i > 1000) Assert.Fail($"Tasks started {started}, expected: 100!");
+            Thread.Sleep(1);
+            if (watch.ElapsedSeconds > 10)
+            {
+                Assert.Fail($"Tasks started within 10s: {started}, expected: 100!");
+            }
         }
+        Console.WriteLine($"Started 100 tasks in {watch.Elapsed.FormatTime()}");
+
         startSignal.Set();
+        watch.Reset();
+
         Assert.IsTrue(task.Wait(10000), "Tasks did not complete im time!");
+        Console.WriteLine($"100 tasks completed after {watch.Elapsed.FormatTime()}");
     }
 
     [Test]

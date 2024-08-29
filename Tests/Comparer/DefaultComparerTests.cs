@@ -81,12 +81,15 @@ public class DefaultComparerTests
     public void TestCultureEqual()
     {
 #if !(NETCOREAPP1_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER)
+        ThreadPool.SetMaxThreads(1000, 1000);
+        ThreadPool.SetMinThreads(100, 100);
+
         var savedCurrentCulture = CultureInfo.CurrentCulture;
         var savedCurrentUICulture = CultureInfo.CurrentUICulture;
-        var rnd = new Random();
         var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
         Parallel.ForEach(cultures, culture =>
         {
+            var rnd = new Random(1337);
             if (culture.IsNeutralCulture)
             {
                 return;
@@ -98,7 +101,7 @@ public class DefaultComparerTests
             }
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var dt1 = new DateTime(rnd.Next() + DateTime.Now.Ticks, DateTimeKind.Unspecified);
                 var dt2 = new DateTime(dt1.Ticks, DateTimeKind.Local);

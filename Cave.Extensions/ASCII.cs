@@ -743,7 +743,8 @@ public static class ASCII
                 uint value = bytes[i];
                 if (termination && (value == 0))
                 {
-                    return result.GetRange(0, i);
+                    result = result[..c];
+                    break;
                 }
 
                 if (value > 127)
@@ -821,6 +822,14 @@ public static class ASCII
     /// <exception cref="ArgumentNullException">bytes.</exception>
     /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
     public static string GetString(byte[] bytes) => bytes != null ? GetString(bytes, 0, bytes.Length) : throw new ArgumentNullException(nameof(bytes));
+
+    /// <summary>Gets the string for the specified 7Bit ASCII bytes.</summary>
+    /// <param name="bytes">Bytes to decode.</param>
+    /// <param name="termination">if set to <c>true</c> [obey termination].</param>
+    /// <returns>The string.</returns>
+    /// <exception cref="ArgumentNullException">bytes.</exception>
+    /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
+    public static string GetString(byte[] bytes, bool termination) => bytes != null ? GetString(bytes, 0, bytes.Length, termination) : throw new ArgumentNullException(nameof(bytes));
 
     /// <summary>Gets the string for the specified 7Bit ASCII bytes.</summary>
     /// <param name="bytes">Bytes to decode.</param>
