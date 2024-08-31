@@ -682,7 +682,11 @@ public class StringExtensionsTests
             {
                 if (Equals(new CultureInfo("mi-NZ"), culture))
                 {
+#if NET5_0_OR_GREATER
+                    Assert.Warn("NET Framework bug. Culture mi-NZ fails AM / PM test when converting to and from string.");
+#else
                     Assert.Inconclusive("NET Framework bug. Culture mi-NZ fails AM / PM test when converting to and from string.");
+#endif
                     return;
                 }
                 Assert.Fail($"Roundtrip ToString->ConvertValue not successful at type DateTime and culture {culture.Name}! '{test}' is not equal to '{read}' (string '{str}')!");
@@ -694,67 +698,74 @@ public class StringExtensionsTests
         }
     }
 
-    static void ToStringParseTestCulture(CultureInfo culture)
+    static Exception? ToStringParseTestCulture(CultureInfo culture)
     {
-        var rnd = new Random(1337);
-        if (culture.IsNeutralCulture)
+        try
         {
-            return;
-        }
+            var rnd = new Random(1337);
+            if (culture.IsNeutralCulture)
+            {
+                return null;
+            }
 
-        if (culture.Calendar is GregorianCalendar) { }
-        else
-        {
-            return;
-        }
+            if (culture.Calendar is GregorianCalendar) { }
+            else
+            {
+                return null;
+            }
 
-        for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
+            {
+                double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
+                ToStringParseTestValue((float)NextDouble(), culture);
+                ToStringParseTestValue(NextDouble(), culture);
+                ToStringParseTestValue((decimal)(NextDouble() % 1d), culture);
+                ToStringParseTestValue((sbyte)rnd.Next(), culture);
+                ToStringParseTestValue((byte)rnd.Next(), culture);
+                ToStringParseTestValue((short)rnd.Next(), culture);
+                ToStringParseTestValue((ushort)rnd.Next(), culture);
+                ToStringParseTestValue(rnd.Next(), culture);
+                ToStringParseTestValue((uint)rnd.Next(), culture);
+                ToStringParseTestValue(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
+                ToStringParseTestValue((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                ToStringParseTestValue(TimeSpan.FromDays(rnd.NextDouble()), culture);
+                ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                ToStringParseTestValue((float?)rnd.NextDouble(), culture);
+                ToStringParseTestValue((double?)rnd.NextDouble(), culture);
+                ToStringParseTestValue((decimal?)rnd.NextDouble(), culture);
+                ToStringParseTestValue((sbyte?)rnd.Next(), culture);
+                ToStringParseTestValue((byte?)rnd.Next(), culture);
+                ToStringParseTestValue((short?)rnd.Next(), culture);
+                ToStringParseTestValue((ushort?)rnd.Next(), culture);
+                ToStringParseTestValue((int?)rnd.Next(), culture);
+                ToStringParseTestValue((uint?)rnd.Next(), culture);
+                ToStringParseTestValue((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                ToStringParseTestValue((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
+                ToStringParseTestValue((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
+                ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
+                ToStringParseTestValue((float?)null, culture);
+                ToStringParseTestValue((double?)null, culture);
+                ToStringParseTestValue((decimal?)null, culture);
+                ToStringParseTestValue((sbyte?)null, culture);
+                ToStringParseTestValue((byte?)null, culture);
+                ToStringParseTestValue((short?)null, culture);
+                ToStringParseTestValue((ushort?)null, culture);
+                ToStringParseTestValue((int?)null, culture);
+                ToStringParseTestValue((uint?)null, culture);
+                ToStringParseTestValue((long?)null, culture);
+                ToStringParseTestValue((ulong?)null, culture);
+                ToStringParseTestValue((TimeSpan?)null, culture);
+                ToStringParseTestValue((DateTime?)null, culture);
+                var buf = new byte[50];
+                rnd.NextBytes(buf);
+                ToStringParseTestValue(buf, culture);
+                var arrayI = new[] { rnd.Next(), rnd.Next() };
+                ToStringParseTestValue(arrayI, culture);
+            }
+        }
+        catch (Exception ex)
         {
-            double NextDouble() => (rnd.NextDouble() / rnd.NextDouble()) + double.MinValue;
-            ToStringParseTestValue((float)NextDouble(), culture);
-            ToStringParseTestValue(NextDouble(), culture);
-            ToStringParseTestValue((decimal)(NextDouble() % 1d), culture);
-            ToStringParseTestValue((sbyte)rnd.Next(), culture);
-            ToStringParseTestValue((byte)rnd.Next(), culture);
-            ToStringParseTestValue((short)rnd.Next(), culture);
-            ToStringParseTestValue((ushort)rnd.Next(), culture);
-            ToStringParseTestValue(rnd.Next(), culture);
-            ToStringParseTestValue((uint)rnd.Next(), culture);
-            ToStringParseTestValue(((long)rnd.Next() * rnd.Next()) + rnd.Next(), culture);
-            ToStringParseTestValue((ulong)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            ToStringParseTestValue(TimeSpan.FromDays(rnd.NextDouble()), culture);
-            ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            ToStringParseTestValue((float?)rnd.NextDouble(), culture);
-            ToStringParseTestValue((double?)rnd.NextDouble(), culture);
-            ToStringParseTestValue((decimal?)rnd.NextDouble(), culture);
-            ToStringParseTestValue((sbyte?)rnd.Next(), culture);
-            ToStringParseTestValue((byte?)rnd.Next(), culture);
-            ToStringParseTestValue((short?)rnd.Next(), culture);
-            ToStringParseTestValue((ushort?)rnd.Next(), culture);
-            ToStringParseTestValue((int?)rnd.Next(), culture);
-            ToStringParseTestValue((uint?)rnd.Next(), culture);
-            ToStringParseTestValue((long?)(((long)rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            ToStringParseTestValue((ulong?)((rnd.Next() * rnd.Next()) + rnd.Next()), culture);
-            ToStringParseTestValue((TimeSpan?)TimeSpan.FromDays(rnd.NextDouble()), culture);
-            ToStringParseTestDateTime(DateTime.Now + TimeSpan.FromDays(rnd.NextDouble()), culture);
-            ToStringParseTestValue((float?)null, culture);
-            ToStringParseTestValue((double?)null, culture);
-            ToStringParseTestValue((decimal?)null, culture);
-            ToStringParseTestValue((sbyte?)null, culture);
-            ToStringParseTestValue((byte?)null, culture);
-            ToStringParseTestValue((short?)null, culture);
-            ToStringParseTestValue((ushort?)null, culture);
-            ToStringParseTestValue((int?)null, culture);
-            ToStringParseTestValue((uint?)null, culture);
-            ToStringParseTestValue((long?)null, culture);
-            ToStringParseTestValue((ulong?)null, culture);
-            ToStringParseTestValue((TimeSpan?)null, culture);
-            ToStringParseTestValue((DateTime?)null, culture);
-            var buf = new byte[50];
-            rnd.NextBytes(buf);
-            ToStringParseTestValue(buf, culture);
-            var arrayI = new[] { rnd.Next(), rnd.Next() };
-            ToStringParseTestValue(arrayI, culture);
+            return ex;
         }
     }
 
@@ -763,7 +774,11 @@ public class StringExtensionsTests
     {
         ThreadPool.SetMaxThreads(1000, 1000);
         ThreadPool.SetMinThreads(100, 100);
-        Parallel.ForEach(allCultures, ToStringParseTestCulture);
+        Parallel.ForEach(allCultures, (culture) =>
+        {
+            var result = ToStringParseTestCulture(culture);
+            if (result is not InconclusiveException) throw result;
+        });
     }
 
     [Test]
