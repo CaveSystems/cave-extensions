@@ -762,6 +762,7 @@ public class StringExtensionsTests
                 var arrayI = new[] { rnd.Next(), rnd.Next() };
                 ToStringParseTestValue(arrayI, culture);
             }
+            return null;
         }
         catch (Exception ex)
         {
