@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+#nullable enable
+
 namespace Cave;
 
 /// <summary>Gets extensions for the <see cref="Type"/> class.</summary>
@@ -19,7 +21,7 @@ public static class TypeExtension
     /// <param name="value">Value to convert.</param>
     /// <param name="cultureInfo">The culture to use during formatting.</param>
     /// <returns>Returns a new instance of the specified type.</returns>
-    public static object ConvertPrimitive(this Type toType, object value, IFormatProvider cultureInfo)
+    public static object? ConvertPrimitive(this Type toType, object? value, IFormatProvider cultureInfo)
     {
         try
         {
@@ -36,14 +38,14 @@ public static class TypeExtension
     /// <param name="value">Value to convert.</param>
     /// <param name="culture">The culture to use during formatting.</param>
     /// <returns>Returns a new instance of the specified type.</returns>
-    public static object ConvertValue(this Type toType, object value, CultureInfo culture) => ConvertValue(toType, value, (IFormatProvider)culture);
+    public static object? ConvertValue(this Type toType, object? value, CultureInfo culture) => ConvertValue(toType, value, (IFormatProvider)culture);
 
     /// <summary>Converts a value to the desired field value.</summary>
     /// <param name="toType">Type to convert to.</param>
     /// <param name="value">Value to convert.</param>
     /// <param name="formatProvider">The format provider to use during formatting.</param>
     /// <returns>Returns a new instance of the specified type.</returns>
-    public static object ConvertValue(this Type toType, object value, IFormatProvider formatProvider = null)
+    public static object? ConvertValue(this Type toType, object? value, IFormatProvider? formatProvider = null)
     {
         if (toType == null)
         {
@@ -52,7 +54,7 @@ public static class TypeExtension
 
         formatProvider ??= CultureInfo.InvariantCulture;
 
-        if (value == null)
+        if (value is null)
         {
             return null;
         }
@@ -74,7 +76,7 @@ public static class TypeExtension
 
         if (toType == typeof(bool))
         {
-            return value.ToString().ToUpperInvariant() switch
+            return value.ToString()?.ToUpperInvariant() switch
             {
                 "TRUE" or "ON" or "YES" or "1" => true,
                 _ => false,
@@ -98,7 +100,7 @@ public static class TypeExtension
         }
         if (toType.IsEnum)
         {
-            return Enum.Parse(toType, value.ToString(), true);
+            return Enum.Parse(toType, value.ToString() ?? "0", true);
         }
 #endif
 
@@ -127,7 +129,7 @@ public static class TypeExtension
             else
             {
                 Trace.TraceInformation("Using object.ToString() convert to string!");
-                str = value.ToString();
+                str = value.ToString() ?? string.Empty;
             }
         }
         if (toType == typeof(string))
@@ -246,7 +248,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
@@ -258,7 +260,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             var cctor = toType.GetConstructor(new[] { typeof(string), typeof(IFormatProvider) });
@@ -270,7 +272,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             cctor = toType.GetConstructor(new[] { typeof(string) });
@@ -282,7 +284,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
@@ -294,7 +296,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             method = toType.GetMethod("op_Explicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
@@ -306,7 +308,7 @@ public static class TypeExtension
                 }
                 catch (TargetInvocationException ex)
                 {
-                    errors.Add(ex.InnerException);
+                    if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
             if (errors.Count > 0)
@@ -370,7 +372,7 @@ public static class TypeExtension
     /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute"/>.</summary>
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The company name.</returns>
-    public static string GetCompanyName(this Type type)
+    public static string? GetCompanyName(this Type type)
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         => type?.GetTypeInfo().Assembly.GetCompanyName();
 #else
@@ -392,7 +394,7 @@ public static class TypeExtension
     /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.</summary>
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The product name.</returns>
-    public static string GetProductName(this Type type)
+    public static string? GetProductName(this Type type)
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
         => type?.GetTypeInfo().Assembly.GetProductName();
 #else

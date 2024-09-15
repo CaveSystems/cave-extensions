@@ -141,11 +141,9 @@ public struct XxHash32 : IHashingFunction
 
     #region Public Methods
 
-    /// <summary>Add a items hash to the hashcode.</summary>
-    /// <typeparam name="T">Type of the item to add (prevents unboxing).</typeparam>
-    /// <param name="item">Item to add.</param>
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public void Add<T>(T item) => Hash((uint)(item?.GetHashCode() ?? 0));
+    public void Feed(int hash) => Hash((uint)hash);
 
     /// <summary>NotSupported</summary>
     /// <exception cref="NotSupportedException"></exception>

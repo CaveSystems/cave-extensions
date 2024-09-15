@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -29,24 +30,24 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     }
 
     /// <summary>
-    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0x0000000000000000 refin=false refout=false xorout=0x0000000000000000
-    /// check=0x6c40df5f0b497347 residue=0x0000000000000000 name="CRC-64".
+    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0x0000000000000000 refin=false refout=false xorout=0x0000000000000000 check=0x6c40df5f0b497347
+    /// residue=0x0000000000000000 name="CRC-64".
     /// </summary>
     public static CRC64 ECMA182 => new(DefaultPolynomial, 0x0000000000000000, finalXor: 0x0000000000000000, reflectInput: false, reflectOutput: false, name: "CRC-64");
 
     /// <summary>
-    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=false refout=false xorout=0xffffffffffffffff
-    /// check=0x62ec59e3f1a4f00a residue=0xfcacbebd5931a992 name="CRC-64/WE".
+    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=false refout=false xorout=0xffffffffffffffff check=0x62ec59e3f1a4f00a
+    /// residue=0xfcacbebd5931a992 name="CRC-64/WE".
     /// </summary>
     public static CRC64 WE => new(DefaultPolynomial, 0xffffffffffffffff, finalXor: 0xffffffffffffffff, reflectInput: false, reflectOutput: false, name: "CRC-64/WE");
 
     /// <summary>
-    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=true refout=true xorout=0xffffffffffffffff
-    /// check=0x995dc9bbdf1939fa residue=0x49958c9abd7d353f name="CRC-64/XZ".
+    /// Gets width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=true refout=true xorout=0xffffffffffffffff check=0x995dc9bbdf1939fa
+    /// residue=0x49958c9abd7d353f name="CRC-64/XZ".
     /// </summary>
     public static CRC64 XZ => new(DefaultPolynomial, 0xffffffffffffffff, finalXor: 0xffffffffffffffff, reflectInput: true, reflectOutput: true, name: "CRC-64/XZ");
 
-    #endregion
+    #endregion Static
 
     #region Fields
 
@@ -67,11 +68,11 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
 
     ulong currentCRC;
 
-    #endregion
+    #endregion Fields
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="CRC64" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CRC64"/> class.</summary>
     /// <param name="blueprint">The blueprint to copy all properties from.</param>
     /// <exception cref="NotImplementedException">Throws an error if reflection is uneven.</exception>
     public CRC64(CRC64 blueprint)
@@ -92,14 +93,13 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CRC64" /> class. Creates a new CRC64.XZ: width=64 poly=0x42f0e1eba9ea3693
-    /// init=0xffffffffffffffff refin=true refout=true xorout=0xffffffffffffffff check=0x995dc9bbdf1939fa residue=0x49958c9abd7d353f
-    /// name="CRC-64/XZ".
+    /// Initializes a new instance of the <see cref="CRC64"/> class. Creates a new CRC64.XZ: width=64 poly=0x42f0e1eba9ea3693 init=0xffffffffffffffff refin=true
+    /// refout=true xorout=0xffffffffffffffff check=0x995dc9bbdf1939fa residue=0x49958c9abd7d353f name="CRC-64/XZ".
     /// </summary>
     public CRC64()
         : this(DefaultPolynomial, 0xffffffffffffffff, finalXor: 0xffffffffffffffff, reflectInput: true, reflectOutput: true, name: "CRC-64/XZ") { }
 
-    /// <summary>Initializes a new instance of the <see cref="CRC64" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CRC64"/> class.</summary>
     /// <param name="poly">The polynom.</param>
     /// <param name="init">The initialize value.</param>
     /// <param name="reflectInput">if set to <c>true</c> [reflect input value] first.</param>
@@ -131,7 +131,7 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
         currentCRC = Initializer;
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
@@ -142,7 +142,7 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     /// <value>The table.</value>
     public ulong[] Table { get; set; }
 
-    #endregion
+    #endregion Properties
 
     #region IChecksum<ulong> Members
 
@@ -178,15 +178,15 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
         set => currentCRC = value;
     }
 
-    #endregion
+    #endregion IChecksum<ulong> Members
 
     #region IHashingFunction Members
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public void Add<T>(T item)
+    public void Feed(int hash)
     {
-        var itemHash = item?.GetHashCode() ?? 0;
+        var itemHash = hash;
         Update(itemHash);
         itemHash >>= 8;
         Update(itemHash);
@@ -196,11 +196,11 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
         Update(itemHash);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void Feed(byte[] data) => HashCore(data, 0, data.Length);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public unsafe void Feed(byte* data, int length)
     {
@@ -210,10 +210,10 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
         }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public int ToHashCode() => (int)((Value >> 32) ^ (Value & 0xffffffff));
 
-    #endregion
+    #endregion IHashingFunction Members
 
     #region Overrides
 
@@ -223,9 +223,7 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
 #endif
 
     /// <summary>
-    /// Computes the hash for the specified data. The caller needs to <see cref="Initialize" /> the <see cref="CRC64" /> first and call
-    /// <see
-    ///     cref="HashFinal" />
+    /// Computes the hash for the specified data. The caller needs to <see cref="Initialize"/> the <see cref="CRC64"/> first and call <see cref="HashFinal"/>
     /// afterwards to obtain the full hash code.
     /// </summary>
     /// <param name="array">Array of bytes to hash.</param>
@@ -251,18 +249,18 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     /// <summary>Gets the size, in bits, of the computed hash code.</summary>
     public override int HashSize => 32;
 
-    /// <summary>(Re-)initializes the <see cref="CRC64" />.</summary>
+    /// <summary>(Re-)initializes the <see cref="CRC64"/>.</summary>
     public override void Initialize() => currentCRC = Initializer;
 
-    #endregion
+    #endregion Overrides
 
     #region Overrides
 
-    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
-    /// <returns>A <see cref="string" /> that represents this instance.</returns>
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
     public override string ToString() => Name + " width=32 poly=" + Polynomial + " init=" + Initializer + " refin=" + ReflectInput + " refout=" + ReflectOutput + " xorout=" + FinalXor;
 
-    #endregion
+    #endregion Overrides
 
     #region Members
 
@@ -346,5 +344,5 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
         Table = table;
     }
 
-    #endregion
+    #endregion Members
 }

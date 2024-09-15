@@ -26,6 +26,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Cave.IO" Version="3.0.8" />
+        <PackageReference Include="Cave.Logging" Version="3.0.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.3" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
           <PrivateAssets>all</PrivateAssets>

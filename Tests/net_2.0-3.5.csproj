@@ -14,6 +14,8 @@
 
     <ItemGroup>
         <PackageReference Include="Cave.Console" Version="3.0.2" />
+        <PackageReference Include="Cave.IO" Version="3.0.8" />
+        <PackageReference Include="Cave.Logging" Version="3.0.9" />
         <PackageReference Include="NUnit" Version="2.6.4" />
         <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />
     </ItemGroup>

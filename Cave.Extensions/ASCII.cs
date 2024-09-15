@@ -459,10 +459,6 @@ public static class ASCII
         /// <summary>non zero digits [1-9].</summary>
         public const string NonZeroDigits = "123456789";
 
-        /// <summary>all digits [0-9].</summary>
-        [Obsolete("Use Digits instead!")]
-        public const string Numbers = "0123456789";
-
         /// <summary>printable 7Bit ASCII chars.</summary>
         public const string Printable = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 

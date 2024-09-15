@@ -19,20 +19,6 @@ public static partial class StringExtensions
 
     #region Public Methods
 
-    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="text">The text to use.</param>
-    /// <returns>A camel case version of text.</returns>
-    [Obsolete("Use GetLowerCamelCaseName or GetPascalCase instead!")]
-    public static string GetCamelCaseName(this string text) => GetLowerCamelCaseName(text);
-
-    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="validChars">Valid characters.</param>
-    /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
-    /// <returns>A camel case version of text.</returns>
-    [Obsolete("Use GetLowerCamelCaseName or GetPascalCase instead!")]
-    public static string GetCamelCaseName(this string text, string validChars, char splitter) => GetLowerCamelCaseName(text, validChars, splitter);
-
     /// <summary>Builds a kebab case name split at invalid characters and upper case letters. Example: this-is-a-kebab-case-name</summary>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
@@ -109,20 +95,6 @@ public static partial class StringExtensions
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ValidCharsCasing, '_');
-
-    /// <summary>Joins the strings with (upper) camel casing. Example: ThisIsACamelCaseName</summary>
-    /// <param name="parts">The parts.</param>
-    /// <param name="culture">The culture info.</param>
-    /// <returns>The joined string.</returns>
-    [Obsolete("Use JoinPascalCase() or JoinLowerCamelCase() instead!")]
-    public static string JoinCamelCase(this string[] parts, CultureInfo culture = null) => JoinPascalCase(parts, culture);
-
-    /// <summary>Joins the strings with (upper) camel casing. Example: ThisIsACamelCaseName</summary>
-    /// <param name="parts">The parts.</param>
-    /// <param name="culture">The culture info.</param>
-    /// <returns>The joined string.</returns>
-    [Obsolete("Use JoinPascalCase() or JoinLowerCamelCase() instead!")]
-    public static string JoinCamelCase(this IEnumerable parts, CultureInfo culture = null) => JoinPascalCase(parts, culture);
 
     /// <summary>Joins the strings using kebab case. Example: this-is-a-kebab-case-name</summary>
     /// <param name="parts">The parts.</param>
@@ -405,12 +377,6 @@ public static partial class StringExtensions
 
         return result.ToString();
     }
-
-    /// <summary>Splits a string at character casing.</summary>
-    /// <param name="text">The text.</param>
-    /// <returns>The string array.</returns>
-    [Obsolete("Use SplitCasing() instead!")]
-    public static string[] SplitCamelCase(this string text) => SplitCasing(text);
 
     /// <summary>Splits a string at character casing.</summary>
     /// <param name="text">The text.</param>

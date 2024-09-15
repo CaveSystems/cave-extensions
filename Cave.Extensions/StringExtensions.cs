@@ -651,10 +651,6 @@ public static partial class StringExtensions
         return Print(d, "d");
     }
 
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    [Obsolete("Warning this method is ambiguous. Use FormatTicks() or FormatSeconds()")]
-    public static string FormatTime(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, formatProvider);
-
     /// <summary>Formats the specified timespan to [[d.]HH:]MM:SS.F.</summary>
     /// <param name="timeSpan">The time span.</param>
     /// <param name="millisecondDigits">The number of millisecond digits.</param>

@@ -168,24 +168,6 @@ public static class ObjectExtension
     /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
-    /// <param name="noException">Ignore null value properties and missing fields.</param>
-    /// <returns>Returns the value of the specified property or default.</returns>
-    [Obsolete("Use TryGetPropertyValue instead!")]
-    public static object GetPropertyValue(this object instance, string fullPath, bool noException)
-    {
-        if (noException)
-        {
-            _ = TryGetPropertyValue(instance, fullPath, out var value);
-            return value;
-        }
-
-        return GetPropertyValue(instance, fullPath);
-    }
-
-    /// <summary>Gets the specified property value.</summary>
-    /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
-    /// <param name="instance">Instance to read from.</param>
-    /// <param name="fullPath">Full property path.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns the value of the specified property or default.</returns>
     public static object GetPropertyValue(this object instance, string fullPath, BindingFlags bindingFlags = BindingFlags.Default)
