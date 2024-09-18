@@ -19,6 +19,25 @@ public static partial class StringExtensions
 
     #region Public Methods
 
+    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsACamelCaseName</summary>
+    /// <param name="validChars">Valid characters.</param>
+    /// <param name="splitter">Character used to split parts.</param>
+    /// <param name="text">The text to use.</param>
+    /// <returns>A camel case version of text.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string GetCamelCaseName(this string text, string validChars, char splitter)
+    {
+        text = text.ReplaceInvalidChars(validChars, $"{splitter}");
+        var parts = text.Split(splitter).SelectMany(s => s.SplitCasing());
+        return parts.ToArray().JoinCamelCase();
+    }
+
+    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsACamelCaseName</summary>
+    /// <param name="text">The text to use.</param>
+    /// <returns>A camel case version of text.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ValidCharsCasing, '_');
+
     /// <summary>Builds a kebab case name split at invalid characters and upper case letters. Example: this-is-a-kebab-case-name</summary>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
@@ -37,25 +56,6 @@ public static partial class StringExtensions
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetKebabCaseName(this string text) => GetKebabCaseName(text, ValidCharsCasing, '-');
-
-    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="validChars">Valid characters.</param>
-    /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
-    /// <returns>A camel case version of text.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string GetLowerCamelCaseName(this string text, string validChars, char splitter)
-    {
-        text = text.ReplaceInvalidChars(validChars, $"{splitter}");
-        var parts = text.Split(splitter).SelectMany(s => s.SplitCasing());
-        return parts.ToArray().JoinLowerCamelCase();
-    }
-
-    /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="text">The text to use.</param>
-    /// <returns>A camel case version of text.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string GetLowerCamelCaseName(this string text) => GetLowerCamelCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Builds a pascal case name split at invalid characters and upper case letters. Example: ThisIsAPascalCaseName</summary>
     /// <param name="validChars">Valid characters.</param>
@@ -95,6 +95,86 @@ public static partial class StringExtensions
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetSnakeCaseName(this string text) => GetSnakeCaseName(text, ValidCharsCasing, '_');
+
+    /// <summary>Joins the strings with camel casing. Example: thisIsACamelCaseName</summary>
+    /// <param name="parts">The parts.</param>
+    /// <param name="culture">The culture info.</param>
+    /// <returns>The joned string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
+    {
+        if ((parts == null) || (parts.Length == 0))
+        {
+            return string.Empty;
+        }
+
+        culture ??= CultureInfo.CurrentCulture;
+
+        var result = new StringBuilder();
+        foreach (var part in parts)
+        {
+            var t = part.Trim();
+            if (t.Length < 1)
+            {
+                continue;
+            }
+
+            if (result.Length > 0)
+            {
+                _ = result.Append(t[0].ToUpper(culture));
+                if (t.Length > 1)
+                {
+                    _ = result.Append(t[1..].ToLower(culture));
+                }
+            }
+            else
+            {
+                _ = result.Append(t.ToLower(culture));
+            }
+        }
+
+        return result.ToString();
+    }
+
+    /// <summary>Joins the strings with camel casing. Example: thisIsACamelCaseName</summary>
+    /// <param name="parts">The parts.</param>
+    /// <param name="culture">The culture info.</param>
+    /// <returns>The joned string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string JoinCamelCase(this IEnumerable parts, CultureInfo culture = null)
+    {
+        if (parts == null)
+        {
+            return string.Empty;
+        }
+
+        culture ??= CultureInfo.CurrentCulture;
+
+        var result = new StringBuilder();
+        foreach (var part in parts)
+        {
+            var t = part is IFormattable formattable ? formattable.ToString(null, culture) : $"{part}";
+            if (t.Length < 1)
+            {
+                continue;
+            }
+
+            if (result.Length > 0)
+            {
+                _ = result.Append(t[0].ToUpper(culture));
+                if (t.Length > 1)
+                {
+                    _ = result.Append(t[1..].ToLower(culture));
+                }
+            }
+            else
+            {
+                _ = result.Append(t.ToLower(culture));
+            }
+        }
+
+        return result.ToString();
+    }
 
     /// <summary>Joins the strings using kebab case. Example: this-is-a-kebab-case-name</summary>
     /// <param name="parts">The parts.</param>
@@ -159,86 +239,6 @@ public static partial class StringExtensions
             }
 
             _ = result.Append(t.ToLower(culture));
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Joins the strings with camel casing. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="parts">The parts.</param>
-    /// <param name="culture">The culture info.</param>
-    /// <returns>The joned string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string JoinLowerCamelCase(this string[] parts, CultureInfo culture = null)
-    {
-        if ((parts == null) || (parts.Length == 0))
-        {
-            return string.Empty;
-        }
-
-        culture ??= CultureInfo.CurrentCulture;
-
-        var result = new StringBuilder();
-        foreach (var part in parts)
-        {
-            var t = part.Trim();
-            if (t.Length < 1)
-            {
-                continue;
-            }
-
-            if (result.Length > 0)
-            {
-                _ = result.Append(t[0].ToUpper(culture));
-                if (t.Length > 1)
-                {
-                    _ = result.Append(t[1..].ToLower(culture));
-                }
-            }
-            else
-            {
-                _ = result.Append(t.ToLower(culture));
-            }
-        }
-
-        return result.ToString();
-    }
-
-    /// <summary>Joins the strings with camel casing. Example: thisIsALowerCamelCaseName</summary>
-    /// <param name="parts">The parts.</param>
-    /// <param name="culture">The culture info.</param>
-    /// <returns>The joned string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string JoinLowerCamelCase(this IEnumerable parts, CultureInfo culture = null)
-    {
-        if (parts == null)
-        {
-            return string.Empty;
-        }
-
-        culture ??= CultureInfo.CurrentCulture;
-
-        var result = new StringBuilder();
-        foreach (var part in parts)
-        {
-            var t = part is IFormattable formattable ? formattable.ToString(null, culture) : $"{part}";
-            if (t.Length < 1)
-            {
-                continue;
-            }
-
-            if (result.Length > 0)
-            {
-                _ = result.Append(t[0].ToUpper(culture));
-                if (t.Length > 1)
-                {
-                    _ = result.Append(t[1..].ToLower(culture));
-                }
-            }
-            else
-            {
-                _ = result.Append(t.ToLower(culture));
-            }
         }
 
         return result.ToString();

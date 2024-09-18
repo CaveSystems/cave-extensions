@@ -28,7 +28,6 @@ public class StringExtensionsTests
     public void GetCasingTest()
     {
         Assert.AreEqual("testText123", "Test Text 123".GetCamelCaseName());
-        Assert.AreEqual("testText123", "Test Text 123".GetLowerCamelCaseName());
         Assert.AreEqual("TestText123", "Test Text 123".GetPascalCaseName());
         Assert.AreEqual("test_text_123", "Test Text 123".GetSnakeCaseName());
         Assert.AreEqual("test-text-123", "Test Text 123".GetKebabCaseName());
@@ -37,15 +36,6 @@ public class StringExtensionsTests
     [Test]
     public void SplitCasingTest()
     {
-        Assert.AreEqual(new[] { "Test", "ID" }.Join('|'), "TestID".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "Test", "Id" }.Join('|'), "TestId".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "test", "ID" }.Join('|'), "testID".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "test", "Id" }.Join('|'), "testId".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "Test", "ID", "123" }.Join('|'), "TestID123".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "Test", "Id", "123" }.Join('|'), "TestId123".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "test", "ID", "123" }.Join('|'), "testID123".SplitCamelCase().Join('|'));
-        Assert.AreEqual(new[] { "test", "Id", "123" }.Join('|'), "testId123".SplitCamelCase().Join('|'));
-
         Assert.AreEqual(new[] { "Test", "ID" }.Join('|'), "TestID".SplitCasing().Join('|'));
         Assert.AreEqual(new[] { "Test", "Id" }.Join('|'), "TestId".SplitCasing().Join('|'));
         Assert.AreEqual(new[] { "test", "ID" }.Join('|'), "testID".SplitCasing().Join('|'));
@@ -61,7 +51,7 @@ public class StringExtensionsTests
     [Test]
     public void CamelCaseTest()
     {
-        const string expected = "TestId";
+        const string expected = "testId";
         Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinCamelCase());
         Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinCamelCase());
         Assert.AreEqual(expected, new[] { "test", "ID" }.JoinCamelCase());
@@ -104,18 +94,6 @@ public class StringExtensionsTests
         Assert.AreEqual(expected, new[] { "test", "Id" }.JoinKebabCase());
         Assert.AreEqual(expected, new[] { "test", "id" }.JoinKebabCase());
         Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinKebabCase());
-    }
-
-    [Test]
-    public void LowerCamelCaseTest()
-    {
-        const string expected = "testId";
-        Assert.AreEqual(expected, new[] { "Test", "ID" }.JoinLowerCamelCase());
-        Assert.AreEqual(expected, new[] { "Test", "Id" }.JoinLowerCamelCase());
-        Assert.AreEqual(expected, new[] { "test", "ID" }.JoinLowerCamelCase());
-        Assert.AreEqual(expected, new[] { "test", "Id" }.JoinLowerCamelCase());
-        Assert.AreEqual(expected, new[] { "test", "id" }.JoinLowerCamelCase());
-        Assert.AreEqual(expected, new[] { "teSt", "iD" }.JoinLowerCamelCase());
     }
 
     [Test]
@@ -260,7 +238,7 @@ public class StringExtensionsTests
     }
 
     [Test]
-    public void FormatTime()
+    public void FormatTimeSpanTest()
     {
         void Test(TimeSpan timespan)
         {
@@ -292,25 +270,25 @@ public class StringExtensionsTests
     }
 
     [Test]
-    public void FormatTimeString()
+    public void FormatSecondsTest()
     {
         var value = 1.234;
-        Assert.AreEqual("1.23ns", (value / 1000 / 1000 / 1000).FormatTime());
-        Assert.AreEqual("1.23µs", (value / 1000 / 1000).FormatTime());
-        Assert.AreEqual("1.23ms", (value / 1000).FormatTime());
-        Assert.AreEqual("1.23s", value.FormatTime());
-        Assert.AreEqual("1.23min", (value * 60).FormatTime());
-        Assert.AreEqual("1.23h", (value * 3600).FormatTime());
-        Assert.AreEqual("1.23d", (value * 3600 * 24).FormatTime());
+        Assert.AreEqual("1.23ns", (value / 1000 / 1000 / 1000).FormatSeconds());
+        Assert.AreEqual("1.23µs", (value / 1000 / 1000).FormatSeconds());
+        Assert.AreEqual("1.23ms", (value / 1000).FormatSeconds());
+        Assert.AreEqual("1.23s", value.FormatSeconds());
+        Assert.AreEqual("1.23min", (value * 60).FormatSeconds());
+        Assert.AreEqual("1.23h", (value * 3600).FormatSeconds());
+        Assert.AreEqual("1.23d", (value * 3600 * 24).FormatSeconds());
 
         value = 12.3678;
-        Assert.AreEqual("12.4ns", (value / 1000 / 1000 / 1000).FormatTime());
-        Assert.AreEqual("12.4µs", (value / 1000 / 1000).FormatTime());
-        Assert.AreEqual("12.4ms", (value / 1000).FormatTime());
-        Assert.AreEqual("12.4s", value.FormatTime());
-        Assert.AreEqual("12.4min", (value * 60).FormatTime());
-        Assert.AreEqual("12.4h", (value * 3600).FormatTime());
-        Assert.AreEqual("12.4d", (value * 3600 * 24).FormatTime());
+        Assert.AreEqual("12.4ns", (value / 1000 / 1000 / 1000).FormatSeconds());
+        Assert.AreEqual("12.4µs", (value / 1000 / 1000).FormatSeconds());
+        Assert.AreEqual("12.4ms", (value / 1000).FormatSeconds());
+        Assert.AreEqual("12.4s", value.FormatSeconds());
+        Assert.AreEqual("12.4min", (value * 60).FormatSeconds());
+        Assert.AreEqual("12.4h", (value * 3600).FormatSeconds());
+        Assert.AreEqual("12.4d", (value * 3600 * 24).FormatSeconds());
 
         Assert.AreEqual("12.3678ns", (value / 1000 / 1000 / 1000).FormatSeconds("g"));
         Assert.AreEqual("12.3678µs", (value / 1000 / 1000).FormatSeconds("g"));
