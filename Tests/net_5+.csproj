@@ -13,11 +13,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cave.IO" Version="3.0.8" />
-        <PackageReference Include="Cave.Logging" Version="3.0.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.8.0" />
-        <PackageReference Include="Cave.Console" Version="3.0.2" />
         <PackageReference Include="NUnit" Version="3.14.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     </ItemGroup>
