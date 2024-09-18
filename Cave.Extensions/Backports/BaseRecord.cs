@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable IDE0130
+
+using System;
 using System.Reflection;
 using System.Text;
 

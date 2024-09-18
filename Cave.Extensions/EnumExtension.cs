@@ -29,7 +29,7 @@ public static class EnumExtension
             }
         }
 
-        return flags.ToArray();
+        return [.. flags];
     }
 
     /// <summary>Gets a string for all single flags set. ("flag1, flag4, ..").</summary>

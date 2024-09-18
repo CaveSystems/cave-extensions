@@ -137,7 +137,7 @@ public static class BufferExtensions
             encoded.AddRange(algorithm.IV);
             // add data
             encoded.AddRange(enc.TransformFinalBlock(data, 0, data.Length));
-            return encoded.ToArray();
+            return [.. encoded];
         }
         finally
         {

@@ -46,10 +46,10 @@ public abstract class BaseX : IBaseX
     #region Public Methods
 
     /// <inheritdoc/>
-    public abstract byte[] Decode(byte[] data);
+    public abstract byte[] Decode(byte[] baseXdata);
 
     /// <inheritdoc/>
-    public byte DecodeCharacter(char character) => CharacterDictionary.GetValue(character);
+    public byte DecodeCharacter(char baseXcharacter) => CharacterDictionary.GetValue(baseXcharacter);
 
 #if !NET20 && !NET35
 
@@ -79,7 +79,7 @@ public abstract class BaseX : IBaseX
     public abstract string Encode(byte[] data);
 
     /// <inheritdoc/>
-    public char EncodeCharacter(int value) => CharacterDictionary.GetCharacter(value);
+    public char EncodeCharacter(int baseXvalue) => CharacterDictionary.GetCharacter(baseXvalue);
 
 #if !NET20 && !NET35
 

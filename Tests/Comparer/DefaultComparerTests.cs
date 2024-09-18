@@ -68,10 +68,10 @@ public class DefaultComparerTests
         var a2 = new int[] { 1, 2 };
         var a3 = new int[] { 1, 2, 3 };
         var b2 = new int[] { 1, 2 };
-        Assert.IsTrue(DefaultComparer.Combine(a2, a3) < 0);
-        Assert.IsTrue(DefaultComparer.Combine(a3, a2) > 0);
-        Assert.IsTrue(DefaultComparer.Combine(a2, a2) == 0);
-        Assert.IsTrue(DefaultComparer.Combine(a2, b2) == 0);
+        Assert.IsTrue(DefaultComparer.Compare(a2, a3) < 0);
+        Assert.IsTrue(DefaultComparer.Compare(a3, a2) > 0);
+        Assert.IsTrue(DefaultComparer.Compare(a2, a2) == 0);
+        Assert.IsTrue(DefaultComparer.Compare(a2, b2) == 0);
         Assert.IsTrue(DefaultComparer.Equals(a2, a2));
         Assert.IsTrue(DefaultComparer.Equals(a2, b2));
         Assert.IsFalse(DefaultComparer.Equals(a2, a3));

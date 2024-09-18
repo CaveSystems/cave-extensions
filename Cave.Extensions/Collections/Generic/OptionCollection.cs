@@ -10,9 +10,81 @@ namespace Cave.Collections.Generic;
 [DebuggerDisplay("Count={Count}")]
 public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection>
 {
-    #region Static
+    #region Private Fields
 
-    /// <summary>Gets an Array of <see cref="Option" />s from a <see cref="IDictionary" />.</summary>
+    readonly List<string, Option> items = [];
+
+    #endregion Private Fields
+
+    #region Private Indexers
+
+    /// <summary>Allows direct access to the first <see cref="Option"/> with the specified name.</summary>
+    /// <param name="optionIndex">Index of the option.</param>
+    /// <returns></returns>
+    Option this[int optionIndex] => items.GetB(optionIndex);
+
+    #endregion Private Indexers
+
+    #region Public Constructors
+
+    /// <summary>Initializes a new empty instance of the <see cref="OptionCollection"/> class.</summary>
+    public OptionCollection() { }
+
+    /// <summary>Creates a new <see cref="OptionCollection"/>.</summary>
+    /// <param name="enumeration">The <see cref="IEnumerable"/> list of <see cref="Option"/> s.</param>
+    public OptionCollection(IEnumerable<Option> enumeration)
+    {
+        if (enumeration == null)
+        {
+            throw new ArgumentNullException(nameof(enumeration));
+        }
+
+        foreach (var option in enumeration)
+        {
+            items.Add(option.Name, option);
+        }
+    }
+
+    #endregion Public Constructors
+
+    #region Public Properties
+
+    /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
+    public static bool IsReadOnly => true;
+
+    /// <summary>Gets the number of items present.</summary>
+    public int Count => items.Count;
+
+    /// <summary>Gets all option names.</summary>
+    public IList<string> Names => items.ItemsA;
+
+    #endregion Public Properties
+
+    #region Public Indexers
+
+    /// <summary>Allows direct access to the first <see cref="Option"/> with the specified name.</summary>
+    /// <param name="optionName">Name of the option.</param>
+    /// <returns></returns>
+    /// <exception cref="KeyNotFoundException"></exception>
+    public Option this[string optionName]
+    {
+        get
+        {
+            var index = IndexOf(optionName);
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(optionName));
+            }
+
+            return this[index];
+        }
+    }
+
+    #endregion Public Indexers
+
+    #region Public Methods
+
+    /// <summary>Gets an Array of <see cref="Option"/> s from a <see cref="IDictionary"/>.</summary>
     /// <param name="dictionary"></param>
     /// <returns></returns>
     public static OptionCollection FromDictionary(IDictionary dictionary)
@@ -32,7 +104,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
         return result;
     }
 
-    /// <summary>Obtains an Array of <see cref="Option" />s from a specified string Array.</summary>
+    /// <summary>Obtains an Array of <see cref="Option"/> s from a specified string Array.</summary>
     /// <param name="lines">The strings to obtain Options from.</param>
     /// <param name="ignoreInvalid">if set to <c>true</c> [ignore invalid options].</param>
     /// <returns></returns>
@@ -64,85 +136,28 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <returns></returns>
     public static OptionCollection Parse(string text) => FromStrings(text.SplitNewLine());
 
-    /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
-    public static bool IsReadOnly => true;
-
-    #endregion
-
-    #region Fields
-
-    readonly List<string, Option> items = new();
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>Initializes a new empty instance of the <see cref="OptionCollection" /> class.</summary>
-    public OptionCollection() { }
-
-    /// <summary>Creates a new <see cref="OptionCollection" />.</summary>
-    /// <param name="enumeration">The <see cref="IEnumerable" /> list of <see cref="Option" />s.</param>
-    public OptionCollection(IEnumerable<Option> enumeration)
-    {
-        if (enumeration == null)
-        {
-            throw new ArgumentNullException(nameof(enumeration));
-        }
-
-        foreach (var option in enumeration)
-        {
-            items.Add(option.Name, option);
-        }
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>Gets the number of items present.</summary>
-    public int Count => items.Count;
-
-    /// <summary>Allows direct access to the first<see cref="Option" /> with the specified name.</summary>
+    /// <summary>Checks whether a specified option name is part of the collection.</summary>
     /// <param name="optionName">Name of the option.</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException"></exception>
-    public Option this[string optionName]
+    public bool Contains(string optionName)
     {
-        get
+        if (optionName == null)
         {
-            var index = IndexOf(optionName);
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(optionName));
-            }
-
-            return this[index];
+            throw new ArgumentNullException(nameof(optionName));
         }
+
+        return items.ContainsA(optionName);
     }
 
-    /// <summary>Gets all option names.</summary>
-    public IList<string> Names => items.ItemsA;
-
-    /// <summary>Allows direct access to the first<see cref="Option" /> with the specified name.</summary>
-    /// <param name="optionIndex">Index of the option.</param>
+    /// <summary>Determines whether the collection contains a specified element by using the default equality comparer.</summary>
+    /// <param name="item"></param>
     /// <returns></returns>
-    Option this[int optionIndex] => items.GetB(optionIndex);
+    public bool Contains(Option item) => items.ContainsB(item);
 
-    #endregion
-
-    #region IEnumerable<Option> Members
-
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
-    IEnumerator IEnumerable.GetEnumerator() => items.ItemsB.GetEnumerator();
-
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
-    public IEnumerator<Option> GetEnumerator() => items.ItemsB.GetEnumerator();
-
-    #endregion
-
-    #region IEquatable<OptionCollection> Members
+    /// <summary>Copies all elements of the collection to an Array, starting at a particular Array index.</summary>
+    /// <param name="array"></param>
+    /// <param name="arrayIndex"></param>
+    public void CopyTo(Option[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
     /// <summary>Determines whether the specified object is equal to the current object.</summary>
     /// <param name="other"></param>
@@ -170,10 +185,6 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
         return true;
     }
 
-    #endregion
-
-    #region Overrides
-
     /// <summary>Determines whether the specified object is equal to the current object. (Inherited from Object.)</summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -182,62 +193,6 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <summary>Serves as a hash function for a particular type.</summary>
     /// <returns></returns>
     public override int GetHashCode() => items.GetHashCode();
-
-    /// <summary>Gets a string containing all options.</summary>
-    /// <returns></returns>
-    public override string ToString()
-    {
-        var result = new StringBuilder();
-        foreach (var option in this)
-        {
-            var optionString = option.ToString();
-            if (result.Length > 0)
-            {
-                _ = result.Append(' ');
-            }
-
-            var containsSpace = optionString.IndexOf(' ') > -1;
-            if (containsSpace)
-            {
-                _ = result.Append('"');
-            }
-
-            _ = result.Append(optionString);
-            if (containsSpace)
-            {
-                _ = result.Append('"');
-            }
-        }
-
-        return result.ToString();
-    }
-
-    #endregion
-
-    #region Members
-
-    /// <summary>Checks whether a specified option name is part of the collection.</summary>
-    /// <param name="optionName">Name of the option.</param>
-    /// <returns></returns>
-    public bool Contains(string optionName)
-    {
-        if (optionName == null)
-        {
-            throw new ArgumentNullException(nameof(optionName));
-        }
-
-        return items.ContainsA(optionName);
-    }
-
-    /// <summary>Determines whether the collection contains a specified element by using the default equality comparer.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Contains(Option item) => items.ContainsB(item);
-
-    /// <summary>Copies all elements of the collection to an Array, starting at a particular Array index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
-    public void CopyTo(Option[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
     /// <summary>Gets the index of the first option with the specified name.</summary>
     /// <param name="optionName">Name of the option.</param>
@@ -285,5 +240,42 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
         return result;
     }
 
-    #endregion
+    /// <summary>Gets a string containing all options.</summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        var result = new StringBuilder();
+        foreach (var option in this)
+        {
+            var optionString = option.ToString();
+            if (result.Length > 0)
+            {
+                _ = result.Append(' ');
+            }
+
+            var containsSpace = optionString.IndexOf(' ') > -1;
+            if (containsSpace)
+            {
+                _ = result.Append('"');
+            }
+
+            _ = result.Append(optionString);
+            if (containsSpace)
+            {
+                _ = result.Append('"');
+            }
+        }
+
+        return result.ToString();
+    }
+
+    /// <summary>Returns an enumerator that iterates through all items.</summary>
+    /// <returns></returns>
+    public IEnumerator<Option> GetEnumerator() => items.ItemsB.GetEnumerator();
+
+    /// <summary>Returns an enumerator that iterates through all items.</summary>
+    /// <returns></returns>
+    IEnumerator IEnumerable.GetEnumerator() => items.ItemsB.GetEnumerator();
+
+    #endregion Public Methods
 }

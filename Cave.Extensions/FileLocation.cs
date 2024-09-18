@@ -121,7 +121,7 @@ public class FileLocation : IEquatable<FileLocation>
     /// <param name="extension">The extension.</param>
     public FileLocation(RootLocation root, string subFolders, string fileName, string extension)
     {
-        if (extension is not null && !extension.StartsWith(".")) throw new ArgumentOutOfRangeException(nameof(extension), "Extension needs to start with a point!");
+        if (extension is not null && !extension.StartsWith('.')) throw new ArgumentOutOfRangeException(nameof(extension), "Extension needs to start with a point!");
         Root = root;
         SubFolders = subFolders ?? "";
         Extension = extension;

@@ -13,7 +13,7 @@ public abstract class ProgressManagerBase : IProgressManager
 {
     #region Fields
 
-    readonly Set<IProgress> items = new();
+    readonly Set<IProgress> items = [];
     int nextIdentifier;
 
     #endregion

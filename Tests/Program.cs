@@ -10,8 +10,6 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Cave;
-using Cave.Console;
-using Cave.Logging;
 using NUnit.Framework;
 using Test.BaseX;
 
@@ -38,11 +36,12 @@ class Program
         var frameworkVersion = "net " + Environment.Version;
 #endif
 
-        SystemConsole.WriteLine($"Framework: <yellow>{frameworkVersion}");
+        Console.WriteLine($"Framework: {frameworkVersion}");
 
-        SystemConsole.SetKeyPressedEvent(KeyPressed);
         foreach (var type in types)
         {
+            try { while (Console.KeyAvailable) KeyPressed(Console.ReadKey(true)); } catch { }
+
 #if ALTERNATE_CODE
             var attrib = type.GetTypeInfo().GetCustomAttribute<TestFixtureAttribute>();
             if (attrib is not TestFixtureAttribute) continue;
@@ -55,7 +54,7 @@ class Program
             }
 #endif
 
-            SystemConsole.WriteLine($"Program.cs: info TI0000: <cyan>Create {type}<reset>: {frameworkVersion}");
+            Console.WriteLine($"Program.cs: info TI0000: Create {type}: {frameworkVersion}");
             var instance = Activator.CreateInstance(type);
             var methods = type.GetMethods();
             foreach (var method in methods)
@@ -75,7 +74,7 @@ class Program
                 }
 
                 GC.Collect(999, GCCollectionMode.Forced);
-                SystemConsole.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: <cyan>Start {method.Name}<reset>: {frameworkVersion}:");
+                Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0001: Start {method.Name}: {frameworkVersion}:");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 var watch = StopWatch.StartNew();
                 try
@@ -85,13 +84,13 @@ class Program
                     {
                         if (!Debugger.IsAttached) throw new TimeoutException($"Timeout of test after {watch.Elapsed.FormatTime()}");
                     }
-                    SystemConsole.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: <green>Success {method.Name} <reset>{watch.Elapsed.FormatTime()}: {frameworkVersion}");
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: info TI0002: Success {method.Name} {watch.Elapsed.FormatTime()}: {frameworkVersion}");
                 }
                 catch (Exception ex)
                 {
-                    SystemConsole.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: <red>Error {method.Name} <reset>{watch.Elapsed.FormatTime()}: {frameworkVersion}: {ex.Message}");
-                    SystemConsole.WriteLine(ex.ToString());
-                    SystemConsole.WriteLine(ex.StackTrace);
+                    Console.WriteLine($"{method.DeclaringType.Name}.cs: error TE0001: Error {method.Name} {watch.Elapsed.FormatTime()}: {frameworkVersion}: {ex.Message}");
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex.StackTrace);
                     errors++;
                 }
             }
@@ -99,14 +98,14 @@ class Program
         if (errors == 0)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            SystemConsole.WriteLine($"Program.cs: info TI9999: <green>All tests successfully completed<reset>: {frameworkVersion}");
+            Console.WriteLine($"Program.cs: info TI9999: All tests successfully completed: {frameworkVersion}");
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            SystemConsole.WriteLine($"Program.cs: error TE9999: {errors} tests failed: {frameworkVersion}");
+            Console.WriteLine($"Program.cs: error TE9999: {errors} tests failed: {frameworkVersion}");
         }
-        SystemConsole.ResetColor();
+        Console.ResetColor();
         if (Debugger.IsAttached)
         {
             WaitExit();
@@ -119,7 +118,7 @@ class Program
     {
         if (keyInfo.Key == ConsoleKey.Escape || (keyInfo.Modifiers == ConsoleModifiers.Control && keyInfo.Key == ConsoleKey.C))
         {
-            SystemConsole.WriteLine("<red>Break<reset> by user interaction!");
+            Console.WriteLine("Break by user interaction!");
             exit = true;
         }
     }
@@ -130,8 +129,8 @@ class Program
 
     static void WaitExit()
     {
-        SystemConsole.Write("--- press enter to exit ---");
-        while (SystemConsole.ReadKey().Key != ConsoleKey.Enter)
+        Console.Write("--- press enter to exit ---");
+        while (Console.ReadKey().Key != ConsoleKey.Enter)
         {
             ;
         }

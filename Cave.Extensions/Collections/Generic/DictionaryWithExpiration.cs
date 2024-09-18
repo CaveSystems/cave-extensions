@@ -16,7 +16,7 @@ public class DictionaryWithExpiration<TKey, TValue> : IDictionary<TKey, TValue>
 {
     #region Fields
 
-    readonly Dictionary<TKey, TValue> items = new();
+    readonly Dictionary<TKey, TValue> items = [];
     long nextCheckTicks;
     long ticksBetweenChecks = TimeSpan.TicksPerSecond;
 

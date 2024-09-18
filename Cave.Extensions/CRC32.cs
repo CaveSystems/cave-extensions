@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -31,58 +32,34 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         return x;
     }
 
-    /// <summary>
-    /// Gets width=32 poly=0xf4acfb13 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0x1697d06a residue=0x904cddbf
-    /// name="CRC-32/AUTOSAR".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0xf4acfb13 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0x1697d06a residue=0x904cddbf name="CRC-32/AUTOSAR".</summary>
     public static CRC32 AUTOSAR => new(0xf4acfb13, 0xFFFFFFFF, finalXor: 0xffffffff, reflectInput: true, reflectOutput: true, name: "CRC-32/AUTOSAR");
 
-    /// <summary>
-    /// Gets width=32 poly=0x04c11db7 init=0xffffffff refin=false refout=false xorout=0xffffffff check=0xfc891918 residue=0xc704dd7b
-    /// name="CRC-32/BZIP2".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x04c11db7 init=0xffffffff refin=false refout=false xorout=0xffffffff check=0xfc891918 residue=0xc704dd7b name="CRC-32/BZIP2".</summary>
     public static CRC32 BZIP2 => new(DefaultPolynomial, 0xFFFFFFFF, finalXor: 0, reflectInput: false, reflectOutput: false, name: "CRC-32/BZIP2");
 
-    /// <summary>
-    /// Gets width=32 poly=0x1edc6f41 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xe3069283 residue=0xb798b438
-    /// name="CRC-32C".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x1edc6f41 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xe3069283 residue=0xb798b438 name="CRC-32C".</summary>
     public static CRC32 C => new(0x1edc6f41, 0xFFFFFFFF, finalXor: 0xFFFFFFFF, reflectInput: true, reflectOutput: true, name: "CRC-32C");
 
-    /// <summary>Gets alias for <see cref="POSIX" />.</summary>
+    /// <summary>Gets alias for <see cref="POSIX"/>.</summary>
     public static CRC32 CKSUM => POSIX;
 
-    /// <summary>
-    /// Gets width=32 poly=0xa833982b init=0xffffffff refin=true refout=true xorout=0xffffffff check=0x87315576 residue=0x45270551
-    /// name="CRC-32D".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0xa833982b init=0xffffffff refin=true refout=true xorout=0xffffffff check=0x87315576 residue=0x45270551 name="CRC-32D".</summary>
     public static CRC32 D => new(0xa833982b, 0xFFFFFFFF, finalXor: 0xFFFFFFFF, reflectInput: true, reflectOutput: true, name: "CRC-32D");
 
-    /// <summary>
-    /// Gets width=32 poly=0x04c11db7 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xcbf43926 residue=0xdebb20e3
-    /// name="CRC-32".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x04c11db7 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xcbf43926 residue=0xdebb20e3 name="CRC-32".</summary>
     public static CRC32 Default => new(DefaultPolynomial, 0xFFFFFFFF, finalXor: 0xFFFFFFFF, reflectInput: true, reflectOutput: true, name: "CRC-32");
 
-    /// <summary>
-    /// Gets width=32 poly=0x04c11db7 init=0xffffffff refin=false refout=false xorout=0x00000000 check=0x0376e6e7 residue=0x00000000
-    /// name="CRC-32/MPEG-2".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x04c11db7 init=0xffffffff refin=false refout=false xorout=0x00000000 check=0x0376e6e7 residue=0x00000000 name="CRC-32/MPEG-2".</summary>
     public static CRC32 MPEG2 => new(DefaultPolynomial, 0xFFFFFFFF, finalXor: 0xFFFFFFFF, reflectInput: false, reflectOutput: false, name: "CRC-32/MPEG-2");
 
-    /// <summary>
-    /// Gets width=32 poly=0x04c11db7 init=0x00000000 refin=false refout=false xorout=0xffffffff check=0x765e7680 residue=0xc704dd7b
-    /// name="CRC-32/POSIX".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x04c11db7 init=0x00000000 refin=false refout=false xorout=0xffffffff check=0x765e7680 residue=0xc704dd7b name="CRC-32/POSIX".</summary>
     public static CRC32 POSIX => new(DefaultPolynomial, 0x00000000, finalXor: 0xFFFFFFFF, reflectInput: false, reflectOutput: false, name: "CRC-32/POSIX");
 
-    /// <summary>
-    /// Gets width=32 poly=0x814141ab init=0x00000000 refin=false refout=false xorout=0x00000000 check=0x3010bf7f residue=0x00000000
-    /// name="CRC-32Q".
-    /// </summary>
+    /// <summary>Gets width=32 poly=0x814141ab init=0x00000000 refin=false refout=false xorout=0x00000000 check=0x3010bf7f residue=0x00000000 name="CRC-32Q".</summary>
     public static CRC32 Q => new(0x814141ab, 0x00000000, finalXor: 0x00000000, reflectInput: false, reflectOutput: false, name: "CRC-32Q");
 
-    #endregion
+    #endregion Static
 
     #region Fields
 
@@ -107,11 +84,11 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     uint currentCRC;
     uint[] table;
 
-    #endregion
+    #endregion Fields
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="CRC32" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CRC32"/> class.</summary>
     /// <param name="blueprint">The blueprint to copy all properties from.</param>
     /// <exception cref="NotImplementedException">Throws an error if reflection is uneven.</exception>
     public CRC32(CRC32 blueprint)
@@ -131,11 +108,11 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         currentCRC = Initializer;
     }
 
-    /// <summary>Initializes a new instance of the <see cref="CRC32" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CRC32"/> class.</summary>
     public CRC32()
         : this(DefaultPolynomial, 0xFFFFFFFF, true, true, 0xffffffff, "CRC-32") { }
 
-    /// <summary>Initializes a new instance of the <see cref="CRC32" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CRC32"/> class.</summary>
     /// <param name="poly">The polynom.</param>
     /// <param name="init">The initialize value.</param>
     /// <param name="reflectInput">if set to <c>true</c> [reflect input value] first.</param>
@@ -167,7 +144,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         currentCRC = Initializer;
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
@@ -175,7 +152,7 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     /// <value>The table.</value>
     public uint[] Table => (uint[])table.Clone();
 
-    #endregion
+    #endregion Properties
 
     #region IChecksum<uint> Members
 
@@ -239,15 +216,15 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         set => currentCRC = value;
     }
 
-    #endregion
+    #endregion IChecksum<uint> Members
 
     #region IHashingFunction Members
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public void Add<T>(T item)
+    public void Feed(int hash)
     {
-        var itemHash = (uint)(item?.GetHashCode() ?? 0);
+        var itemHash = (uint)hash;
         if (ReflectInput)
         {
             currentCRC = (currentCRC >> 8) ^ table[(currentCRC ^ itemHash) & 0xFF];
@@ -270,11 +247,11 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void Feed(byte[] data) => HashCore(data, 0, data.Length);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public unsafe void Feed(byte* data, int length)
     {
@@ -284,10 +261,10 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public int ToHashCode() => (int)Value;
 
-    #endregion
+    #endregion IHashingFunction Members
 
     #region Overrides
 
@@ -320,22 +297,22 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     /// <summary>Gets the size, in bits, of the computed hash code.</summary>
     public override int HashSize => 32;
 
-    /// <summary>(Re-)initializes the <see cref="CRC32" />.</summary>
+    /// <summary>(Re-)initializes the <see cref="CRC32"/>.</summary>
     public override void Initialize() => currentCRC = Initializer;
 
-    #endregion
+    #endregion Overrides
 
     #region Overrides
 
-    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
-    /// <returns>A <see cref="string" /> that represents this instance.</returns>
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
     public override string ToString() => Name + " width=32 poly=" + Polynomial + " init=" + Initializer + " refin=" + ReflectInput + " refout=" + ReflectOutput + " xorout=" + FinalXor;
 
-    #endregion
+    #endregion Overrides
 
     #region Members
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object Clone() => new CRC32(this);
 
     /// <summary>directly hashes one byte.</summary>
@@ -414,5 +391,5 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
         this.table = table;
     }
 
-    #endregion
+    #endregion Members
 }

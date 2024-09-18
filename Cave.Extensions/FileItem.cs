@@ -63,11 +63,11 @@ public sealed class FileItem
     /// <returns>The full path.</returns>
     public static implicit operator string(FileItem file) => file?.FullPath;
 
-    #endregion
+    #endregion Static
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="FileItem" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="FileItem"/> class.</summary>
     /// <param name="baseDirectory">The base directory.</param>
     /// <param name="subDirectoryAndName">The subdirectory and name of the file.</param>
     public FileItem(string baseDirectory, string subDirectoryAndName)
@@ -77,7 +77,7 @@ public sealed class FileItem
         FullPath = FileSystem.GetFullPath(FileSystem.Combine(BaseDirectory, Relative));
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
@@ -90,11 +90,7 @@ public sealed class FileItem
     {
         get
         {
-            var i = FullPath.LastIndexOfAny(new[]
-            {
-                '\\',
-                '/'
-            });
+            var i = FullPath.LastIndexOfAny(['\\', '/']);
             return FullPath[..i];
         }
     }
@@ -113,7 +109,7 @@ public sealed class FileItem
     /// <summary>Gets the relative path.</summary>
     public string Relative { get; }
 
-    #endregion
+    #endregion Properties
 }
 
 #endif

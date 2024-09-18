@@ -734,7 +734,7 @@ namespace System.Linq
                     var key = keySelector(element);
                     if (key == null)
                     {
-                        defaultList ??= new();
+                        defaultList ??= [];
 
                         defaultList.Add(element);
                     }
@@ -742,7 +742,7 @@ namespace System.Linq
                     {
                         if (!groups.TryGetValue(key, out var group))
                         {
-                            group = new();
+                            group = [];
                             groups.Add(key, group);
                         }
 
@@ -793,7 +793,7 @@ namespace System.Linq
                     var element = elementSelector(item);
                     if (key == null)
                     {
-                        defaultList ??= new();
+                        defaultList ??= [];
 
                         defaultList.Add(element);
                     }
@@ -801,7 +801,7 @@ namespace System.Linq
                     {
                         if (!groups.TryGetValue(key, out var group))
                         {
-                            group = new();
+                            group = [];
                             groups.Add(key, group);
                         }
 
@@ -1713,7 +1713,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var result = comparer == null ? new() : new Dictionary<TKey, TElement>(comparer);
+            var result = comparer == null ? [] : new Dictionary<TKey, TElement>(comparer);
             foreach (var e in source)
             {
                 result.Add(keySelector(e), elementSelector(e));
@@ -1752,13 +1752,13 @@ namespace System.Linq
                 var key = keySelector(element);
                 if (key == null)
                 {
-                    defaultKeyElements ??= new();
+                    defaultKeyElements ??= [];
 
                     list = defaultKeyElements;
                 }
                 else if (!lookup.TryGetValue(key, out list))
                 {
-                    list = new();
+                    list = [];
                     lookup.Add(key, list);
                 }
 

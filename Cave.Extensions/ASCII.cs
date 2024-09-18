@@ -459,10 +459,6 @@ public static class ASCII
         /// <summary>non zero digits [1-9].</summary>
         public const string NonZeroDigits = "123456789";
 
-        /// <summary>all digits [0-9].</summary>
-        [Obsolete("Use Digits instead!")]
-        public const string Numbers = "0123456789";
-
         /// <summary>printable 7Bit ASCII chars.</summary>
         public const string Printable = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
@@ -631,7 +627,7 @@ public static class ASCII
             }
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     /// <summary>Escapes the character by its hexadecimal representation ( <![CDATA[\'x'YY]]> or <![CDATA[\'u'YYYY]]> depending on the charset).</summary>
@@ -641,23 +637,23 @@ public static class ASCII
     /// <exception cref="InvalidOperationException">Cannot escape character {0}!.</exception>
     public static char[] EscapeHex(char c, char escapeCharacter = '\\') =>
         c < 256
-            ? new[]
-            {
+            ?
+            [
                 escapeCharacter,
                 'x',
                 GetHexChar(c >> 4),
                 GetHexChar(c)
-            }
+            ]
             : c < 65536
-                ? new[]
-                {
+                ?
+                [
                     escapeCharacter,
                     'u',
                     GetHexChar(c >> 12),
                     GetHexChar(c >> 8),
                     GetHexChar(c >> 4),
                     GetHexChar(c)
-                }
+                ]
                 : throw new InvalidOperationException("Cannot escape character {0}!");
 
     /// <summary>Gets the bytes for a specified 7Bit ASCII string.</summary>
@@ -969,7 +965,7 @@ public static class ASCII
             result.Add(c);
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     #endregion Public Methods

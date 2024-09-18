@@ -28,8 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_4.x", "Tests\net_4.x.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_5+", "Tests\net_5+.csproj", "{C9630467-5644-459F-A572-F637A172BA9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "netcore_3.1", "Tests\netcore_3.1.csproj", "{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +50,6 @@ Global
 		{C9630467-5644-459F-A572-F637A172BA9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9630467-5644-459F-A572-F637A172BA9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9630467-5644-459F-A572-F637A172BA9A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,7 +58,6 @@ Global
 		{489E29E8-6ECF-4215-ADAE-E3858E784727} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
 		{D0AED5EE-675A-47BD-9CA3-CC1E989CEC04} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
 		{C9630467-5644-459F-A572-F637A172BA9A} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
-		{C03FC18C-DF7E-43CA-BC2D-C8DF37825C37} = {12D70B9D-8AA9-4079-865E-D00AFD9BA1A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AEF21AA2-1CDB-40F2-81A5-99B67962757E}

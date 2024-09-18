@@ -29,7 +29,7 @@ public static class Platform
     /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
     public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
 
-    static readonly Dictionary<string, object> cachedValues = new();
+    static readonly Dictionary<string, object> cachedValues = [];
 
     static T GetCached<T>(string name, Func<T> getter)
     {

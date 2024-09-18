@@ -32,16 +32,6 @@ public static class AppDom
 
     #endregion Public Enums
 
-    #region Public Properties
-
-    /// <summary>Gets the installation identifier.</summary>
-    /// <value>The installation identifier.</value>
-    /// <exception cref="NotSupportedException">if <see cref="Guid.GetHashCode()"/> failes.</exception>
-    [Obsolete("Use InstallationGuid.ProgramGuid")]
-    public static uint ProgramID => (uint)InstallationGuid.ProgramGuid.ToString().GetHashCode();
-
-    #endregion Public Properties
-
     #region Public Methods
 
     /// <summary>Finds the loaded assembly with the specified name.</summary>
@@ -235,12 +225,6 @@ public static class AppDom
 
         return types;
     }
-
-    /// <summary>Searches all loaded types assignable to the specified one and containing a default constructor.</summary>
-    /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
-    /// <returns>Returns a list of types.</returns>
-    [Obsolete("Use GetInstances() or FindTypes() instead.")]
-    public static List<T> GetTypes<T>() => GetInstances<T>(true);
 
     #endregion Public Methods
 }

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
+#nullable enable
+
 namespace Cave.Collections;
 
 /// <summary>Gets a default comparer.</summary>
@@ -32,7 +34,7 @@ public struct DefaultComparer
     /// <param name="second">Second array</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static int Combine<T>(T[] first, T[] second) where T : struct
+    public static int Compare<T>(T[] first, T[] second) where T : struct
     {
         if (ReferenceEquals(first, second)) return 0;
         var comparer = Comparer<T>.Default;
@@ -49,7 +51,7 @@ public struct DefaultComparer
     /// <param name="array1">The first byte array to check for equality.</param>
     /// <param name="array2">The second byte array to check for equality.</param>
     /// <returns>Returns true if the object equal each other.</returns>
-    public static unsafe bool Equals(byte[] array1, byte[] array2)
+    public static unsafe bool Equals(byte[]? array1, byte[]? array2)
     {
         if (array1 == array2)
         {
@@ -155,7 +157,7 @@ public struct DefaultComparer
     /// <param name="value1">The first <see cref="object"/> to check for equality.</param>
     /// <param name="value2">The second <see cref="object"/> to check for equality.</param>
     /// <returns>Returns true if the object equal each other.</returns>
-    public static new bool Equals(object value1, object value2)
+    public static new bool Equals(object? value1, object? value2)
     {
         if (ReferenceEquals(value1, value2))
         {
@@ -196,12 +198,6 @@ public struct DefaultComparer
             return false;
         }
 
-        // is array ?
-        if (value1 is Array array1)
-        {
-            return value2 is Array array2 && ItemsEqual(array1, array2);
-        }
-
         // is IEnumerable
         if (value1 is IEnumerable ie1)
         {
@@ -216,7 +212,7 @@ public struct DefaultComparer
     /// <param name="array1">The first array its items are compared.</param>
     /// <param name="array2">The second array its items are compared.</param>
     /// <returns>Returns true if all items in both array equal each other and the number of items equals, too.</returns>
-    public static bool Equals(IEnumerable array1, IEnumerable array2)
+    public static bool Equals(IEnumerable? array1, IEnumerable? array2)
     {
         if (ReferenceEquals(array1, array2))
         {
@@ -586,7 +582,7 @@ public struct DefaultComparer
     /// <param name="array1">The first array its items are compared.</param>
     /// <param name="array2">The second array its items are compared.</param>
     /// <returns>Returns true if all items in both array equal each other and the number of items equals, too.</returns>
-    public static bool ItemsEqual(IEnumerable array1, IEnumerable array2)
+    public static bool ItemsEqual(IEnumerable? array1, IEnumerable? array2)
     {
         if (array1 is null)
         {
@@ -616,7 +612,7 @@ public struct DefaultComparer
                 return true;
             }
 
-            if (!object.Equals(enumerator1.Current, enumerator2.Current))
+            if (!Equals(enumerator1.Current, enumerator2.Current))
             {
                 return false;
             }

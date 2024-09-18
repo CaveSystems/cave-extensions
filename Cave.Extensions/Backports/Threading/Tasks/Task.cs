@@ -9,13 +9,15 @@ namespace System.Threading.Tasks;
 
 public class Task<TResult> : Task
 {
-    Func<TResult> func;
+    readonly Func<TResult> func;
 
     public TResult Result { get; private set; }
 
     internal override void OnRunAction() => Result = func();
 
-    public Task(Func<TResult> func, TaskCreationOptions options = TaskCreationOptions.None) : base(options, null, null) => this.func = func;
+    public Task(Func<TResult> func) : base(0, null, null) => this.func = func;
+
+    public Task(Func<TResult> func, TaskCreationOptions options) : base(options, null, null) => this.func = func;
 }
 
 public class Task : IDisposable

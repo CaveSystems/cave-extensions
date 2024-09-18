@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Cave.Security;
 
+#nullable enable
+
 /// <summary>Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC algorithm.</summary>
 public class PBKDF2 : DeriveBytes
 #if NET20 || NET35 || NETCOREAPP1_0 || NETCOREAPP1_1
@@ -13,17 +15,17 @@ public class PBKDF2 : DeriveBytes
 {
     #region Private Fields
 
-    HMAC algorithm;
-    byte[] buffer;
+    HMAC? algorithm;
+    byte[]? buffer;
     int hashNumber;
     int iterations = 1000;
-    byte[] salt;
+    byte[]? salt;
 
     #endregion Private Fields
 
     #region Private Constructors
 
-    PBKDF2(HMAC algorithm)
+    PBKDF2(HMAC? algorithm)
     {
         this.algorithm = algorithm ?? new HMACSHA512();
         CreateSalt();
@@ -35,6 +37,10 @@ public class PBKDF2 : DeriveBytes
 
     void FillBuffer()
     {
+        if (salt is null) throw new InvalidOperationException("Salt is unset!");
+        if (buffer is null) throw new InvalidOperationException("Buffer is unset!");
+        if (algorithm is null) throw new InvalidOperationException("Algorithm is unset!");
+
         var i = ++hashNumber;
         var s = new byte[salt.Length + 4];
         Buffer.BlockCopy(salt, 0, s, 0, salt.Length);
@@ -74,7 +80,7 @@ public class PBKDF2 : DeriveBytes
         base.Dispose(disposing);
         if (disposing)
         {
-            (algorithm as IDisposable).Dispose();
+            (algorithm as IDisposable)?.Dispose();
             algorithm = null;
         }
     }
@@ -87,7 +93,7 @@ public class PBKDF2 : DeriveBytes
     {
         if (disposing)
         {
-            (algorithm as IDisposable).Dispose();
+            (algorithm as IDisposable)?.Dispose();
             algorithm = null;
         }
     }
@@ -110,9 +116,20 @@ public class PBKDF2 : DeriveBytes
 
     /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
     /// <param name="password">The password.</param>
+    /// <param name="saltLength">The length of the salt.</param>
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
+    public PBKDF2(string password, int saltLength = 32, HMAC? algorithm = null) : this(algorithm)
+    {
+        if (saltLength < 1) throw new ArgumentOutOfRangeException(nameof(saltLength), "Unset salt is not supported!");
+        SetSalt(RNG.GetBytes(saltLength));
+        SetPassword(password);
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="PBKDF2"/> class.</summary>
+    /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
-    public PBKDF2(string password, byte[] salt, HMAC algorithm = null) : this(algorithm)
+    public PBKDF2(string password, byte[] salt, HMAC? algorithm = null) : this(algorithm)
     {
         SetPassword(password);
         SetSalt(salt);
@@ -122,7 +139,7 @@ public class PBKDF2 : DeriveBytes
     /// <param name="password">The password.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
-    public PBKDF2(byte[] password, byte[] salt, HMAC algorithm = null) : this(algorithm)
+    public PBKDF2(byte[] password, byte[] salt, HMAC? algorithm = null) : this(algorithm)
     {
         SetPassword(password);
         SetSalt(salt);
@@ -133,7 +150,7 @@ public class PBKDF2 : DeriveBytes
     /// <param name="salt">The salt.</param>
     /// <param name="iterations">The iterations. This value is not checked and allows invalid values!</param>
     /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
-    public PBKDF2(byte[] password, byte[] salt, int iterations, HMAC algorithm = null) : this(algorithm)
+    public PBKDF2(byte[] password, byte[] salt, int iterations, HMAC? algorithm = null) : this(algorithm)
     {
         this.iterations = iterations;
         SetPassword(password);
@@ -145,7 +162,7 @@ public class PBKDF2 : DeriveBytes
     /// <param name="salt">The salt.</param>
     /// <param name="iterations">The iterations. This value is not checked and allows invalid values!</param>
     /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
-    public PBKDF2(string password, byte[] salt, int iterations, HMAC algorithm = null) : this(algorithm)
+    public PBKDF2(string password, byte[] salt, int iterations, HMAC? algorithm = null) : this(algorithm)
     {
         this.iterations = iterations;
         SetPassword(password);
@@ -159,7 +176,7 @@ public class PBKDF2 : DeriveBytes
     /// <summary>Gets or sets the iteration count.</summary>
     /// <value>The iteration count.</value>
     /// <exception cref="Exception"></exception>
-    /// <exception cref="ArgumentOutOfRangeException">IterationCount &lt; 1000</exception>
+    /// <exception cref="ArgumentOutOfRangeException">IterationCount &lt; 1</exception>
     public int IterationCount
     {
         get => iterations;
@@ -170,65 +187,33 @@ public class PBKDF2 : DeriveBytes
                 throw new InvalidOperationException($"Cannot change the {nameof(IterationCount)} after calling GetBytes() the first time!");
             }
 
-            if (value < 1000)
+            if (value < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(value), "IterationCount < 1000");
+                throw new ArgumentOutOfRangeException(nameof(value), "IterationCount < 1");
             }
 
             iterations = value;
         }
     }
 
-    /// <summary>Gets or sets the salt.</summary>
-    /// <value>The salt.</value>
-    /// <exception cref="Exception"></exception>
-    /// <exception cref="ArgumentNullException">Salt</exception>
-    /// <exception cref="ArgumentException">Salt &lt; 8 bytes</exception>
-    public string Private => $"{Base64.NoPadding.Encode(algorithm.Key)};{Base64.NoPadding.Encode(salt)};{IterationCount}";
-
     #endregion Public Properties
 
     #region Public Methods
 
-    /// <summary>Creates a new instance with the specified HMAC.</summary>
-    /// <returns></returns>
+    /// <summary>Creates a new instance using the specified HMAC algorithm.</summary>
     public static PBKDF2 Create(HMAC algorithm) => new(algorithm);
 
-    /// <summary>Creates a new instance using the specified private data containing the password, salt and iterations.</summary>
-    /// <param name="data">The private data.</param>
-    /// <returns></returns>
-    public static PBKDF2 FromPrivate(string data)
-    {
-        var parts = data?.Split(';') ?? throw new ArgumentNullException(nameof(data));
-        if (parts.Length != 3)
-        {
-            throw new ArgumentOutOfRangeException(nameof(data));
-        }
-
-        var password = Base64.NoPadding.Decode(parts[0]);
-        var salt = Base64.NoPadding.Decode(parts[1]);
-        if (!int.TryParse(parts[2], out var iterations))
-        {
-            throw new ArgumentOutOfRangeException(nameof(data));
-        }
-
-        return new(password, salt, iterations);
-    }
-
-    /// <summary>Guesses the complexity (bit variation strength) of a specified salt or password.</summary>
-    /// <param name="data">The password or salt.</param>
-    /// <returns>Returns the estimated strength</returns>
-    [Obsolete("Use PasswordTest instead.")]
-    public static int GuessComplexity(byte[] data) => PasswordTest.GuessComplexity(data);
+    /// <summary>Creates a new salt with 32x8 = 256 bits.</summary>
+    public void CreateSalt() => CreateSalt(32);
 
     /// <summary>Creates a new salt.</summary>
-    public void CreateSalt() => SetSalt(RNG.GetBytes(32));
+    public void CreateSalt(int length = 32) => SetSalt(RNG.GetBytes(length));
 
     /// <summary>Returns the next pseudo-random one time pad with the specified number of bytes.</summary>
     /// <param name="cb">Length of the byte buffer to retrieve.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">Algorithm</exception>
-    /// <exception cref="ArgumentException">Iterations &lt; 1000 or Salt &lt; 8 bytes or Password &lt; 8 bytes</exception>
+    /// <exception cref="ArgumentException">Iterations &lt; 1 or Salt &lt; 1 byte or Password &lt; 1 bytes</exception>
     /// <exception cref="ArgumentOutOfRangeException">Length</exception>
     public override byte[] GetBytes(int cb)
     {
@@ -242,9 +227,9 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentException("Iterations < 1");
         }
 
-        if ((salt == null) | (salt.Length < 8))
+        if ((salt is null) || (salt.Length < 1))
         {
-            throw new ArgumentException("Salt < 8 bytes");
+            throw new ArgumentException("Salt < 1 byte");
         }
 
         if (cb < 1)
@@ -252,7 +237,7 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentOutOfRangeException(nameof(cb));
         }
 
-        buffer ??= ArrayExtension.Empty<byte>();
+        buffer ??= [];
 
         //enough data present ?
         while (buffer.Length < cb)
@@ -294,10 +279,12 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentNullException(nameof(password));
         }
 
-        if (salt.Length < 8)
+        if (password.Length < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(password), "Password < 8 bytes");
+            throw new ArgumentOutOfRangeException(nameof(password), "Password < 1 byte");
         }
+
+        if (algorithm is null) throw new InvalidOperationException("Algorithm is null!");
 
         algorithm.Key = (byte[])password.Clone();
     }
@@ -323,13 +310,16 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentNullException(nameof(salt));
         }
 
-        if (salt.Length < 8)
+        if (salt.Length < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(salt), "Salt < 8 bytes");
+            throw new ArgumentOutOfRangeException(nameof(salt), "Salt < 1 bytes");
         }
 
         this.salt = (byte[])salt.Clone();
     }
+
+    /// <summary>Gets the name of the used algorithm.</summary>
+    public string AlgorithmName => algorithm?.HashName ?? throw new InvalidOperationException("Algorith is unset!");
 
     #endregion Public Methods
 }

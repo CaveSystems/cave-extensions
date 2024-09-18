@@ -10,37 +10,7 @@ namespace Cave;
 /// <summary>Gets an ipv4 subnet definition.</summary>
 public class IPNetwork : IEquatable<IPNetwork>
 {
-    #region Static
-
-    /// <summary>Parses an <see cref="IPNetwork" /> instance from the specified string.</summary>
-    /// <param name="text">String to parse.</param>
-    /// <returns>Returns a new <see cref="IPNetwork" /> instance.</returns>
-    public static IPNetwork Parse(string text)
-    {
-        if (text == null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
-
-        var parts = text.Trim().Split(new[]
-        {
-            ' ',
-            '/'
-        }, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length != 2)
-        {
-            throw new ArgumentException("IPNetwork requires format <address>/<mask> or <address>/<subnet>!");
-        }
-
-        var addr = IPAddress.Parse(parts[0]);
-        if (int.TryParse(parts[1], out var subnet))
-        {
-            return new(addr, subnet);
-        }
-
-        var mask = IPAddress.Parse(parts[1]);
-        return new(addr, mask);
-    }
+    #region Private Methods
 
     static IEnumerable<byte> GetBits(byte b)
     {
@@ -89,16 +59,16 @@ public class IPNetwork : IEquatable<IPNetwork>
         return new(result);
     }
 
-    #endregion
+    #endregion Private Methods
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="IPNetwork" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="IPNetwork"/> class.</summary>
     /// <param name="address">Base address.</param>
     /// <param name="subnet">Subnet.</param>
     public IPNetwork(IPAddress address, int subnet) : this(address, GetMask(subnet, address?.AddressFamily ?? throw new ArgumentNullException(nameof(address)))) { }
 
-    /// <summary>Initializes a new instance of the <see cref="IPNetwork" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="IPNetwork"/> class.</summary>
     /// <param name="address">Base address.</param>
     /// <param name="mask">Subnet mask.</param>
     public IPNetwork(IPAddress address, IPAddress mask)
@@ -174,9 +144,9 @@ public class IPNetwork : IEquatable<IPNetwork>
         Broadcast = new(broadcastBytes);
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the base ip address.</summary>
     public IPAddress Address { get; }
@@ -227,7 +197,7 @@ public class IPNetwork : IEquatable<IPNetwork>
     public int AddressesBitCount => Mask.GetAddressBytes().SelectMany(GetBits).Count(b => b == 0);
 
     /// <summary>Gets the number of addresses present at the network. This returns 0 for networks with subnets greater than 64 bits.</summary>
-    /// <remarks>This is a fast calculation for all addresses present at <see cref="Addresses" />.</remarks>
+    /// <remarks>This is a fast calculation for all addresses present at <see cref="Addresses"/>.</remarks>
     public ulong AddressesCount
     {
         get
@@ -261,26 +231,49 @@ public class IPNetwork : IEquatable<IPNetwork>
     /// <summary>Gets the subnet or -1 if the mask has to be used.</summary>
     public int Subnet { get; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region IEquatable<IPNetwork> Members
+    #region Public Methods
 
-    /// <inheritdoc />
+    /// <summary>Parses an <see cref="IPNetwork"/> instance from the specified string.</summary>
+    /// <param name="text">String to parse.</param>
+    /// <returns>Returns a new <see cref="IPNetwork"/> instance.</returns>
+    public static IPNetwork Parse(string text)
+    {
+        if (text == null)
+        {
+            throw new ArgumentNullException(nameof(text));
+        }
+
+        char[] separator = [' ', '/'];
+        var parts = text.Trim().Split(separator, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("IPNetwork requires format <address>/<mask> or <address>/<subnet>!");
+        }
+
+        var addr = IPAddress.Parse(parts[0]);
+        if (int.TryParse(parts[1], out var subnet))
+        {
+            return new(addr, subnet);
+        }
+
+        var mask = IPAddress.Parse(parts[1]);
+        return new(addr, mask);
+    }
+
+    /// <inheritdoc/>
     public bool Equals(IPNetwork other) => (other != null) && Equals(other.Address, Address) && Equals(other.Mask, Mask) && (other.Subnet == Subnet);
 
-    #endregion
-
-    #region Overrides
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override bool Equals(object obj) => Equals(obj as IPNetwork);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();
 
-    /// <summary>Gets a string {ipaddress}/{subnet} or {ipaddress}/{mask}. This can be parsed by <see cref="Parse(string)" />.</summary>
+    /// <summary>Gets a string {ipaddress}/{subnet} or {ipaddress}/{mask}. This can be parsed by <see cref="Parse(string)"/>.</summary>
     /// <returns>Parsable string describing this instance.</returns>
     public override string ToString() => $"{Address}/{(Subnet > -1 ? Subnet : Mask)}";
 
-    #endregion
+    #endregion Public Methods
 }

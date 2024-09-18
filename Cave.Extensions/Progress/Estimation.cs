@@ -12,7 +12,7 @@ public abstract class Estimation : IEstimation
     #region Fields
 
     /// <summary>Obtains the <see cref="EstimationItem" />s of this estimation.</summary>
-    readonly List<EstimationItem> items = new();
+    readonly List<EstimationItem> items = [];
 
     #endregion
 

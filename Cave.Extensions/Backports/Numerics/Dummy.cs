@@ -1,5 +1,7 @@
-﻿namespace System.Numerics;
+﻿#pragma warning disable IDE0130
 
-class Dummy
+namespace System.Numerics;
+
+sealed class Dummy
 {
 }

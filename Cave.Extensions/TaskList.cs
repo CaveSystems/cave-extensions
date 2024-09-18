@@ -10,7 +10,7 @@ public class TaskList
 {
     #region Fields
 
-    readonly Dictionary<Task, object> tasks = new();
+    readonly Dictionary<Task, object> tasks = [];
 
     /// <summary>The maximum concurrent threads.</summary>
     public int MaximumConcurrentThreads = Environment.ProcessorCount * 2;
@@ -36,7 +36,7 @@ public class TaskList
     public Task[] ToArray()
     {
         Cleanup();
-        return tasks.Keys.ToArray();
+        return [.. tasks.Keys];
     }
 
     /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>

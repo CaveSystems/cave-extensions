@@ -19,7 +19,7 @@ public static class SkipLastExtension
         }
 
         var iterator = source.GetEnumerator();
-        var hasRemainingItems = false;
+        bool hasRemainingItems;
         var cache = new Queue<TSource>(count + 1);
         do
         {

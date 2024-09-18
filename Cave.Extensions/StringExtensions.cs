@@ -402,7 +402,7 @@ public static partial class StringExtensions
         {
             return string.Empty;
         }
-        args ??= ArrayExtension.Empty<object>();
+        args ??= [];
         var result = text;
         for (var i = 0; i < args.Length; i++)
         {
@@ -650,10 +650,6 @@ public static partial class StringExtensions
         var d = timeSpan.TotalDays;
         return Print(d, "d");
     }
-
-    /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    [Obsolete("Warning this method is ambiguous. Use FormatTicks() or FormatSeconds()")]
-    public static string FormatTime(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, formatProvider);
 
     /// <summary>Formats the specified timespan to [[d.]HH:]MM:SS.F.</summary>
     /// <param name="timeSpan">The time span.</param>
@@ -1301,25 +1297,36 @@ public static partial class StringExtensions
         return new(x, y);
     }
 
-    /// <summary>Parses a PointF.ToString() result.</summary>
+    /// <summary>Parses a Point.ToString() result.</summary>
     /// <param name="point">String value to parse.</param>
-    /// <returns>The parsed float point.</returns>
+    /// <returns>The parsed point.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static PointF ParsePointF(this string point)
     {
-        var data = Unbox(point, "{", "}");
-        var parts = data.ToUpperInvariant().Split(new[]
+        if (point == null)
         {
-            "X=",
-            "Y="
-        }, StringSplitOptions.RemoveEmptyEntries);
+            throw new ArgumentNullException(nameof(point));
+        }
+
+        var data = Unbox(point.Trim(), "{", "}");
+        var parts = data.Split([", "], StringSplitOptions.None);
         if (parts.Length != 2)
         {
             throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
         }
 
-        var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-        var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+        }
+
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid point data '{point}'!", nameof(point));
+        }
+
+        var x = float.Parse(parts[0].Trim()[2..], CultureInfo.CurrentCulture);
+        var y = float.Parse(parts[1].Trim()[2..], CultureInfo.CurrentCulture);
         return new(x, y);
     }
 
@@ -1363,29 +1370,47 @@ public static partial class StringExtensions
         return new(x, y, w, h);
     }
 
-    /// <summary>Parses a RectangleF.ToString() result.</summary>
+    /// <summary>Parses a Rectangle.ToString() result.</summary>
     /// <param name="rect">String value to parse.</param>
-    /// <returns>The parsed float rectangle.</returns>
+    /// <returns>The parsed rectangle.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static RectangleF ParseRectangleF(this string rect)
     {
         var data = Unbox(rect, "{", "}");
-        var parts = data.ToUpperInvariant().Split(new[]
+        var parts = data.Split(',');
+        if (parts.Length == 8)
         {
-            "X=",
-            "Y=",
-            "WIDTH=",
-            "HEIGHT="
-        }, StringSplitOptions.RemoveEmptyEntries);
+            parts = [parts[0] + "," + parts[1], parts[2] + "," + parts[3], parts[4] + "," + parts[5], parts[6] + "," + parts[7]];
+        }
         if (parts.Length != 4)
         {
             throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
         }
 
-        var x = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-        var y = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
-        var w = float.Parse(parts[2].Trim(' ', ','), CultureInfo.CurrentCulture);
-        var h = float.Parse(parts[3].Trim(' ', ','), CultureInfo.CurrentCulture);
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("X=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+        }
+
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("Y=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+        }
+
+        if (!parts[2].Trim().ToUpperInvariant().StartsWith("WIDTH=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+        }
+
+        if (!parts[3].Trim().ToUpperInvariant().StartsWith("HEIGHT=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid rect data '{rect}'!", nameof(rect));
+        }
+
+        var x = float.Parse(parts[0].Trim()[2..], CultureInfo.CurrentCulture);
+        var y = float.Parse(parts[1].Trim()[2..], CultureInfo.CurrentCulture);
+        var w = float.Parse(parts[2].Trim()[6..], CultureInfo.CurrentCulture);
+        var h = float.Parse(parts[3].Trim()[7..], CultureInfo.CurrentCulture);
         return new(x, y, w, h);
     }
 
@@ -1422,25 +1447,36 @@ public static partial class StringExtensions
         return new(w, h);
     }
 
-    /// <summary>Parses a SizeF.ToString() result.</summary>
+    /// <summary>Parses a Size.ToString() result.</summary>
     /// <param name="size">String value to parse.</param>
-    /// <returns>The parsed float size.</returns>
+    /// <returns>The parsed size.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static SizeF ParseSizeF(this string size)
     {
-        var data = Unbox(size, "{", "}");
-        var parts = data.ToUpperInvariant().Split(new[]
+        if (size == null)
         {
-            "WIDTH=",
-            "HEIGHT="
-        }, StringSplitOptions.RemoveEmptyEntries);
+            throw new ArgumentNullException(nameof(size));
+        }
+
+        var data = Unbox(size.Trim(), "{", "}");
+        var parts = data.Split([", "], StringSplitOptions.None);
         if (parts.Length != 2)
         {
             throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
         }
 
-        var w = float.Parse(parts[0].Trim(' ', ','), CultureInfo.CurrentCulture);
-        var h = float.Parse(parts[1].Trim(' ', ','), CultureInfo.CurrentCulture);
+        if (!parts[0].Trim().ToUpperInvariant().StartsWith("WIDTH=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+        }
+
+        if (!parts[1].Trim().ToUpperInvariant().StartsWith("HEIGHT=", StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Invalid size data '{size}'!", nameof(size));
+        }
+
+        var w = float.Parse(parts[0].Trim()[6..], CultureInfo.CurrentCulture);
+        var h = float.Parse(parts[1].Trim()[7..], CultureInfo.CurrentCulture);
         return new(w, h);
     }
 
@@ -1776,7 +1812,7 @@ public static partial class StringExtensions
     {
         if (text == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         if (indices == null)
@@ -1797,7 +1833,7 @@ public static partial class StringExtensions
             items.Add(text[start..]);
         }
 
-        return items.ToArray();
+        return [.. items];
     }
 
     /// <summary>Splits a string at the specified indices.</summary>
@@ -1816,7 +1852,7 @@ public static partial class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1841,7 +1877,7 @@ public static partial class StringExtensions
             result.Add(text[last..]);
         }
 
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>Splits a string at the specified separators and allows to keep the separators in the list.</summary>
@@ -1853,7 +1889,7 @@ public static partial class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1878,7 +1914,7 @@ public static partial class StringExtensions
         {
             result.Add(remainder);
         }
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>Splits a string at platform independent newline markings (CR, LF, CRLF, #0).</summary>
@@ -1890,7 +1926,7 @@ public static partial class StringExtensions
     {
         if (text == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1981,7 +2017,7 @@ public static partial class StringExtensions
             _ = result.RemoveAll(string.IsNullOrEmpty);
         }
 
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>
@@ -2062,7 +2098,7 @@ public static partial class StringExtensions
             }
         }
 
-        return array.ToArray();
+        return [.. array];
     }
 
     /// <summary>
@@ -2294,7 +2330,7 @@ public static partial class StringExtensions
             result.Add(ToString(obj, cultureInfo));
         }
 
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>Converts a exception to a string array.</summary>
@@ -2312,7 +2348,7 @@ public static partial class StringExtensions
 
         if (exception == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var strings = new List<string>();
@@ -2401,7 +2437,7 @@ public static partial class StringExtensions
             }
         }
 
-        return strings.ToArray();
+        return [.. strings];
     }
 
     /// <summary>Converts a exception to a simple text message.</summary>
@@ -2572,17 +2608,17 @@ public static partial class StringExtensions
 
         if (text.Length > 1)
         {
-            if (text.StartsWith("(", StringComparison.Ordinal) && text.EndsWith(")", StringComparison.Ordinal))
+            if (text.StartsWith('(') && text.EndsWith(')'))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("[", StringComparison.Ordinal) && text.EndsWith("]", StringComparison.Ordinal))
+            if (text.StartsWith('[') && text.EndsWith(']'))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("{", StringComparison.Ordinal) && text.EndsWith("}", StringComparison.Ordinal))
+            if (text.StartsWith('{') && text.EndsWith('}'))
             {
                 return text[1..^1];
             }
@@ -2605,12 +2641,12 @@ public static partial class StringExtensions
 
         if (text.Length > 1)
         {
-            if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
+            if (text.StartsWith('\'') && text.EndsWith('\''))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
+            if (text.StartsWith('\"') && text.EndsWith('\"'))
             {
                 return text[1..^1];
             }

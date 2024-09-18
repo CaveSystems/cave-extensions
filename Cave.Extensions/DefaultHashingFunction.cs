@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 
 namespace Cave;
@@ -6,7 +7,14 @@ namespace Cave;
 /// <summary>Provides the single instance used to combine all hashes at generated code.</summary>
 public static class DefaultHashingFunction
 {
-    #region Static
+    #region Public Properties
+
+    /// <summary>Provides the function used to create the <see cref="IHashingFunction"/> used to combine hashes.</summary>
+    public static Func<IHashingFunction> Create { get; set; } = () => new XxHash32();
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Calculates the hash for the specified byte buffer.</summary>
     /// <param name="buffer">Buffer to hash</param>
@@ -17,6 +25,28 @@ public static class DefaultHashingFunction
         var hash = Create();
         hash.Feed(buffer);
         return hash.ToHashCode();
+    }
+
+    /// <summary>
+    /// Calculates the hash for the specified object. This automatically enumerates all enumerable types and is able to build hashes for nested arrays and lists.
+    /// </summary>
+    /// <param name="binder">Object to get hashcode for</param>
+    /// <returns>Returns the hash code for the binder.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static int Calculate(object binder)
+    {
+        switch (binder)
+        {
+            case null: return 0;
+            case byte[] buffer: return Calculate(buffer);
+            case IEnumerable enumerable:
+            {
+                var hash = Create();
+                hash.AddRange(enumerable);
+                return hash.ToHashCode();
+            }
+            default: return binder.GetHashCode();
+        }
     }
 
     /// <summary>Combines the hashes of the specified instances.</summary>
@@ -144,8 +174,5 @@ public static class DefaultHashingFunction
         return hash.ToHashCode();
     }
 
-    /// <summary>Provides the function used to create the <see cref="IHashingFunction" /> used to combine hashes.</summary>
-    public static Func<IHashingFunction> Create { get; set; } = () => new XxHash32();
-
-    #endregion
+    #endregion Public Methods
 }

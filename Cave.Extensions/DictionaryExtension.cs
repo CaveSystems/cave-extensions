@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cave;
 
-/// <summary>Gets extensions for <see cref="IDictionary{TKey,TValue}" /> instances.</summary>
+/// <summary>Gets extensions for <see cref="IDictionary{TKey,TValue}"/> instances.</summary>
 public static class DictionaryExtension
 {
     #region Static
 
-    /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
+    /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}"/> instance.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -31,7 +32,7 @@ public static class DictionaryExtension
         return true;
     }
 
-    /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
+    /// <summary>Tries to add an entry to the <see cref="IDictionary{TKey, TValue}"/> instance.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -60,7 +61,7 @@ public static class DictionaryExtension
         return true;
     }
 
-    /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
+    /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}"/> instance.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -83,7 +84,7 @@ public static class DictionaryExtension
         }
     }
 
-    /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}" /> instance.</summary>
+    /// <summary>Tries to add a number of entries to the <see cref="IDictionary{TKey, TValue}"/> instance.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
@@ -130,6 +131,7 @@ public static class DictionaryExtension
     }
 
 #if NET20
+
     /// <summary>Tries to retrieve the value for the specified key.</summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
@@ -137,6 +139,7 @@ public static class DictionaryExtension
     /// <param name="key">The key to get.</param>
     /// <param name="value">Returns the value found or default(value).</param>
     /// <returns>Returns the value found or default(value).</returns>
+    [SuppressMessage("Performance", "CA1854", Justification = "Backport")]
     public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
     {
         if (dictionary == null)
@@ -151,7 +154,8 @@ public static class DictionaryExtension
         value = default;
         return false;
     }
+
 #endif
 
-    #endregion
+    #endregion Static
 }

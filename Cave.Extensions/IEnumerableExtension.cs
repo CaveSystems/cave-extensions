@@ -13,10 +13,7 @@ public static class IEnumerableExtension
 {
     #region Static
 
-    /// <summary>
-    /// Returns all items after the specified <paramref name="item"/>.
-    /// Items are checked using <see cref="object.Equals(object, object)"/>.
-    /// </summary>
+    /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
@@ -38,9 +35,7 @@ public static class IEnumerableExtension
         }
     }
 
-    /// <summary>
-    /// Returns all items after the specified <paramref name="item"/> including the first matching item.
-    /// </summary>
+    /// <summary>Returns all items after the specified <paramref name="item"/> including the first matching item.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
@@ -54,20 +49,14 @@ public static class IEnumerableExtension
     /// <returns>A read-only wrapper for the specified array.</returns>
     public static IList<T> AsReadOnly<T>(this IEnumerable<T> items) => items is IList<T> list ? list.AsReadOnly() : items.AsList().AsReadOnly();
 
-    /// <summary>
-    /// Returns all items after the specified <paramref name="item"/>.
-    /// Items are checked using <see cref="object.Equals(object, object)"/>.
-    /// </summary>
+    /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
     /// <returns>A new sequence of items.</returns>
     public static IEnumerable<T> Before<T>(this IEnumerable<T> enumerable, T item) => enumerable.TakeWhile(i => !Equals(i, item));
 
-    /// <summary>
-    /// Returns all items after the specified <paramref name="item"/> including item.
-    /// Items are checked using <see cref="object.Equals(object, object)"/>.
-    /// </summary>
+    /// <summary>Returns all items after the specified <paramref name="item"/> including item. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
@@ -736,15 +725,13 @@ public static class IEnumerableExtension
         return hasher.ToHashCode();
     }
 
-    /// <summary>
-    /// Iterates the enumeration to get the count of items.
-    /// </summary>
+    /// <summary>Iterates the enumeration to get the count of items.</summary>
     /// <param name="enumerable"></param>
     /// <returns>Returns the number of items.</returns>
     public static int Count(this IEnumerable enumerable)
     {
         var enumerator = enumerable.GetEnumerator();
-        int count = 0;
+        var count = 0;
         while (enumerator.MoveNext()) count++;
         return count;
     }

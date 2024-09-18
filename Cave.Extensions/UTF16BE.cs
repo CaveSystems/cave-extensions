@@ -21,7 +21,7 @@ public sealed class UTF16BE : Unicode
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF16BE Empty { get; } = new UTF16BE(ArrayExtension.Empty<byte>());
+    public static UTF16BE Empty { get; } = new UTF16BE([]);
 
     /// <inheritdoc/>
     public override byte[] ByteOrderMark => new byte[] { 0xFE, 0xFF };

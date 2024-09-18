@@ -21,7 +21,7 @@ public sealed class UTF32LE : Unicode
     #region Public Properties
 
     /// <summary>Gets the empty instance.</summary>
-    public static UTF32LE Empty { get; } = new UTF32LE(ArrayExtension.Empty<byte>());
+    public static UTF32LE Empty { get; } = new UTF32LE([]);
 
     /// <inheritdoc/>
     public override byte[] ByteOrderMark => new byte[] { 0xFF, 0xFE, 0x00, 0x00 };

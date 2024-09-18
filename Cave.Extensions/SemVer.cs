@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Cave;
 
-/// <summary>Provides semantic version numbers: <see href="https://semver.org/" /></summary>
-/// <seealso cref="IEquatable{T}" />
-/// <seealso cref="IComparable{SemanticVersion}" />
+/// <summary>Provides semantic version numbers: <see href="https://semver.org/"/></summary>
+/// <seealso cref="IEquatable{T}"/>
+/// <seealso cref="IComparable{SemanticVersion}"/>
 public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
 {
     #region Static
@@ -51,11 +51,11 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         }
 
         //get build part
-        var split = text.Split(new[] { '+' }, 2);
+        var split = text.Split(['+'], 2);
         var build = split.Length > 1 ? split[1] : null;
         var value = split[0];
         //get pre-release part
-        split = value.Split(new[] { '-' }, 2);
+        split = value.Split(['-'], 2);
         var preRelease = split.Length > 1 ? split[1] : null;
         value = split[0];
         //get core version
@@ -199,11 +199,11 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         return version1.CompareTo(version2) <= 0;
     }
 
-    #endregion
+    #endregion Static
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="SemanticVersion" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="SemVer"/> class.</summary>
     /// <param name="major">The major version number.</param>
     /// <param name="minor">The minor version number.</param>
     /// <param name="patch">The patch version number.</param>
@@ -229,22 +229,21 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         Build = build;
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
     /// <summary>Gets the build version string.</summary>
     public string? Build { get; }
 
-    /// <summary>
-    /// Gets the core version. <![CDATA[<version core> ::= <major> "." <minor> "." <patch>]]></summary>
+    /// <summary>Gets the core version. <![CDATA[<version core> ::= <major> "." <minor> "." <patch>]]></summary>
     public Version Core => Patch < 0 ? new(Major, Minor) : new Version(Major, Minor, Patch);
 
     /// <summary>Gets a value indicating whether the meta data contains only valid chars or not.</summary>
     public bool IsMetaValid =>
         (Meta is null || ((Meta.Count(c => c == '+') <= 1) && !Meta.HasInvalidChars(ValidCharsMeta)))
-     && PreRelease?.StartsWith("-", StringComparison.Ordinal) is not true
-     && Build?.StartsWith("+", StringComparison.Ordinal) is not true;
+     && PreRelease?.StartsWith('-') is not true
+     && Build?.StartsWith('+') is not true;
 
     /// <summary>Gets the major version number.</summary>
     public int Major { get; }
@@ -273,28 +272,28 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <summary>Gets the pre release version string.</summary>
     public string? PreRelease { get; }
 
-    /// <summary>Returns the version without the <see cref="Build" /> part.</summary>
+    /// <summary>Returns the version without the <see cref="Build"/> part.</summary>
     public SemVer WithoutBuild => new(Major, Minor, Patch, PreRelease);
 
-    #endregion
+    #endregion Properties
 
     #region IComparable Members
 
     /// <summary>
-    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current
-    /// instance precedes, follows, or occurs in the same position in the sort order as the other object.
+    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows,
+    /// or occurs in the same position in the sort order as the other object.
     /// </summary>
     /// <param name="other">An object to compare with this instance.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
     public int CompareTo(object? other) => other is SemVer version ? CompareTo(version) : 1;
 
-    #endregion
+    #endregion IComparable Members
 
     #region IComparable<SemVer> Members
 
     /// <summary>
-    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current
-    /// instance precedes, follows, or occurs in the same position in the sort order as the other object.
+    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows,
+    /// or occurs in the same position in the sort order as the other object.
     /// </summary>
     /// <param name="other">An object to compare with this instance.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
@@ -337,7 +336,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         return result;
     }
 
-    #endregion
+    #endregion IComparable<SemVer> Members
 
     #region IEquatable<SemVer> Members
 
@@ -346,13 +345,13 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
     public bool Equals(SemVer? other) => other is not null && (CompareTo(other) == 0);
 
-    #endregion
+    #endregion IEquatable<SemVer> Members
 
     #region Overrides
 
-    /// <summary>Determines whether the specified <see cref="object" />, is equal to this instance.</summary>
-    /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-    /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+    /// <summary>Determines whether the specified <see cref="object"/>, is equal to this instance.</summary>
+    /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
+    /// <returns><c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object? obj) => obj switch
     {
         SemVer semVer => Equals(semVer),
@@ -364,8 +363,8 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
     public override int GetHashCode() => ToString().GetHashCode();
 
-    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
-    /// <returns>A <see cref="string" /> that represents this instance.</returns>
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -378,5 +377,5 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         return sb.ToString();
     }
 
-    #endregion
+    #endregion Overrides
 }

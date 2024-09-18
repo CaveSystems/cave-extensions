@@ -6,36 +6,25 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace System.Linq
+namespace System.Linq;
+
+sealed class Grouping<TKey, TElement>(TKey key, IEnumerable<TElement> group) : IGrouping<TKey, TElement>
 {
-    class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
-    {
-        #region Fields
+    #region Fields
 
-        internal readonly IEnumerable<TElement> Group;
+    internal IEnumerable<TElement> Group => group;
 
-        #endregion Fields
+    #endregion Fields
 
-        #region Constructors
+    #region IGrouping<TKey,TElement> Members
 
-        public Grouping(TKey key, IEnumerable<TElement> group)
-        {
-            Group = group;
-            Key = key;
-        }
+    IEnumerator IEnumerable.GetEnumerator() => Group.GetEnumerator();
 
-        #endregion Constructors
+    public IEnumerator<TElement> GetEnumerator() => Group.GetEnumerator();
 
-        #region IGrouping<TKey,TElement> Members
+    public TKey Key => key;
 
-        IEnumerator IEnumerable.GetEnumerator() => Group.GetEnumerator();
-
-        public IEnumerator<TElement> GetEnumerator() => Group.GetEnumerator();
-
-        public TKey Key { get; }
-
-        #endregion IGrouping<TKey,TElement> Members
-    }
+    #endregion IGrouping<TKey,TElement> Members
 }
 
 #endif

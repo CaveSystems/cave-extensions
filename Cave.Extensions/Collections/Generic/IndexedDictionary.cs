@@ -79,8 +79,8 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <summary>Initializes a new instance of the <see cref="IndexedDictionary{TKey, TValue}" /> class.</summary>
     public IndexedDictionary()
     {
-        dictionary = new();
-        keys = new();
+        dictionary = [];
+        keys = [];
     }
 
     #endregion

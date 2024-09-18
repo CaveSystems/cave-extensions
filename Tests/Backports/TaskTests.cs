@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Cave;
-using Cave.Console;
 using NUnit.Framework;
 
 namespace Test.Backports;
