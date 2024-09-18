@@ -64,7 +64,7 @@ public sealed class UTF7 : Unicode
                         }
                         else
                         {
-                            code = new() { data[i] };
+                            code = [data[i]];
                         }
                     }
                     else
@@ -120,7 +120,7 @@ public sealed class UTF7 : Unicode
                     }
                     else
                     {
-                        code = new() { data[i] };
+                        code = [data[i]];
                     }
                 }
                 else

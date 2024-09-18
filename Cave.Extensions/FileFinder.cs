@@ -262,11 +262,11 @@ public sealed class FileFinder : IDisposable
 
         DirectorySearchRunning = true;
         FileSearchRunning = true;
-        tasks = new[]
-        {
+        tasks =
+        [
             Task.Factory.StartNew(SearchDirectories),
             Task.Factory.StartNew(SearchFiles)
-        };
+        ];
     }
 
     string CheckDirectory(string value)

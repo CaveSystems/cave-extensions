@@ -51,11 +51,11 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
         }
 
         //get build part
-        var split = text.Split(new[] { '+' }, 2);
+        var split = text.Split(['+'], 2);
         var build = split.Length > 1 ? split[1] : null;
         var value = split[0];
         //get pre-release part
-        split = value.Split(new[] { '-' }, 2);
+        split = value.Split(['-'], 2);
         var preRelease = split.Length > 1 ? split[1] : null;
         value = split[0];
         //get core version

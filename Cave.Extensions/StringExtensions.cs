@@ -402,7 +402,7 @@ public static partial class StringExtensions
         {
             return string.Empty;
         }
-        args ??= ArrayExtension.Empty<object>();
+        args ??= [];
         var result = text;
         for (var i = 0; i < args.Length; i++)
         {
@@ -1772,7 +1772,7 @@ public static partial class StringExtensions
     {
         if (text == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         if (indices == null)
@@ -1812,7 +1812,7 @@ public static partial class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1849,7 +1849,7 @@ public static partial class StringExtensions
     {
         if (string.IsNullOrEmpty(text))
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1886,7 +1886,7 @@ public static partial class StringExtensions
     {
         if (text == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var result = new List<string>();
@@ -1977,7 +1977,7 @@ public static partial class StringExtensions
             _ = result.RemoveAll(string.IsNullOrEmpty);
         }
 
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>
@@ -2058,7 +2058,7 @@ public static partial class StringExtensions
             }
         }
 
-        return array.ToArray();
+        return [.. array];
     }
 
     /// <summary>
@@ -2308,7 +2308,7 @@ public static partial class StringExtensions
 
         if (exception == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var strings = new List<string>();
@@ -2568,17 +2568,17 @@ public static partial class StringExtensions
 
         if (text.Length > 1)
         {
-            if (text.StartsWith("(", StringComparison.Ordinal) && text.EndsWith(")", StringComparison.Ordinal))
+            if (text.StartsWith('(') && text.EndsWith(')'))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("[", StringComparison.Ordinal) && text.EndsWith("]", StringComparison.Ordinal))
+            if (text.StartsWith('[') && text.EndsWith(']'))
             {
                 return text[1..^1];
             }
 
-            if (text.StartsWith("{", StringComparison.Ordinal) && text.EndsWith("}", StringComparison.Ordinal))
+            if (text.StartsWith('{') && text.EndsWith('}'))
             {
                 return text[1..^1];
             }

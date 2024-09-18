@@ -237,7 +237,7 @@ public class PBKDF2 : DeriveBytes
             throw new ArgumentOutOfRangeException(nameof(cb));
         }
 
-        buffer ??= ArrayExtension.Empty<byte>();
+        buffer ??= [];
 
         //enough data present ?
         while (buffer.Length < cb)

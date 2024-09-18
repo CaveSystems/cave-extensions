@@ -1,4 +1,5 @@
-﻿#pragma warning disable CS1591
+﻿#pragma warning disable IDE0130
+#pragma warning disable CS1591
 #if (NETSTANDARD1_0_OR_GREATER && ! NETSTANDARD1_3_OR_GREATER) || ((NET20_OR_GREATER && !NET46_OR_GREATER) && ! NETCOREAPP2_0_OR_GREATER)
 
 using System.Globalization;

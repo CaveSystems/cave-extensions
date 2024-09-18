@@ -17,7 +17,7 @@ namespace System.Threading.Tasks
 
             readonly AutoResetEvent completed = new(false);
 
-            readonly List<Exception> exceptions = new();
+            readonly List<Exception> exceptions = [];
             int currentTasks;
 
             #endregion Fields

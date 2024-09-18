@@ -170,11 +170,7 @@ public sealed class Option : IEquatable<Option>
             throw new ArgumentNullException(nameof(option));
         }
 
-        if (option.IndexOfAny(new[]
-            {
-                '\r',
-                '\n'
-            }) > -1)
+        if (option.IndexOfAny(['\r', '\n']) > -1)
         {
             throw new ArgumentOutOfRangeException(nameof(option));
         }

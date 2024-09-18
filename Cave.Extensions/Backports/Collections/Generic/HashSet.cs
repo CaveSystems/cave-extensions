@@ -17,7 +17,7 @@ namespace System.Collections.Generic
 
         #region private Member
 
-        Dictionary<T, byte> dict = new();
+        Dictionary<T, byte> dict = [];
 
         #endregion private Member
 

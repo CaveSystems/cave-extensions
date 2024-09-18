@@ -191,9 +191,9 @@ public sealed class Set<T> : IItemSet<T>
     #region private Member
 
 #if NET20
-    Dictionary<T, byte> list = new();
+    Dictionary<T, byte> list = [];
 #else
-    readonly HashSet<T> list = new();
+    readonly HashSet<T> list = [];
 #endif
 
     #endregion private Member
@@ -434,7 +434,7 @@ public sealed class Set<T> : IItemSet<T>
 #if NET20
         // cannot clear, recreate
         list.Clear();
-        list = new();
+        list = [];
 #else
         list.Clear();
         list.TrimExcess();
@@ -567,8 +567,8 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
 {
     #region Fields
 
-    readonly List<ItemPair<TKey, TValue>> list = new();
-    readonly Dictionary<TKey, ItemPair<TKey, TValue>> lookupA = new();
+    readonly List<ItemPair<TKey, TValue>> list = [];
+    readonly Dictionary<TKey, ItemPair<TKey, TValue>> lookupA = [];
 
     #endregion Fields
 

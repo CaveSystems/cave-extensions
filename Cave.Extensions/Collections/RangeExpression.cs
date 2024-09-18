@@ -164,8 +164,8 @@ public class RangeExpression : IEquatable<RangeExpression>, IEnumerable<int>, IE
 
     #region Fields
 
-    readonly List<Counter> counters = new();
-    readonly List<int> values = new();
+    readonly List<Counter> counters = [];
+    readonly List<int> values = [];
 
     bool allValues;
     string currentString;

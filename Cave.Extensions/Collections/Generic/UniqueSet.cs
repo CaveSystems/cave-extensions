@@ -17,9 +17,9 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
 {
     #region Fields
 
-    readonly List<ItemPair<TKey1, TKey2>> list = new();
-    readonly Dictionary<TKey1, ItemPair<TKey1, TKey2>> lookupA = new();
-    readonly Dictionary<TKey2, ItemPair<TKey1, TKey2>> lookupB = new();
+    readonly List<ItemPair<TKey1, TKey2>> list = [];
+    readonly Dictionary<TKey1, ItemPair<TKey1, TKey2>> lookupA = [];
+    readonly Dictionary<TKey2, ItemPair<TKey1, TKey2>> lookupB = [];
 
     #endregion
 

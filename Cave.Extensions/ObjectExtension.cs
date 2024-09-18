@@ -34,7 +34,8 @@ public static class ObjectExtension
             bindingFlags = BindingFlags.Instance | BindingFlags.Public;
         }
 
-        IList<string> path = fullPath?.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries) ?? ArrayExtension.Empty<string>();
+        char[] splitter = ['.', '/'];
+        IList<string> path = fullPath?.Split(splitter, StringSplitOptions.RemoveEmptyEntries) ?? [];
         var current = instance;
         for (var i = 0; i < path.Count; i++)
         {
@@ -214,7 +215,7 @@ public static class ObjectExtension
     /// <param name="ignoredByAttribute">If set all properties containing this attribute will be ignored.</param>
     /// <param name="ignoredByName">If set all properties with a name matching any entry will be ignored.</param>
     /// <returns>True if all properties equal, false otherwise.</returns>
-    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type ignoredByAttribute = null, params string[] ignoredByName) => PropertiesEqual(instance, other, new[] { ignoredByAttribute }, ignoredByName);
+    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type ignoredByAttribute = null, params string[] ignoredByName) => PropertiesEqual(instance, other, [ignoredByAttribute], ignoredByName);
 
     /// <summary>Checks whether all properties equal.</summary>
     /// <typeparam name="TObject">The object type to get property definitions from.</typeparam>

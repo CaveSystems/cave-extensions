@@ -386,7 +386,7 @@ public static partial class StringExtensions
     {
         if (text == null)
         {
-            return ArrayExtension.Empty<string>();
+            return [];
         }
 
         var splits = new List<int>();

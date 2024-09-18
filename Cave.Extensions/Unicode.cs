@@ -37,7 +37,7 @@ public abstract class Unicode : IUnicode
     public static bool operator >=(Unicode left, Unicode right) => left is null ? right is null : left.CompareTo(right) >= 0;
 
     /// <summary>Creates a new empty instance.</summary>
-    public Unicode() => Data = ArrayExtension.Empty<byte>();
+    public Unicode() => Data = [];
 
     /// <summary>Creates a new instance</summary>
     /// <param name="data">Content</param>

@@ -24,8 +24,8 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
     public List()
     {
-        listA = new();
-        listB = new();
+        listA = [];
+        listB = [];
     }
 
     /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>

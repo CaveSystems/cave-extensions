@@ -235,7 +235,7 @@ public static class TypeExtension
         {
             // try to find public static Parse(string, IFormatProvider) method in class
             var errors = new List<Exception>();
-            var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string), typeof(IFormatProvider) }, null);
+            var method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, [typeof(string), typeof(IFormatProvider)], null);
             if (method != null)
             {
                 try
@@ -251,7 +251,7 @@ public static class TypeExtension
                     if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
-            method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+            method = toType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, [typeof(string)], null);
             if (method != null)
             {
                 try
@@ -263,7 +263,7 @@ public static class TypeExtension
                     if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
-            var cctor = toType.GetConstructor(new[] { typeof(string), typeof(IFormatProvider) });
+            var cctor = toType.GetConstructor([typeof(string), typeof(IFormatProvider)]);
             if (cctor != null)
             {
                 try
@@ -275,7 +275,7 @@ public static class TypeExtension
                     if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
-            cctor = toType.GetConstructor(new[] { typeof(string) });
+            cctor = toType.GetConstructor([typeof(string)]);
             if (cctor != null)
             {
                 try
@@ -287,7 +287,7 @@ public static class TypeExtension
                     if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
-            method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+            method = toType.GetMethod("op_Implicit", BindingFlags.Public | BindingFlags.Static, null, [typeof(string)], null);
             if (method != null)
             {
                 try
@@ -299,7 +299,7 @@ public static class TypeExtension
                     if (ex.InnerException != null) errors.Add(ex.InnerException);
                 }
             }
-            method = toType.GetMethod("op_Explicit", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+            method = toType.GetMethod("op_Explicit", BindingFlags.Public | BindingFlags.Static, null, [typeof(string)], null);
             if (method != null)
             {
                 try

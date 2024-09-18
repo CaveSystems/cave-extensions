@@ -42,7 +42,7 @@ namespace System.Linq
                 }
                 else if (!dict.TryGetValue(key, out list))
                 {
-                    dict[key] = list = new();
+                    dict[key] = list = [];
                 }
                 list.Add(element);
             }

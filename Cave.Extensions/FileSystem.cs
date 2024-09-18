@@ -174,11 +174,8 @@ public static class FileSystem
 
             #endregion handle rooted paths
 
-            var parts = path.Split(new[]
-            {
-                '/',
-                '\\'
-            }, StringSplitOptions.RemoveEmptyEntries);
+            char[] splitter = ['/', '\\'];
+            var parts = path.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
             foreach (var part in parts)
             {
                 if (part == "?")

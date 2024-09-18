@@ -194,7 +194,7 @@ public class SynchronizedSet<T> : IItemSet<T>
 
     #region Fields
 
-    readonly SynchronizedDictionary<T, byte> dict = new();
+    readonly SynchronizedDictionary<T, byte> dict = [];
 
     #endregion
 
