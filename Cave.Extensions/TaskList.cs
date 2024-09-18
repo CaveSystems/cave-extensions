@@ -36,7 +36,7 @@ public class TaskList
     public Task[] ToArray()
     {
         Cleanup();
-        return tasks.Keys.ToArray();
+        return [.. tasks.Keys];
     }
 
     /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>

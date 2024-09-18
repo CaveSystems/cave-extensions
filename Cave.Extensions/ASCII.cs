@@ -627,7 +627,7 @@ public static class ASCII
             }
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     /// <summary>Escapes the character by its hexadecimal representation ( <![CDATA[\'x'YY]]> or <![CDATA[\'u'YYYY]]> depending on the charset).</summary>
@@ -965,7 +965,7 @@ public static class ASCII
             result.Add(c);
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     #endregion Public Methods

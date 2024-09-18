@@ -45,7 +45,7 @@ public sealed class UTF7 : Unicode
                 {
                     if (data[i] == '-')
                     {
-                        var chunk = DecodeChunk(code.ToArray());
+                        var chunk = DecodeChunk([.. code]);
                         result[len++] = char.ConvertToUtf32(chunk, 0);
                         code = null;
                     }
@@ -101,7 +101,7 @@ public sealed class UTF7 : Unicode
             {
                 if (data[i] == '-')
                 {
-                    var chunk = DecodeChunk(code.ToArray());
+                    var chunk = DecodeChunk([.. code]);
                     _ = result.Append(chunk);
                     code = null;
                 }

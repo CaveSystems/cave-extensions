@@ -31,7 +31,7 @@ public static class IBaseXExtensions
     /// <param name="baseX">Instance to use</param>
     /// <param name="baseXstring">BaseX string value</param>
     /// <returns>Returns the decoded value</returns>
-    public static long DecodeInt64(this IBaseX baseX, string baseXstring) => (long)baseX.DecodeValue(baseXstring);
+    public static long DecodeInt64(this IBaseX baseX, string baseXstring) => baseX.DecodeValue(baseXstring);
 
     /// <summary>Decodes the specified BaseX string to a value.</summary>
     /// <param name="baseX">Instance to use</param>

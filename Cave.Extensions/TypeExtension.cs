@@ -200,7 +200,7 @@ public static class TypeExtension
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-2), formatProvider) * TimeSpan.TicksPerMillisecond));
                 }
 
-                if (str.EndsWith("s", StringComparison.Ordinal))
+                if (str.EndsWith('s'))
                 {
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), formatProvider) * TimeSpan.TicksPerSecond));
                 }
@@ -210,17 +210,17 @@ public static class TypeExtension
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-3), formatProvider) * TimeSpan.TicksPerMinute));
                 }
 
-                if (str.EndsWith("h", StringComparison.Ordinal))
+                if (str.EndsWith('h'))
                 {
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), formatProvider) * TimeSpan.TicksPerHour));
                 }
 
-                if (str.EndsWith("d", StringComparison.Ordinal))
+                if (str.EndsWith('d'))
                 {
                     return new TimeSpan((long)Math.Round(double.Parse(str.SubstringEnd(-1), formatProvider) * TimeSpan.TicksPerDay));
                 }
 
-                return str.EndsWith("a", StringComparison.Ordinal)
+                return str.EndsWith('a')
                     ? TimeSpan.FromDays(double.Parse(str.SubstringEnd(-1), formatProvider) * 365.25)
                     : (object)new TimeSpan(long.Parse(str, formatProvider));
             }

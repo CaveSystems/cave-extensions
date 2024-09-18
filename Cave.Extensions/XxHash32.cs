@@ -48,12 +48,12 @@ public struct XxHash32 : IHashingFunction
 {
     #region Private Fields
 
-    const uint prime1 = 2654435761U;
-    const uint prime2 = 2246822519U;
-    const uint prime3 = 3266489917U;
-    const uint prime4 = 668265263U;
-    const uint prime5 = 374761393U;
-    const uint seed = 1667331685U;
+    const uint Prime1 = 2654435761U;
+    const uint Prime2 = 2246822519U;
+    const uint Prime3 = 3266489917U;
+    const uint Prime4 = 668265263U;
+    const uint Prime5 = 374761393U;
+    const uint Seed = 1667331685U;
     uint len;
     uint q1, q2, q3;
     uint v1, v2, v3, v4;
@@ -67,15 +67,15 @@ public struct XxHash32 : IHashingFunction
     {
         unchecked
         {
-            v1 = seed + prime1 + prime2;
-            v2 = seed + prime2;
-            v3 = seed;
-            v4 = seed - prime1;
+            v1 = Seed + Prime1 + Prime2;
+            v2 = Seed + Prime2;
+            v3 = Seed;
+            v4 = Seed - Prime1;
         }
     }
 
     [MethodImpl((MethodImplOptions)256)]
-    static uint MixEmptyState() => seed + prime5;
+    static uint MixEmptyState() => Seed + Prime5;
 
     [MethodImpl((MethodImplOptions)256)]
     static uint MixFinal(uint hash)
@@ -83,9 +83,9 @@ public struct XxHash32 : IHashingFunction
         unchecked
         {
             hash ^= hash >> 15;
-            hash *= prime2;
+            hash *= Prime2;
             hash ^= hash >> 13;
-            hash *= prime3;
+            hash *= Prime3;
             hash ^= hash >> 16;
             return hash;
         }
@@ -95,13 +95,13 @@ public struct XxHash32 : IHashingFunction
     static uint MixState(uint v1, uint v2, uint v3, uint v4) => RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
 
     [MethodImpl((MethodImplOptions)256)]
-    static uint QueueRound(uint hash, uint queuedValue) => RotateLeft(hash + (queuedValue * prime3), 17) * prime4;
+    static uint QueueRound(uint hash, uint queuedValue) => RotateLeft(hash + (queuedValue * Prime3), 17) * Prime4;
 
     [MethodImpl((MethodImplOptions)256)]
     static uint RotateLeft(uint value, int bits) => (value << bits) | (value >> (32 - bits));
 
     [MethodImpl((MethodImplOptions)256)]
-    static uint Round(uint hash, uint input) => RotateLeft(hash + (input * prime2), 13) * prime1;
+    static uint Round(uint hash, uint input) => RotateLeft(hash + (input * Prime2), 13) * Prime1;
 
     [MethodImpl((MethodImplOptions)0x0100)]
     void Hash(uint value)

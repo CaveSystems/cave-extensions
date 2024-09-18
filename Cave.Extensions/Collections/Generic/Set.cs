@@ -667,7 +667,7 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     /// <summary>Gets the index of the specified A object. This is an O(n) operation.</summary>
     /// <param name="key">'A' object to be found.</param>
     /// <returns>The index of item if found in the List; otherwise, -1.</returns>
-    public int IndexOfA(TKey key) => !lookupA.ContainsKey(key) ? -1 : list.IndexOf(lookupA[key]);
+    public int IndexOfA(TKey key) => !lookupA.TryGetValue(key, out var value) ? -1 : list.IndexOf(value);
 
     /// <summary>Not supported. Use UniqueSet instead.</summary>
     /// <param name="value"></param>

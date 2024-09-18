@@ -45,9 +45,9 @@ public class BaseDynamic : BaseX
     #region Public Methods
 
     /// <inheritdoc/>
-    public override byte[] Decode(byte[] data)
+    public override byte[] Decode(byte[] baseXdata)
     {
-        var decode = data.Select(b => DecodeCharacter((char)b)).ToArray();
+        var decode = baseXdata.Select(b => DecodeCharacter((char)b)).ToArray();
         var realSize = (int)(decode.Length / Math.Log(256, Base));
         Array.Reverse(decode);
         var result = new byte[realSize];
@@ -68,10 +68,10 @@ public class BaseDynamic : BaseX
 
 #if !NET20 && !NET35
     /// <inheritdoc/>
-    public override BigInteger DecodeBigInteger(byte[] data)
+    public override BigInteger DecodeBigInteger(byte[] baseXdata)
     {
         BigInteger value = 0;
-        foreach (var b in data)
+        foreach (var b in baseXdata)
         {
             var c = (char)b;
             if (c == Padding)
@@ -85,17 +85,17 @@ public class BaseDynamic : BaseX
 #endif
 
     /// <inheritdoc/>
-    public override long DecodeValue(byte[] data)
+    public override long DecodeValue(byte[] baseXdata)
     {
         long value = 0;
-        foreach (var b in data)
+        foreach (var b in baseXdata)
         {
             var c = (char)b;
             if (c == Padding)
             {
                 break;
             }
-            value = (value * Base) + (int)DecodeCharacter(c);
+            value = (value * Base) + DecodeCharacter(c);
         }
         return value;
     }
@@ -137,7 +137,7 @@ public class BaseDynamic : BaseX
         }
         result.Reverse();
         if (Padding is char padding) { result.Add(padding); }
-        return new(result.ToArray());
+        return new([.. result]);
     }
 #endif
 
@@ -157,7 +157,7 @@ public class BaseDynamic : BaseX
         }
         result.Reverse();
         if (Padding is char padding) { result.Add(padding); }
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     #endregion Public Methods

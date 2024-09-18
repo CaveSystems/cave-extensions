@@ -209,7 +209,7 @@ public static class FileSystem
             return root ?? ".";
         }
 
-        var result = string.Join($"{separator}", resultParts.ToArray());
+        var result = string.Join($"{separator}", [.. resultParts]);
         return root + result;
     }
 
@@ -557,7 +557,7 @@ public static class FileSystem
         var results = new List<string>();
         results.AddRange(Directory.GetDirectories(path, "*", searchOption));
         results.AddRange(Directory.GetFiles(path, searchPattern, searchOption));
-        return results.ToArray();
+        return [.. results];
     }
 
 #else

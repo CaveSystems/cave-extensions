@@ -242,8 +242,8 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <summary>Gets a value indicating whether the meta data contains only valid chars or not.</summary>
     public bool IsMetaValid =>
         (Meta is null || ((Meta.Count(c => c == '+') <= 1) && !Meta.HasInvalidChars(ValidCharsMeta)))
-     && PreRelease?.StartsWith("-", StringComparison.Ordinal) is not true
-     && Build?.StartsWith("+", StringComparison.Ordinal) is not true;
+     && PreRelease?.StartsWith('-') is not true
+     && Build?.StartsWith('+') is not true;
 
     /// <summary>Gets the major version number.</summary>
     public int Major { get; }

@@ -9,7 +9,7 @@ public class Base32 : BaseWithFixedBits
 {
     #region Private Fields
 
-    const int bitCount = 5;
+    const int BitCount = 5;
 
     #endregion Private Fields
 
@@ -20,7 +20,7 @@ public class Base32 : BaseWithFixedBits
     /// <param name="padding">The padding (use null to skip padding).</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    protected Base32(CharacterDictionary dictionary, char? padding) : base(dictionary, bitCount, padding) { }
+    protected Base32(CharacterDictionary dictionary, char? padding) : base(dictionary, BitCount, padding) { }
 
     #endregion Protected Constructors
 
@@ -56,17 +56,17 @@ public class Base32 : BaseWithFixedBits
     #region Public Methods
 
     /// <summary>Decodes a Base32 data array.</summary>
-    /// <param name="data">The Base32 data to decode.</param>
-    public override byte[] Decode(byte[] data)
+    /// <param name="baseXdata">The Base32 data to decode.</param>
+    public override byte[] Decode(byte[] baseXdata)
     {
         if (CharacterDictionary == null)
         {
             throw new InvalidOperationException($"Property {nameof(CharacterDictionary)} has to be set!");
         }
 
-        if (data == null)
+        if (baseXdata == null)
         {
-            throw new ArgumentNullException(nameof(data));
+            throw new ArgumentNullException(nameof(baseXdata));
         }
 
         if (Padding != null)
@@ -79,18 +79,18 @@ public class Base32 : BaseWithFixedBits
         }
 
         // decode data
-        var result = new List<byte>(data.Length);
+        var result = new List<byte>(baseXdata.Length);
         var value = 0;
         var bits = 0;
-        foreach (var b in data)
+        foreach (var b in baseXdata)
         {
             if (b == Padding)
             {
                 break;
             }
 
-            value <<= bitCount;
-            bits += bitCount;
+            value <<= BitCount;
+            bits += BitCount;
             value |= CharacterDictionary.GetValue((char)b);
             if (bits >= 8)
             {
@@ -100,7 +100,7 @@ public class Base32 : BaseWithFixedBits
                 result.Add((byte)outValue);
             }
         }
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>Encodes the specified data.</summary>
@@ -119,18 +119,18 @@ public class Base32 : BaseWithFixedBits
         {
             value = (value << 8) | b;
             bits += 8;
-            while (bits >= bitCount)
+            while (bits >= BitCount)
             {
-                bits -= bitCount;
+                bits -= BitCount;
                 var outValue = value >> bits;
                 value &= ~(0xFFFF << bits);
                 result.Add(CharacterDictionary.GetCharacter(outValue));
             }
         }
 
-        if (bits >= bitCount)
+        if (bits >= BitCount)
         {
-            bits -= bitCount;
+            bits -= BitCount;
             var outValue = value >> bits;
             value &= ~(0xFFFF << bits);
             result.Add(CharacterDictionary.GetCharacter(outValue));
@@ -138,10 +138,10 @@ public class Base32 : BaseWithFixedBits
 
         if (bits > 0)
         {
-            var shift = bitCount - bits;
+            var shift = BitCount - bits;
             var outValue = value << shift;
             result.Add(CharacterDictionary.GetCharacter(outValue));
-            bits -= bitCount;
+            bits -= BitCount;
         }
 
         if (Padding != null)
@@ -150,11 +150,11 @@ public class Base32 : BaseWithFixedBits
             while ((bits % 8) != 0)
             {
                 result.Add(padding);
-                bits -= bitCount;
+                bits -= BitCount;
             }
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     #endregion Public Methods

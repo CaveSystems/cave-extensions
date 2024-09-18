@@ -170,7 +170,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
 
             // get path (if any) and remove it from server string
             var pathIndex = server.IndexOfAny(['/']);
-            if ((pathIndex == 2) && ((protocol == null) || (protocol.ToUpperInvariant() == "FILE")))
+            if ((pathIndex == 2) && ((protocol == null) || (protocol.Equals("file", StringComparison.InvariantCultureIgnoreCase))))
             {
                 path = server;
                 server = null;

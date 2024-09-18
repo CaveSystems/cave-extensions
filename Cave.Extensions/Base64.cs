@@ -4,11 +4,16 @@ using System.Collections.Generic;
 namespace Cave;
 
 /// <summary>Gets Base64 en-/decoding.</summary>
-public class Base64 : BaseWithFixedBits
+/// <remarks>Initializes a new instance of the <see cref="Base64"/> class.</remarks>
+/// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
+/// <param name="padding">The padding (use null to skip padding).</param>
+/// <exception cref="ArgumentOutOfRangeException"></exception>
+/// <exception cref="ArgumentException">Invalid padding character.</exception>
+public class Base64(CharacterDictionary dict, char? padding) : BaseWithFixedBits(dict, BitCount, padding)
 {
     #region Private Fields
 
-    const int bitCount = 6;
+    const int BitCount = 6;
 
     #endregion Private Fields
 
@@ -21,17 +26,6 @@ public class Base64 : BaseWithFixedBits
     public const string CharactersUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
     #endregion Public Fields
-
-    #region Public Constructors
-
-    /// <summary>Initializes a new instance of the <see cref="Base64"/> class.</summary>
-    /// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
-    /// <param name="padding">The padding (use null to skip padding).</param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    /// <exception cref="ArgumentException">Invalid padding character.</exception>
-    public Base64(CharacterDictionary dict, char? padding) : base(dict, bitCount, padding) { }
-
-    #endregion Public Constructors
 
     #region Public Properties
 
@@ -49,12 +43,12 @@ public class Base64 : BaseWithFixedBits
     #region Public Methods
 
     /// <summary>Decodes a base64 data array.</summary>
-    /// <param name="data">The base64 data to decode.</param>
-    public override byte[] Decode(byte[] data)
+    /// <param name="baseXdata">The base64 data to decode.</param>
+    public override byte[] Decode(byte[] baseXdata)
     {
-        if (data == null)
+        if (baseXdata == null)
         {
-            throw new ArgumentNullException(nameof(data));
+            throw new ArgumentNullException(nameof(baseXdata));
         }
 
         if (Padding != null)
@@ -67,18 +61,18 @@ public class Base64 : BaseWithFixedBits
         }
 
         // decode data
-        var result = new List<byte>(data.Length);
+        var result = new List<byte>(baseXdata.Length);
         var value = 0;
         var bits = 0;
-        foreach (var b in data)
+        foreach (var b in baseXdata)
         {
             if (b == Padding)
             {
                 break;
             }
 
-            value <<= bitCount;
-            bits += bitCount;
+            value <<= BitCount;
+            bits += BitCount;
             value |= CharacterDictionary.GetValue((char)b);
             if (bits >= 8)
             {
@@ -88,7 +82,7 @@ public class Base64 : BaseWithFixedBits
                 result.Add((byte)outValue);
             }
         }
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>Encodes the specified data.</summary>
@@ -106,18 +100,18 @@ public class Base64 : BaseWithFixedBits
         {
             value = (value << 8) | b;
             bits += 8;
-            while (bits >= bitCount)
+            while (bits >= BitCount)
             {
-                bits -= bitCount;
+                bits -= BitCount;
                 var outValue = value >> bits;
                 value &= ~(0xFFFF << bits);
                 result.Add(CharacterDictionary.GetCharacter(outValue));
             }
         }
 
-        if (bits > bitCount)
+        if (bits > BitCount)
         {
-            bits -= bitCount;
+            bits -= BitCount;
             var outValue = value >> bits;
             value &= ~(0xFFFF << bits);
             result.Add(CharacterDictionary.GetCharacter(outValue));
@@ -125,10 +119,10 @@ public class Base64 : BaseWithFixedBits
 
         if (bits > 0)
         {
-            var shift = bitCount - bits;
+            var shift = BitCount - bits;
             var outValue = value << shift;
             result.Add(CharacterDictionary.GetCharacter(outValue));
-            bits -= bitCount;
+            bits -= BitCount;
         }
 
         if (Padding != null)
@@ -137,11 +131,11 @@ public class Base64 : BaseWithFixedBits
             while ((bits % 8) != 0)
             {
                 result.Add(padding);
-                bits -= bitCount;
+                bits -= BitCount;
             }
         }
 
-        return new(result.ToArray());
+        return new([.. result]);
     }
 
     #endregion Public Methods
