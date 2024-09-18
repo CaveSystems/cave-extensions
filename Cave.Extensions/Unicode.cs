@@ -56,7 +56,7 @@ public abstract class Unicode : IUnicode
     public int CompareTo(object? obj) => obj is not IUnicode unicode ? 1 : CompareTo(unicode);
 
     /// <inheritdoc/>
-    public int CompareTo(IUnicode? other) => other is null ? 1 : DefaultComparer.Combine(Codepoints, other.Codepoints);
+    public int CompareTo(IUnicode? other) => other is null ? 1 : DefaultComparer.Compare(Codepoints, other.Codepoints);
 
     /// <inheritdoc/>
     public bool Equals(IUnicode? other) => other is not null && DefaultComparer.Equals(Codepoints, other.Codepoints);
