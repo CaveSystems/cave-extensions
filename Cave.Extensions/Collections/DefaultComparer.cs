@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-#nullable enable
-
 namespace Cave.Collections;
 
 /// <summary>Gets a default comparer.</summary>

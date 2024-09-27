@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Cave.Security;
 
-#nullable enable
+
 
 /// <summary>Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC algorithm.</summary>
 public class PBKDF2 : DeriveBytes
@@ -74,6 +74,7 @@ public class PBKDF2 : DeriveBytes
     #region Protected Methods
 
 #if NET40_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {

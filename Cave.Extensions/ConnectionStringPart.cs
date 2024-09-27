@@ -1,6 +1,6 @@
 namespace Cave;
 
-/// <summary>Gets selection of <see cref="ConnectionString" /> parts.</summary>
+/// <summary>Gets selection of <see cref="ConnectionString"/> parts.</summary>
 public enum ConnectionStringPart
 {
     /// <summary>All parts of the connection string</summary>

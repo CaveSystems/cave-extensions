@@ -12,7 +12,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 {
     #region Private Fields
 
-    readonly List<string, Option> items = [];
+    readonly List<string, Option> items = new();
 
     #endregion Private Fields
 
@@ -48,6 +48,9 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     #endregion Public Constructors
 
     #region Public Properties
+
+    /// <summary>Provides an empty option collection.</summary>
+    public static OptionCollection Empty { get; } = new();
 
     /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
     public static bool IsReadOnly => true;
@@ -109,7 +112,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <param name="ignoreInvalid">if set to <c>true</c> [ignore invalid options].</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">texts.</exception>
-    public static OptionCollection FromStrings(string[] lines, bool ignoreInvalid = false)
+    public static OptionCollection FromStrings(string[]? lines, bool ignoreInvalid = false)
     {
         if (lines == null)
         {
@@ -162,7 +165,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <summary>Determines whether the specified object is equal to the current object.</summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(OptionCollection other)
+    public bool Equals(OptionCollection? other)
     {
         if (other is null)
         {
@@ -188,7 +191,11 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <summary>Determines whether the specified object is equal to the current object. (Inherited from Object.)</summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object obj) => Equals(obj as OptionCollection);
+    public override bool Equals(object? obj) => Equals(obj as OptionCollection);
+
+    /// <summary>Returns an enumerator that iterates through all items.</summary>
+    /// <returns></returns>
+    public IEnumerator<Option> GetEnumerator() => items.ItemsB.GetEnumerator();
 
     /// <summary>Serves as a hash function for a particular type.</summary>
     /// <returns></returns>
@@ -268,10 +275,6 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 
         return result.ToString();
     }
-
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
-    public IEnumerator<Option> GetEnumerator() => items.ItemsB.GetEnumerator();
 
     /// <summary>Returns an enumerator that iterates through all items.</summary>
     /// <returns></returns>

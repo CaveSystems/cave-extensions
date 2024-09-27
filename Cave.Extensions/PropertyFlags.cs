@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Cave;
 
-/// <summary>Flags used at <see cref="ObjectExtension.GetProperties(object, PropertyFlags, BindingFlags, PropertyDataFilter)" /></summary>
+/// <summary>Flags used at <see cref="ObjectExtension.GetProperties(object, PropertyFlags, BindingFlags, PropertyDataFilter)"/></summary>
 [Flags]
 public enum PropertyFlags
 {

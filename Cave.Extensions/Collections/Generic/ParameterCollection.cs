@@ -11,68 +11,55 @@ namespace Cave.Collections.Generic;
 [DebuggerDisplay("Count={Count}")]
 public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterCollection>, ICollection<string>
 {
-    #region Fields
+    #region Private Fields
 
     readonly string[] items;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="ParameterCollection" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="ParameterCollection"/> class.</summary>
     /// <param name="items"></param>
     public ParameterCollection(params string[] items) => this.items = items;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
-    /// <summary>Gets or sets the <see cref="string" /> at the specified index.</summary>
-    /// <value>The <see cref="string" />.</value>
+    /// <summary>Provides an empty parameter collection</summary>
+    public static ParameterCollection Empty { get; } = new();
+
+    /// <inheritdoc/>
+    public int Count => items.Length;
+
+    /// <inheritdoc/>
+    public bool IsReadOnly => true;
+
+    #endregion Public Properties
+
+    #region Public Indexers
+
+    /// <summary>Gets or sets the <see cref="string"/> at the specified index.</summary>
+    /// <value>The <see cref="string"/>.</value>
     /// <param name="index">The index.</param>
     /// <returns></returns>
     public string this[int index] => items[index];
 
-    #endregion
+    #endregion Public Indexers
 
-    #region ICollection<string> Members
+    #region Public Methods
 
-    void ICollection<string>.Add(string item) => throw new ReadOnlyException();
-
-    void ICollection<string>.Clear() => throw new ReadOnlyException();
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public bool Contains(string item) => IndexOf(item) > -1;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
-
-    /// <inheritdoc />
-    public int Count => items.Length;
-
-    /// <inheritdoc />
-    public bool IsReadOnly => true;
-
-    bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
-
-    #endregion
-
-    #region IEnumerable<string> Members
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
-
-    /// <inheritdoc />
-    public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>)items).GetEnumerator();
-
-    #endregion
-
-    #region IEquatable<ParameterCollection> Members
 
     /// <summary>Determines whether the specified object is equal to the current object.</summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(ParameterCollection other)
+    public bool Equals(ParameterCollection? other)
     {
         if (other is null)
         {
@@ -95,15 +82,17 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
         return true;
     }
 
-    #endregion
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => Equals(obj as ParameterCollection);
 
-    #region Overrides
+    /// <inheritdoc/>
+    public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>)items).GetEnumerator();
 
-    /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as ParameterCollection);
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();
+
+    /// <inheritdoc/>
+    public int IndexOf(string item) => Array.IndexOf(items, item);
 
     /// <summary>Gets a string containing all parameters.</summary>
     /// <returns></returns>
@@ -133,12 +122,14 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
         return result.ToString();
     }
 
-    #endregion
+    void ICollection<string>.Add(string item) => throw new ReadOnlyException();
 
-    #region Members
+    void ICollection<string>.Clear() => throw new ReadOnlyException();
 
-    /// <inheritdoc />
-    public int IndexOf(string item) => Array.IndexOf(items, item);
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
-    #endregion
+    bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
+
+    #endregion Public Methods
 }

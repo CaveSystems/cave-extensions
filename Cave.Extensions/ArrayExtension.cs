@@ -76,6 +76,7 @@ public static class ArrayExtension
     public static T[] Empty<T>() =>
 #if NET2_0_OR_GREATER || NET46_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NETSTANDARD1_3_OR_GREATER
         Array.Empty<T>();
+
 #else
         new T[0];
 
@@ -358,7 +359,7 @@ public static class ArrayExtension
     /// <param name="pattern">The pattern.</param>
     /// <param name="encoding">The encoding (defaults to <see cref="Encoding.UTF8"/>).</param>
     /// <returns>True if data starts with the pattern.</returns>
-    public static bool StartsWith(this byte[] data, string pattern, Encoding encoding = null)
+    public static bool StartsWith(this byte[] data, string pattern, Encoding? encoding = null)
     {
         if (data == null)
         {

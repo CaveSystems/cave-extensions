@@ -1,4 +1,4 @@
-﻿#nullable enable
+﻿
 
 using System;
 
@@ -6,13 +6,19 @@ namespace Cave.Progress;
 
 sealed class ProgressItem : IProgress
 {
-    #region Fields
+    #region Private Fields
 
     readonly object syncRoot = new();
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Private Methods
+
+    void OnUpdated() => Updated?.Invoke(this, new(this));
+
+    #endregion Private Methods
+
+    #region Public Constructors
 
     public ProgressItem(object source, int identifier)
     {
@@ -20,15 +26,31 @@ sealed class ProgressItem : IProgress
         Identifier = identifier;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Events
 
+    public event EventHandler<ProgressEventArgs>? Updated;
+
+    #endregion Public Events
+
+    #region Public Properties
+
+    public bool Completed { get; private set; }
+    public DateTime Created { get; } = MonotonicTime.UtcNow;
     public IEstimation? Estimation { get; set; }
 
-    #endregion
+    public int Identifier { get; }
 
-    #region IProgress Members
+    public object Source { get; }
+
+    public string Text { get; private set; } = string.Empty;
+
+    public float Value { get; private set; }
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     public void Complete()
     {
@@ -40,11 +62,7 @@ sealed class ProgressItem : IProgress
         OnUpdated();
     }
 
-    public bool Completed { get; private set; }
-    public DateTime Created { get; } = MonotonicTime.UtcNow;
-    public int Identifier { get; }
-    public object Source { get; }
-    public string Text { get; private set; } = string.Empty;
+    public override string ToString() => $"{Value:P} : {Text}";
 
     public void Update(float value, string? text = null)
     {
@@ -75,21 +93,5 @@ sealed class ProgressItem : IProgress
         OnUpdated();
     }
 
-    public event EventHandler<ProgressEventArgs>? Updated;
-
-    public float Value { get; private set; }
-
-    #endregion
-
-    #region Overrides
-
-    public override string ToString() => $"{Value:P} : {Text}";
-
-    #endregion
-
-    #region Members
-
-    void OnUpdated() => Updated?.Invoke(this, new(this));
-
-    #endregion
+    #endregion Public Methods
 }

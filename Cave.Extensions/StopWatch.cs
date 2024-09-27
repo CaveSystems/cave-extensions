@@ -5,7 +5,15 @@ namespace Cave;
 /// <summary>Gets access to a selected IStopWatch implementation for the current platform.</summary>
 public static class StopWatch
 {
-    #region Static
+    #region Public Properties
+
+    /// <summary>Gets the type of the selected stop watch.</summary>
+    /// <value>The type of the selected.</value>
+    public static Type SelectedType { get; private set; } = typeof(DateTimeStopWatch);
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Checks the resolution.</summary>
     /// <param name="watch">The IStopWatch to check.</param>
@@ -48,8 +56,7 @@ public static class StopWatch
     /// <param name="type">The type.</param>
     public static void SetType(Type type)
     {
-        var watch = (IStopWatch)Activator.CreateInstance(type);
-        watch.Start();
+        if (Activator.CreateInstance(type) is not IStopWatch watch) throw new InvalidCastException($"Could not create {nameof(IStopWatch)} with {SelectedType}!");
         SelectedType = type;
     }
 
@@ -57,14 +64,10 @@ public static class StopWatch
     /// <returns>The started stopwatch.</returns>
     public static IStopWatch StartNew()
     {
-        var watch = (IStopWatch)Activator.CreateInstance(SelectedType);
+        if (Activator.CreateInstance(SelectedType) is not IStopWatch watch) throw new InvalidCastException($"Could not create {nameof(IStopWatch)} with {SelectedType}!");
         watch.Start();
         return watch;
     }
 
-    /// <summary>Gets the type of the selected stop watch.</summary>
-    /// <value>The type of the selected.</value>
-    public static Type SelectedType { get; private set; } = typeof(DateTimeStopWatch);
-
-    #endregion
+    #endregion Public Methods
 }

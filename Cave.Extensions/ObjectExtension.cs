@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Cave;
 
@@ -22,7 +20,7 @@ public static class ObjectExtension
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <param name="throwException">Throw exceptions instead of returning an error code.</param>
     /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
-    static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags, bool throwException)
+    static GetPropertyValueError TryGetPropertyValue(this object instance, string? fullPath, out object? result, BindingFlags bindingFlags, bool throwException)
     {
         if (instance == null)
         {
@@ -147,7 +145,7 @@ public static class ObjectExtension
     /// <param name="bindingFlags">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
     /// <param name="filter">Allows to filter properties.</param>
     /// <returns>Returns an <see cref="IEnumerable{T}"/> with all properties of the specified instance.</returns>
-    public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = BindingFlags.Default, PropertyDataFilter filter = null)
+    public static IEnumerable<PropertyData> GetProperties(this object instance, PropertyFlags flags, BindingFlags bindingFlags = BindingFlags.Default, PropertyDataFilter? filter = null)
     {
         if (instance == null)
         {
@@ -171,7 +169,7 @@ public static class ObjectExtension
     /// <param name="fullPath">Full property path.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns the value of the specified property or default.</returns>
-    public static object GetPropertyValue(this object instance, string fullPath, BindingFlags bindingFlags = BindingFlags.Default)
+    public static object? GetPropertyValue(this object instance, string fullPath, BindingFlags bindingFlags = BindingFlags.Default)
     {
         if (instance == null)
         {
@@ -186,7 +184,7 @@ public static class ObjectExtension
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>
     /// <returns>Returns the value of the specified property or default.</returns>
-    public static TValue GetPropertyValue<TValue>(this object instance, string fullPath)
+    public static TValue? GetPropertyValue<TValue>(this object instance, string fullPath)
     {
         var current = GetPropertyValue(instance, fullPath);
         if (current is TValue value)
@@ -215,7 +213,7 @@ public static class ObjectExtension
     /// <param name="ignoredByAttribute">If set all properties containing this attribute will be ignored.</param>
     /// <param name="ignoredByName">If set all properties with a name matching any entry will be ignored.</param>
     /// <returns>True if all properties equal, false otherwise.</returns>
-    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type ignoredByAttribute = null, params string[] ignoredByName) => PropertiesEqual(instance, other, [ignoredByAttribute], ignoredByName);
+    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type? ignoredByAttribute = null, params string[] ignoredByName) => PropertiesEqual(instance, other, ignoredByAttribute is null ? [] : [ignoredByAttribute], ignoredByName);
 
     /// <summary>Checks whether all properties equal.</summary>
     /// <typeparam name="TObject">The object type to get property definitions from.</typeparam>
@@ -224,7 +222,7 @@ public static class ObjectExtension
     /// <param name="ignoredByAttribute">If set all properties containing any of the specified attributes will be ignored.</param>
     /// <param name="ignoredByName">If set all properties with a name matching any entry will be ignored.</param>
     /// <returns>True if all properties equal, false otherwise.</returns>
-    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type[] ignoredByAttribute = null, string[] ignoredByName = null)
+    public static bool PropertiesEqual<TObject>(this TObject instance, TObject other, Type[]? ignoredByAttribute = null, string[]? ignoredByName = null)
     {
         var type = typeof(TObject);
         var i = 0;
@@ -260,8 +258,8 @@ public static class ObjectExtension
                 continue;
             }
 
-            var instanceValue = property.GetMethod.Invoke(instance, null);
-            var otherValue = property.GetMethod.Invoke(other, null);
+            var instanceValue = property.GetMethod?.Invoke(instance, null);
+            var otherValue = property.GetMethod?.Invoke(other, null);
 #endif
             if (!Equals(instanceValue, otherValue))
             {
@@ -287,7 +285,7 @@ public static class ObjectExtension
     /// <param name="result">Returns the result value.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
-    public static GetPropertyValueError TryGetPropertyValue(this object instance, string fullPath, out object result, BindingFlags bindingFlags = BindingFlags.Default)
+    public static GetPropertyValueError TryGetPropertyValue(this object instance, string? fullPath, out object? result, BindingFlags bindingFlags = BindingFlags.Default)
         => TryGetPropertyValue(instance, fullPath, out result, bindingFlags, false);
 
     /// <summary>Gets the specified property value.</summary>
@@ -297,7 +295,7 @@ public static class ObjectExtension
     /// <param name="result">Returns the result value.</param>
     /// <param name="bindingFlags">BindingFlags for the property. (Default = Public | Instance).</param>
     /// <returns>Returns <see cref="GetPropertyValueError.None"/> on success or the error encountered.</returns>
-    public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string fullPath, out TValue result, BindingFlags bindingFlags = default)
+    public static GetPropertyValueError TryGetPropertyValue<TValue>(this object instance, string? fullPath, out TValue? result, BindingFlags bindingFlags = default)
     {
         var error = TryGetPropertyValue(instance, fullPath, out var obj, bindingFlags);
         if (error != GetPropertyValueError.None)

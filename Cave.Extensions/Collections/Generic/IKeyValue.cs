@@ -5,11 +5,11 @@
 public interface IKeyValue<TKey>
     where TKey : struct
 {
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the unique key / identifier for this instance.</summary>
     /// <value>The key / identifier.</value>
     TKey Key { get; }
 
-    #endregion
+    #endregion Public Properties
 }

@@ -18,6 +18,9 @@ public sealed class ReadOnlySet<T> : IItemSet<T>
 
     #region Public Constructors
 
+    /// <summary>Initializes an empty instance.</summary>
+    public ReadOnlySet() => set = new Set<T>();
+
     /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class.</summary>
     /// <param name="set">The Set.</param>
     public ReadOnlySet(IItemSet<T> set) => this.set = set;
@@ -62,10 +65,13 @@ public sealed class ReadOnlySet<T> : IItemSet<T>
     public void CopyTo(T[] array, int arrayIndex) => set.CopyTo(array, arrayIndex);
 
     /// <inheritdoc/>
-    public bool Equals(IItemSet<T> other) => set.Equals(other);
+    public bool Equals(IItemSet<T>? other) => other is not null && set.Equals(other);
 
     /// <inheritdoc/>
-    public override bool Equals(object obj) => obj is IItemSet<T> other && Equals(other);
+    public override bool Equals(object? obj) => obj is IItemSet<T> other && Equals(other);
+
+    /// <inheritdoc/>
+    public IEnumerator<T> GetEnumerator() => set.GetEnumerator();
 
     /// <inheritdoc/>
     public override int GetHashCode() => set != null ? set.GetHashCode() : 0;
@@ -83,7 +89,7 @@ public sealed class ReadOnlySet<T> : IItemSet<T>
     void ICollection<T>.Clear() => throw new ReadOnlyException();
 
     /// <inheritdoc/>
-    public IEnumerator<T> GetEnumerator() => set.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => set.GetEnumerator();
 
     /// <inheritdoc/>
     bool IItemSet<T>.Include(T item) => throw new ReadOnlyException();
@@ -96,9 +102,6 @@ public sealed class ReadOnlySet<T> : IItemSet<T>
 
     /// <inheritdoc/>
     bool ICollection<T>.Remove(T item) => throw new ReadOnlyException();
-
-    /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() => set.GetEnumerator();
 
     /// <inheritdoc/>
     void IItemSet<T>.Remove(T item) => throw new ReadOnlyException();

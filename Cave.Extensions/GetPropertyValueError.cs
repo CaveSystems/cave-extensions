@@ -2,7 +2,7 @@
 
 namespace Cave;
 
-/// <summary>Provides error codes for <see cref="ObjectExtension.TryGetPropertyValue(object, string, out object, BindingFlags)" /> functions.</summary>
+/// <summary>Provides error codes for <see cref="ObjectExtension.TryGetPropertyValue(object, string, out object, BindingFlags)"/> functions.</summary>
 public enum GetPropertyValueError
 {
     /// <summary>No error</summary>

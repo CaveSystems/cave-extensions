@@ -6,7 +6,7 @@ namespace Cave.Collections.Generic;
 /// <summary>Gets extensions for dictionaryies.</summary>
 public static class DictionaryExtensions
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Tries to get the value associated with the specified key.</summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -15,7 +15,7 @@ public static class DictionaryExtensions
     /// <param name="key">The key.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns></returns>
-    public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default)
+    public static TValue? TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue? defaultValue = default)
     {
         if (dictionary == null)
         {
@@ -25,5 +25,5 @@ public static class DictionaryExtensions
         return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
     }
 
-    #endregion
+    #endregion Public Methods
 }

@@ -1,6 +1,8 @@
+#if NET20 || NET35
+#nullable disable
 #pragma warning disable IDE0130
 #pragma warning disable CS1591
-#if NET20 || NET35
+#pragma warning disable CS8601
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

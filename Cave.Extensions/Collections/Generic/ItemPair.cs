@@ -5,7 +5,7 @@ namespace Cave.Collections.Generic;
 /// <typeparam name="T2">The type of the second object.</typeparam>
 public class ItemPair<T1, T2>
 {
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>Creates a new instance with the specified values.</summary>
     /// <param name="value1">First value.</param>
@@ -16,9 +16,9 @@ public class ItemPair<T1, T2>
         B = value2;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the first value.</summary>
     public T1 A { get; }
@@ -26,14 +26,14 @@ public class ItemPair<T1, T2>
     /// <summary>Gets the second value.</summary>
     public T2 B { get; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Overrides
+    #region Public Methods
 
     /// <summary>Checks another ItemPair{T1, T2} for equality.</summary>
     /// <param name="obj">The other instance to check.</param>
     /// <returns>Returns true if the other instance equals this one, false otherwise.</returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not ItemPair<T1, T2>)
         {
@@ -46,11 +46,11 @@ public class ItemPair<T1, T2>
 
     /// <summary>Gets the hash code for this instance.</summary>
     /// <returns></returns>
-    public override int GetHashCode() => A.GetHashCode() ^ B.GetHashCode();
+    public override int GetHashCode() => (A?.GetHashCode() ?? 0) ^ (B?.GetHashCode() ?? 0);
 
     /// <summary>Gets a string "A B".</summary>
     /// <returns></returns>
     public override string ToString() => $"{A} {B}";
 
-    #endregion
+    #endregion Public Methods
 }

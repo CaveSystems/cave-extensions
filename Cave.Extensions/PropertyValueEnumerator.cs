@@ -8,115 +8,16 @@ namespace Cave;
 /// <summary>Enumerator for valid properties of an object.</summary>
 public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumerable<PropertyData>
 {
-    #region Fields
+    #region Private Fields
 
-    Stack<PropertyData> stack;
+    readonly Stack<PropertyData> stack = new();
+    PropertyData? current;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Private Methods
 
-    /// <summary>Initializes a new instance of the <see cref="PropertyValueEnumerator" /> class.</summary>
-    /// <param name="instance">Instance to iterate.</param>
-    /// <param name="bindingFlags">Property binding flags.</param>
-    /// <param name="recursive">Recursive property search.</param>
-    /// <param name="filter">Allows to filter properties.</param>
-    public PropertyValueEnumerator(object instance, BindingFlags bindingFlags, bool recursive = false, PropertyDataFilter filter = null)
-    {
-        Filter = filter;
-        Root = instance;
-        BindingFlags = bindingFlags;
-        Recursive = recursive;
-        Reset();
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>Gets the used <see cref="BindingFlags" />.</summary>
-    public BindingFlags BindingFlags { get; }
-
-    /// <summary>Gets the filter used.</summary>
-    public PropertyDataFilter Filter { get; }
-
-    /// <summary>Gets a value indicating whether only the <see cref="Root" /> objects properties are returned or even properties of properties.</summary>
-    public bool Recursive { get; }
-
-    /// <summary>Gets the root type.</summary>
-    public object Root { get; }
-
-    /// <summary>Gets or sets the namespaces we will not recurse into.</summary>
-    public string[] SkipNamespaces { get; set; } = PropertyData.DefaultSkipNamespaces;
-
-    /// <summary>Gets or sets the types we will not recurse into.</summary>
-    public Type[] SkipTypes { get; set; } = PropertyData.DefaultSkipTypes;
-
-    #endregion
-
-    #region IEnumerable<PropertyData> Members
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive, Filter);
-
-    /// <inheritdoc />
-    IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive, Filter);
-
-    #endregion
-
-    #region IEnumerator<PropertyData> Members
-
-    /// <inheritdoc />
-    public void Dispose() => stack = null;
-
-    /// <inheritdoc />
-    object IEnumerator.Current => Current;
-
-    /// <inheritdoc />
-    public bool MoveNext()
-    {
-        if (stack.Count == 0)
-        {
-            return false;
-        }
-
-        var current = stack.Pop();
-        if (Recursive)
-        {
-            object value = null;
-            if (current.CanGetValue)
-            {
-                try
-                {
-                    value = current.Value;
-                }
-                catch
-                {
-                    /* getter throws error */
-                }
-            }
-            AddProperties(current, value);
-        }
-
-        Current = current;
-        return true;
-    }
-
-    /// <inheritdoc />
-    public void Reset()
-    {
-        stack = new();
-        AddProperties(null, Root);
-    }
-
-    /// <inheritdoc />
-    public PropertyData Current { get; private set; }
-
-    #endregion
-
-    #region Members
-
-    void AddProperties(PropertyData parent, object instance)
+    void AddProperties(PropertyData? parent, object? instance)
     {
         if (instance == null) return;
         if (instance is string) return;
@@ -154,7 +55,7 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
         }
     }
 
-    void HandleEnumerable(PropertyData parent, IEnumerable enumerable)
+    void HandleEnumerable(PropertyData? parent, IEnumerable enumerable)
     {
         var i = -1;
         foreach (var item in enumerable)
@@ -184,5 +85,106 @@ public sealed class PropertyValueEnumerator : IEnumerator<PropertyData>, IEnumer
         }
     }
 
-    #endregion
+    #endregion Private Methods
+
+    #region Public Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="PropertyValueEnumerator"/> class.</summary>
+    /// <param name="instance">Instance to iterate.</param>
+    /// <param name="bindingFlags">Property binding flags.</param>
+    /// <param name="recursive">Recursive property search.</param>
+    /// <param name="filter">Allows to filter properties.</param>
+    public PropertyValueEnumerator(object instance, BindingFlags bindingFlags, bool recursive = false, PropertyDataFilter? filter = null)
+    {
+        Filter = filter;
+        Root = instance;
+        BindingFlags = bindingFlags;
+        Recursive = recursive;
+        Reset();
+    }
+
+    #endregion Public Constructors
+
+    #region Public Properties
+
+    /// <summary>Gets the used <see cref="BindingFlags"/>.</summary>
+    public BindingFlags BindingFlags { get; }
+
+    /// <inheritdoc/>
+    public PropertyData Current => current ?? throw new InvalidOperationException("Reset required!");
+
+    /// <summary>Gets the filter used.</summary>
+    public PropertyDataFilter? Filter { get; }
+
+    /// <summary>Gets a value indicating whether this instance was disposed or not.</summary>
+    public bool IsDisposed { get; private set; }
+
+    /// <summary>Gets a value indicating whether only the <see cref="Root"/> objects properties are returned or even properties of properties.</summary>
+    public bool Recursive { get; }
+
+    /// <summary>Gets the root type.</summary>
+    public object Root { get; }
+
+    /// <summary>Gets or sets the namespaces we will not recurse into.</summary>
+    public string[] SkipNamespaces { get; set; } = PropertyData.DefaultSkipNamespaces;
+
+    /// <summary>Gets or sets the types we will not recurse into.</summary>
+    public Type[] SkipTypes { get; set; } = PropertyData.DefaultSkipTypes;
+
+    /// <inheritdoc/>
+    object IEnumerator.Current => Current;
+
+    #endregion Public Properties
+
+    #region Public Methods
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        IsDisposed = true;
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    public bool MoveNext()
+    {
+        if (IsDisposed) throw new ObjectDisposedException(nameof(PropertyValueEnumerator));
+        if (stack.Count == 0) return false;
+
+        var current = stack.Pop();
+        if (Recursive)
+        {
+            object? value = null;
+            if (current.CanGetValue)
+            {
+                try
+                {
+                    value = current.Value;
+                }
+                catch
+                {
+                    /* getter throws error */
+                }
+            }
+            AddProperties(current, value);
+        }
+
+        this.current = current;
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        if (IsDisposed) throw new ObjectDisposedException(nameof(PropertyValueEnumerator));
+        AddProperties(null, Root);
+    }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive, Filter);
+
+    /// <inheritdoc/>
+    IEnumerator<PropertyData> IEnumerable<PropertyData>.GetEnumerator() => new PropertyValueEnumerator(Root, BindingFlags, Recursive, Filter);
+
+    #endregion Public Methods
 }

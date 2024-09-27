@@ -37,7 +37,7 @@ public class PropertyData
     /// <param name="propertyInfo">The property info. This may not be null.</param>
     /// <param name="source">The source object of the property.</param>
     /// <param name="arrayIndex">Item is part of an array.</param>
-    public PropertyData(PropertyData parent, PropertyInfo propertyInfo, object source, int arrayIndex = -1)
+    public PropertyData(PropertyData? parent, PropertyInfo propertyInfo, object? source, int arrayIndex = -1)
     {
         RootPath = parent?.FullPath ?? string.Empty;
         if (arrayIndex > -1) RootPath += $"[{arrayIndex}]";
@@ -66,7 +66,7 @@ public class PropertyData
     public string FullPath => $"{RootPath}/{PropertyInfo.Name}";
 
     /// <summary>Gets the parent property. This is null at the root property.</summary>
-    public PropertyData Parent { get; }
+    public PropertyData? Parent { get; }
 
     /// <summary>Gets the property information.</summary>
     public PropertyInfo PropertyInfo { get; }
@@ -78,10 +78,10 @@ public class PropertyData
     /// Gets the source object of this property. This is null at <see cref="PropertyEnumerator"/> and may be null at <see cref="PropertyValueEnumerator"/> if
     /// the property value or root property value is null.
     /// </summary>
-    public object Source { get; }
+    public object? Source { get; }
 
     /// <summary>Gets the current value of the property. This will result in exceptions if <see cref="CanGetValue"/> == false.</summary>
-    public object Value => PropertyInfo.GetValue(Source, null);
+    public object? Value => PropertyInfo.GetValue(Source, null);
 
     #endregion Public Properties
 
@@ -93,7 +93,7 @@ public class PropertyData
     /// <param name="skipNamespaces">Namespaces to be skipped during recursion.</param>
     /// <param name="skipTypes">Types to be skipped during recursion.</param>
     /// <returns>Returns true if the PropertyInfo is found (nested), false otherwise.</returns>
-    public static bool IsNested(PropertyData start, PropertyInfo property, IList<string> skipNamespaces, IList<Type> skipTypes)
+    public static bool IsNested(PropertyData? start, PropertyInfo property, IList<string> skipNamespaces, IList<Type> skipTypes)
     {
         if ((start != null) && (property.DeclaringType != null))
         {
@@ -101,7 +101,7 @@ public class PropertyData
             {
                 return true;
             }
-            if (SkipNamespace(skipNamespaces, property.DeclaringType.Namespace))
+            if (SkipNamespace(skipNamespaces, property.DeclaringType?.Namespace ?? string.Empty))
             {
                 return true;
             }
@@ -121,12 +121,12 @@ public class PropertyData
     }
 
     /// <summary>Gets the current value of the property. This will result in exceptions if <see cref="CanGetValue"/> == false.</summary>
-    public object GetValue() => PropertyInfo.GetValue(Source, null);
+    public object? GetValue() => PropertyInfo.GetValue(Source, null);
 
     /// <summary>Gets the current property value of the specified object. The object has to match the PropertyInfo.DeclaringType.</summary>
     /// <param name="source">Source object to read from.</param>
     /// <returns>Returns the property value.</returns>
-    public object GetValueOf(object source)
+    public object? GetValueOf(object source)
     {
         if (source == null)
         {
@@ -146,7 +146,7 @@ public class PropertyData
 
     /// <summary>Tries to get the value and catches all exceptions the properties getter throws.</summary>
     /// <returns>Returns the value of the property, null if value cannot be retrieved.</returns>
-    public object TryGetValue()
+    public object? TryGetValue()
     {
         try
         {

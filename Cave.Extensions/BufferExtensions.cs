@@ -10,7 +10,7 @@ namespace Cave;
 /// <summary>Gets extensions to byte buffers.</summary>
 public static class BufferExtensions
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Concatenates buffers.</summary>
     /// <param name="block1">First block</param>
@@ -48,14 +48,14 @@ public static class BufferExtensions
     /// <param name="data">Byte buffer to deobfuscate.</param>
     /// <param name="algorithm">Algorithm to use.</param>
     /// <returns>Returns the deobfuscated byte buffer.</returns>
-    public static byte[] Deobfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+    public static byte[] Deobfuscate(this byte[] data, SymmetricAlgorithm? algorithm = null)
     {
         if (data == null)
         {
             throw new ArgumentNullException(nameof(data));
         }
 
-        IDisposable disposable = null;
+        IDisposable? disposable = null;
         if (algorithm == null)
         {
 #if NET20
@@ -107,14 +107,14 @@ public static class BufferExtensions
     /// <param name="algorithm">Algorithm to use.</param>
     /// <returns>Returns the obfuscated byte buffer.</returns>
     [SuppressMessage("Style", "IDE0028")]
-    public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm algorithm = null)
+    public static byte[] Obfuscate(this byte[] data, SymmetricAlgorithm? algorithm = null)
     {
         if (data == null)
         {
             throw new ArgumentNullException(nameof(data));
         }
 
-        IDisposable disposable = null;
+        IDisposable? disposable = null;
         if (algorithm == null)
         {
 #if NET20
@@ -238,5 +238,5 @@ public static class BufferExtensions
         }
     }
 
-    #endregion Static
+    #endregion Public Methods
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -263,10 +262,10 @@ public class IPNetwork : IEquatable<IPNetwork>
     }
 
     /// <inheritdoc/>
-    public bool Equals(IPNetwork other) => (other != null) && Equals(other.Address, Address) && Equals(other.Mask, Mask) && (other.Subnet == Subnet);
+    public bool Equals(IPNetwork? other) => (other != null) && Equals(other.Address, Address) && Equals(other.Mask, Mask) && (other.Subnet == Subnet);
 
     /// <inheritdoc/>
-    public override bool Equals(object obj) => Equals(obj as IPNetwork);
+    public override bool Equals(object? obj) => Equals(obj as IPNetwork);
 
     /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();

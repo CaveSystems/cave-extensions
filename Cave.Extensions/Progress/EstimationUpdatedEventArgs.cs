@@ -1,15 +1,15 @@
-#nullable enable
+
 
 using System;
 
 namespace Cave.Progress;
 
-/// <summary>Provides an event for <see cref="IEstimation" /> classes to notify about actualizations.</summary>
+/// <summary>Provides an event for <see cref="IEstimation"/> classes to notify about actualizations.</summary>
 public sealed class EstimationUpdatedEventArgs : EventArgs
 {
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="EstimationUpdatedEventArgs" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="EstimationUpdatedEventArgs"/> class.</summary>
     /// <param name="estimatedCompletionTime">Estimated completion time (absolute).</param>
     /// <param name="currentProgress">Current progress value.</param>
     public EstimationUpdatedEventArgs(DateTime estimatedCompletionTime, float currentProgress)
@@ -18,9 +18,9 @@ public sealed class EstimationUpdatedEventArgs : EventArgs
         CurrentProgress = currentProgress;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the current progress.</summary>
     public float CurrentProgress { get; }
@@ -28,5 +28,5 @@ public sealed class EstimationUpdatedEventArgs : EventArgs
     /// <summary>Gets the estimated completion time.</summary>
     public DateTime EstimatedCompletionTime { get; }
 
-    #endregion
+    #endregion Public Properties
 }

@@ -90,6 +90,7 @@ public abstract class BaseX : IBaseX
         if (!BitConverter.IsLittleEndian) Array.Reverse(data);
         return Encode(data);
     }
+
 #endif
 
     /// <inheritdoc/>

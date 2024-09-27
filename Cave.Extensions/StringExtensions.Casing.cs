@@ -101,7 +101,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinCamelCase(this string[] parts, CultureInfo culture = null)
+    public static string JoinCamelCase(this string[] parts, CultureInfo? culture = null)
     {
         if ((parts == null) || (parts.Length == 0))
         {
@@ -141,7 +141,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinCamelCase(this IEnumerable parts, CultureInfo culture = null)
+    public static string JoinCamelCase(this IEnumerable parts, CultureInfo? culture = null)
     {
         if (parts == null)
         {
@@ -181,7 +181,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinKebabCase(this string[] parts, CultureInfo culture = null)
+    public static string JoinKebabCase(this string[] parts, CultureInfo? culture = null)
     {
         if ((parts == null) || (parts.Length == 0))
         {
@@ -215,7 +215,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinKebabCase(this IEnumerable parts, CultureInfo culture = null)
+    public static string JoinKebabCase(this IEnumerable parts, CultureInfo? culture = null)
     {
         if (parts == null)
         {
@@ -249,7 +249,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joined string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinPascalCase(this string[] parts, CultureInfo culture = null)
+    public static string JoinPascalCase(this string[] parts, CultureInfo? culture = null)
     {
         if ((parts == null) || (parts.Length == 0))
         {
@@ -282,7 +282,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinPascalCase(this IEnumerable parts, CultureInfo culture = null)
+    public static string JoinPascalCase(this IEnumerable parts, CultureInfo? culture = null)
     {
         if (parts == null)
         {
@@ -315,7 +315,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinSnakeCase(this string[] parts, CultureInfo culture = null)
+    public static string JoinSnakeCase(this string[] parts, CultureInfo? culture = null)
     {
         if ((parts == null) || (parts.Length == 0))
         {
@@ -349,7 +349,7 @@ public static partial class StringExtensions
     /// <param name="culture">The culture info.</param>
     /// <returns>The joned string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string JoinSnakeCase(this IEnumerable parts, CultureInfo culture = null)
+    public static string JoinSnakeCase(this IEnumerable parts, CultureInfo? culture = null)
     {
         if (parts == null)
         {

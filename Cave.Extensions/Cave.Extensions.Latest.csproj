@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Version>4.999</Version>
+		<Nullable>enable</Nullable>
+		
+		<!--project-->
+		<RootNamespace>Cave</RootNamespace>
+		<AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
+		<Product>CaveSystems Extensions Library</Product>
+		<PackageTags>CaveSystems Extensions</PackageTags>
+		<Description>CaveSystems Extensions Library. This packages contains extensions methods for various .net classes, fast crc32, crc64, base32, base64 implementations and backports for older frameworks.</Description>
+		<PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/CaveSystems/cave-extensions</RepositoryUrl>
+		<!--settings-->
+		<PackageReleaseNotes />
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<SignAssembly>true</SignAssembly>
+		<NeutralLanguage />
+		<DelaySign>false</DelaySign>
+		<RollForward>LatestMinor</RollForward>
+	</PropertyGroup>
+
+</Project>

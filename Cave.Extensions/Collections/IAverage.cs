@@ -5,7 +5,7 @@ namespace Cave.Collections;
 /// <summary>Interface for average calculations.</summary>
 public interface IAverage<T> : IEnumerable<T>
 {
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the average for the current items.</summary>
     /// <value>The average.</value>
@@ -16,16 +16,13 @@ public interface IAverage<T> : IEnumerable<T>
     int Count { get; }
 
     /// <summary>Gets or sets the maximum item count.</summary>
-    /// <remarks>
-    /// Setting this to zero or negative values disables the maximum item count. An update is done after next call to
-    /// <see cref="Add(T)" />.
-    /// </remarks>
+    /// <remarks>Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(T)"/>.</remarks>
     /// <value>The maximum count.</value>
     int MaximumCount { get; set; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Members
+    #region Public Methods
 
     /// <summary>Adds the specified item.</summary>
     /// <param name="item">The item.</param>
@@ -34,5 +31,5 @@ public interface IAverage<T> : IEnumerable<T>
     /// <summary>Clears this instance.</summary>
     void Clear();
 
-    #endregion
+    #endregion Public Methods
 }

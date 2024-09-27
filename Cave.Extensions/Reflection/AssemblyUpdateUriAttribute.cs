@@ -6,18 +6,18 @@ namespace Cave.Reflection;
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class AssemblyUpdateUriAttribute : Attribute
 {
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="AssemblyUpdateUriAttribute" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="AssemblyUpdateUriAttribute"/> class.</summary>
     /// <param name="uri">Update URI for the Assembly.</param>
     public AssemblyUpdateUriAttribute(Uri uri) => URI = uri;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the update URI.</summary>
     public Uri URI { get; }
 
-    #endregion
+    #endregion Public Properties
 }

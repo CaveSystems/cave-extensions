@@ -52,10 +52,15 @@ public static partial class StringExtensions
     /// <param name="character">The character to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string AfterFirst(this string value, char character)
+    public static string AfterFirst(this string? value, char character)
     {
-        var i = value?.IndexOf(character) ?? -1;
-        return i < 0 ? string.Empty : value[(i + 1)..];
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.IndexOf(character);
+            if (i >= 0) result = value[(i + 1)..];
+        }
+        return result;
     }
 
     /// <summary>Returns the string after the specified pattern.</summary>
@@ -63,15 +68,20 @@ public static partial class StringExtensions
     /// <param name="pattern">The character to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string AfterFirst(this string value, string pattern)
+    public static string AfterFirst(this string? value, string pattern)
     {
         if (pattern == null)
         {
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        var i = value?.IndexOf(pattern, StringComparison.Ordinal) ?? -1;
-        return i < 0 ? string.Empty : value[(i + pattern.Length)..];
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.IndexOf(pattern);
+            if (i >= 0) result = value[(i + pattern.Length)..];
+        }
+        return result;
     }
 
     /// <summary>Returns the string after the specified pattern.</summary>
@@ -79,10 +89,15 @@ public static partial class StringExtensions
     /// <param name="character">The pattern to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string AfterLast(this string value, char character)
+    public static string AfterLast(this string? value, char character)
     {
-        var i = value?.LastIndexOf(character) ?? -1;
-        return i < 0 ? string.Empty : value[(i + 1)..];
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.LastIndexOf(character);
+            if (i >= 0) result = value[(i + 1)..];
+        }
+        return result;
     }
 
     /// <summary>Returns the string after the specified pattern.</summary>
@@ -90,15 +105,20 @@ public static partial class StringExtensions
     /// <param name="pattern">The pattern to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string AfterLast(this string value, string pattern)
+    public static string AfterLast(this string? value, string pattern)
     {
         if (pattern == null)
         {
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        var i = value?.LastIndexOf(pattern, StringComparison.Ordinal) ?? -1;
-        return i < 0 ? string.Empty : value[(i + pattern.Length)..];
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.LastIndexOf(pattern);
+            if (i >= 0) result = value[(i + pattern.Length)..];
+        }
+        return result;
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -106,14 +126,15 @@ public static partial class StringExtensions
     /// <param name="character">The pattern to search for.</param>
     /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string BeforeFirst(this string value, char character)
+    public static string BeforeFirst(this string? value, char character)
     {
-        if (value == null)
+        var result = string.Empty;
+        if (value is not null)
         {
-            return string.Empty;
+            var i = value.IndexOf(character);
+            if (i >= 0) result = value[..i];
         }
-        var i = value.IndexOf(character);
-        return i < 0 ? value : value[..i];
+        return result;
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -121,14 +142,20 @@ public static partial class StringExtensions
     /// <param name="pattern">The character to search for.</param>
     /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string BeforeFirst(this string value, string pattern)
+    public static string BeforeFirst(this string? value, string pattern)
     {
-        if (value == null)
+        if (pattern == null)
         {
-            return string.Empty;
+            throw new ArgumentNullException(nameof(pattern));
         }
-        var i = value.IndexOf(pattern, StringComparison.Ordinal);
-        return i < 0 ? value : value[..i];
+
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.IndexOf(pattern);
+            if (i >= 0) result = value[..i];
+        }
+        return result;
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -138,12 +165,13 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeLast(this string value, char character)
     {
-        if (value == null)
+        var result = string.Empty;
+        if (value is not null)
         {
-            return string.Empty;
+            var i = value.LastIndexOf(character);
+            if (i >= 0) result = value[..i];
         }
-        var i = value.LastIndexOf(character);
-        return i < 0 ? value : value[..i];
+        return result;
     }
 
     /// <summary>Returns the string before the specified pattern.</summary>
@@ -153,17 +181,18 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeLast(this string value, string pattern)
     {
-        if (value == null)
-        {
-            return string.Empty;
-        }
         if (pattern == null)
         {
             throw new ArgumentNullException(nameof(pattern));
         }
 
-        var i = value.LastIndexOf(pattern);
-        return i < 0 ? value : value[..i];
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.LastIndexOf(pattern);
+            if (i >= 0) result = value[..i];
+        }
+        return result;
     }
 
     /// <summary>Boxes the specified text with the given character.</summary>
@@ -226,7 +255,7 @@ public static partial class StringExtensions
     /// <param name="text">The text.</param>
     /// <returns>Retruns the detected new line string (CR, LF, CRLF).</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string DetectNewLine(this string text)
+    public static string? DetectNewLine(this string text)
     {
         if (text == null)
         {
@@ -415,12 +444,12 @@ public static partial class StringExtensions
 
     /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
     /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatBinarySize(this float size, IFormatProvider culture = null)
+    public static string FormatBinarySize(this float size, IFormatProvider? formatProvider = null)
     {
-        culture ??= CultureInfo.InvariantCulture;
+        formatProvider ??= CultureInfo.InvariantCulture;
 
         var negative = size < 0;
         IecUnit unit = 0;
@@ -430,7 +459,7 @@ public static partial class StringExtensions
             unit++;
         }
 
-        var result = size.ToString("0.000", culture);
+        var result = size.ToString("0.000", formatProvider);
         if (result.Length > 5)
         {
             result = result[..5];
@@ -441,38 +470,38 @@ public static partial class StringExtensions
 
     /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
     /// <param name="value">Value to format.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The formatted string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatBinarySize(this double value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+    public static string FormatBinarySize(this double value, IFormatProvider? formatProvider = null) => FormatBinarySize((float)value, formatProvider);
 
     /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
     /// <param name="value">Value to format.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The formatted string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatBinarySize(this decimal value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+    public static string FormatBinarySize(this decimal value, IFormatProvider? formatProvider = null) => FormatBinarySize((float)value, formatProvider);
 
     /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
     /// <param name="value">Value to format.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The formatted string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatBinarySize(this ulong value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+    public static string FormatBinarySize(this ulong value, IFormatProvider? formatProvider = null) => FormatBinarySize((float)value, formatProvider);
 
     /// <summary>Formats a value with IEC values (factor 1024) to a human readable string (kiB, MiB, GiB, ...)</summary>
     /// <param name="value">Value to format.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The formatted string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatBinarySize(this long value, IFormatProvider culture = null) => FormatBinarySize((float)value, culture);
+    public static string FormatBinarySize(this long value, IFormatProvider? formatProvider = null) => FormatBinarySize((float)value, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="seconds">Seconds to format.</param>
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSeconds(this double seconds, IFormatProvider formatProvider = null) => FormatSeconds(seconds, null, formatProvider);
+    public static string FormatSeconds(this double seconds, IFormatProvider? formatProvider = null) => FormatSeconds(seconds, null, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="seconds">Seconds to format.</param>
@@ -480,7 +509,7 @@ public static partial class StringExtensions
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23ns, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSeconds(this double seconds, string format, IFormatProvider formatProvider = null)
+    public static string FormatSeconds(this double seconds, string? format, IFormatProvider? formatProvider = null)
     {
         formatProvider ??= CultureInfo.InvariantCulture;
 
@@ -519,16 +548,16 @@ public static partial class StringExtensions
 
     /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
     /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this float size, IFormatProvider culture = null)
+    public static string FormatSize(this float size, IFormatProvider? formatProvider = null)
     {
-        culture ??= CultureInfo.CurrentCulture;
+        formatProvider ??= CultureInfo.CurrentCulture;
 
         if (size < 0)
         {
-            return "-" + FormatSize(-size, culture);
+            return "-" + FormatSize(-size, formatProvider);
         }
 
         var calc = size;
@@ -539,7 +568,7 @@ public static partial class StringExtensions
             unit++;
         }
 
-        var result = Math.Truncate(calc) == calc ? calc.ToString(culture) : calc.ToString("0.000", culture);
+        var result = Math.Truncate(calc) == calc ? calc.ToString(formatProvider) : calc.ToString("0.000", formatProvider);
         if (result.Length > 5)
         {
             result = result[..5];
@@ -550,44 +579,44 @@ public static partial class StringExtensions
 
     /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
     /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this ulong size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+    public static string FormatSize(this ulong size, IFormatProvider? formatProvider = null) => FormatSize((float)size, formatProvider);
+
+    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string FormatSize(this long size, IFormatProvider? formatProvider = null) => FormatSize((float)size, formatProvider);
 
     /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
     /// <param name="size">The size.</param>
     /// <param name="culture">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this long size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+    public static string FormatSize(this decimal size, IFormatProvider? culture = null) => FormatSize((float)size, culture);
 
     /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
     /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this decimal size, IFormatProvider culture = null) => FormatSize((float)size, culture);
-
-    /// <summary>Formats a value with SI units (factor 1000) to a human readable string (k, M, G, ...)</summary>
-    /// <param name="size">The size.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a string with significant 4 digits and a unit string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string FormatSize(this double size, IFormatProvider culture = null) => FormatSize((float)size, culture);
+    public static string FormatSize(this double size, IFormatProvider? formatProvider = null) => FormatSize((float)size, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    public static string FormatTicks(this long ticks, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), null, formatProvider);
+    public static string FormatTicks(this long ticks, IFormatProvider? formatProvider = null) => FormatTime(new TimeSpan(ticks), null, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
-    public static string FormatTicks(this long ticks, string format, IFormatProvider formatProvider = null) => FormatTime(new TimeSpan(ticks), format, formatProvider);
+    public static string FormatTicks(this long ticks, string format, IFormatProvider? formatProvider = null) => FormatTime(new TimeSpan(ticks), format, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="timeSpan">TimeSpan to format.</param>
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider formatProvider = null) => FormatTime(timeSpan, null, formatProvider);
+    public static string FormatTime(this TimeSpan timeSpan, IFormatProvider? formatProvider = null) => FormatTime(timeSpan, null, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
     /// <param name="timeSpan">TimeSpan to format.</param>
@@ -595,7 +624,7 @@ public static partial class StringExtensions
     /// <param name="formatProvider">Culture used to format the double value.</param>
     /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string FormatTime(this TimeSpan timeSpan, string format, IFormatProvider formatProvider = null)
+    public static string FormatTime(this TimeSpan timeSpan, string? format, IFormatProvider? formatProvider = null)
     {
         string Print(double value, string unit) => value.ToString(format ?? (Math.Round(value, 2) > 9.99 ? "0.0" : "0.00"), formatProvider) + unit;
 
@@ -756,7 +785,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentException("StartMark not found!");
@@ -766,7 +795,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentOutOfRangeException(nameof(startMark), "StartMark does not match!");
@@ -777,7 +806,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentException("EndMark not found!");
@@ -823,7 +852,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentException("StartMark not found!");
@@ -833,7 +862,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentOutOfRangeException(nameof(startMark), "StartMark does not match!");
@@ -845,7 +874,7 @@ public static partial class StringExtensions
         {
             if (!throwException)
             {
-                return null;
+                return string.Empty;
             }
 
             throw new ArgumentException("EndMark not found!");
@@ -1039,10 +1068,10 @@ public static partial class StringExtensions
     /// <summary>Joins a collection to a string.</summary>
     /// <param name="array">The string array.</param>
     /// <param name="separator">The seperator.</param>
-    /// <param name="formatProvider">The format provider.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, string separator, IFormatProvider formatProvider = null)
+    public static string Join(this IEnumerable array, string separator, IFormatProvider? formatProvider = null)
     {
         if (array == null)
         {
@@ -1072,41 +1101,18 @@ public static partial class StringExtensions
 
     /// <summary>Joins a collection to a string.</summary>
     /// <param name="array">The string array.</param>
-    /// <param name="separator">The seperator.</param>
-    /// <param name="cultureInfo">The culture info.</param>
-    /// <returns>Returns a new string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, string separator, CultureInfo cultureInfo) => Join(array, separator, (IFormatProvider)cultureInfo);
-
-    /// <summary>Joins a collection to a string.</summary>
-    /// <param name="array">The string array.</param>
     /// <param name="separator">The separator.</param>
-    /// <param name="cultureInfo">The culture info.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, char separator, CultureInfo cultureInfo) => Join(array, separator.ToString(), (IFormatProvider)cultureInfo);
+    public static string Join(this IEnumerable array, char separator, IFormatProvider? formatProvider = null) => Join(array, separator.ToString(), formatProvider);
 
     /// <summary>Joins a collection to a string.</summary>
     /// <param name="array">The string array.</param>
-    /// <param name="separator">The separator.</param>
-    /// <param name="formatProvider">The format provider info.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, char separator, IFormatProvider formatProvider = null) => Join(array, separator.ToString(), formatProvider);
-
-    /// <summary>Joins a collection to a string.</summary>
-    /// <param name="array">The string array.</param>
-    /// <param name="cultureInfo">The culture info.</param>
-    /// <returns>Returns a new string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, CultureInfo cultureInfo) => Join(array, (IFormatProvider)cultureInfo);
-
-    /// <summary>Joins a collection to a string.</summary>
-    /// <param name="array">The string array.</param>
-    /// <param name="formatProvider">The format provider.</param>
-    /// <returns>Returns a new string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string Join(this IEnumerable array, IFormatProvider formatProvider = null)
+    public static string Join(this IEnumerable array, IFormatProvider? formatProvider = null)
     {
         formatProvider ??= CultureInfo.CurrentCulture;
 
@@ -1118,7 +1124,7 @@ public static partial class StringExtensions
         var result = new StringBuilder();
         foreach (var obj in array)
         {
-            _ = result.Append(ToString(obj, formatProvider));
+            result.Append(ToString(obj, formatProvider));
         }
 
         return result.ToString();
@@ -1203,17 +1209,10 @@ public static partial class StringExtensions
 
     /// <summary>Parses a DateTime.</summary>
     /// <param name="dateTimeString">String value to parse.</param>
-    /// <param name="culture">Culture used to check for the full date time pattern.</param>
-    /// <returns>The parsed datetime.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static DateTime ParseDateTime(this string dateTimeString, CultureInfo culture) => ParseDateTime(dateTimeString, (IFormatProvider)culture);
-
-    /// <summary>Parses a DateTime.</summary>
-    /// <param name="dateTimeString">String value to parse.</param>
     /// <param name="formatProvider">Format provider used to check for the full date time pattern.</param>
     /// <returns>The parsed datetime.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static DateTime ParseDateTime(this string dateTimeString, IFormatProvider formatProvider)
+    public static DateTime ParseDateTime(this string dateTimeString, IFormatProvider? formatProvider)
     {
         DateTime result;
         if (formatProvider is CultureInfo culture)
@@ -1480,21 +1479,13 @@ public static partial class StringExtensions
         return new(w, h);
     }
 
-    /// <summary>Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, CultureInfo)"/> method.</summary>
-    /// <typeparam name="T">Type to convert to.</typeparam>
-    /// <param name="value">String value to convert.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>Returns a new value instance.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static T ParseValue<T>(this string value, CultureInfo culture = null) => (T)typeof(T).ConvertValue(value, culture);
-
     /// <summary>Converts a string to the specified target type using the <see cref="TypeExtension.ConvertValue(Type, object, IFormatProvider)"/> method.</summary>
     /// <typeparam name="T">Type to convert to.</typeparam>
     /// <param name="value">String value to convert.</param>
     /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>Returns a new value instance.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static T ParseValue<T>(this string value, IFormatProvider formatProvider) => (T)typeof(T).ConvertValue(value, formatProvider);
+    public static T? ParseValue<T>(this string value, IFormatProvider? formatProvider = null) => (T?)TypeExtension.ConvertValue(typeof(T), value, formatProvider);
 
     /// <summary>Randomizes the character casing.</summary>
     /// <param name="value">The string.</param>
@@ -2240,17 +2231,10 @@ public static partial class StringExtensions
 
     /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
     /// <param name="value">Value to format.</param>
-    /// <param name="culture">An object that supplies culture-specific formatting information.</param>
-    /// <returns>The string.</returns>
-    [MethodImpl((MethodImplOptions)256)]
-    public static string ToString(object value, CultureInfo culture) => ToString(value, (IFormatProvider)culture);
-
-    /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
-    /// <param name="value">Value to format.</param>
     /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The string.</returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static string ToString(object value, IFormatProvider formatProvider)
+    public static string ToString(object value, IFormatProvider? formatProvider)
     {
         if (value == null)
         {
@@ -2292,7 +2276,7 @@ public static partial class StringExtensions
             return formattable.ToString(null, formatProvider);
         }
 
-        return value is ICollection collection ? value + " {" + Join(collection, ",", formatProvider) + "}" : value.ToString();
+        return value is ICollection collection ? value + " {" + Join(collection, ",", formatProvider) + "}" : $"{value}";
     }
 
     /// <summary>Returns the objects.ToString() result or "&lt;null&gt;".</summary>
@@ -2428,6 +2412,8 @@ public static partial class StringExtensions
         {
             foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
             {
+                if (inner is null) continue;
+
                 if (debug)
                 {
                     strings.Add("---");

@@ -6,124 +6,22 @@ namespace Cave;
 /// <summary>Provides access to a better precision date time that always advances in time.</summary>
 public readonly struct InteropDateTime : IComparable, IComparable<InteropDateTime>, IEquatable<InteropDateTime>, IFormattable
 {
-    #region Static
+    #region Public Fields
 
-    /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static InteropDateTime Parse(string value) => Parse(value, null);
-
-    /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    public static InteropDateTime Parse(string value, IFormatProvider provider) =>
-        DateTimeOffset.TryParseExact(value, StringExtensions.InteropDateTimeFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var result)
-            ? result
-            : DateTimeOffset.ParseExact(value, StringExtensions.InteropDateTimeFormatWithoutTimeZone, provider ?? CultureInfo.InvariantCulture);
-
-    /// <summary>Adds a <see cref="TimeSpan" /> to the <see cref="InteropDateTime" />.</summary>
-    /// <param name="value1">The first value.</param>
-    /// <param name="value2">The second value.</param>
-    /// <returns>The result of the calculation.</returns>
-    public static InteropDateTime operator +(InteropDateTime value1, TimeSpan value2) => new(value1.DateTimeOffset + value2);
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset == value2.DateTimeOffset;
-
-    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime" /> to <see cref="DateTimeOffset" />.</summary>
-    /// <param name="dateTime">The time stamp.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator DateTimeOffset(InteropDateTime dateTime) => dateTime.DateTimeOffset;
-
-    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime" /> to <see cref="DateTime" />.</summary>
-    /// <param name="dateTime">The time stamp.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator DateTime(InteropDateTime dateTime) => dateTime.DateTimeOffset.DateTime;
-
-    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime" /> to <see cref="UnixTime64" />.</summary>
-    /// <param name="dateTime">The time stamp.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator UnixTime64(InteropDateTime dateTime) => UnixTime64.Convert((DateTime)dateTime);
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator >(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset > value2.DateTimeOffset;
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator >=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset >= value2.DateTimeOffset;
-
-    /// <summary>Performs an implicit conversion from <see cref="DateTimeOffset" /> to <see cref="InteropDateTime" />.</summary>
-    /// <param name="dateTime">The date time.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator InteropDateTime(DateTimeOffset dateTime) => new(dateTime);
-
-    /// <summary>Performs an implicit conversion from <see cref="DateTime" /> to <see cref="InteropDateTime" />.</summary>
-    /// <param name="dateTime">The date time.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator InteropDateTime(DateTime dateTime) => new(dateTime);
-
-    /// <summary>Performs an implicit conversion from <see cref="UnixTime64" /> to <see cref="InteropDateTime" />.</summary>
-    /// <param name="unixDateTime">The date time.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator InteropDateTime(UnixTime64 unixDateTime) => new(unixDateTime.DateTime);
-
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset != value2.DateTimeOffset;
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator <(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset < value2.DateTimeOffset;
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="value1">The value1.</param>
-    /// <param name="value2">The value2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator <=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset <= value2.DateTimeOffset;
-
-    /// <summary>Subtracts a <see cref="TimeSpan" /> from the <see cref="InteropDateTime" />.</summary>
-    /// <param name="value1">The first value.</param>
-    /// <param name="value2">The second value.</param>
-    /// <returns>The result of the calculation.</returns>
-    public static InteropDateTime operator -(InteropDateTime value1, TimeSpan value2) => new(value1.DateTimeOffset - value2);
-
-    /// <summary>Subtracts two <see cref="InteropDateTime" /> values.</summary>
-    /// <param name="value1">The first value.</param>
-    /// <param name="value2">The second value.</param>
-    /// <returns>The result of the calculation.</returns>
-    public static TimeSpan operator -(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset - value2.DateTimeOffset;
-
-    #endregion
-
-    #region Fields
-
-    /// <summary>Gets the <see cref="DateTimeOffset" />.</summary>
+    /// <summary>Gets the <see cref="DateTimeOffset"/>.</summary>
     public readonly DateTimeOffset DateTimeOffset;
 
-    #endregion
+    #endregion Public Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new <see cref="InteropDateTime" /> instance.</summary>
+    /// <summary>Initializes a new <see cref="InteropDateTime"/> instance.</summary>
     /// <param name="dateTimeOffset"></param>
     public InteropDateTime(DateTimeOffset dateTimeOffset) => DateTimeOffset = dateTimeOffset;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the date component.</summary>
     public DateTime Date => DateTimeOffset.Date;
@@ -155,46 +53,128 @@ public readonly struct InteropDateTime : IComparable, IComparable<InteropDateTim
     /// <summary>Gets the year component.</summary>
     public int Year => DateTimeOffset.Year;
 
-    #endregion
+    #endregion Public Properties
 
-    #region IComparable Members
+    #region Public Methods
 
-    /// <inheritdoc />
-    public int CompareTo(object obj) => obj is InteropDateTime mdt ? CompareTo(mdt) : 1;
+    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime"/> to <see cref="DateTime"/>.</summary>
+    /// <param name="dateTime">The time stamp.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator DateTime(InteropDateTime dateTime) => dateTime.DateTimeOffset.DateTime;
 
-    #endregion
+    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime"/> to <see cref="DateTimeOffset"/>.</summary>
+    /// <param name="dateTime">The time stamp.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator DateTimeOffset(InteropDateTime dateTime) => dateTime.DateTimeOffset;
 
-    #region IComparable<InteropDateTime> Members
+    /// <summary>Performs an implicit conversion from <see cref="InteropDateTime"/> to <see cref="UnixTime64"/>.</summary>
+    /// <param name="dateTime">The time stamp.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator UnixTime64(InteropDateTime dateTime) => UnixTime64.Convert((DateTime)dateTime);
 
-    /// <inheritdoc />
+    /// <summary>Performs an implicit conversion from <see cref="DateTimeOffset"/> to <see cref="InteropDateTime"/>.</summary>
+    /// <param name="dateTime">The date time.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator InteropDateTime(DateTimeOffset dateTime) => new(dateTime);
+
+    /// <summary>Performs an implicit conversion from <see cref="DateTime"/> to <see cref="InteropDateTime"/>.</summary>
+    /// <param name="dateTime">The date time.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator InteropDateTime(DateTime dateTime) => new(dateTime);
+
+    /// <summary>Performs an implicit conversion from <see cref="UnixTime64"/> to <see cref="InteropDateTime"/>.</summary>
+    /// <param name="unixDateTime">The date time.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator InteropDateTime(UnixTime64 unixDateTime) => new(unixDateTime.DateTime);
+
+    /// <summary>Subtracts a <see cref="TimeSpan"/> from the <see cref="InteropDateTime"/>.</summary>
+    /// <param name="value1">The first value.</param>
+    /// <param name="value2">The second value.</param>
+    /// <returns>The result of the calculation.</returns>
+    public static InteropDateTime operator -(InteropDateTime value1, TimeSpan value2) => new(value1.DateTimeOffset - value2);
+
+    /// <summary>Subtracts two <see cref="InteropDateTime"/> values.</summary>
+    /// <param name="value1">The first value.</param>
+    /// <param name="value2">The second value.</param>
+    /// <returns>The result of the calculation.</returns>
+    public static TimeSpan operator -(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset - value2.DateTimeOffset;
+
+    /// <summary>Implements the operator !=.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator !=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset != value2.DateTimeOffset;
+
+    /// <summary>Adds a <see cref="TimeSpan"/> to the <see cref="InteropDateTime"/>.</summary>
+    /// <param name="value1">The first value.</param>
+    /// <param name="value2">The second value.</param>
+    /// <returns>The result of the calculation.</returns>
+    public static InteropDateTime operator +(InteropDateTime value1, TimeSpan value2) => new(value1.DateTimeOffset + value2);
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator <(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset < value2.DateTimeOffset;
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator <=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset <= value2.DateTimeOffset;
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator ==(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset == value2.DateTimeOffset;
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator >(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset > value2.DateTimeOffset;
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="value1">The value1.</param>
+    /// <param name="value2">The value2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator >=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset >= value2.DateTimeOffset;
+
+    /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static InteropDateTime Parse(string value) => Parse(value, null);
+
+    /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
+    /// <param name="value"></param>
+    /// <param name="provider"></param>
+    /// <returns></returns>
+    public static InteropDateTime Parse(string value, IFormatProvider? provider) =>
+        DateTimeOffset.TryParseExact(value, StringExtensions.InteropDateTimeFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var result)
+            ? result
+            : DateTimeOffset.ParseExact(value, StringExtensions.InteropDateTimeFormatWithoutTimeZone, provider ?? CultureInfo.InvariantCulture);
+
+    /// <inheritdoc/>
+    public int CompareTo(object? obj) => obj is InteropDateTime mdt ? CompareTo(mdt) : 1;
+
+    /// <inheritdoc/>
     public int CompareTo(InteropDateTime other) => DateTimeOffset.CompareTo(other.DateTimeOffset);
 
-    #endregion
-
-    #region IEquatable<InteropDateTime> Members
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public bool Equals(InteropDateTime other) => DateTimeOffset.Equals(other.DateTimeOffset);
 
-    #endregion
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is InteropDateTime time && Equals(time);
 
-    #region IFormattable Members
-
-    /// <inheritdoc />
-    public string ToString(string format, IFormatProvider formatProvider) => DateTimeOffset.ToString(format ?? StringExtensions.InteropDateTimeFormat, formatProvider ?? CultureInfo.CurrentCulture);
-
-    #endregion
-
-    #region Overrides
-
-    /// <inheritdoc />
-    public override bool Equals(object obj) => obj is InteropDateTime time && Equals(time);
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override int GetHashCode() => DateTimeOffset.GetHashCode();
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
+    public string ToString(string? format, IFormatProvider? formatProvider) => DateTimeOffset.ToString(format ?? StringExtensions.InteropDateTimeFormat, formatProvider ?? CultureInfo.CurrentCulture);
+
+    /// <inheritdoc/>
     public override string ToString() => ToString(null, null);
 
-    #endregion
+    #endregion Public Methods
 }

@@ -1,82 +1,40 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+
+#pragma warning disable CS8601
 
 namespace Cave.Collections.Generic;
 
 /// <summary>Gets a thread safe dictionary. This is much faster than SynchronizedDictionary if you got only two threads accessing values.</summary>
 /// <typeparam name="TKey">The type of the key.</typeparam>
 /// <typeparam name="TValue">The type of the value.</typeparam>
-/// <seealso cref="System.Collections.Generic.IDictionary{TKey, TValue}" />
+/// <seealso cref="System.Collections.Generic.IDictionary{TKey, TValue}"/>
 public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    where TKey : notnull
 {
-    #region Fields
+    #region Private Fields
 
     readonly IDictionary<TKey, TValue> dict;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="SynchronizedDictionary{TKey, TValue}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="SynchronizedDictionary{TKey, TValue}"/> class.</summary>
     public SynchronizedDictionary() => dict = new Dictionary<TKey, TValue>();
 
-    /// <summary>Initializes a new instance of the <see cref="SynchronizedDictionary{TKey, TValue}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="SynchronizedDictionary{TKey, TValue}"/> class.</summary>
     /// <param name="dictionary">The dictionary.</param>
     public SynchronizedDictionary(IDictionary<TKey, TValue> dictionary) => dict = dictionary;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
-    /// <inheritdoc />
-    public bool IsEmpty => dict.Count == 0;
-
-    /// <inheritdoc />
-    public object SyncRoot { get; } = new();
-
-    #endregion
-
-    #region IDictionary<TKey,TValue> Members
-
-    /// <inheritdoc />
-    public void Add(KeyValuePair<TKey, TValue> item)
-    {
-        lock (SyncRoot)
-        {
-            dict.Add(item);
-        }
-    }
-
-    /// <inheritdoc />
-    public void Clear()
-    {
-        lock (SyncRoot)
-        {
-            dict.Clear();
-        }
-    }
-
-    /// <inheritdoc />
-    public bool Contains(KeyValuePair<TKey, TValue> item)
-    {
-        lock (SyncRoot)
-        {
-            return dict.Contains(item);
-        }
-    }
-
-    /// <inheritdoc />
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-    {
-        lock (SyncRoot)
-        {
-            dict.CopyTo(array, arrayIndex);
-        }
-    }
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public int Count
     {
         get
@@ -88,7 +46,10 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
+    public bool IsEmpty => dict.Count == 0;
+
+    /// <inheritdoc/>
     public bool IsReadOnly
     {
         get
@@ -100,32 +61,36 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <inheritdoc />
-    public bool Remove(KeyValuePair<TKey, TValue> item)
+    /// <inheritdoc/>
+    public ICollection<TKey> Keys
     {
-        lock (SyncRoot)
+        get
         {
-            return dict.Remove(item);
+            lock (SyncRoot)
+            {
+                return dict.Keys.ToArray();
+            }
         }
     }
 
-    /// <inheritdoc />
-    public void Add(TKey key, TValue value)
+    /// <inheritdoc/>
+    public object SyncRoot { get; } = new();
+
+    /// <inheritdoc/>
+    public ICollection<TValue> Values
     {
-        lock (SyncRoot)
+        get
         {
-            dict.Add(key, value);
+            lock (SyncRoot)
+            {
+                return dict.Values.ToArray();
+            }
         }
     }
 
-    /// <inheritdoc />
-    public bool ContainsKey(TKey key)
-    {
-        lock (SyncRoot)
-        {
-            return dict.ContainsKey(key);
-        }
-    }
+    #endregion Public Properties
+
+    #region Public Indexers
 
     /// <summary>Gets or sets the value with the specified key.</summary>
     /// <value>The value.</value>
@@ -149,73 +114,27 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <inheritdoc />
-    public ICollection<TKey> Keys
-    {
-        get
-        {
-            lock (SyncRoot)
-            {
-                return dict.Keys.ToArray();
-            }
-        }
-    }
+    #endregion Public Indexers
 
-    /// <inheritdoc />
-    public bool Remove(TKey key)
+    #region Public Methods
+
+    /// <inheritdoc/>
+    public void Add(KeyValuePair<TKey, TValue> item)
     {
         lock (SyncRoot)
         {
-            return dict.Remove(key);
+            dict.Add(item);
         }
     }
 
-    /// <inheritdoc />
-    public bool TryGetValue(TKey key, out TValue value)
+    /// <inheritdoc/>
+    public void Add(TKey key, TValue value)
     {
         lock (SyncRoot)
         {
-            return dict.TryGetValue(key, out value);
+            dict.Add(key, value);
         }
     }
-
-    /// <inheritdoc />
-    public ICollection<TValue> Values
-    {
-        get
-        {
-            lock (SyncRoot)
-            {
-                return dict.Values.ToArray();
-            }
-        }
-    }
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        lock (SyncRoot)
-        {
-            var items = new KeyValuePair<TKey, TValue>[dict.Count];
-            CopyTo(items, 0);
-            return items.GetEnumerator();
-        }
-    }
-
-    /// <inheritdoc />
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-    {
-        lock (SyncRoot)
-        {
-            var items = new KeyValuePair<TKey, TValue>[dict.Count];
-            CopyTo(items, 0);
-            return ((IEnumerable<KeyValuePair<TKey, TValue>>)items).GetEnumerator();
-        }
-    }
-
-    #endregion
-
-    #region Members
 
     /// <summary>Adds a range of items to the dictionary.</summary>
     /// <param name="items">The items.</param>
@@ -232,6 +151,53 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
             {
                 dict.Add(item);
             }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Clear()
+    {
+        lock (SyncRoot)
+        {
+            dict.Clear();
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool Contains(KeyValuePair<TKey, TValue> item)
+    {
+        lock (SyncRoot)
+        {
+            return dict.Contains(item);
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool ContainsKey(TKey key)
+    {
+        lock (SyncRoot)
+        {
+            return dict.ContainsKey(key);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+    {
+        lock (SyncRoot)
+        {
+            dict.CopyTo(array, arrayIndex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        lock (SyncRoot)
+        {
+            var items = new KeyValuePair<TKey, TValue>[dict.Count];
+            CopyTo(items, 0);
+            return ((IEnumerable<KeyValuePair<TKey, TValue>>)items).GetEnumerator();
         }
     }
 
@@ -303,6 +269,24 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
+    /// <inheritdoc/>
+    public bool Remove(KeyValuePair<TKey, TValue> item)
+    {
+        lock (SyncRoot)
+        {
+            return dict.Remove(item);
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool Remove(TKey key)
+    {
+        lock (SyncRoot)
+        {
+            return dict.Remove(key);
+        }
+    }
+
     /// <summary>Tries to add a new item to the dictionary.</summary>
     /// <param name="key">The key.</param>
     /// <param name="constructor">The constructor.</param>
@@ -346,9 +330,18 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         return true;
     }
 
+    /// <inheritdoc/>
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        lock (SyncRoot)
+        {
+            return dict.TryGetValue(key, out value);
+        }
+    }
+
     /// <summary>Tries to remove the specified key.</summary>
     /// <param name="key">The key.</param>
-    /// <returns>Returns true on successful remove or false is. </returns>
+    /// <returns>Returns true on successful remove or false is.</returns>
     public bool TryRemove(TKey key)
     {
         var removed = false;
@@ -368,7 +361,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <param name="key">The key.</param>
     /// <param name="value">The value.</param>
     /// <returns>Returns true on successful remove or false otherwise.</returns>
-    public bool TryRemove(TKey key, out TValue value)
+    public bool TryRemove(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         var removed = false;
         lock (SyncRoot)
@@ -383,5 +376,16 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         return removed;
     }
 
-    #endregion
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        lock (SyncRoot)
+        {
+            var items = new KeyValuePair<TKey, TValue>[dict.Count];
+            CopyTo(items, 0);
+            return items.GetEnumerator();
+        }
+    }
+
+    #endregion Public Methods
 }

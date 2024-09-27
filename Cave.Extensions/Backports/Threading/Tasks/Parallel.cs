@@ -1,7 +1,7 @@
-﻿#pragma warning disable CS1591 // No comments for backports
+﻿#if NET20 || NET35 || NETSTANDARD10
+#nullable disable
+#pragma warning disable CS1591 // No comments for backports
 #pragma warning disable IDE0130 // Namespace does not match folder structure
-
-#if NET20 || NET35 || NETSTANDARD10
 
 using System.Collections.Generic;
 
@@ -9,20 +9,12 @@ namespace System.Threading.Tasks
 {
     public static class Parallel
     {
-        #region Nested type: Runner
-
         sealed class Runner<T> : IDisposable
         {
-            #region Fields
-
             readonly AutoResetEvent completed = new(false);
 
-            readonly List<Exception> exceptions = [];
+            readonly List<Exception> exceptions = new();
             int currentTasks;
-
-            #endregion Fields
-
-            #region Properties
 
             public ParallelLoopState LoopState { get; } = new();
 
@@ -30,15 +22,7 @@ namespace System.Threading.Tasks
 
             public int ConcurrentTasks { get; set; } = -1;
 
-            #endregion Properties
-
-            #region IDisposable Members
-
             public void Dispose() => (completed as IDisposable)?.Dispose();
-
-            #endregion IDisposable Members
-
-            #region Members
 
             public void Wait()
             {
@@ -89,13 +73,7 @@ namespace System.Threading.Tasks
                     completed.Set();
                 }
             }
-
-            #endregion Members
         }
-
-        #endregion Nested type: Runner
-
-        #region Static
 
         public static void For(int fromInclusive, int toExclusive, Action<int> action)
         {
@@ -192,8 +170,6 @@ namespace System.Threading.Tasks
             }
             instance.Wait();
         }
-
-        #endregion Static
     }
 }
 

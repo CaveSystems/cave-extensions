@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Cave;
 
-/// <summary>Gets extensions on <see cref="IPAddress" /> instances.</summary>
+/// <summary>Gets extensions on <see cref="IPAddress"/> instances.</summary>
 public static class IPAddressExtension
 {
     #region Static
@@ -21,7 +21,7 @@ public static class IPAddressExtension
     /// <summary>Returns a new address with the specified netmask.</summary>
     /// <param name="address">The address.</param>
     /// <param name="netmask">The netmask.</param>
-    /// <returns>Returns an <see cref="IPAddress" /> instance.</returns>
+    /// <returns>Returns an <see cref="IPAddress"/> instance.</returns>
     /// <exception cref="ArgumentNullException">address or netmask.</exception>
     /// <exception cref="ArgumentOutOfRangeException">AddressFamily of address and netmask do not match.</exception>
     public static IPAddress GetAddress(this IPAddress address, IPAddress netmask)
@@ -52,20 +52,21 @@ public static class IPAddressExtension
         return new(result);
     }
 
-    /// <summary>Gets the local broadcast address for the specified <paramref name="address" /> and <paramref name="subnet" /> size combination.</summary>
+    /// <summary>Gets the local broadcast address for the specified <paramref name="address"/> and <paramref name="subnet"/> size combination.</summary>
     /// <param name="address">Address information.</param>
     /// <param name="subnet">The subnet size.</param>
     /// <returns>Returns a local broadcast address.</returns>
     public static IPAddress GetBroadcastAddress(this IPAddress address, int subnet) => GetSubnet(address, subnet).Broadcast;
 
-    /// <summary>Gets the local broadcast address for the specified <paramref name="address" /> and <paramref name="netmask" /> combination.</summary>
+    /// <summary>Gets the local broadcast address for the specified <paramref name="address"/> and <paramref name="netmask"/> combination.</summary>
     /// <param name="address">Address information.</param>
     /// <param name="netmask">Netmask.</param>
     /// <returns>Returns a local broadcast address.</returns>
     public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress netmask) => new IPNetwork(address, netmask).Broadcast;
 
 #if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-    /// <summary>Gets the local broadcast address for the specified <see cref="UnicastIPAddressInformation" />.</summary>
+
+    /// <summary>Gets the local broadcast address for the specified <see cref="UnicastIPAddressInformation"/>.</summary>
     /// <param name="address">Address information.</param>
     /// <param name="subnet">Subnet length. (Required for ipv6 on framework &lt;= 4.0).</param>
     /// <returns>Returns a local broadcast address.</returns>
@@ -96,6 +97,7 @@ public static class IPAddressExtension
 
         throw new NotSupportedException($"AddressFamily {address.Address.AddressFamily} is not supported!");
     }
+
 #endif
 
     /// <summary>Gets the name of the reverse lookup zone of an ipv4 or ipv6 address.</summary>
@@ -168,10 +170,10 @@ public static class IPAddressExtension
     /// <returns>Returns the reverse lookup zone name.</returns>
     public static string GetReverseLookupZone(this IPAddress address, IPAddress mask) => GetReverseLookupZone(address, mask.GetSubnetBits());
 
-    /// <summary>Gets the ipv4 <see cref="IPNetwork" /> instance for the specified address and subnet.</summary>
+    /// <summary>Gets the ipv4 <see cref="IPNetwork"/> instance for the specified address and subnet.</summary>
     /// <param name="address">The address within the subnet.</param>
     /// <param name="subnet">The subnet.</param>
-    /// <returns>A new <see cref="IPNetwork" /> instance.</returns>
+    /// <returns>A new <see cref="IPNetwork"/> instance.</returns>
     public static IPNetwork GetSubnet(this IPAddress address, int subnet) => new(address, subnet);
 
     /// <summary>Gets the number of continious bits within the subnet (counted from the lsb).</summary>
@@ -228,8 +230,8 @@ public static class IPAddressExtension
     }
 
     /// <summary>Returns a value indicating whether a ip address is a multicast address.</summary>
-    /// <param name="address"> Instance of the IPAddress, that should be used. </param>
-    /// <returns> true, if the given address is a multicast address; otherwise, false. </returns>
+    /// <param name="address">Instance of the IPAddress, that should be used.</param>
+    /// <returns>true, if the given address is a multicast address; otherwise, false.</returns>
     public static bool IsMulticast(this IPAddress address)
     {
         if (address == null)
@@ -250,7 +252,7 @@ public static class IPAddressExtension
         throw new ArgumentException("Invalid AddressFamily!", nameof(address));
     }
 
-    /// <summary>Modifies an <see cref="IPAddress" />.</summary>
+    /// <summary>Modifies an <see cref="IPAddress"/>.</summary>
     /// <param name="address">The base address.</param>
     /// <param name="modifier">The modifier function.</param>
     /// <returns>Returns the modified address.</returns>
@@ -271,5 +273,5 @@ public static class IPAddressExtension
         return new(bytes);
     }
 
-    #endregion
+    #endregion Static
 }

@@ -10,19 +10,9 @@ namespace System.Linq
 {
     sealed class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
     {
-        #region Fields
-
         readonly IEnumerable<TElement> elements;
 
-        #endregion Fields
-
-        #region Constructors
-
         public OrderedEnumerable(IEnumerable<TElement> elements) => this.elements = elements;
-
-        #endregion Constructors
-
-        #region IOrderedEnumerable<TElement> Members
 
         IEnumerator IEnumerable.GetEnumerator() => elements.GetEnumerator();
 
@@ -42,7 +32,7 @@ namespace System.Linq
                 }
                 else if (!dict.TryGetValue(key, out list))
                 {
-                    dict[key] = list = [];
+                    dict[key] = list = new();
                 }
                 list.Add(element);
             }
@@ -54,8 +44,6 @@ namespace System.Linq
             sorted.Reverse();
             return new OrderedEnumerable<TElement>(sorted.SelectMany(s => s).Concat(nullList));
         }
-
-        #endregion IOrderedEnumerable<TElement> Members
     }
 }
 

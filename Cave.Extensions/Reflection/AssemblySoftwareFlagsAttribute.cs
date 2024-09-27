@@ -6,18 +6,18 @@ namespace Cave.Reflection;
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class AssemblySoftwareFlagsAttribute : Attribute
 {
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="AssemblySoftwareFlagsAttribute" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="AssemblySoftwareFlagsAttribute"/> class.</summary>
     /// <param name="flags">The flags.</param>
     public AssemblySoftwareFlagsAttribute(SoftwareFlags flags) => Flags = flags;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the SoftwareFlags.</summary>
     public SoftwareFlags Flags { get; }
 
-    #endregion
+    #endregion Public Properties
 }

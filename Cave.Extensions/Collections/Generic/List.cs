@@ -6,29 +6,27 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic;
 
-/// <summary>Gets a list implementation for <see cref="ItemPair{A, B}" /> objects.</summary>
+/// <summary>Gets a list implementation for <see cref="ItemPair{A, B}"/> objects.</summary>
 /// <typeparam name="TValue1">The type of the first object.</typeparam>
 /// <typeparam name="TValue2">The type of the second object.</typeparam>
 [DebuggerDisplay("Count={Count}")]
 public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
 {
-    #region Fields
+    #region Private Fields
 
     readonly List<TValue1> listA;
     readonly List<TValue2> listB;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
-    public List()
+    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
+    public List() : this(256)
     {
-        listA = [];
-        listB = [];
     }
 
-    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
     /// <param name="capacity">Initial capacity.</param>
     public List(int capacity)
     {
@@ -36,69 +34,13 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
         listB = new(capacity);
     }
 
-    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="List{TValue1, TValue2}"/> class.</summary>
     /// <param name="items">Items to be added to the list.</param>
-    public List(IEnumerable<ItemPair<TValue1, TValue2>> items) => AddRange(items);
+    public List(IEnumerable<ItemPair<TValue1, TValue2>> items) : this() => AddRange(items);
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
-
-    /// <summary>Gets all A items present.</summary>
-    public IList<TValue1> ItemsA => listA.ToArray();
-
-    /// <summary>Gets all B items present.</summary>
-    public IList<TValue2> ItemsB => listB.ToArray();
-
-    #endregion
-
-    #region IList<ItemPair<TValue1,TValue2>> Members
-
-    /// <summary>Adds a new ItemPair at the end of the list.</summary>
-    /// <param name="item">The ItemPair to add.</param>
-    public void Add(ItemPair<TValue1, TValue2> item)
-    {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
-        listA.Add(item.A);
-        listB.Add(item.B);
-    }
-
-    /// <summary>Clears the list.</summary>
-    public void Clear()
-    {
-        if (IsReadOnly)
-        {
-            throw new ReadOnlyException();
-        }
-
-        listA.Clear();
-        listB.Clear();
-    }
-
-    /// <summary>Checks whether the list contains the specified ItemPair or not.</summary>
-    /// <param name="item">The ItemPair to search for.</param>
-    /// <returns>Returns true if the list contains the ItemPair false otherwise.</returns>
-    public bool Contains(ItemPair<TValue1, TValue2> item) => IndexOf(item) > -1;
-
-    /// <summary>Copies all ItemPairs to the specified array.</summary>
-    /// <param name="array">The Array to write to.</param>
-    /// <param name="arrayIndex">The index to start writing at.</param>
-    public void CopyTo(ItemPair<TValue1, TValue2>[] array, int arrayIndex)
-    {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
-
-        for (var i = 0; i < Count; i++)
-        {
-            array[arrayIndex++] = this[i];
-        }
-    }
+    #region Public Properties
 
     /// <summary>Gets the number of items present.</summary>
     public int Count => listA.Count;
@@ -106,76 +48,15 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
     public bool IsReadOnly { get; private set; }
 
-    /// <summary>Removes the specified ItemPair from the list if it is present.</summary>
-    /// <param name="item">The ItemPair to remove.</param>
-    /// <returns>Returns true if an ItemPair was removed.</returns>
-    public bool Remove(ItemPair<TValue1, TValue2> item)
-    {
-        var index = IndexOf(item);
-        if (index < 0)
-        {
-            return false;
-        }
+    /// <summary>Gets all A items present.</summary>
+    public IList<TValue1> ItemsA => listA.ToArray();
 
-        RemoveAt(index);
-        return true;
-    }
+    /// <summary>Gets all B items present.</summary>
+    public IList<TValue2> ItemsB => listB.ToArray();
 
-    /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
-    /// <returns>Returns an IEnumerator.</returns>
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        var array = new ItemPair<TValue1, TValue2>[Count];
-        CopyTo(array, 0);
-        return array.GetEnumerator();
-    }
+    #endregion Public Properties
 
-    /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
-    /// <returns>Returns an IEnumerator.</returns>
-    public IEnumerator<ItemPair<TValue1, TValue2>> GetEnumerator()
-    {
-        var array = new ItemPair<TValue1, TValue2>[Count];
-        CopyTo(array, 0);
-        return new List<ItemPair<TValue1, TValue2>>(array).GetEnumerator();
-    }
-
-    /// <summary>Gets the index of the specified ItemPair.</summary>
-    /// <param name="item">The ItemPair to search for.</param>
-    /// <returns>Returns the index or -1.</returns>
-    public int IndexOf(ItemPair<TValue1, TValue2> item)
-    {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
-        var index = listA.IndexOf(item.A);
-        while (index > -1)
-        {
-            if (Equals(listB[index], item.B))
-            {
-                break;
-            }
-
-            index = listA.IndexOf(item.A, index);
-        }
-
-        return index;
-    }
-
-    /// <summary>Inserts an ItemPair at the specified index.</summary>
-    /// <param name="index">The index to insert the ItemPair at.</param>
-    /// <param name="item">The ItemPair to insert.</param>
-    public void Insert(int index, ItemPair<TValue1, TValue2> item)
-    {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
-        listA.Insert(index, item.A);
-        listB.Insert(index, item.B);
-    }
+    #region Public Indexers
 
     /// <summary>Gets/sets the ItemPair at the specified index.</summary>
     /// <param name="index">The index.</param>
@@ -200,22 +81,22 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
         }
     }
 
-    /// <summary>Removes the ItemPair at the specified index.</summary>
-    /// <param name="index"></param>
-    public void RemoveAt(int index)
+    #endregion Public Indexers
+
+    #region Public Methods
+
+    /// <summary>Adds a new ItemPair at the end of the list.</summary>
+    /// <param name="item">The ItemPair to add.</param>
+    public void Add(ItemPair<TValue1, TValue2> item)
     {
-        if (IsReadOnly)
+        if (item == null)
         {
-            throw new ReadOnlyException();
+            throw new ArgumentNullException(nameof(item));
         }
 
-        listA.RemoveAt(index);
-        listB.RemoveAt(index);
+        listA.Add(item.A);
+        listB.Add(item.B);
     }
-
-    #endregion
-
-    #region Members
 
     /// <summary>Adds an ItemPair to the list.</summary>
     /// <param name="value1">A item to add.</param>
@@ -245,6 +126,23 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
         }
     }
 
+    /// <summary>Clears the list.</summary>
+    public void Clear()
+    {
+        if (IsReadOnly)
+        {
+            throw new ReadOnlyException();
+        }
+
+        listA.Clear();
+        listB.Clear();
+    }
+
+    /// <summary>Checks whether the list contains the specified ItemPair or not.</summary>
+    /// <param name="item">The ItemPair to search for.</param>
+    /// <returns>Returns true if the list contains the ItemPair false otherwise.</returns>
+    public bool Contains(ItemPair<TValue1, TValue2> item) => IndexOf(item) > -1;
+
     /// <summary>Checks whether the specified value is present or not.</summary>
     /// <param name="value1">The value to search for.</param>
     /// <returns>Returns true if the value is present false otherwise.</returns>
@@ -254,6 +152,22 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <param name="value2">The value to search for.</param>
     /// <returns>Returns true if the value is present false otherwise.</returns>
     public bool ContainsB(TValue2 value2) => IndexOfB(value2) > -1;
+
+    /// <summary>Copies all ItemPairs to the specified array.</summary>
+    /// <param name="array">The Array to write to.</param>
+    /// <param name="arrayIndex">The index to start writing at.</param>
+    public void CopyTo(ItemPair<TValue1, TValue2>[] array, int arrayIndex)
+    {
+        if (array == null)
+        {
+            throw new ArgumentNullException(nameof(array));
+        }
+
+        for (var i = 0; i < Count; i++)
+        {
+            array[arrayIndex++] = this[i];
+        }
+    }
 
     /// <summary>Copies all A items to the specified array starting at the specified index.</summary>
     /// <param name="array">The array to write to.</param>
@@ -303,6 +217,39 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <returns>Returns the B value read.</returns>
     public TValue2 GetB(int index) => listB[index];
 
+    /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
+    /// <returns>Returns an IEnumerator.</returns>
+    public IEnumerator<ItemPair<TValue1, TValue2>> GetEnumerator()
+    {
+        var array = new ItemPair<TValue1, TValue2>[Count];
+        CopyTo(array, 0);
+        return new List<ItemPair<TValue1, TValue2>>(array).GetEnumerator();
+    }
+
+    /// <summary>Gets the index of the specified ItemPair.</summary>
+    /// <param name="item">The ItemPair to search for.</param>
+    /// <returns>Returns the index or -1.</returns>
+    public int IndexOf(ItemPair<TValue1, TValue2> item)
+    {
+        if (item == null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        var index = listA.IndexOf(item.A);
+        while (index > -1)
+        {
+            if (Equals(listB[index], item.B))
+            {
+                break;
+            }
+
+            index = listA.IndexOf(item.A, index);
+        }
+
+        return index;
+    }
+
     /// <summary>Gets the first index of the specified A value.</summary>
     /// <param name="value1">The value to look for.</param>
     /// <returns>Returns the first index found or -1.</returns>
@@ -324,6 +271,20 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <param name="value2">The value to look for.</param>
     /// <returns>Returns the first index found or -1.</returns>
     public int IndexOfB(TValue2 value2) => listB.IndexOf(value2);
+
+    /// <summary>Inserts an ItemPair at the specified index.</summary>
+    /// <param name="index">The index to insert the ItemPair at.</param>
+    /// <param name="item">The ItemPair to insert.</param>
+    public void Insert(int index, ItemPair<TValue1, TValue2> item)
+    {
+        if (item == null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        listA.Insert(index, item.A);
+        listB.Insert(index, item.B);
+    }
 
     /// <summary>Inserts an ItemPair into the list.</summary>
     /// <param name="index">The index to insert at.</param>
@@ -369,6 +330,34 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
         return true;
     }
 
+    /// <summary>Removes the specified ItemPair from the list if it is present.</summary>
+    /// <param name="item">The ItemPair to remove.</param>
+    /// <returns>Returns true if an ItemPair was removed.</returns>
+    public bool Remove(ItemPair<TValue1, TValue2> item)
+    {
+        var index = IndexOf(item);
+        if (index < 0)
+        {
+            return false;
+        }
+
+        RemoveAt(index);
+        return true;
+    }
+
+    /// <summary>Removes the ItemPair at the specified index.</summary>
+    /// <param name="index"></param>
+    public void RemoveAt(int index)
+    {
+        if (IsReadOnly)
+        {
+            throw new ReadOnlyException();
+        }
+
+        listA.RemoveAt(index);
+        listB.RemoveAt(index);
+    }
+
     /// <summary>Reverses the order of the elements in the List.</summary>
     public void Reverse()
     {
@@ -389,5 +378,14 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     /// <summary>Sets the list readonly. This operation is not reversible.</summary>
     public void SetReadOnly() => IsReadOnly = true;
 
-    #endregion
+    /// <summary>Gets an IEnumerator for all ItemPairs present.</summary>
+    /// <returns>Returns an IEnumerator.</returns>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        var array = new ItemPair<TValue1, TValue2>[Count];
+        CopyTo(array, 0);
+        return array.GetEnumerator();
+    }
+
+    #endregion Public Methods
 }
