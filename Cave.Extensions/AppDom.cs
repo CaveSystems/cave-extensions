@@ -86,7 +86,11 @@ public static class AppDom
                 mode.HasFlag(LoadFlags.LoadAssemblies) ?
                     Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
                     FindAssembly(assemblyName, true);
+#if NET20 || NET35
+            var type = assembly?.GetType(typeName, true);
+#else
             var type = assembly?.GetType(typeName, true, false);
+#endif
             if (type is not null) return type;
         }
         return FindType(name, null, mode);
