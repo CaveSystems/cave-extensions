@@ -128,11 +128,15 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeFirst(this string? value, char character)
     {
-        var result = string.Empty;
-        if (value is not null)
+        string result;
+        if (value is null)
+        {
+            result = string.Empty;
+        }
+        else
         {
             var i = value.IndexOf(character);
-            if (i >= 0) result = value[..i];
+            result = (i >= 0) ? value[..i] : value;
         }
         return result;
     }
@@ -144,16 +148,15 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeFirst(this string? value, string pattern)
     {
-        if (pattern == null)
+        string result;
+        if (value is null)
         {
-            throw new ArgumentNullException(nameof(pattern));
+            result = string.Empty;
         }
-
-        var result = string.Empty;
-        if (value is not null)
+        else
         {
             var i = value.IndexOf(pattern);
-            if (i >= 0) result = value[..i];
+            result = (i >= 0) ? value[..i] : value;
         }
         return result;
     }
@@ -165,11 +168,15 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeLast(this string value, char character)
     {
-        var result = string.Empty;
-        if (value is not null)
+        string result;
+        if (value is null)
+        {
+            result = string.Empty;
+        }
+        else
         {
             var i = value.LastIndexOf(character);
-            if (i >= 0) result = value[..i];
+            result = (i >= 0) ? value[..i] : value;
         }
         return result;
     }
@@ -181,16 +188,15 @@ public static partial class StringExtensions
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeLast(this string value, string pattern)
     {
-        if (pattern == null)
+        string result;
+        if (value is null)
         {
-            throw new ArgumentNullException(nameof(pattern));
+            result = string.Empty;
         }
-
-        var result = string.Empty;
-        if (value is not null)
+        else
         {
             var i = value.LastIndexOf(pattern);
-            if (i >= 0) result = value[..i];
+            result = (i >= 0) ? value[..i] : value;
         }
         return result;
     }
