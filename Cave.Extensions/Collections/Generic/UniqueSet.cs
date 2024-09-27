@@ -14,12 +14,14 @@ namespace Cave.Collections.Generic;
 /// <seealso cref="Cave.Collections.Generic.IItemSet{TKey1, TKey2}"/>
 [DebuggerDisplay("Count={Count}")]
 public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
+    where TKey1 : notnull
+    where TKey2 : notnull
 {
     #region Private Fields
 
-    readonly List<ItemPair<TKey1, TKey2>> list = [];
-    readonly Dictionary<TKey1, ItemPair<TKey1, TKey2>> lookupA = [];
-    readonly Dictionary<TKey2, ItemPair<TKey1, TKey2>> lookupB = [];
+    readonly List<ItemPair<TKey1, TKey2>> list = new();
+    readonly Dictionary<TKey1, ItemPair<TKey1, TKey2>> lookupA = new();
+    readonly Dictionary<TKey2, ItemPair<TKey1, TKey2>> lookupB = new();
 
     #endregion Private Fields
 
@@ -327,7 +329,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// <param name="key1">The a key.</param>
     /// <param name="key2">The b key.</param>
     /// <returns></returns>
-    public bool TryGetA(TKey1 key1, out TKey2 key2)
+    public bool TryGetA(TKey1 key1, out TKey2? key2)
     {
         if (lookupA.TryGetValue(key1, out var item))
         {
@@ -343,7 +345,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// <param name="key2">The b key.</param>
     /// <param name="key1">The a key.</param>
     /// <returns></returns>
-    public bool TryGetB(TKey2 key2, out TKey1 key1)
+    public bool TryGetB(TKey2 key2, out TKey1? key1)
     {
         if (lookupB.TryGetValue(key2, out var item))
         {

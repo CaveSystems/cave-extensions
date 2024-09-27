@@ -13,13 +13,13 @@ public sealed class Option : IEquatable<Option>
     public readonly string Name;
 
     /// <summary>Gets the used prefix (e.g. null, "", "-" or "--").</summary>
-    public readonly string Prefix;
+    public readonly string? Prefix;
 
     /// <summary>Obtains the separator.</summary>
     public readonly string Separator;
 
     /// <summary>Gets the value of the <see cref="Option"/>.</summary>
-    public readonly string Value;
+    public readonly string? Value;
 
     #endregion Public Fields
 
@@ -43,7 +43,7 @@ public sealed class Option : IEquatable<Option>
     /// <param name="value">The value of the <see cref="Option"/>.</param>
     /// <exception cref="ArgumentNullException">Name.</exception>
     /// <exception cref="ArgumentException"></exception>
-    public Option(string prefix, string name, string separator, string value)
+    public Option(string? prefix, string name, string separator, string? value)
     {
         if (name == null)
         {
@@ -73,10 +73,7 @@ public sealed class Option : IEquatable<Option>
         Prefix = prefix;
         Name = name;
         Separator = separator;
-        if (value != null)
-        {
-            Value = value.UnboxText(false).Replace("''", "'");
-        }
+        Value = value?.UnboxText(false).Replace("''", "'");
     }
 
     #endregion Public Constructors
@@ -86,12 +83,12 @@ public sealed class Option : IEquatable<Option>
     /// <summary>Gets an <see cref="Option"/> from a <see cref="DictionaryEntry"/>.</summary>
     /// <param name="dictionaryEntry"></param>
     /// <returns></returns>
-    public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) => new(null, dictionaryEntry.Key.ToString(), "=", dictionaryEntry.Value.ToString());
+    public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) => new(null, $"{dictionaryEntry.Key}", "=", $"{dictionaryEntry.Value}");
 
     /// <summary>Gets only the option prefix at the beginning null, "-", "--".</summary>
     /// <param name="option"></param>
     /// <returns></returns>
-    public static string GetPrefix(string option)
+    public static string? GetPrefix(string option)
     {
         if (string.IsNullOrEmpty(option))
         {
@@ -176,7 +173,7 @@ public sealed class Option : IEquatable<Option>
         }
 
         var index = option.IndexOf(separator, StringComparison.OrdinalIgnoreCase);
-        string prefix;
+        string? prefix;
         string name;
         var value = string.Empty;
         if (index < 0)
@@ -208,12 +205,12 @@ public sealed class Option : IEquatable<Option>
     /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(Option other) => other is not null && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
+    public bool Equals(Option? other) => other is not null && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
 
     /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object obj) => Equals(obj as Option);
+    public override bool Equals(object? obj) => Equals(obj as Option);
 
     /// <summary>Gets a hash code based on the result of <see cref="ToString()"/>.</summary>
     /// <returns></returns>

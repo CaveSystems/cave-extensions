@@ -1,21 +1,35 @@
 ﻿using System;
-using System.Collections;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
-#pragma warning disable CS0162
 
 namespace Cave;
 
 /// <summary>Provides a fast managed implementation of the Cyclic Redundancy Checksum with 32 bits without reflection.</summary>
 public struct FastCrc32 : IHashingFunction, IChecksum<uint>
 {
-    #region Static
+    #region Private Fields
+
+    static readonly uint[] table = CRC32.BZIP2.Table;
+
+    uint currentCRC = Initializer;
+
+    #endregion Private Fields
+
+    #region Private Methods
+
+    [MethodImpl((MethodImplOptions)0x0100)]
+    void HashCore(uint @byte)
+    {
+        var i = ((currentCRC >> 24) ^ @byte) & 0xFF;
+        currentCRC = (currentCRC << 8) ^ table[i];
+    }
+
+    #endregion Private Methods
+
+    #region Public Fields
 
     /// <summary>The initializer value.</summary>
     public const uint Initializer = 0xffffffff;
-
-    /// <summary>The name of the hash.</summary>
-    public string Name => "CRC-32/BZIP2";
 
     /// <summary>
     /// Provides the default polynomial (*the* standard CRC-32 polynomial, first popularized by Ethernet)
@@ -23,17 +37,22 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     /// </summary>
     public const uint Polynomial = 0x04c11db7;
 
-    static readonly uint[] table = CRC32.BZIP2.Table;
+    #endregion Public Fields
 
-    #endregion Static
+    #region Public Constructors
 
     /// <summary>Creates a new instance of the <see cref="FastCrc32"/> structure. This produces a checksum equivalent to <see cref="CRC32.BZIP2"/>.</summary>
     public FastCrc32() { }
 
-    #region Properties
+    #endregion Public Constructors
+
+    #region Public Properties
 
     /// <summary>Gets the lookup table.</summary>
     public static uint[] Table => (uint[])table.Clone();
+
+    /// <summary>The name of the hash.</summary>
+    public string Name => "CRC-32/BZIP2";
 
     /// <inheritdoc/>
     public uint Value
@@ -42,13 +61,15 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
         get => ~currentCRC;
     }
 
-    /// <inheritdoc/>
-    [MethodImpl((MethodImplOptions)0x0100)]
-    public int ToHashCode() => (int)~currentCRC;
+    #endregion Public Properties
 
-    #endregion Properties
+    #region Public Methods
 
-    #region Members
+    /// <summary>NotSupported</summary>
+    /// <exception cref="NotSupportedException"></exception>
+    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override bool Equals(object? obj) => throw new NotSupportedException();
 
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
@@ -78,12 +99,11 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
         HashCore(val & 0xFF);
     }
 
-    [MethodImpl((MethodImplOptions)0x0100)]
-    void HashCore(uint @byte)
-    {
-        var i = ((currentCRC >> 24) ^ @byte) & 0xFF;
-        currentCRC = (currentCRC << 8) ^ table[i];
-    }
+    /// <summary>NotSupported</summary>
+    /// <exception cref="NotSupportedException"></exception>
+    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override int GetHashCode() => throw new NotSupportedException();
 
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
@@ -99,6 +119,10 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     public void Reset() => currentCRC = Initializer;
 
     /// <inheritdoc/>
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public int ToHashCode() => (int)~currentCRC;
+
+    /// <inheritdoc/>
     public void Update(int value) => HashCore((uint)value);
 
     /// <inheritdoc/>
@@ -107,11 +131,5 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     /// <inheritdoc/>
     public void Update(byte[] buffer, int offset, int count) => HashCore(buffer, offset, count);
 
-    #endregion Members
-
-    #region private funtionality
-
-    uint currentCRC = Initializer;
-
-    #endregion private funtionality
+    #endregion Public Methods
 }

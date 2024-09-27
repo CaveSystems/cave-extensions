@@ -14,18 +14,18 @@ namespace Cave.Collections;
 /// <param name="max"></param>
 public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IEnumerable<int>, IEnumerable
 {
-    #region Nested type: RangeEnumerator
+    #region Private Classes
 
     sealed class RangeEnumerator : IEnumerator<int>, IEnumerator
     {
-        #region Fields
+        #region Private Fields
 
         readonly RangeExpression range;
         long current;
 
-        #endregion Fields
+        #endregion Private Fields
 
-        #region Constructors
+        #region Public Constructors
 
         public RangeEnumerator(RangeExpression range)
         {
@@ -33,17 +33,41 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
             Reset();
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
 
-        #region Properties
+        #region Public Properties
 
         public bool Disposed { get; private set; }
 
-        #endregion Properties
+        public int Current
+        {
+            get
+            {
+                if (Disposed)
+                {
+                    throw new ObjectDisposedException(nameof(RangeEnumerator));
+                }
+                if (current < range.Minimum)
+                {
+                    throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
+                }
 
-        #region IEnumerator<int> Members
+                if (current > range.Maximum)
+                {
+                    throw new InvalidOperationException("Invalid operation, moved out of Range!");
+                }
+
+                return (int)current;
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public void Dispose() => Disposed = true;
+
+        #endregion Public Methods
 
         object IEnumerator.Current => Current;
 
@@ -77,115 +101,96 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
             }
             current = range.Minimum - 1L;
         }
-
-        public int Current
-        {
-            get
-            {
-                if (Disposed)
-                {
-                    throw new ObjectDisposedException(nameof(RangeEnumerator));
-                }
-                if (current < range.Minimum)
-                {
-                    throw new InvalidOperationException("Invalid operation, use MoveNext() first!");
-                }
-
-                if (current > range.Maximum)
-                {
-                    throw new InvalidOperationException("Invalid operation, moved out of Range!");
-                }
-
-                return (int)current;
-            }
-        }
-
-        #endregion IEnumerator<int> Members
     }
 
-    #endregion Nested type: RangeEnumerator
+    #endregion Private Classes
 
-    #region Static
+    #region Private Fields
 
-    /// <summary>Parses a <see cref="RangeExpression"/> from a specified string.</summary>
-    /// <param name="text">A <see cref="RangeExpression"/> string.</param>
-    /// <param name="min">Minimum value of the <see cref="RangeExpression"/>.</param>
-    /// <param name="max">Maximum value of the <see cref="RangeExpression"/>.</param>
-    /// <returns></returns>
-    public static RangeExpression Parse(string text, int min, int max)
-    {
-        var result = new RangeExpression(min, max);
-        result.Parse(text);
-        return result;
-    }
+    readonly List<Counter> counters = new();
 
-    /// <summary>Adds two <see cref="RangeExpression"/> s.</summary>
-    /// <param name="range1"></param>
-    /// <param name="range2"></param>
-    /// <returns></returns>
-    public static RangeExpression operator +(RangeExpression range1, RangeExpression range2)
-    {
-        if (range1 == null)
-        {
-            throw new ArgumentNullException(nameof(range1));
-        }
-
-        if (range2 == null)
-        {
-            throw new ArgumentNullException(nameof(range2));
-        }
-
-        var result = new RangeExpression(Math.Min(range1.Minimum, range2.Minimum), Math.Max(range1.Maximum, range2.Maximum))
-        {
-            range1,
-            range2
-        };
-        return result;
-    }
-
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="range1">The range1.</param>
-    /// <param name="range2">The range2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(RangeExpression range1, RangeExpression range2)
-    {
-        if (range1 is null)
-        {
-            return range2 is null;
-        }
-
-        return range2 is not null && (range1.AllValuesString == range2.AllValuesString);
-    }
-
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="range1">The range1.</param>
-    /// <param name="range2">The range2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(RangeExpression range1, RangeExpression range2) => range1 is null ? range2 is not null : range2 is null || (range1.AllValuesString != range2.AllValuesString);
-
-    #endregion Static
-
-    #region Fields
-
-    readonly List<Counter> counters = [];
-    readonly List<int> values = [];
+    readonly List<int> values = new();
 
     bool allValues;
-    string currentString;
+
     string allValuesString = "*";
+
+    string? currentString;
+
     char rangeSeparator = '-';
-    char valueSeparator = ',';
+
     char repetitionSeparator = '/';
 
-    #endregion Fields
+    char valueSeparator = ',';
 
-    #region Properties
+    #endregion Private Fields
 
-    /// <summary>Gets the maximum of the <see cref="RangeExpression"/>.</summary>
-    public int Maximum => max;
+    #region Private Methods
 
-    /// <summary>Gets the minimum of the <see cref="RangeExpression"/>.</summary>
-    public int Minimum => min;
+    void ParseRange(string text, int minValue, int maxValue)
+    {
+        var parts = text.Split(new[] { ValueSeparator }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var part in parts)
+        {
+            ParseRangePart(part, minValue, maxValue);
+        }
+    }
+
+    void ParseRangePart(string text, int minValue, int maxValue)
+    {
+        try
+        {
+            var start = minValue;
+            var end = maxValue;
+
+            if (text == AllValuesString)
+            {
+                allValues = true;
+                return;
+            }
+
+            // repetition part .../x
+            var parts = text.Split(RepetitionSeparator);
+            var repetition = 1;
+            switch (parts.Length)
+            {
+                default: throw new ArgumentException($"Invalid range {text}!");
+                case 1: break;
+                case 2:
+                    repetition = int.Parse(parts[1], CultureInfo.InvariantCulture);
+                    break;
+            }
+
+            // value part x[-y]/...
+            parts = parts[0].Split(RangeSeparator);
+            if (parts.Length == 0)
+            {
+                throw new ArgumentException($"Invalid range {text}!");
+            }
+            if ((parts.Length == 1) && (repetition == 1))
+            {
+                Add(int.Parse(parts[0]));
+                return;
+            }
+            if (parts[0] != AllValuesString)
+            {
+                start = Math.Max(start, int.Parse(parts[0]));
+            }
+            if (parts.Length > 1)
+            {
+                end = Math.Max(start, int.Parse(parts[1]));
+            }
+            Add(Counter.Create(start, end, repetition));
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException($"Invalid range string '{text}'.", nameof(text), ex);
+        }
+    }
+
+    #endregion Private Methods
+
+    #region Public Properties
 
     /// <summary>Gets or sets the all values string.</summary>
     public string AllValuesString
@@ -197,6 +202,12 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
             currentString = null;
         }
     }
+
+    /// <summary>Gets the maximum of the <see cref="RangeExpression"/>.</summary>
+    public int Maximum => max;
+
+    /// <summary>Gets the minimum of the <see cref="RangeExpression"/>.</summary>
+    public int Minimum => min;
 
     /// <summary>Gets or sets the range separator.</summary>
     public char RangeSeparator
@@ -231,34 +242,215 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
         }
     }
 
-    #endregion Properties
+    #endregion Public Properties
 
-    #region IEnumerable<int> Members
+    #region Public Methods
 
-    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
+    /// <summary>Implements the operator !=.</summary>
+    /// <param name="range1">The range1.</param>
+    /// <param name="range2">The range2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator !=(RangeExpression range1, RangeExpression range2) => range1 is null ? range2 is not null : range2 is null || (range1.AllValuesString != range2.AllValuesString);
+
+    /// <summary>Adds two <see cref="RangeExpression"/> s.</summary>
+    /// <param name="range1"></param>
+    /// <param name="range2"></param>
     /// <returns></returns>
-    IEnumerator IEnumerable.GetEnumerator() => new RangeEnumerator(this);
+    public static RangeExpression operator +(RangeExpression range1, RangeExpression range2)
+    {
+        if (range1 is null)
+        {
+            throw new ArgumentNullException(nameof(range1));
+        }
 
-    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
+        if (range2 is null)
+        {
+            throw new ArgumentNullException(nameof(range2));
+        }
+
+        var result = new RangeExpression(Math.Min(range1.Minimum, range2.Minimum), Math.Max(range1.Maximum, range2.Maximum))
+        {
+            range1,
+            range2
+        };
+        return result;
+    }
+
+    /// <summary>Implements the operator ==.</summary>
+    /// <param name="range1">The range1.</param>
+    /// <param name="range2">The range2.</param>
+    /// <returns>The result of the operator.</returns>
+    public static bool operator ==(RangeExpression range1, RangeExpression range2)
+    {
+        if (range1 is null)
+        {
+            return range2 is null;
+        }
+
+        return range2 is not null && (range1.AllValuesString == range2.AllValuesString);
+    }
+
+    /// <summary>Parses a <see cref="RangeExpression"/> from a specified string.</summary>
+    /// <param name="text">A <see cref="RangeExpression"/> string.</param>
+    /// <param name="min">Minimum value of the <see cref="RangeExpression"/>.</param>
+    /// <param name="max">Maximum value of the <see cref="RangeExpression"/>.</param>
     /// <returns></returns>
-    public IEnumerator<int> GetEnumerator() => new RangeEnumerator(this);
+    public static RangeExpression Parse(string text, int min, int max)
+    {
+        var result = new RangeExpression(min, max);
+        result.Parse(text);
+        return result;
+    }
 
-    #endregion IEnumerable<int> Members
+    /// <summary>Adds a value to this <see cref="RangeExpression"/>.</summary>
+    /// <param name="value"></param>
+    public void Add(int value)
+    {
+        if (allValues)
+        {
+            return;
+        }
+        if (Contains(value) || (value < Minimum) || (value > Maximum))
+        {
+            return;
+        }
+        currentString = null;
+        values.Add(value);
+    }
 
-    #region IEquatable<RangeExpression> Members
+    /// <summary>Adds a <see cref="Counter"/> to this <see cref="RangeExpression"/>.</summary>
+    /// <param name="counter"></param>
+    public void Add(Counter counter)
+    {
+        if (allValues)
+        {
+            return;
+        }
+        if ((counters.Count > 0) && Contains(counter))
+        {
+            return;
+        }
+
+        if (counter.Start < Minimum)
+        {
+            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} undercuts minimum {Minimum}!");
+        }
+        if (counter.End > Maximum)
+        {
+            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} exceeds maximum {Maximum}!");
+        }
+        currentString = null;
+        counters.Add(counter);
+    }
+
+    /// <summary>Adds a <see cref="RangeExpression"/> to this <see cref="RangeExpression"/>.</summary>
+    /// <param name="range"></param>
+    public void Add(RangeExpression range)
+    {
+        if (range is null)
+        {
+            throw new ArgumentNullException(nameof(range));
+        }
+
+        currentString = null;
+        foreach (var c in range.counters)
+        {
+            if (!Contains(c))
+            {
+                counters.Add(c);
+            }
+        }
+        foreach (var v in range.values)
+        {
+            if (!Contains(v))
+            {
+                values.Add(v);
+            }
+        }
+    }
+
+    /// <summary>Checks whether a specified value is part of the <see cref="RangeExpression"/> or not.</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool Contains(int value)
+    {
+        if (allValues)
+        {
+            return (value >= Minimum) && (value <= Maximum);
+        }
+
+        if (values.Contains(value))
+        {
+            return true;
+        }
+
+        foreach (var counter in counters)
+        {
+            if (counter.Contains(value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Checks whether a specified <see cref="Counter"/> is part of the <see cref="RangeExpression"/> or not.</summary>
+    /// <param name="counter"></param>
+    /// <returns></returns>
+    public bool Contains(Counter counter)
+    {
+        if (counter is null)
+        {
+            throw new ArgumentNullException(nameof(counter));
+        }
+
+        if (allValues)
+        {
+            return (counter.Start >= Minimum) && (counter.End <= Maximum);
+        }
+
+        foreach (var c in counters)
+        {
+            if (counter.Contains(c))
+            {
+                return true;
+            }
+        }
+
+        foreach (var value in counter)
+        {
+            if (Contains(value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /// <inheritdoc/>
-    public bool Equals(RangeExpression other) => string.Equals(ToString(), other?.ToString(), StringComparison.OrdinalIgnoreCase);
-
-    #endregion IEquatable<RangeExpression> Members
-
-    #region Overrides
+    public bool Equals(RangeExpression? other) => string.Equals(ToString(), other?.ToString(), StringComparison.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
-    public override bool Equals(object obj) => obj is RangeExpression range && Equals(range);
+    public override bool Equals(object? obj) => obj is RangeExpression range && Equals(range);
 
     /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();
+
+    /// <summary>Parses a string and sets all properties of the <see cref="RangeExpression"/> to the parsed values.</summary>
+    /// <param name="text"></param>
+    public void Parse(string text)
+    {
+        if (text == null)
+        {
+            throw new ArgumentNullException(nameof(text));
+        }
+
+        counters.Clear();
+        values.Clear();
+        ParseRange(text, Minimum, Maximum);
+    }
 
     /// <summary>Gets the counter properties as string.</summary>
     /// <returns></returns>
@@ -323,211 +515,13 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
         return currentString;
     }
 
-    #endregion Overrides
-
-    #region Members
-
-    /// <summary>Adds a value to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="value"></param>
-    public void Add(int value)
-    {
-        if (allValues)
-        {
-            return;
-        }
-        if (Contains(value) || (value < Minimum) || (value > Maximum))
-        {
-            return;
-        }
-        currentString = null;
-        values.Add(value);
-    }
-
-    /// <summary>Adds a <see cref="Counter"/> to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="counter"></param>
-    public void Add(Counter counter)
-    {
-        if (allValues)
-        {
-            return;
-        }
-        if ((counters.Count > 0) && Contains(counter))
-        {
-            return;
-        }
-
-        if (counter.Start < Minimum)
-        {
-            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} undercuts minimum {Minimum}!");
-        }
-        if (counter.End > Maximum)
-        {
-            throw new ArgumentOutOfRangeException(nameof(counter), $"Counter {counter} exceeds maximum {Maximum}!");
-        }
-        currentString = null;
-        counters.Add(counter);
-    }
-
-    /// <summary>Adds a <see cref="RangeExpression"/> to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="range"></param>
-    public void Add(RangeExpression range)
-    {
-        if (range == null)
-        {
-            throw new ArgumentNullException(nameof(range));
-        }
-
-        currentString = null;
-        foreach (var c in range.counters)
-        {
-            if (!Contains(c))
-            {
-                counters.Add(c);
-            }
-        }
-        foreach (var v in range.values)
-        {
-            if (!Contains(v))
-            {
-                values.Add(v);
-            }
-        }
-    }
-
-    /// <summary>Checks whether a specified value is part of the <see cref="RangeExpression"/> or not.</summary>
-    /// <param name="value"></param>
+    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
     /// <returns></returns>
-    public bool Contains(int value)
-    {
-        if (allValues)
-        {
-            return (value >= Minimum) && (value <= Maximum);
-        }
+    public IEnumerator<int> GetEnumerator() => new RangeEnumerator(this);
 
-        if (values.Contains(value))
-        {
-            return true;
-        }
-
-        foreach (var counter in counters)
-        {
-            if (counter.Contains(value))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Checks whether a specified <see cref="Counter"/> is part of the <see cref="RangeExpression"/> or not.</summary>
-    /// <param name="counter"></param>
+    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
     /// <returns></returns>
-    public bool Contains(Counter counter)
-    {
-        if (counter == null)
-        {
-            throw new ArgumentNullException(nameof(counter));
-        }
+    IEnumerator IEnumerable.GetEnumerator() => new RangeEnumerator(this);
 
-        if (allValues)
-        {
-            return (counter.Start >= Minimum) && (counter.End <= Maximum);
-        }
-
-        foreach (var c in counters)
-        {
-            if (counter.Contains(c))
-            {
-                return true;
-            }
-        }
-
-        foreach (var value in counter)
-        {
-            if (Contains(value))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>Parses a string and sets all properties of the <see cref="RangeExpression"/> to the parsed values.</summary>
-    /// <param name="text"></param>
-    public void Parse(string text)
-    {
-        if (text == null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
-
-        counters.Clear();
-        values.Clear();
-        ParseRange(text, Minimum, Maximum);
-    }
-
-    void ParseRange(string text, int minValue, int maxValue)
-    {
-        var parts = text.Split(new[] { ValueSeparator }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var part in parts)
-        {
-            ParseRangePart(part, minValue, maxValue);
-        }
-    }
-
-    void ParseRangePart(string text, int minValue, int maxValue)
-    {
-        try
-        {
-            var start = minValue;
-            var end = maxValue;
-
-            if (text == AllValuesString)
-            {
-                allValues = true;
-                return;
-            }
-
-            // repetition part .../x
-            var parts = text.Split(RepetitionSeparator);
-            var repetition = 1;
-            switch (parts.Length)
-            {
-                default: throw new ArgumentException($"Invalid range {text}!");
-                case 1: break;
-                case 2:
-                    repetition = int.Parse(parts[1], CultureInfo.InvariantCulture);
-                    break;
-            }
-
-            // value part x[-y]/...
-            parts = parts[0].Split(RangeSeparator);
-            if (parts.Length == 0)
-            {
-                throw new ArgumentException($"Invalid range {text}!");
-            }
-            if ((parts.Length == 1) && (repetition == 1))
-            {
-                Add(int.Parse(parts[0]));
-                return;
-            }
-            if (parts[0] != AllValuesString)
-            {
-                start = Math.Max(start, int.Parse(parts[0]));
-            }
-            if (parts.Length > 1)
-            {
-                end = Math.Max(start, int.Parse(parts[1]));
-            }
-            Add(Counter.Create(start, end, repetition));
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException($"Invalid range string '{text}'.", nameof(text), ex);
-        }
-    }
-
-    #endregion Members
+    #endregion Public Methods
 }

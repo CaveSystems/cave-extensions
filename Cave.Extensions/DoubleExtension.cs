@@ -7,40 +7,38 @@ namespace Cave;
 /// <summary>Gets extensions for double to decimal conversion.</summary>
 public static class DoubleExtension
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Formats the price.</summary>
     /// <param name="price">The price.</param>
-    /// <param name="culture">The culture.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
     /// <returns>The formated string.</returns>
-    public static string FormatPrice(this double price, CultureInfo culture = null)
+    public static string FormatPrice(this double price, IFormatProvider? formatProvider = null)
     {
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-        culture ??= Thread.CurrentThread.CurrentCulture;
-#endif
+        formatProvider ??= Thread.CurrentThread.CurrentCulture;
 
         // maximum 5 digits
         var decimalValue = (long)Math.Round((price % 1) * 100000);
         if ((decimalValue % 100) != 0)
         {
             // need all (5) digits
-            return price.ToString("N5", culture);
+            return price.ToString("N5", formatProvider);
         }
 
         if ((decimalValue % 1000) != 0)
         {
             // need 3 digits
-            return price.ToString("N3", culture);
+            return price.ToString("N3", formatProvider);
         }
 
         if (decimalValue != 0)
         {
             // need 2 digits
-            return price.ToString("N2", culture);
+            return price.ToString("N2", formatProvider);
         }
 
         // no digits at all
-        return price.ToString("N0", culture);
+        return price.ToString("N0", formatProvider);
     }
 
     /// <summary>Removes rouding errors on doubles and converts them to decimals.</summary>
@@ -136,5 +134,5 @@ public static class DoubleExtension
         return (decimal)Math.Round(value * (double)p) / p;
     }
 
-    #endregion
+    #endregion Public Methods
 }

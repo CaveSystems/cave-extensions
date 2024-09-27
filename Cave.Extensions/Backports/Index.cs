@@ -80,7 +80,7 @@ public readonly struct Index : IEquatable<Index>
         return offset;
     }
 
-    public override bool Equals(object obj) => obj is Index index && Equals(index);
+    public override bool Equals(object? obj) => obj is Index index && Equals(index);
 
     public bool Equals(Index other) => value == other.value;
 

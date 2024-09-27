@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Text;
 
 namespace Cave;
 
@@ -35,6 +34,7 @@ public interface IBaseX
     /// <param name="baseXdata">The data to decode.</param>
     /// <returns>Returns the decoded value.</returns>
     BigInteger DecodeBigInteger(byte[] baseXdata);
+
 #endif
 
     /// <summary>Decodes the specified <paramref name="baseXdata"/>.</summary>
@@ -53,10 +53,12 @@ public interface IBaseX
     char EncodeCharacter(int baseXvalue);
 
 #if !NET20 && !NET35
+
     /// <summary>Encodes the specified value to an encoded string.</summary>
     /// <param name="value">The value to encode.</param>
     /// <returns>Returns the encoded string.</returns>
     string EncodeBigInteger(BigInteger value);
+
 #endif
 
     /// <summary>Encodes the specified value to an encoded string.</summary>

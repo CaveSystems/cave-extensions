@@ -13,7 +13,7 @@
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 
         <!-- Nullable -->
-        <!--<nullable>enable</nullable>-->
+        <nullable>enable</nullable>
 
         <!-- Analyzer -->
         <EnableNETAnalyzers>true</EnableNETAnalyzers>

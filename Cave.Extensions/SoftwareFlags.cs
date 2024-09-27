@@ -11,7 +11,7 @@ public enum SoftwareFlags
     /// <summary>No flags</summary>
     None = 0,
 
-    /// <summary>Software suite (<see cref="Stable" />, <see cref="Testing" />)</summary>
+    /// <summary>Software suite ( <see cref="Stable"/>, <see cref="Testing"/>)</summary>
     Suite = 0x0F,
 
     /// <summary>Software is stable</summary>
@@ -23,7 +23,7 @@ public enum SoftwareFlags
     /// <summary>Software unstable trunk or branch</summary>
     Unstable = 0x03,
 
-    /// <summary>Software configuration (<see cref="Release" />, <see cref="Debug" />)</summary>
+    /// <summary>Software configuration ( <see cref="Release"/>, <see cref="Debug"/>)</summary>
     Configuration = 0xF0,
 
     /// <summary>Software with release configuration</summary>

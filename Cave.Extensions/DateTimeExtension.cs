@@ -5,7 +5,7 @@ namespace Cave;
 /// <summary>Date Time extensions.</summary>
 public static class DateTimeExtension
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Determines whether the specified date is a valid date.</summary>
     /// <param name="year">The year.</param>
@@ -27,5 +27,5 @@ public static class DateTimeExtension
      && (minutes >= 0) && (minutes < 60)
      && (seconds >= 0) && (seconds < 60);
 
-    #endregion
+    #endregion Public Methods
 }

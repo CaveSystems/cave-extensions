@@ -56,7 +56,7 @@ public static class DictionaryExtension
             return false;
         }
 
-        var value = valueFunc != null ? valueFunc(key) : default;
+        var value = valueFunc.Invoke(key);
         dictionary.Add(key, value);
         return true;
     }
@@ -119,7 +119,7 @@ public static class DictionaryExtension
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
     /// <param name="key">The key to get.</param>
     /// <returns>Returns the value found or default(value).</returns>
-    public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+    public static TValue? TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
     {
         if (dictionary == null)
         {
@@ -140,7 +140,7 @@ public static class DictionaryExtension
     /// <param name="value">Returns the value found or default(value).</param>
     /// <returns>Returns the value found or default(value).</returns>
     [SuppressMessage("Performance", "CA1854", Justification = "Backport")]
-    public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+    public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         if (dictionary == null)
         {

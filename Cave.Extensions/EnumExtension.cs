@@ -78,6 +78,7 @@ public static class EnumExtension
     }
 
 #if NET40_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET5_0_OR_GREATER
+
     /// <summary>Tries to parse the specified string.</summary>
     /// <typeparam name="TEnum">The type of the enum.</typeparam>
     /// <param name="value">The value.</param>
@@ -86,6 +87,7 @@ public static class EnumExtension
     public static bool TryParse<TEnum>(this string value, out TEnum result)
         where TEnum : struct, IConvertible =>
         Enum.TryParse(value, true, out result);
+
 #elif NET20_OR_GREATER || NETSTANDARD1_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER
     /// <summary>Tries the parse.</summary>
     /// <typeparam name="TEnum">The type of the enum.</typeparam>

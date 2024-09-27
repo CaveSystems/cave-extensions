@@ -2,7 +2,7 @@
 
 namespace Cave;
 
-/// <summary>Gets an interface for <see cref="FileFinder" /> file comparer.</summary>
+/// <summary>Gets an interface for <see cref="FileFinder"/> file comparer.</summary>
 public interface IFileFinderComparer
 {
     #region Members
@@ -12,7 +12,7 @@ public interface IFileFinderComparer
     /// <returns>Returns true if the file matches, false otherwise.</returns>
     bool FileMatches(FileItem file);
 
-    #endregion
+    #endregion Members
 }
 
 #endif

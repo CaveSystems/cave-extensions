@@ -2,13 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 #if NET20 || NET35 || NET40
+
 using System.Collections.Generic;
+
 #endif
 
 namespace Cave
 {
-    /// <summary>Gets extensions for <see cref="Assembly" /> instances.</summary>
+    /// <summary>Gets extensions for <see cref="Assembly"/> instances.</summary>
     public static class AssemblyExtension
     {
         #region Static
@@ -29,7 +32,7 @@ namespace Cave
                 // strip connection string
                 if (ConnectionString.TryParse(path, out var connectionString))
                 {
-                    path = connectionString.Location;
+                    path = connectionString.Location ?? string.Empty;
                 }
 
                 if (File.Exists(path))
@@ -42,7 +45,7 @@ namespace Cave
                 var path = assembly.ManifestModule.FullyQualifiedName;
                 if (ConnectionString.TryParse(path, out var connectionString))
                 {
-                    path = connectionString.Location;
+                    path = connectionString.Location ?? string.Empty;
                 }
 
                 if (File.Exists(path))
@@ -53,7 +56,7 @@ namespace Cave
             throw new FileNotFoundException("Could not resolve Assembly path.", assembly.ToString());
         }
 
-        /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute" />.</summary>
+        /// <summary>Get the assembly company name using the <see cref="AssemblyCompanyAttribute"/>.</summary>
         /// <param name="assembly">The assembly to inspect.</param>
         /// <returns>The company name.</returns>
         public static string GetCompanyName(this Assembly assembly)
@@ -66,14 +69,13 @@ namespace Cave
             var attributes = assembly.GetCustomAttributes<AssemblyCompanyAttribute>();
             return attributes.FirstOrDefault()?.Company ?? throw new ArgumentException("Company attribute unset!");
         }
+
 #if NET20 || NET35 || NET40
+
         /// <summary>Retrieves a collection of custom attributes of a specified type that are applied to a specified assembly.</summary>
         /// <typeparam name="TAttribute">The type of attribute to search for.</typeparam>
         /// <param name="assembly">The assembly to inspect.</param>
-        /// <returns>
-        /// A collection of the custom attributes that are applied to element and that match T, or an empty collection if no such attributes
-        /// exist.
-        /// </returns>
+        /// <returns>A collection of the custom attributes that are applied to element and that match T, or an empty collection if no such attributes exist.</returns>
         public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>(this Assembly assembly)
             where TAttribute : Attribute
         {
@@ -89,14 +91,15 @@ namespace Cave
             }
             return result;
         }
+
 #endif
 
         /// <summary>Gets the directory the assembly was located at during load time.</summary>
         /// <param name="assembly">Assembly instance.</param>
         /// <returns>Returns a directory.</returns>
-        public static string GetDirectory(this Assembly assembly) => Path.GetDirectoryName(GetAssemblyFilePath(assembly));
+        public static string GetDirectory(this Assembly assembly) => Path.GetDirectoryName(GetAssemblyFilePath(assembly)) ?? throw new InvalidOperationException($"Invalid GetAssemblyFilePath({assembly})");
 
-        /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute" />.</summary>
+        /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.</summary>
         /// <param name="assembly">The assembly to inspect.</param>
         /// <returns>The product name.</returns>
         public static string GetProductName(this Assembly assembly)
@@ -110,6 +113,6 @@ namespace Cave
             return attributes.FirstOrDefault()?.Product ?? throw new ArgumentException("Product attribute unset!");
         }
 
-        #endregion
+        #endregion Static
     }
 }

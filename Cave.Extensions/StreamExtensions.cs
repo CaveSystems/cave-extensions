@@ -5,12 +5,23 @@ using System.Text;
 
 namespace Cave;
 
-/// <summary>Gets extensions to <see cref="Stream" /> implementations.</summary>
+/// <summary>Gets extensions to <see cref="Stream"/> implementations.</summary>
 public static class StreamExtensions
 {
-    #region Static
+    #region Private Fields
 
     static int blockSize = 64 * 1024;
+
+    #endregion Private Fields
+
+    #region Public Properties
+
+    /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 64kb.</summary>
+    public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Does a stream copy from source to destination.</summary>
     /// <param name="source">Source stream.</param>
@@ -21,7 +32,7 @@ public static class StreamExtensions
     /// <returns>The number of bytes copied.</returns>
     /// <exception cref="ArgumentNullException">source or target.</exception>
     [MethodImpl((MethodImplOptions)256)]
-    public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback callback = null, object userItem = null)
+    public static long CopyBlocksTo(this Stream source, Stream target, long length = -1, ProgressCallback? callback = null, object? userItem = null)
     {
         if (source == null)
         {
@@ -86,7 +97,7 @@ public static class StreamExtensions
     /// <returns>The bytes read.</returns>
     /// <exception cref="EndOfStreamException">Thrown if the stream can seek but ends before the expected end.</exception>
     [MethodImpl((MethodImplOptions)256)]
-    public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback callback = null, object userItem = null)
+    public static byte[] ReadAllBytes(this Stream source, long length = -1, ProgressCallback? callback = null, object? userItem = null)
     {
         if (source == null)
         {
@@ -145,7 +156,7 @@ public static class StreamExtensions
     /// <returns>The bytes read.</returns>
     /// <exception cref="ArgumentNullException">source.</exception>
     [MethodImpl((MethodImplOptions)256)]
-    public static byte[] ReadBlock(this Stream source, int count, ProgressCallback callback, object userItem = null)
+    public static byte[] ReadBlock(this Stream source, int count, ProgressCallback? callback, object? userItem = null)
     {
         if (source == null)
         {
@@ -194,8 +205,5 @@ public static class StreamExtensions
         stream.Write(data, 0, data.Length);
     }
 
-    /// <summary>Gets or sets the blocksize to be used on any stream operations. Defaults to 64kb.</summary>
-    public static int BlockSize { get => blockSize; set => blockSize = Math.Min(1024, value); }
-
-    #endregion
+    #endregion Public Methods
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -67,6 +67,7 @@ public class BaseDynamic : BaseX
     }
 
 #if !NET20 && !NET35
+
     /// <inheritdoc/>
     public override BigInteger DecodeBigInteger(byte[] baseXdata)
     {
@@ -82,6 +83,7 @@ public class BaseDynamic : BaseX
         }
         return value;
     }
+
 #endif
 
     /// <inheritdoc/>
@@ -124,6 +126,7 @@ public class BaseDynamic : BaseX
     }
 
 #if !NET20 && !NET35
+
     /// <inheritdoc/>
     public override string EncodeBigInteger(BigInteger value)
     {
@@ -139,6 +142,7 @@ public class BaseDynamic : BaseX
         if (Padding is char padding) { result.Add(padding); }
         return new([.. result]);
     }
+
 #endif
 
     /// <inheritdoc/>

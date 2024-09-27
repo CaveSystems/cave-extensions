@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Cave;
 
@@ -234,9 +233,7 @@ public static class MonotonicTime
 
     #region Public Methods
 
-    /// <summary>
-    /// Function to be used when synchronizing and calibrating (<see cref="Resync"/>, <see cref="Calibrate"/>).
-    /// </summary>
+    /// <summary>Function to be used when synchronizing and calibrating ( <see cref="Resync"/>, <see cref="Calibrate"/>).</summary>
     public static Func<DateTime> GetSystemUtcDateTime { get; set; } = () => DateTime.UtcNow;
 
     /// <summary>
@@ -300,9 +297,7 @@ public static class MonotonicTime
         return new Drift(values, count);
     }
 
-    /// <summary>
-    /// Restarts the monotonic time system resulting in a resync of the start time and the current time.
-    /// </summary>
+    /// <summary>Restarts the monotonic time system resulting in a resync of the start time and the current time.</summary>
     /// <returns></returns>
     public static Drift Resync()
     {

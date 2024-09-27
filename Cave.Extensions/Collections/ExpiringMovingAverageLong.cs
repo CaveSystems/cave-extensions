@@ -6,40 +6,53 @@ using System.Linq;
 namespace Cave.Collections;
 
 /// <summary>Gets a simple moving average calculation.</summary>
-/// <seealso cref="IAverage{T}" />
+/// <seealso cref="IAverage{T}"/>
 public class ExpiringMovingAverageLong : IAverage<long>
 {
-    #region Nested type: Item
+    #region Private Classes
 
     sealed class Item
     {
-        #region Fields
+        #region Public Fields
 
         public DateTime DateTime;
         public long Long;
 
-        #endregion
+        #endregion Public Fields
     }
 
-    #endregion
+    #endregion Private Classes
 
-    #region Fields
+    #region Private Fields
 
     readonly LinkedList<Item> items = new();
     long total;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Properties
+    #region Public Properties
+
+    /// <summary>Gets the average for the current items.</summary>
+    /// <value>The average.</value>
+    public long Average => total == 0 ? 0 : total / items.Count;
+
+    /// <summary>Gets the current item count.</summary>
+    /// <value>The item count.</value>
+    public int Count => items.Count;
 
     /// <summary>Gets or sets the maximum age of the items.</summary>
     /// <value>The maximum age.</value>
-    /// <remarks>Setting this to zero or negative values disables the maximum age. An update is done after next call to <see cref="Add(long)" />.</remarks>
+    /// <remarks>Setting this to zero or negative values disables the maximum age. An update is done after next call to <see cref="Add(long)"/>.</remarks>
     public TimeSpan MaximumAge { get; set; }
 
-    #endregion
+    /// <summary>Gets or sets the maximum item count.</summary>
+    /// <value>The maximum count.</value>
+    /// <remarks>Setting this to zero or negative values disables the maximum item count. An update is done after next call to <see cref="Add(long)"/>.</remarks>
+    public int MaximumCount { get; set; }
 
-    #region IAverage<long> Members
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Adds the specified item.</summary>
     /// <param name="item">The item.</param>
@@ -51,7 +64,7 @@ public class ExpiringMovingAverageLong : IAverage<long>
         {
             while (items.Count > MaximumCount)
             {
-                total -= items.First.Value.Long;
+                total -= items.First!.Value.Long;
                 items.RemoveFirst();
             }
         }
@@ -59,17 +72,13 @@ public class ExpiringMovingAverageLong : IAverage<long>
         if (MaximumAge > TimeSpan.Zero)
         {
             var keepAfter = DateTime.UtcNow - MaximumAge;
-            while (items.First.Value.DateTime < keepAfter)
+            while (items.First!.Value.DateTime < keepAfter)
             {
                 total -= items.First.Value.Long;
                 items.RemoveFirst();
             }
         }
     }
-
-    /// <summary>Gets the average for the current items.</summary>
-    /// <value>The average.</value>
-    public long Average => total == 0 ? 0 : total / items.Count;
 
     /// <summary>Clears this instance.</summary>
     public void Clear()
@@ -78,23 +87,11 @@ public class ExpiringMovingAverageLong : IAverage<long>
         total = 0;
     }
 
-    /// <summary>Gets the current item count.</summary>
-    /// <value>The item count.</value>
-    public int Count => items.Count;
-
-    /// <summary>Gets or sets the maximum item count.</summary>
-    /// <value>The maximum count.</value>
-    /// <remarks>
-    /// Setting this to zero or negative values disables the maximum item count. An update is done after next call to
-    /// <see cref="Add(long)" />.
-    /// </remarks>
-    public int MaximumCount { get; set; }
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => items.Select(i => i.Long).GetEnumerator();
-
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IEnumerator<long> GetEnumerator() => items.Select(i => i.Long).GetEnumerator();
 
-    #endregion
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => items.Select(i => i.Long).GetEnumerator();
+
+    #endregion Public Methods
 }

@@ -3,8 +3,6 @@ using System.IO;
 
 namespace Cave;
 
-#nullable enable
-
 /// <summary>Provides extensions to the <see cref="RootLocation"/> enumeration.</summary>
 public static class RootLocationExtension
 {

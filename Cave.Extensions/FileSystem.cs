@@ -1,6 +1,4 @@
-﻿#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +10,13 @@ namespace Cave;
 /// <summary>Gets filesystem functions.</summary>
 public static class FileSystem
 {
-    #region Static
+    #region Private Fields
+
+    static string? programFileName;
+
+    #endregion Private Fields
+
+    #region Public Fields
 
     /// <summary>Gets the invalid chars</summary>
     public const string InvalidCharsString = "\"&<>|:*?";
@@ -26,20 +30,102 @@ public static class FileSystem
     /// <summary>Gets the windows pysical drive prefix.</summary>
     public const string WindowsPysicalDrivePrefix = @"\\.\";
 
-    static string programFileName;
+    #endregion Public Fields
+
+    #region Public Properties
+
+    /// <summary>Gets invalid chars (in range 32..127) invalid for platform independent paths.</summary>
+    public static IList<char> InvalidChars => InvalidCharsString.ToCharArray();
+
+    /// <summary>Gets the directory where the application may store machine specific settings (no roaming).</summary>
+    public static string LocalMachineAppData
+    {
+        get
+        {
+            var want = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+    }
+
+    /// <summary>Gets the local machine configuration directory.</summary>
+    public static string LocalMachineConfiguration => Platform.Type switch
+    {
+        PlatformType.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+        PlatformType.Windows or PlatformType.CompactFramework or PlatformType.Xbox => LocalMachineAppData,
+        _ => "/etc/"
+    };
+
+    /// <summary>Gets the directory where the application may store user and machine specific settings (no roaming).</summary>
+    public static string LocalUserAppData
+    {
+        get
+        {
+            var want = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+    }
+
+    /// <summary>Gets the local user configuration directory.</summary>
+    public static string LocalUserConfiguration => LocalUserAppData;
+
+    /// <summary>Gets all platform path separator chars.</summary>
+    public static IList<char> PathSeparatorChars => PathSeparatorCharsString.ToCharArray();
+
+    /// <summary>Gets the program directory.</summary>
+    public static string ProgramDirectory => Path.GetDirectoryName(ProgramFileName) ?? string.Empty;
+
+    /// <summary>Gets the full program fileName with path and extension.</summary>
+    public static string ProgramFileName => programFileName ??= GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
+
+    /// <summary>Gets the program files base path (this may be process dependent on 64 bit os!).</summary>
+    public static string ProgramFiles
+    {
+        get
+        {
+            var want = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+    }
+
+    /// <summary>Gets the directory where the user stores his/her roaming profile.</summary>
+    public static string UserAppData
+    {
+        get
+        {
+            var want = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+    }
+
+    /// <summary>Gets the configuration directory (this equals <see cref="UserAppData"/>).</summary>
+    public static string UserConfiguration => UserAppData;
+
+    /// <summary>Gets the directory where the user stores his/her documents.</summary>
+    public static string UserDocuments
+    {
+        get
+        {
+            var want = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+    }
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Combines multiple paths starting with the current directory.</summary>
     /// <param name="paths">The paths.</param>
     /// <returns>The combined paths.</returns>
     /// <remarks>This function supports long paths.</remarks>
-    public static string Combine(params string[] paths) => Combine(Path.DirectorySeparatorChar, paths);
+    public static string Combine(params string?[] paths) => Combine(Path.DirectorySeparatorChar, paths);
 
     /// <summary>Combines multiple paths starting with the current directory.</summary>
     /// <param name="pathSeparator">The path separator.</param>
     /// <param name="paths">The paths.</param>
     /// <returns>The combined paths.</returns>
     /// <remarks>This function supports long paths.</remarks>
-    public static string Combine(char pathSeparator, params string[] paths) => Combine(out _, pathSeparator, paths);
+    public static string Combine(char pathSeparator, params string?[] paths) => Combine(out _, pathSeparator, paths);
 
     /// <summary>Combines multiple paths starting with the current directory.</summary>
     /// <param name="type">Returns the detected path type.</param>
@@ -47,7 +133,7 @@ public static class FileSystem
     /// <param name="paths">The paths.</param>
     /// <returns>The combined paths.</returns>
     /// <remarks>This function supports long paths.</remarks>
-    public static string Combine(out PathType type, char pathSeparator, params string[] paths)
+    public static string Combine(out PathType type, char pathSeparator, params string?[] paths)
     {
         if (paths == null)
         {
@@ -55,21 +141,14 @@ public static class FileSystem
         }
 
         type = 0;
-        string root = null;
+        string? root = null;
         var separator = pathSeparator;
         var resultParts = new LinkedList<string>();
         foreach (var s in paths)
         {
+            if (s is null) continue;
             var path = s;
-            if (path == null)
-            {
-                continue;
-            }
-
-            if (path.Length < 1)
-            {
-                continue;
-            }
+            if (path.Length < 1) continue;
 
             #region handle rooted paths
 
@@ -287,7 +366,7 @@ public static class FileSystem
     /// <exception cref="ArgumentNullException">Thrown if directoryMaskList is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the mainPath cannot be found.</exception>
     /// <example>@"c:\somepath\*", @"/absolute/path/dir*", @"./sub/*", @"*|r", @"./somepath/file.ext|r".</example>
-    public static ICollection<DirectoryItem> FindDirectories(IEnumerable<string> directoryMaskList, string mainPath = null, bool recursive = false)
+    public static ICollection<DirectoryItem> FindDirectories(IEnumerable<string> directoryMaskList, string? mainPath = null, bool recursive = false)
     {
         if (directoryMaskList == null)
         {
@@ -312,11 +391,15 @@ public static class FileSystem
                     searchOption = SearchOption.AllDirectories;
                 }
 
-                var path = ".";
+                string path;
                 if (!string.IsNullOrEmpty(mask))
                 {
-                    path = Path.GetDirectoryName(mask);
+                    path = Path.GetDirectoryName(mask) ?? ".";
                     mask = Path.GetFileName(mask);
+                }
+                else
+                {
+                    path = ".";
                 }
 
                 if (string.IsNullOrEmpty(mask))
@@ -365,7 +448,7 @@ public static class FileSystem
     /// <exception cref="ArgumentNullException">Thrown if fileMaskList is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the mainPath cannot be found.</exception>
     /// <example>@"c:\somepath\somefile*.ext", @"/absolute/path/file.ext", @"./sub/*.*", @"*.cs|r", @"./somepath/file.ext|r".</example>
-    public static ICollection<FileItem> FindFiles(string fileMask, string mainPath = null, bool recursive = false) => FindFiles(new[] { fileMask }, mainPath, recursive);
+    public static ICollection<FileItem> FindFiles(string fileMask, string? mainPath = null, bool recursive = false) => FindFiles(new[] { fileMask }, mainPath, recursive);
 
     /// <summary>
     /// Finds all files that match the criteria specified at the FileMaskList. The FileMaskList may contain absolute and relative pathss, filenames or masks and
@@ -378,7 +461,7 @@ public static class FileSystem
     /// <exception cref="ArgumentNullException">Thrown if fileMaskList is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the mainPath cannot be found.</exception>
     /// <example>@"c:\somepath\somefile*.ext", @"/absolute/path/file.ext", @"./sub/*.*", @"*.cs|r", @"./somepath/file.ext|r".</example>
-    public static IList<FileItem> FindFiles(IEnumerable<string> fileMaskList, string mainPath = null, bool recursive = false)
+    public static IList<FileItem> FindFiles(IEnumerable<string> fileMaskList, string? mainPath = null, bool recursive = false)
     {
         if (fileMaskList == null)
         {
@@ -403,11 +486,15 @@ public static class FileSystem
                     searchOption = SearchOption.AllDirectories;
                 }
 
-                var path = ".";
+                string path;
                 if (mask.IndexOfAny((char[])PathSeparatorChars) > -1)
                 {
-                    path = Path.GetDirectoryName(mask);
+                    path = Path.GetDirectoryName(mask) ?? ".";
                     mask = Path.GetFileName(mask);
+                }
+                else
+                {
+                    path = ".";
                 }
 
                 if (mainPath != null)
@@ -550,20 +637,17 @@ public static class FileSystem
     /// <returns>
     /// An array of file the file names and directory names that match the specified search criteria, or an empty array if no files or directories are found.
     /// </returns>
-#if NET35 || NET20
-
     public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
+#if NET35 || NET20
         var results = new List<string>();
         results.AddRange(Directory.GetDirectories(path, "*", searchOption));
         results.AddRange(Directory.GetFiles(path, searchPattern, searchOption));
         return [.. results];
-    }
-
 #else
-    public static string[] GetFileSystemEntries(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        => Directory.GetFileSystemEntries(path, searchPattern, searchOption);
+        return Directory.GetFileSystemEntries(path, searchPattern, searchOption);
 #endif
+    }
 
     /// <summary>Returns an absolute path from a relative path and a fully qualified base path.</summary>
     /// <param name="paths">A number of paths to combine.</param>
@@ -637,84 +721,6 @@ public static class FileSystem
     /// <param name="path">The path.</param>
     /// <returns>The parent path.</returns>
     public static string GetParent(string path) => Combine(path, "..");
-
-    /*
-    /// <summary>Returns the absolute path for the specified path string.</summary>
-    /// <param name="path">The file or directory for which to obtain absolute path information.</param>
-    /// <returns>The fully qualified location of path.</returns>
-    public static string GetFullPath(string path)
-    {
-        var c = Path.DirectorySeparatorChar;
-        var result = Combine(path);
-        if (result.Contains($"{c}..{c}"))
-        {
-            throw new Exception("Path is not absolute!");
-        }
-        if (!Path.IsPathRooted(result))
-        {
-            throw new Exception("Path has not root!");
-        }
-        return result;
-        /*
-        path = path.Replace('\\', '/');
-        var parts = (IEnumerable<string>)path.Split('/');
-
-        Stack<string> current;
-        if (path.StartsWith("/"))
-        {
-            current = new Stack<string>();
-            if (Platform.IsMicrosoft)
-            {
-                current.Push(Path.GetPathRoot(Directory.GetCurrentDirectory()).Substring(0, 2));
-            }
-        }
-        else if (Platform.IsMicrosoft)
-        {
-            var start = parts.FirstOrDefault() ?? string.Empty;
-            if (start.Length == 2 && start[1] == ':')
-            {
-                current = new Stack<string>(new string[] { start });
-                parts = parts.Skip(1);
-            }
-            else
-            {
-                current = new Stack<string>(Directory.GetCurrentDirectory().Split(pathSeparatorChars, StringSplitOptions.RemoveEmptyEntries));
-            }
-        }
-        else
-        {
-            current = new Stack<string>(Directory.GetCurrentDirectory().Split(pathSeparatorChars, StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        foreach (var part in parts)
-        {
-            switch (part)
-            {
-                case "":
-                case ".": continue;
-                case "..":
-                    current.Pop();
-                    continue;
-                default:
-                    current.Push(part);
-                    continue;
-            }
-        }
-        var result = current.Reverse().Join('/');
-        if (path.EndsWith("/"))
-        {
-            result += "/";
-        }
-        if (Platform.IsMicrosoft)
-        {
-            return result.Replace('/', '\\');
-        }
-        else
-        {
-            return "/" + result;
-        }
-    }
-    */
 
     /// <summary>Gets a relative path.</summary>
     /// <param name="fullPath">The full path of the file / directory.</param>
@@ -834,7 +840,7 @@ public static class FileSystem
         }
 
         var parts = fullPath.SplitKeepSeparators('\\', '/');
-        string root = null;
+        string? root = null;
         var folders = new List<string>();
         for (var i = 0; i < parts.Length; i++)
         {
@@ -885,7 +891,7 @@ public static class FileSystem
             throw new ArgumentNullException(nameof(fileName));
         }
 
-        _ = Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+        Directory.CreateDirectory(Path.GetDirectoryName(fileName) ?? ".");
         File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite).Close();
     }
 
@@ -922,87 +928,10 @@ public static class FileSystem
             return true;
         }
 
-        _ = TryDeleteDirectory(Path.GetDirectoryName(path));
+        var dir = Path.GetDirectoryName(path);
+        if (dir is not null) TryDeleteDirectory(dir);
         return true;
     }
 
-    /// <summary>Gets invalid chars (in range 32..127) invalid for platform independent paths.</summary>
-    public static IList<char> InvalidChars => InvalidCharsString.ToCharArray();
-
-    /// <summary>Gets the directory where the application may store machine specific settings (no roaming).</summary>
-    public static string LocalMachineAppData
-    {
-        get
-        {
-            var want = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-    }
-
-    /// <summary>Gets the local machine configuration directory.</summary>
-    public static string LocalMachineConfiguration => Platform.Type switch
-    {
-        PlatformType.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-        PlatformType.Windows or PlatformType.CompactFramework or PlatformType.Xbox => LocalMachineAppData,
-        _ => "/etc/"
-    };
-
-    /// <summary>Gets the directory where the application may store user and machine specific settings (no roaming).</summary>
-    public static string LocalUserAppData
-    {
-        get
-        {
-            var want = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-    }
-
-    /// <summary>Gets the local user configuration directory.</summary>
-    public static string LocalUserConfiguration => LocalUserAppData;
-
-    /// <summary>Gets all platform path separator chars.</summary>
-    public static IList<char> PathSeparatorChars => PathSeparatorCharsString.ToCharArray();
-
-    /// <summary>Gets the program directory.</summary>
-    public static string ProgramDirectory => Path.GetDirectoryName(ProgramFileName);
-
-    /// <summary>Gets the full program fileName with path and extension.</summary>
-    public static string ProgramFileName => programFileName ??= GetFullPath(MainAssembly.Get().GetAssemblyFilePath());
-
-    /// <summary>Gets the program files base path (this may be process dependent on 64 bit os!).</summary>
-    public static string ProgramFiles
-    {
-        get
-        {
-            var want = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-    }
-
-    /// <summary>Gets the directory where the user stores his/her roaming profile.</summary>
-    public static string UserAppData
-    {
-        get
-        {
-            var want = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-    }
-
-    /// <summary>Gets the configuration directory (this equals <see cref="UserAppData"/>).</summary>
-    public static string UserConfiguration => UserAppData;
-
-    /// <summary>Gets the directory where the user stores his/her documents.</summary>
-    public static string UserDocuments
-    {
-        get
-        {
-            var want = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            return Directory.Exists(want) ? want : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-    }
-
-    #endregion Static
+    #endregion Public Methods
 }
-
-#endif

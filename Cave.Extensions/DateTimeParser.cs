@@ -8,11 +8,81 @@ namespace Cave;
 /// <summary>Gets a parser for DateTime strings.</summary>
 public static class DateTimeParser
 {
-    #region Static
+    #region Private Fields
 
     static readonly string timeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
 
     static DateTime? defaultDateTime;
+
+    #endregion Private Fields
+
+    #region Private Methods
+
+    static bool ConvertDate(string year, string month, string day, out DateTime date)
+    {
+        date = new(0, DateTimeKind.Unspecified);
+        if (!int.TryParse(year, out var y))
+        {
+            return false;
+        }
+
+        if (!int.TryParse(month, out var m))
+        {
+            return false;
+        }
+
+        if (!int.TryParse(day, out var d))
+        {
+            return false;
+        }
+
+        if (y >= 100)
+        {
+            if (y < 1000)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (y > (Default.Year % 100))
+            {
+                y += 1900;
+            }
+            else
+            {
+                y += 2000;
+            }
+        }
+
+        try
+        {
+            date = new(y, m, d, 0, 0, 0, DateTimeKind.Unspecified);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceInformation($"Error at {nameof(DateTimeParser)}.{nameof(ConvertDate)}:");
+            Trace.TraceInformation($"{ex}");
+            return false;
+        }
+
+        return true;
+    }
+
+    #endregion Private Methods
+
+    #region Public Properties
+
+    /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
+    public static DateTime Default
+    {
+        get => defaultDateTime ?? DateTime.UtcNow.Date;
+        set => defaultDateTime = value;
+    }
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     /// <summary>Amount of seconds since 1970-01-01 00:00:00 (may return negative values for earlier dates).</summary>
     /// <param name="dateTime">The DateTime.</param>
@@ -24,8 +94,8 @@ public static class DateTimeParser
     }
 
     /// <summary>
-    /// Tries to find date within the passed string and return it as DateTimeString object. It recognizes only date while ignoring time,
-    /// so time in the returned DateTimeString is always 0:0:0. If year of the date was not found then it accepts the current year.
+    /// Tries to find date within the passed string and return it as DateTimeString object. It recognizes only date while ignoring time, so time in the returned
+    /// DateTimeString is always 0:0:0. If year of the date was not found then it accepts the current year.
     /// </summary>
     /// <param name="text">string that contains date.</param>
     /// <param name="date">parsed date output.</param>
@@ -101,7 +171,7 @@ public static class DateTimeParser
 
         if (!match.Success)
         {
-            // look for  month dd [yyyy]
+            // look for month dd [yyyy]
             match = Regex.Match(text,
                 @"(?:^|[^\d\w])(?'month'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[uarychilestmbro]*\s+(?'day'\d{1,2})(?:-?st|-?th|-?rd|-?nd)?(?:\s*,?\s*(?'year'\d{4}))?(?=$|[^\d\w])",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -114,8 +184,8 @@ public static class DateTimeParser
         }
 
         // SubStringResult bounds = new SubStringResult(text, match.Index, match.Length);
-        string month = null;
-        switch (match.Groups["month"].Value.ToUpperInvariant())
+        var month = match.Groups["month"].Value;
+        switch (month.ToUpperInvariant())
         {
             case "JAN": month = "1"; break;
             case "FEB": month = "2"; break;
@@ -163,10 +233,7 @@ public static class DateTimeParser
         return result;
     }
 
-    /// <summary>
-    /// Tries to find time within the passed string. Detects [h]h:mm[:ss[.f[f[f[f[f[f]]]]]]][offset] [PM/AM] [UTC/GMT] using a a single
-    /// regex.
-    /// </summary>
+    /// <summary>Tries to find time within the passed string. Detects [h]h:mm[:ss[.f[f[f[f[f[f]]]]]]][offset] [PM/AM] [UTC/GMT] using a a single regex.</summary>
     /// <param name="text">String that containing the time.</param>
     /// <param name="time">Parsed time.</param>
     /// <param name="offset">The offset.</param>
@@ -252,13 +319,12 @@ public static class DateTimeParser
     }
 
     /// <summary>
-    /// Tries to find a valid timezone within the passed string and returns it. To obtain the full offset you have to use
-    /// TimeZoneData.Offset + Offset.
+    /// Tries to find a valid timezone within the passed string and returns it. To obtain the full offset you have to use TimeZoneData.Offset + Offset.
     /// </summary>
     /// <param name="text">The string to parse.</param>
     /// <param name="timeZoneData">The detected timezone.</param>
     /// <returns>Returns the string bounds of the timezone.</returns>
-    public static SubStringResult ParseTimeZone(string text, out TimeZoneData timeZoneData)
+    public static SubStringResult ParseTimeZone(string text, out TimeZoneData? timeZoneData)
     {
         var match = Regex.Match(text,
             @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
@@ -315,63 +381,5 @@ public static class DateTimeParser
         return result.Time.Valid || result.Date.Valid;
     }
 
-    /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
-    public static DateTime Default
-    {
-        get => defaultDateTime ?? DateTime.UtcNow.Date;
-        set => defaultDateTime = value;
-    }
-
-    static bool ConvertDate(string year, string month, string day, out DateTime date)
-    {
-        date = new(0, DateTimeKind.Unspecified);
-        if (!int.TryParse(year, out var y))
-        {
-            return false;
-        }
-
-        if (!int.TryParse(month, out var m))
-        {
-            return false;
-        }
-
-        if (!int.TryParse(day, out var d))
-        {
-            return false;
-        }
-
-        if (y >= 100)
-        {
-            if (y < 1000)
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (y > (Default.Year % 100))
-            {
-                y += 1900;
-            }
-            else
-            {
-                y += 2000;
-            }
-        }
-
-        try
-        {
-            date = new(y, m, d, 0, 0, 0, DateTimeKind.Unspecified);
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceInformation($"Error at {nameof(DateTimeParser)}.{nameof(ConvertDate)}:");
-            Trace.TraceInformation($"{ex}");
-            return false;
-        }
-
-        return true;
-    }
-
-    #endregion
+    #endregion Public Methods
 }

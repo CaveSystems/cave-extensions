@@ -39,7 +39,7 @@ public static class AppDom
     /// <param name="throwException">if set to <c>true</c> [throw exception if no assembly can be found].</param>
     /// <returns>Returns the first matching type.</returns>
     /// <exception cref="ArgumentException">Cannot find assembly {0}.</exception>
-    public static Assembly FindAssembly(string name, bool throwException)
+    public static Assembly? FindAssembly(string name, bool throwException)
     {
         if (name.Contains(','))
         {
@@ -76,7 +76,7 @@ public static class AppDom
     /// <param name="mode">The loader mode.</param>
     /// <returns>Returns the first matching type.</returns>
     /// <exception cref="System.TypeLoadException">when type cannot be loaded.</exception>
-    public static Type FindType(string name, LoadFlags mode = 0)
+    public static Type? FindType(string name, LoadFlags mode = 0)
     {
         if (name.Contains(','))
         {
@@ -86,7 +86,12 @@ public static class AppDom
                 mode.HasFlag(LoadFlags.LoadAssemblies) ?
                     Assembly.Load(assemblyName) ?? throw new TypeLoadException($"Could not load assembly {assemblyName}") :
                     FindAssembly(assemblyName, true);
-            return assembly.GetType(typeName, true, false);
+#if NET20 || NET35
+            var type = assembly?.GetType(typeName, true);
+#else
+            var type = assembly?.GetType(typeName, true, false);
+#endif
+            if (type is not null) return type;
         }
         return FindType(name, null, mode);
     }
@@ -97,7 +102,7 @@ public static class AppDom
     /// <param name="mode">The loader mode.</param>
     /// <returns>Returns the first matching type.</returns>
     /// <exception cref="System.TypeLoadException">when type cannot be loaded.</exception>
-    public static Type FindType(string typeName, string assemblyName, LoadFlags mode = 0)
+    public static Type? FindType(string typeName, string? assemblyName, LoadFlags mode = 0)
     {
         if (typeName == null)
         {
@@ -180,7 +185,7 @@ public static class AppDom
     /// <summary>Gets all loaded types assignable to the specified one.</summary>
     /// <param name="predicate">Filter function.</param>
     /// <returns>Returns a list of types.</returns>
-    public static IEnumerable<Type> FindTypes(Func<Type, bool> predicate = null)
+    public static IEnumerable<Type> FindTypes(Func<Type, bool>? predicate = null)
     {
         var selector = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm => asm.GetTypes());
         if (predicate != null)
@@ -210,8 +215,15 @@ public static class AppDom
         {
             try
             {
-                var api = (T)Activator.CreateInstance(type);
-                types.Add(api);
+                var obj = Activator.CreateInstance(type);
+                if (obj is T api)
+                {
+                    types.Add(api);
+                }
+                else if (!ignoreExceptions)
+                {
+                    throw new Exception($"Cannot convert {type} {obj} to {typeof(T)}!");
+                }
             }
             catch
             {

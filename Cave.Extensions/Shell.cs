@@ -36,7 +36,7 @@ public static class Shell
         };
         using var outputWaitHandle = new ManualResetEvent(false);
         using var errorWaitHandle = new ManualResetEvent(false);
-        using var process = Process.Start(startInfo);
+        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Could not start process.");
         Debug.WriteLine($"Start reading from process [{process.Id}] {filename}");
         process.ErrorDataReceived += (sender, e) =>
         {
@@ -111,7 +111,7 @@ public static class Shell
         return result;
     }
 
-    #endregion
+    #endregion Static
 }
 
 #endif

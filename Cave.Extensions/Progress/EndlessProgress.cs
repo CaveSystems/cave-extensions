@@ -1,19 +1,17 @@
 ﻿namespace Cave.Progress;
 
-#nullable enable
-
 /// <summary>Provides an endless progress calculator (increasing slices all the time but never reaching 100%).</summary>
 public class EndlessProgress
 {
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="EndlessProgress" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="EndlessProgress"/> class.</summary>
     /// <param name="estimatedMaximumCount">The estimated maximum count.</param>
     public EndlessProgress(long estimatedMaximumCount) => EstimatedMaxCount = estimatedMaximumCount;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the count.</summary>
     /// <value>The count.</value>
@@ -27,9 +25,9 @@ public class EndlessProgress
     /// <value>The value in range [0..1).</value>
     public float Value { get; private set; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Members
+    #region Public Methods
 
     /// <summary>Increments this instance.</summary>
     public void Increment()
@@ -43,5 +41,5 @@ public class EndlessProgress
         Value = c / (float)EstimatedMaxCount;
     }
 
-    #endregion
+    #endregion Public Methods
 }

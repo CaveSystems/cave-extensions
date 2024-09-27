@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cave;
 
 namespace System.Collections.Generic
 {
@@ -13,49 +14,21 @@ namespace System.Collections.Generic
     [DebuggerDisplay("Count={Count}")]
     public sealed class HashSet<T> : ISet<T>
     {
-        #region Fields
+        Dictionary<T, byte> dict = new();
 
-        #region private Member
-
-        Dictionary<T, byte> dict = [];
-
-        #endregion private Member
-
-        #endregion Fields
-
-        #region ISet<T> Members
-
-        #region ICollection<T> Member
+        public void TrimExcess() => dict = new Dictionary<T, byte>(dict);
 
         /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
         public bool IsReadOnly => false;
 
-        #endregion ICollection<T> Member
-
-        #region IEnumerable Member
-
         /// <summary>Gets an <see cref="IEnumerator"/> for this set.</summary>
         IEnumerator IEnumerable.GetEnumerator() => dict.Keys.GetEnumerator();
-
-        #endregion IEnumerable Member
-
-        #region IEnumerable<T> Member
 
         /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() => dict.Keys.GetEnumerator();
 
-        #endregion IEnumerable<T> Member
-
-        #endregion ISet<T> Members
-
-        #region Members
-
-        #region ICloneable Member
-
         /// <summary>Creates a copy of this set.</summary>
         public object Clone() => new HashSet<T>(dict.Keys);
-
-        #endregion ICloneable Member
 
         /// <summary>Gets an array of all elements present.</summary>
         /// <returns></returns>
@@ -77,10 +50,6 @@ namespace System.Collections.Generic
                 Include(item);
             }
         }
-
-        #endregion Members
-
-        #region constructors
 
         /// <summary>Initializes a new instance of the <see cref="HashSet{T}"/> class.</summary>
         public HashSet() { }
@@ -112,15 +81,11 @@ namespace System.Collections.Generic
             }
         }
 
-        #endregion constructors
-
-        #region public Member
-
         /// <inheritdoc/>
         public bool Contains(T item) => dict.ContainsKey(item);
 
         /// <inheritdoc/>
-        public void Add(T item) => Include(item);
+        public bool Add(T item) => dict.TryAdd(item, (byte)0);
 
         /// <inheritdoc/>
         public void UnionWith(IEnumerable<T> other) => IncludeRange(other);
@@ -201,24 +166,18 @@ namespace System.Collections.Generic
             return dict.Remove(item);
         }
 
-        bool ISet<T>.Add(T item)
+        void ICollection<T>.Add(T item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var result = !dict.ContainsKey(item);
             Include(item);
-            return result;
         }
 
         /// <inheritdoc/>
         public void Clear() => dict.Clear();
-
-        #endregion public Member
-
-        #region ICollection Member
 
         /// <summary>Copies all items present at the set to the specified array, starting at a specified index.</summary>
         /// <param name="array">one-dimensional array to copy to.</param>
@@ -227,8 +186,6 @@ namespace System.Collections.Generic
 
         /// <inheritdoc/>
         public int Count => dict.Count;
-
-        #endregion ICollection Member
     }
 }
 

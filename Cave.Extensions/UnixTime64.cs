@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Cave;
 
-#nullable enable
+
 
 /// <summary>unix time stamp in seconds since epoch</summary>
 [StructLayout(LayoutKind.Sequential, Size = 8)]

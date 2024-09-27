@@ -6,61 +6,84 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic;
 
-/// <summary>Gets a readonly collection implementation for A items of <see cref="Set{A, B}" />.</summary>
+/// <summary>Gets a readonly collection implementation for A items of <see cref="Set{A, B}"/>.</summary>
 /// <typeparam name="TValue1"></typeparam>
 /// <typeparam name="TValue2"></typeparam>
 [DebuggerDisplay("Count={Count}")]
 public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
 {
-    #region Nested type: EnumeratorB
+    #region Private Classes
 
     sealed class EnumeratorB : IEnumerator<TValue2>
     {
-        #region Fields
+        #region Private Fields
 
         readonly IItemSet<TValue1, TValue2> set;
         int index = -1;
 
-        #endregion
+        #endregion Private Fields
 
-        #region Constructors
+        #region Public Constructors
 
         public EnumeratorB(IItemSet<TValue1, TValue2> items) => set = items;
 
-        #endregion
+        #endregion Public Constructors
 
-        #region IEnumerator<TValue2> Members
+        #region Public Properties
+
+        public TValue2 Current => set[index].B;
+
+        object? IEnumerator.Current => set[index].B;
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public void Dispose() { }
-
-        object IEnumerator.Current => set[index].B;
 
         public bool MoveNext() => ++index < set.Count;
 
         public void Reset() => index = -1;
 
-        public TValue2 Current => set[index].B;
-
-        #endregion
+        #endregion Public Methods
     }
 
-    #endregion
+    #endregion Private Classes
 
-    #region Fields
+    #region Private Fields
 
     readonly IItemSet<TValue1, TValue2> set;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="ReadOnlyListB{TValue1, TValue2}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="ReadOnlyListB{TValue1, TValue2}"/> class.</summary>
     /// <param name="items"></param>
     public ReadOnlyListB(IItemSet<TValue1, TValue2> items) => set = items;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region IList<TValue2> Members
+    #region Public Properties
+
+    /// <summary>Gets the number of elements present.</summary>
+    public int Count => set.Count;
+
+    /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
+    public bool IsReadOnly => true;
+
+    #endregion Public Properties
+
+    #region Public Indexers
+
+    /// <summary>Gets the item at the specified index. Setter throws a ReadOnlyException.</summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public TValue2 this[int index] { get => set[index].B; set => throw new ReadOnlyException(); }
+
+    #endregion Public Indexers
+
+    #region Public Methods
 
     /// <summary>Throws a ReadOnlyException.</summary>
     /// <param name="item"></param>
@@ -90,21 +113,6 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
         }
     }
 
-    /// <summary>Gets the number of elements present.</summary>
-    public int Count => set.Count;
-
-    /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
-    public bool IsReadOnly => true;
-
-    /// <summary>Throws a ReadOnlyException.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Remove(TValue2 item) => throw new ReadOnlyException();
-
-    /// <summary>Returns an enumerator that iterates through the collection.</summary>
-    /// <returns></returns>
-    IEnumerator IEnumerable.GetEnumerator() => new EnumeratorB(set);
-
     /// <summary>Returns an enumerator that iterates through the collection.</summary>
     /// <returns></returns>
     public IEnumerator<TValue2> GetEnumerator() => new EnumeratorB(set);
@@ -119,14 +127,18 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     /// <param name="item"></param>
     public void Insert(int index, TValue2 item) => throw new ReadOnlyException();
 
-    /// <summary>Gets the item at the specified index. Setter throws a ReadOnlyException.</summary>
-    /// <param name="index"></param>
+    /// <summary>Throws a ReadOnlyException.</summary>
+    /// <param name="item"></param>
     /// <returns></returns>
-    public TValue2 this[int index] { get => set[index].B; set => throw new ReadOnlyException(); }
+    public bool Remove(TValue2 item) => throw new ReadOnlyException();
 
     /// <summary>Throws a ReadOnlyException.</summary>
     /// <param name="index"></param>
     public void RemoveAt(int index) => throw new ReadOnlyException();
 
-    #endregion
+    /// <summary>Returns an enumerator that iterates through the collection.</summary>
+    /// <returns></returns>
+    IEnumerator IEnumerable.GetEnumerator() => new EnumeratorB(set);
+
+    #endregion Public Methods
 }

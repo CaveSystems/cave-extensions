@@ -4,14 +4,14 @@
 /// <typeparam name="T">Type of byte array.</typeparam>
 public interface IChecksum<T>
 {
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the checksum computed so far.</summary>
     T Value { get; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Members
+    #region Public Methods
 
     /// <summary>Resets the checksum to initialization state.</summary>
     void Reset();
@@ -30,5 +30,5 @@ public interface IChecksum<T>
     /// <param name="count">the number of data bytes to add.</param>
     void Update(byte[] buffer, int offset, int count);
 
-    #endregion
+    #endregion Public Methods
 }

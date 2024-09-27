@@ -12,13 +12,10 @@ public sealed class DirectoryItem
 {
     #region Static
 
-    /// <summary>
-    /// Creates a new directory instance from a specified base path and the full path to the directory. (The subdirectories will be
-    /// extracted.)
-    /// </summary>
+    /// <summary>Creates a new directory instance from a specified base path and the full path to the directory. (The subdirectories will be extracted.)</summary>
     /// <param name="baseDirectory">The base directory.</param>
     /// <param name="fullDirectory">The full path of the directory.</param>
-    /// <returns>Returns a new <see cref="DirectoryItem" />.</returns>
+    /// <returns>Returns a new <see cref="DirectoryItem"/>.</returns>
     public static DirectoryItem FromFullPath(string baseDirectory, string fullDirectory) => new(baseDirectory, GetRelative(fullDirectory, baseDirectory));
 
     /// <summary>Gets a relative path.</summary>
@@ -57,11 +54,11 @@ public sealed class DirectoryItem
             string.Join($"{Path.DirectorySeparatorChar}", relative, baseCheck.Length, relative.Length - baseCheck.Length);
     }
 
-    #endregion
+    #endregion Static
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="DirectoryItem" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="DirectoryItem"/> class.</summary>
     /// <param name="baseDirectory">The base directory.</param>
     /// <param name="subDirectory">The subdirectory.</param>
     public DirectoryItem(string baseDirectory, string subDirectory)
@@ -71,7 +68,7 @@ public sealed class DirectoryItem
         FullPath = FileSystem.GetFullPath(FileSystem.Combine(BaseDirectory, Relative));
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
@@ -84,17 +81,17 @@ public sealed class DirectoryItem
     /// <summary>Gets the relative path.</summary>
     public string Relative { get; }
 
-    #endregion
+    #endregion Properties
 
     #region Overrides
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override int GetHashCode() => FullPath.GetHashCode();
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override string ToString() => FullPath;
 
-    #endregion
+    #endregion Overrides
 }
 
 #endif

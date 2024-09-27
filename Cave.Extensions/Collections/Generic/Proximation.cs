@@ -6,18 +6,18 @@ namespace Cave.Collections.Generic;
 /// <summary>Gets a basic moving average calculated with values based on a time axis (no continuous sampling needed).</summary>
 public class Proximation
 {
-    #region Nested type: ProximationValue
+    #region Private Classes
 
     sealed class ProximationValue
     {
-        #region Fields
+        #region Public Fields
 
         public readonly DateTime TimeStamp;
         public readonly long Value;
 
-        #endregion
+        #endregion Public Fields
 
-        #region Constructors
+        #region Public Constructors
 
         public ProximationValue(DateTime timeStamp, long value)
         {
@@ -31,18 +31,18 @@ public class Proximation
             TimeStamp = DateTime.UtcNow;
         }
 
-        #endregion
+        #endregion Public Constructors
     }
 
-    #endregion
+    #endregion Private Classes
 
-    #region Fields
+    #region Private Fields
 
     readonly LinkedList<ProximationValue> items = new();
 
-    #endregion
+    #endregion Private Fields
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the current moving average.</summary>
     public long Average
@@ -68,7 +68,13 @@ public class Proximation
     public TimeSpan Duration => EndTime - StartTime;
 
     /// <summary>Gets the (local) datetime of the last recorded value.</summary>
-    public DateTime EndTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+    public DateTime EndTime => items.Count == 0 ? default : items.First!.Value.TimeStamp;
+
+    /// <summary>Gets the maximum value.</summary>
+    public long Maximum { get; private set; }
+
+    /// <summary>Gets the minimum value.</summary>
+    public long Minimum { get; private set; }
 
     /// <summary>Gets the reverse weighted average of the whole recorded timeline. Startweight is 100% and endweight is 0%.</summary>
     public long ReverseWeightedAverage
@@ -96,7 +102,7 @@ public class Proximation
     }
 
     /// <summary>Gets the (local) datetime of the first recorded value.</summary>
-    public DateTime StartTime => items.Count == 0 ? default : items.First.Value.TimeStamp;
+    public DateTime StartTime => items.Count == 0 ? default : items.First!.Value.TimeStamp;
 
     /// <summary>Gets the weighted average of the whole recorded timeline. Startweight is 0% and endweight is 100%.</summary>
     public long WeightedAverage
@@ -123,15 +129,9 @@ public class Proximation
         }
     }
 
-    /// <summary>Gets the maximum value.</summary>
-    public long Maximum { get; private set; }
+    #endregion Public Properties
 
-    /// <summary>Gets the minimum value.</summary>
-    public long Minimum { get; private set; }
-
-    #endregion
-
-    #region Members
+    #region Public Methods
 
     /// <summary>Adds a value to the proximation.</summary>
     /// <param name="value">The value to add.</param>
@@ -154,7 +154,7 @@ public class Proximation
     /// <exception cref="ArgumentOutOfRangeException">TimeStamp.</exception>
     public void AddValue(DateTime timeStamp, long value)
     {
-        if ((items.Count > 0) && (items.Last.Value.TimeStamp >= timeStamp))
+        if ((items.Count > 0) && (items.Last!.Value.TimeStamp >= timeStamp))
         {
             throw new ArgumentOutOfRangeException(nameof(timeStamp));
         }
@@ -178,11 +178,11 @@ public class Proximation
     public void ClearOlderThan(TimeSpan age)
     {
         var earliest = EndTime - age;
-        while ((items.Count > 0) && (items.First.Value.TimeStamp < earliest))
+        while ((items.Count > 0) && (items.First!.Value.TimeStamp < earliest))
         {
             items.RemoveFirst();
         }
     }
 
-    #endregion
+    #endregion Public Methods
 }

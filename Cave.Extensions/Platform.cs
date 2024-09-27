@@ -13,34 +13,49 @@ namespace Cave;
 [ExcludeFromCodeCoverage]
 public static class Platform
 {
-    /// <summary>Gets the <see cref="PlatformType"/> of the current platform.</summary>
-    public static PlatformType Type => GetCached(nameof(Type), GetPlatformType);
+    #region Private Fields
 
-    /// <summary>Gets the system version string.</summary>
-    /// <value>The system version string.</value>
-    public static string SystemVersionString => GetCached(nameof(SystemVersionString), GetSystemVersionString);
+    static readonly Dictionary<string, object> cachedValues = new();
 
-    /// <summary>Gets a value indicating whether we run under mono or not.</summary>
-    public static bool IsMono => GetCached(nameof(IsMono), GetIsMono);
+    #endregion Private Fields
 
-    /// <summary>Gets a value indicating whether we run at android or not.</summary>
-    public static bool IsAndroid => GetCached(nameof(IsAndroid), GetIsAndroid);
-
-    /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
-    public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
-
-    static readonly Dictionary<string, object> cachedValues = [];
+    #region Private Methods
 
     static T GetCached<T>(string name, Func<T> getter)
     {
         if (!cachedValues.TryGetValue(name, out var value))
         {
-            value = getter();
-            cachedValues[name] = value;
+            var result = getter.Invoke() ?? throw new InvalidOperationException($"Getter {getter} returned null value!");
+            cachedValues[name] = result;
+            return result;
         }
 
         return (T)value;
     }
+
+    static bool GetIsAndroid() => AppDom.FindType("Android.Runtime", null, AppDom.LoadFlags.NoException) != null;
+
+    [SuppressMessage("Style", "IDE0066:Keep switch")]
+    static bool GetIsMicrosoft()
+    {
+        switch ((int)Environment.OSVersion.Platform)
+        {
+            case 0: /*Win32S*/
+            case 1: /*Win32NT*/
+            case 2: /*Win32Windows*/
+            case 3: /*Windows CE / Compact Framework*/
+            case 5: /*Xbox*/
+                return true;
+
+            default:
+            case 4: /*Unix*/
+            case 6: /*MacOSX*/
+            case 128:
+                return false;
+        }
+    }
+
+    static bool GetIsMono() => AppDom.FindType("Mono.Runtime", null, AppDom.LoadFlags.NoException) != null;
 
     static PlatformType GetPlatformType()
     {
@@ -147,7 +162,7 @@ public static class Platform
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true
-                });
+                }) ?? throw new InvalidOperationException("Could not get system version string!");
                 versionString = process.StandardOutput.ReadToEnd();
             });
             if (task.Wait(1000))
@@ -159,25 +174,27 @@ public static class Platform
         return systemVersionString.BeforeFirst('\n');
     }
 
-    [SuppressMessage("Style", "IDE0066:Keep switch")]
-    static bool GetIsMicrosoft()
-    {
-        switch ((int)Environment.OSVersion.Platform)
-        {
-            case 0: /*Win32S*/
-            case 1: /*Win32NT*/
-            case 2: /*Win32Windows*/
-            case 3: /*Windows CE / Compact Framework*/
-            case 5: /*Xbox*/
-                return true;
+    #endregion Private Methods
 
-            default:
-            case 4: /*Unix*/
-            case 6: /*MacOSX*/
-            case 128:
-                return false;
-        }
-    }
+    #region Public Properties
+
+    /// <summary>Gets a value indicating whether we run at android or not.</summary>
+    public static bool IsAndroid => GetCached(nameof(IsAndroid), GetIsAndroid);
+
+    /// <summary>Gets a value indicating whether we run at a microsoft os or not.</summary>
+    public static bool IsMicrosoft => GetCached(nameof(IsMicrosoft), GetIsMicrosoft);
+
+    /// <summary>Gets a value indicating whether we run under mono or not.</summary>
+    public static bool IsMono => GetCached(nameof(IsMono), GetIsMono);
+
+    /// <summary>Gets the system version string.</summary>
+    /// <value>The system version string.</value>
+    public static string SystemVersionString => GetCached(nameof(SystemVersionString), GetSystemVersionString);
+
+    /// <summary>Gets the <see cref="PlatformType"/> of the current platform.</summary>
+    public static PlatformType Type => GetCached(nameof(Type), GetPlatformType);
+
+    #endregion Public Properties
 
 #if alternative
         static PlatformType GetPlatformType()
@@ -285,10 +302,6 @@ public static class Platform
             return false;
         }
 #endif
-
-    static bool GetIsMono() => AppDom.FindType("Mono.Runtime", null, AppDom.LoadFlags.NoException) != null;
-
-    static bool GetIsAndroid() => AppDom.FindType("Android.Runtime", null, AppDom.LoadFlags.NoException) != null;
 }
 
 #endif

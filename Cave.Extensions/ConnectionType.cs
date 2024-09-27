@@ -48,12 +48,12 @@ public enum ConnectionType
     /// <summary>Connection to mssql database</summary>
     MSSQL,
 
-    /// <summary>The microsoft alias for <see cref="MSSQL" /></summary>
+    /// <summary>The microsoft alias for <see cref="MSSQL"/></summary>
     MICROSOFT = MSSQL,
 
     /// <summary>Connection to postgre sql database</summary>
     PGSQL,
 
-    /// <summary>The postgresql alias for <see cref="PGSQL" /></summary>
+    /// <summary>The postgresql alias for <see cref="PGSQL"/></summary>
     POSTGRESQL = PGSQL
 }

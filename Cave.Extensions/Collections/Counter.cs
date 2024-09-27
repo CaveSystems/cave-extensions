@@ -6,22 +6,22 @@ namespace Cave.Collections;
 
 #pragma warning disable CA1710
 
-/// <summary>Gets an <see cref="IEnumerable" /> implementation for simple integer counting.</summary>
+/// <summary>Gets an <see cref="IEnumerable"/> implementation for simple integer counting.</summary>
 public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
 {
     #region Static
 
-    /// <summary>Creates a new <see cref="Counter" /> from the specified start and end values.</summary>
+    /// <summary>Creates a new <see cref="Counter"/> from the specified start and end values.</summary>
     /// <param name="start">The first value.</param>
     /// <param name="end">The last value to be part of the counter.</param>
-    /// <returns>Returns a new <see cref="Counter" /> instance.</returns>
+    /// <returns>Returns a new <see cref="Counter"/> instance.</returns>
     public static Counter Create(int start, int end) => new(start, (end - start) + 1);
 
-    /// <summary>Creates a new <see cref="Counter" /> from the specified start and end values.</summary>
+    /// <summary>Creates a new <see cref="Counter"/> from the specified start and end values.</summary>
     /// <param name="start">The first value.</param>
     /// <param name="end">The last value.</param>
     /// <param name="step">The step between two values.</param>
-    /// <returns>Returns a new <see cref="Counter" /> instance.</returns>
+    /// <returns>Returns a new <see cref="Counter"/> instance.</returns>
     public static Counter Create(int start, int end, int step) => new(start, (end - start) + 1, step);
 
     /// <summary>Implements the operator ==.</summary>
@@ -60,28 +60,28 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     /// <returns>The result of the operator.</returns>
     public static bool operator <=(Counter left, Counter right) => (left == right) || (left < right);
 
-    #endregion
+    #endregion Static
 
     #region Fields
 
     long current;
 
-    #endregion
+    #endregion Fields
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="Counter" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Counter"/> class.</summary>
     /// <param name="start">The first value.</param>
     public Counter(int start)
         : this(start, int.MaxValue - Math.Abs(start), 1) { }
 
-    /// <summary>Initializes a new instance of the <see cref="Counter" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Counter"/> class.</summary>
     /// <param name="start">The first value.</param>
     /// <param name="count">The value count.</param>
     public Counter(int start, int count)
         : this(start, count, 1) { }
 
-    /// <summary>Initializes a new instance of the <see cref="Counter" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Counter"/> class.</summary>
     /// <param name="start">The first value.</param>
     /// <param name="count">The value count.</param>
     /// <param name="step">The step between two values.</param>
@@ -104,7 +104,7 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
         Reset();
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Properties
 
@@ -129,46 +129,42 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     /// <summary>Gets the step between two values.</summary>
     public int Step { get; }
 
-    #endregion
+    #endregion Properties
 
     #region IComparable Members
 
-    /// <summary>Compares the start of two <see cref="Counter" />s.</summary>
+    /// <summary>Compares the start of two <see cref="Counter"/> s.</summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public int CompareTo(object obj)
-    {
-        var other = obj as Counter;
-        return other == null ? -1 : Start.CompareTo(other.Start);
-    }
+    public int CompareTo(object? obj) => obj is not Counter other ? -1 : Start.CompareTo(other.Start);
 
-    #endregion
+    #endregion IComparable Members
 
     #region IEnumerable<int> Members
 
-    /// <summary>Gets a <see cref="CountEnumerator" />.</summary>
+    /// <summary>Gets a <see cref="CountEnumerator"/>.</summary>
     /// <returns>Returns a new IEnumerator instance.</returns>
     IEnumerator IEnumerable.GetEnumerator() => new CountEnumerator(this);
 
-    /// <summary>Gets a <see cref="CountEnumerator" />.</summary>
+    /// <summary>Gets a <see cref="CountEnumerator"/>.</summary>
     /// <returns>Returns a new IEnumerator{int} instance.</returns>
     public IEnumerator<int> GetEnumerator() => new CountEnumerator(this);
 
-    #endregion
+    #endregion IEnumerable<int> Members
 
     #region IEquatable<Counter> Members
 
-    /// <inheritdoc />
-    public bool Equals(Counter other) => (Start == other.Start) && (End == other.End) && (Step == other.Step);
+    /// <inheritdoc/>
+    public bool Equals(Counter? other) => other is not null && (Start == other.Start) && (End == other.End) && (Step == other.Step);
 
-    #endregion
+    #endregion IEquatable<Counter> Members
 
     #region Overrides
 
-    /// <summary>Checks another <see cref="Counter" /> for equality.</summary>
-    /// <param name="obj">The <see cref="Counter" /> instance to check for equality.</param>
+    /// <summary>Checks another <see cref="Counter"/> for equality.</summary>
+    /// <param name="obj">The <see cref="Counter"/> instance to check for equality.</param>
     /// <returns>Returns true if the specified object equals this one.</returns>
-    public override bool Equals(object obj) => obj is Counter other && Equals(other);
+    public override bool Equals(object? obj) => obj is Counter other && Equals(other);
 
     /// <summary>Gets a hash code for this instance.</summary>
     /// <returns></returns>
@@ -178,20 +174,20 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     /// <returns>Returns a string representing this object.</returns>
     public override string ToString() => "x = k * " + Step + " | " + ((Start - 1L) / Step) + " < k < " + ((End + 1L) / Step);
 
-    #endregion
+    #endregion Overrides
 
     #region Members
 
-    /// <summary>Checks whether a specified value is part of the <see cref="Counter" /> or not.</summary>
+    /// <summary>Checks whether a specified value is part of the <see cref="Counter"/> or not.</summary>
     /// <param name="value">The value to be checked.</param>
     /// <returns>Returns true if the value is part of the counter.</returns>
     public bool Contains(int value) => (value <= End) && (value >= Start) && (((value - Start) % Step) == 0);
 
-    /// <summary>Checks whether a specified <see cref="Counter" /> is part of the <see cref="Counter" /> or not.</summary>
-    /// <param name="counter">The <see cref="Counter" /> whose values to be checked.</param>
+    /// <summary>Checks whether a specified <see cref="Counter"/> is part of the <see cref="Counter"/> or not.</summary>
+    /// <param name="counter">The <see cref="Counter"/> whose values to be checked.</param>
     /// <returns>Returns true if the specified counter is part of the counter.</returns>
     public bool Contains(Counter counter) =>
-        counter == null
+        counter is null
             ? throw new ArgumentNullException(nameof(counter))
             : (counter.Start >= Start) && (counter.Start <= End) && (counter.End <= End) && (counter.End >= Start) && ((counter.Step % Step) <= 0);
 
@@ -211,5 +207,5 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     /// <summary>Resets the counter.</summary>
     public void Reset() => current = Start - Step;
 
-    #endregion
+    #endregion Members
 }

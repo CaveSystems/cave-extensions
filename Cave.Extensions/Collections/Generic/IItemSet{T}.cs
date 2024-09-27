@@ -7,10 +7,10 @@ namespace Cave.Collections.Generic;
 
 /// <summary>Gets a set of items.</summary>
 /// <typeparam name="T">Element type.</typeparam>
-/// <seealso cref="System.Collections.Generic.ICollection{T}" />
+/// <seealso cref="System.Collections.Generic.ICollection{T}"/>
 public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<T>>
 {
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets the number of items in the set.</summary>
     new int Count { get; }
@@ -18,9 +18,9 @@ public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<
     /// <summary>Gets a value indicating whether the set is empty or not.</summary>
     bool IsEmpty { get; }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Members
+    #region Public Methods
 
     /// <summary>Adds a range of items to the set.</summary>
     /// <param name="items">The items to be added to the list.</param>
@@ -82,5 +82,5 @@ public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<
     /// <exception cref="ReadOnlyException">Set is readonly.</exception>
     int TryRemoveRange(IEnumerable<T> items);
 
-    #endregion
+    #endregion Public Methods
 }

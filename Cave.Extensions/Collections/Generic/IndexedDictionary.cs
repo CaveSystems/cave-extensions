@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
+#pragma warning disable CS8601
 
 namespace Cave.Collections.Generic;
 
@@ -10,19 +13,20 @@ namespace Cave.Collections.Generic;
 /// <typeparam name="TValue"></typeparam>
 [DebuggerDisplay("Count={Count}")]
 public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    where TKey : notnull
 {
-    #region Nested type: Enumerator
+    #region Private Classes
 
     sealed class Enumerator : IEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>
     {
-        #region Fields
+        #region Private Fields
 
         readonly IndexedDictionary<TKey, TValue> dictionary;
         readonly IEnumerator<TKey> keyEnumerator;
 
-        #endregion
+        #endregion Private Fields
 
-        #region Constructors
+        #region Public Constructors
 
         public Enumerator(IndexedDictionary<TKey, TValue> dictionary)
         {
@@ -30,28 +34,9 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
             keyEnumerator = this.dictionary.keys.GetEnumerator();
         }
 
-        #endregion
+        #endregion Public Constructors
 
-        #region IEnumerator Members
-
-        object IEnumerator.Current
-        {
-            get
-            {
-                var key = keyEnumerator.Current;
-                return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
-            }
-        }
-
-        public bool MoveNext() => keyEnumerator.MoveNext();
-
-        public void Reset() => keyEnumerator.Reset();
-
-        #endregion
-
-        #region IEnumerator<KeyValuePair<TKey,TValue>> Members
-
-        public void Dispose() => keyEnumerator.Dispose();
+        #region Public Properties
 
         public KeyValuePair<TKey, TValue> Current
         {
@@ -62,63 +47,38 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
             }
         }
 
-        #endregion
-    }
-
-    #endregion
-
-    #region Fields
-
-    readonly Dictionary<TKey, TValue> dictionary;
-    readonly List<TKey> keys;
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>Initializes a new instance of the <see cref="IndexedDictionary{TKey, TValue}" /> class.</summary>
-    public IndexedDictionary()
-    {
-        dictionary = [];
-        keys = [];
-    }
-
-    #endregion
-
-    #region IDictionary<TKey,TValue> Members
-
-    /// <summary>Adds the specified key and value to the dictionary.</summary>
-    /// <param name="item"></param>
-    public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
-
-    /// <summary>Removes all elements from the dictionary.</summary>
-    public void Clear()
-    {
-        dictionary.Clear();
-        keys.Clear();
-    }
-
-    /// <summary>Determines whether the dictionary contains a specific key value combination.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Contains(KeyValuePair<TKey, TValue> item) => dictionary.ContainsKey(item.Key) && Equals(item.Value, dictionary[item.Key]);
-
-    /// <summary>Copies the elements of the dictionary (unsorted) to an array, starting at the specified array index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-    {
-        if (array == null)
+        object IEnumerator.Current
         {
-            throw new ArgumentNullException(nameof(array));
+            get
+            {
+                var key = keyEnumerator.Current;
+                return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
+            }
         }
 
-        var i = arrayIndex;
-        foreach (var k in keys)
-        {
-            array[i++] = new(k, dictionary[k]);
-        }
+        #endregion Public Properties
+
+        #region Public Methods
+
+        public void Dispose() => keyEnumerator.Dispose();
+
+        public bool MoveNext() => keyEnumerator.MoveNext();
+
+        public void Reset() => keyEnumerator.Reset();
+
+        #endregion Public Methods
     }
+
+    #endregion Private Classes
+
+    #region Private Fields
+
+    readonly Dictionary<TKey, TValue> dictionary = new();
+    readonly List<TKey> keys = new();
+
+    #endregion Private Fields
+
+    #region Public Properties
 
     /// <summary>Gets the number of elements in the dictionary.</summary>
     public int Count => dictionary.Count;
@@ -126,24 +86,15 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
     public bool IsReadOnly => false;
 
-    /// <summary>Removes the value with the specified key from the dictionary.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Remove(KeyValuePair<TKey, TValue> item) => dictionary.Remove(item.Key) && keys.Remove(item.Key);
+    /// <summary>Gets a collection containing the keys.</summary>
+    public ICollection<TKey> Keys => keys.AsReadOnly();
 
-    /// <summary>Adds the specified key and value to the dictionary.</summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    public void Add(TKey key, TValue value)
-    {
-        dictionary.Add(key, value);
-        keys.Add(key);
-    }
+    /// <summary>Gets a collection containing the values.</summary>
+    public ICollection<TValue> Values => dictionary.Values;
 
-    /// <summary>Determines whether the <see cref="Dictionary{TKey, TValue}" /> contains the specified key.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public bool ContainsKey(TKey key) => dictionary.ContainsKey(key);
+    #endregion Public Properties
+
+    #region Public Indexers
 
     /// <summary>Gets/sets the value at the specified key.</summary>
     /// <param name="key"></param>
@@ -163,34 +114,60 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <summary>Gets a collection containing the keys.</summary>
-    public ICollection<TKey> Keys => keys.AsReadOnly();
+    #endregion Public Indexers
 
-    /// <summary>Removes the value with the specified key.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public bool Remove(TKey key) => dictionary.Remove(key) && keys.Remove(key);
+    #region Public Methods
 
-    /// <summary>Gets the value associated with the specified key.</summary>
+    /// <summary>Adds the specified key and value to the dictionary.</summary>
+    /// <param name="item"></param>
+    public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+
+    /// <summary>Adds the specified key and value to the dictionary.</summary>
     /// <param name="key"></param>
     /// <param name="value"></param>
-    /// <returns></returns>
-    public bool TryGetValue(TKey key, out TValue value) => dictionary.TryGetValue(key, out value);
+    public void Add(TKey key, TValue value)
+    {
+        dictionary.Add(key, value);
+        keys.Add(key);
+    }
 
-    /// <summary>Gets a collection containing the values.</summary>
-    public ICollection<TValue> Values => dictionary.Values;
+    /// <summary>Removes all elements from the dictionary.</summary>
+    public void Clear()
+    {
+        dictionary.Clear();
+        keys.Clear();
+    }
 
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
+    /// <summary>Determines whether the dictionary contains a specific key value combination.</summary>
+    /// <param name="item"></param>
     /// <returns></returns>
-    IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+    public bool Contains(KeyValuePair<TKey, TValue> item) => dictionary.ContainsKey(item.Key) && Equals(item.Value, dictionary[item.Key]);
+
+    /// <summary>Determines whether the <see cref="Dictionary{TKey, TValue}"/> contains the specified key.</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public bool ContainsKey(TKey key) => dictionary.ContainsKey(key);
+
+    /// <summary>Copies the elements of the dictionary (unsorted) to an array, starting at the specified array index.</summary>
+    /// <param name="array"></param>
+    /// <param name="arrayIndex"></param>
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+    {
+        if (array == null)
+        {
+            throw new ArgumentNullException(nameof(array));
+        }
+
+        var i = arrayIndex;
+        foreach (var k in keys)
+        {
+            array[i++] = new(k, dictionary[k]);
+        }
+    }
 
     /// <summary>Returns an enumerator that iterates through the dictionary.</summary>
     /// <returns></returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => dictionary.GetEnumerator();
-
-    #endregion
-
-    #region Members
 
     /// <summary>Gets the key at the specified index.</summary>
     /// <param name="index">index to read.</param>
@@ -217,10 +194,30 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns></returns>
     public int IndexOf(TKey key) => keys.IndexOf(key);
 
+    /// <summary>Removes the value with the specified key from the dictionary.</summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool Remove(KeyValuePair<TKey, TValue> item) => dictionary.Remove(item.Key) && keys.Remove(item.Key);
+
+    /// <summary>Removes the value with the specified key.</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public bool Remove(TKey key) => dictionary.Remove(key) && keys.Remove(key);
+
     /// <summary>Sets the value at the specified index.</summary>
     /// <param name="index"></param>
     /// <param name="value"></param>
     public void SetValueAt(int index, TValue value) => dictionary[keys[index]] = value;
 
-    #endregion
+    /// <summary>Gets the value associated with the specified key.</summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool TryGetValue(TKey key, out TValue value) => dictionary.TryGetValue(key, out value);
+
+    /// <summary>Returns an enumerator that iterates through all items.</summary>
+    /// <returns></returns>
+    IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+
+    #endregion Public Methods
 }

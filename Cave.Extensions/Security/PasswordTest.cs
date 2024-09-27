@@ -7,7 +7,7 @@ namespace Cave.Security;
 /// <summary>Provides functions for password testing.</summary>
 public static class PasswordTest
 {
-    #region Static
+    #region Public Methods
 
     /// <summary>Guesses the complexity (time needed using a brute force attack with a matching character set) of a specified salt or password</summary>
     /// <param name="data">The password or salt.</param>
@@ -95,5 +95,5 @@ public static class PasswordTest
         return result;
     }
 
-    #endregion
+    #endregion Public Methods
 }

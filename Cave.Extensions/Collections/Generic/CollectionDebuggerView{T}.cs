@@ -7,21 +7,21 @@ namespace Cave.Collections.Generic;
 /// <typeparam name="T"></typeparam>
 public sealed class CollectionDebuggerView<T>
 {
-    #region Fields
+    #region Private Fields
 
     readonly ICollection<T> collection;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{T}" /> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{T}"/> class.</summary>
     /// <param name="collection"></param>
     public CollectionDebuggerView(ICollection<T> collection) => this.collection = collection;
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>Gets all items.</summary>
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
@@ -35,5 +35,5 @@ public sealed class CollectionDebuggerView<T>
         }
     }
 
-    #endregion
+    #endregion Public Properties
 }

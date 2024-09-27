@@ -61,7 +61,7 @@ public sealed class FileItem
     /// <summary>Converts the file item to string containing the full path.</summary>
     /// <param name="file">The file item to convert.</param>
     /// <returns>The full path.</returns>
-    public static implicit operator string(FileItem file) => file?.FullPath;
+    public static implicit operator string?(FileItem? file) => file?.FullPath;
 
     #endregion Static
 

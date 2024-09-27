@@ -1,5 +1,3 @@
-#if !NETCOREAPP1_0 && !NETCOREAPP1_1 && !(NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-
 using System;
 using System.Globalization;
 using System.Reflection;
@@ -12,23 +10,76 @@ namespace Cave;
 /// <summary>Gets extended version info for the specified file (replacement for FileVersionInfo).</summary>
 public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
 {
-    #region static implementation
+    #region Private Fields
 
-    /// <summary>Checks two <see cref="AssemblyVersionInfo" /> for equality.</summary>
-    /// <param name="v1">first version info.</param>
-    /// <param name="v2">second version info.</param>
-    /// <returns>true if versions are equal.</returns>
-    public static bool operator ==(AssemblyVersionInfo v1, AssemblyVersionInfo v2) => v1.Equals(v2);
+    static object? programAssemblyVersionInfo;
 
-    /// <summary>Checks two <see cref="AssemblyVersionInfo" /> for inequality.</summary>
-    /// <param name="v1">first version info.</param>
-    /// <param name="v2">second version info.</param>
-    /// <returns>true if versions are not equal.</returns>
-    public static bool operator !=(AssemblyVersionInfo v1, AssemblyVersionInfo v2) => !v1.Equals(v2);
+    #endregion Private Fields
 
-    static object programAssemblyVersionInfo;
+    #region Public Fields
 
-    /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the current entry assembly.</summary>
+    /// <summary>The Assembly / Product Version.</summary>
+    public Version AssemblyVersion;
+
+    /// <summary>Name of the company.</summary>
+    public string Company;
+
+    /// <summary>Compiler configuration of the program.</summary>
+    public string Configuration;
+
+    /// <summary>The Assemblies' copyright.</summary>
+    public string Copyright;
+
+    /// <summary>The Assemblies' Culture LCID.</summary>
+    public int CultureID;
+
+    /// <summary>The product description.</summary>
+    public string Description;
+
+    /// <summary>The File Version.</summary>
+    public Version FileVersion;
+
+    /// <summary>The Assemblies' Guid.</summary>
+    public Guid Guid;
+
+    /// <summary>Dataset ID. This is only used when reading/writing at a database.</summary>
+    public long ID;
+
+    /// <summary>The Assembly display version.</summary>
+    public SemVer InformalVersion;
+
+    /// <summary>The product name.</summary>
+    public string Product;
+
+    /// <summary>The Assemblies' full PublicKey.</summary>
+    public byte[] PublicKey;
+
+    /// <summary>The Assemblies' PublicKeyToken.</summary>
+    public string PublicKeyToken;
+
+    /// <summary>The Setup Package Name.</summary>
+    public string SetupPackage;
+
+    /// <summary>The Setup Version.</summary>
+    public Version SetupVersion;
+
+    /// <summary>The SoftwareFlags.</summary>
+    public SoftwareFlags SoftwareFlags;
+
+    /// <summary>The title.</summary>
+    public string Title;
+
+    /// <summary>The Assemblies' trademark.</summary>
+    public string Trademark;
+
+    /// <summary>The Assemblies' Update URI.</summary>
+    public Uri UpdateURI;
+
+    #endregion Public Fields
+
+    #region Public Properties
+
+    /// <summary>Gets the <see cref="AssemblyVersionInfo"/> for the current entry assembly.</summary>
     public static AssemblyVersionInfo Program
     {
         get
@@ -43,17 +94,35 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
         }
     }
 
-    /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the specified FileName.</summary>
-    /// <param name="fileName">file name of the assembly.</param>
-    /// <returns>the assembly version info.</returns>
-    public static AssemblyVersionInfo FromAssemblyFile(string fileName) => FromAssembly(Assembly.LoadFile(fileName));
+    /// <summary>Gets or sets the Assemblies' CultureInfo.</summary>
+    public CultureInfo CultureInfo
+    {
+        get => new(CultureID);
+        set => CultureID = value?.LCID ?? 0;
+    }
 
-    /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the specified AssemblyName.</summary>
-    /// <param name="assemblyName">name of the assembly.</param>
-    /// <returns>the assembly version info.</returns>
-    public static AssemblyVersionInfo FromAssemblyName(AssemblyName assemblyName) => FromAssembly(Assembly.Load(assemblyName));
+    /// <summary>Gets the release date.</summary>
+    /// <value>The release date.</value>
+    public DateTime ReleaseDate
+    {
+        get
+        {
+            try
+            {
+                return new(FileVersion.Major, FileVersion.Minor / 100, FileVersion.Minor % 100, FileVersion.Build / 100, FileVersion.Build % 100, 0, DateTimeKind.Utc);
+            }
+            catch
+            {
+                return new(0);
+            }
+        }
+    }
 
-    /// <summary>Gets the <see cref="AssemblyVersionInfo" /> for the specified Assembly.</summary>
+    #endregion Public Properties
+
+    #region Public Methods
+
+    /// <summary>Gets the <see cref="AssemblyVersionInfo"/> for the specified Assembly.</summary>
     /// <param name="assembly">the assembly.</param>
     /// <returns>the assembly version info.</returns>
     public static AssemblyVersionInfo FromAssembly(Assembly assembly)
@@ -170,113 +239,65 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
             }
         }
 
-        #endregion
+        #endregion get assembly attributes
 
         // get assembly name properties
         {
-            i.AssemblyVersion = assemblyName.Version;
-            i.Culture = assemblyName.CultureInfo;
-            i.PublicKey = assemblyName.GetPublicKey();
-            i.PublicKeyToken = assemblyName.GetPublicKeyToken().ToHexString();
+            i.AssemblyVersion = assemblyName.Version ?? new Version();
+            i.CultureID = assemblyName.CultureInfo?.LCID ?? 0;
+            i.PublicKey = assemblyName.GetPublicKey() ?? [];
+            i.PublicKeyToken = assemblyName.GetPublicKeyToken()?.ToHexString() ?? string.Empty;
         }
         return i;
     }
 
-    #endregion
+    /// <summary>Gets the <see cref="AssemblyVersionInfo"/> for the specified FileName.</summary>
+    /// <param name="fileName">file name of the assembly.</param>
+    /// <returns>the assembly version info.</returns>
+    public static AssemblyVersionInfo FromAssemblyFile(string fileName) => FromAssembly(Assembly.LoadFile(fileName));
 
-    #region fields
+    /// <summary>Gets the <see cref="AssemblyVersionInfo"/> for the specified AssemblyName.</summary>
+    /// <param name="assemblyName">name of the assembly.</param>
+    /// <returns>the assembly version info.</returns>
+    public static AssemblyVersionInfo FromAssemblyName(AssemblyName assemblyName) => FromAssembly(Assembly.Load(assemblyName));
 
-    /// <summary>Dataset ID. This is only used when reading/writing at a database.</summary>
-    public long ID;
+    /// <summary>Checks two <see cref="AssemblyVersionInfo"/> for inequality.</summary>
+    /// <param name="v1">first version info.</param>
+    /// <param name="v2">second version info.</param>
+    /// <returns>true if versions are not equal.</returns>
+    public static bool operator !=(AssemblyVersionInfo v1, AssemblyVersionInfo v2) => !v1.Equals(v2);
 
-    /// <summary>The File Version.</summary>
-    public Version FileVersion;
+    /// <summary>Checks two <see cref="AssemblyVersionInfo"/> for equality.</summary>
+    /// <param name="v1">first version info.</param>
+    /// <param name="v2">second version info.</param>
+    /// <returns>true if versions are equal.</returns>
+    public static bool operator ==(AssemblyVersionInfo v1, AssemblyVersionInfo v2) => v1.Equals(v2);
 
-    /// <summary>The Assembly / Product Version.</summary>
-    public Version AssemblyVersion;
+    /// <summary>Checks this instance for equality with another one.</summary>
+    /// <param name="obj">object to check for.</param>
+    /// <returns>true if equal.</returns>
+    public override bool Equals(object? obj) => obj is AssemblyVersionInfo avi && Equals(avi);
 
-    /// <summary>The Assembly display version.</summary>
-    public SemVer InformalVersion;
-
-    /// <summary>The Setup Version.</summary>
-    public Version SetupVersion;
-
-    /// <summary>The Setup Package Name.</summary>
-    public string SetupPackage;
-
-    /// <summary>The SoftwareFlags.</summary>
-    public SoftwareFlags SoftwareFlags;
-
-    /// <summary>The title.</summary>
-    public string Title;
-
-    /// <summary>The product name.</summary>
-    public string Product;
-
-    /// <summary>The product description.</summary>
-    public string Description;
-
-    /// <summary>Name of the company.</summary>
-    public string Company;
-
-    /// <summary>Compiler configuration of the program.</summary>
-    public string Configuration;
-
-    /// <summary>The Assemblies' copyright.</summary>
-    public string Copyright;
-
-    /// <summary>The Assemblies' trademark.</summary>
-    public string Trademark;
-
-    /// <summary>The Assemblies' Culture LCID.</summary>
-    public int CultureID;
-
-    /// <summary>The Assemblies' full PublicKey.</summary>
-    public byte[] PublicKey;
-
-    /// <summary>The Assemblies' PublicKeyToken.</summary>
-    public string PublicKeyToken;
-
-    /// <summary>The Assemblies' Guid.</summary>
-    public Guid Guid;
-
-    /// <summary>The Assemblies' Update URI.</summary>
-    public Uri UpdateURI;
-
-    #endregion
-
-    /// <summary>Gets or sets the Assemblies' CultureInfo.</summary>
-    public CultureInfo Culture
+    /// <summary>Checks this instance for equality with another one.</summary>
+    /// <param name="other">Other version info to test.</param>
+    /// <returns>true if equal.</returns>
+    public bool Equals(AssemblyVersionInfo other)
     {
-        get => new(CultureID);
-        set
+        var fields = typeof(AssemblyVersionInfo).GetFields(BindingFlags.Public);
+        foreach (var field in fields)
         {
-            if (value == null)
+            if (field.GetValue(this) != field.GetValue(other))
             {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            CultureID = value.LCID;
-        }
-    }
-
-    /// <summary>Gets the release date.</summary>
-    /// <value>The release date.</value>
-    public DateTime ReleaseDate
-    {
-        get
-        {
-            try
-            {
-                return new(FileVersion.Major, FileVersion.Minor / 100, FileVersion.Minor % 100, FileVersion.Build / 100, FileVersion.Build % 100,
-                    0, DateTimeKind.Utc);
-            }
-            catch
-            {
-                return new(0);
+                return false;
             }
         }
+
+        return true;
     }
+
+    /// <summary>Gets a hashcode for this instance.</summary>
+    /// <returns>the hash code.</returns>
+    public override int GetHashCode() => Guid.GetHashCode();
 
     /// <summary>Gets a latestversion instance for the current assembly (this populates only fields present at this instance).</summary>
     /// <returns>the latest version.</returns>
@@ -297,9 +318,9 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
     /// <returns>Product name and informal version.</returns>
     public override string ToString() => Product + " " + InformalVersion;
 
-    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
     /// <param name="format">The format.</param>
-    /// <returns>A <see cref="string" /> that represents this instance.</returns>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
     /// <exception cref="NotSupportedException">Invalid format.</exception>
     public string ToString(string format)
     {
@@ -316,37 +337,12 @@ public struct AssemblyVersionInfo : IEquatable<AssemblyVersionInfo>
                 }
 
                 break;
+
             default: throw new NotSupportedException();
         }
 
         return result.ToString();
     }
 
-    /// <summary>Gets a hashcode for this instance.</summary>
-    /// <returns>the hash code.</returns>
-    public override int GetHashCode() => Guid.GetHashCode();
-
-    /// <summary>Checks this instance for equality with another one.</summary>
-    /// <param name="obj">object to check for.</param>
-    /// <returns>true if equal.</returns>
-    public override bool Equals(object obj) => obj is AssemblyVersionInfo avi && Equals(avi);
-
-    /// <summary>Checks this instance for equality with another one.</summary>
-    /// <param name="other">Other version info to test.</param>
-    /// <returns>true if equal.</returns>
-    public bool Equals(AssemblyVersionInfo other)
-    {
-        var fields = typeof(AssemblyVersionInfo).GetFields(BindingFlags.Public);
-        foreach (var field in fields)
-        {
-            if (field.GetValue(this) != field.GetValue(other))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    #endregion Public Methods
 }
-
-#endif

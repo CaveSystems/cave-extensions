@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-#nullable enable
+
 
 namespace Cave;
 
@@ -32,13 +32,6 @@ public static class TypeExtension
             throw new NotSupportedException($"The value '{value}' cannot be converted to target type '{toType}'!", ex);
         }
     }
-
-    /// <summary>Converts a value to the desired field value.</summary>
-    /// <param name="toType">Type to convert to.</param>
-    /// <param name="value">Value to convert.</param>
-    /// <param name="culture">The culture to use during formatting.</param>
-    /// <returns>Returns a new instance of the specified type.</returns>
-    public static object? ConvertValue(this Type toType, object? value, CultureInfo culture) => ConvertValue(toType, value, (IFormatProvider)culture);
 
     /// <summary>Converts a value to the desired field value.</summary>
     /// <param name="toType">Type to convert to.</param>

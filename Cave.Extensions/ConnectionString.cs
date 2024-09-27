@@ -11,25 +11,25 @@ public struct ConnectionString : IEquatable<ConnectionString>
     #region Public Fields
 
     /// <summary>Gets or sets the path.</summary>
-    public string Location;
+    public string? Location;
 
     /// <summary>Gets or sets the options.</summary>
-    public string Options;
+    public string? Options;
 
     /// <summary>Gets or sets the password.</summary>
-    public string Password;
+    public string? Password;
 
     /// <summary>Gets or sets the port.</summary>
     public ushort Port;
 
     /// <summary>Gets or sets the protocol.</summary>
-    public string Protocol;
+    public string? Protocol;
 
     /// <summary>Gets or sets the server address or name.</summary>
-    public string Server;
+    public string? Server;
 
     /// <summary>Gets or sets the username.</summary>
-    public string UserName;
+    public string? UserName;
 
     #endregion Public Fields
 
@@ -43,8 +43,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
     /// <param name="port">Port or null.</param>
     /// <param name="location">Path or null.</param>
     /// <param name="options">list of options separated by an '&amp;' sign.</param>
-    public ConnectionString(string protocol, string userName, string password, string server, ushort port = 0, string location = null,
-        string options = null)
+    public ConnectionString(string? protocol, string? userName, string? password, string? server, ushort port = 0, string? location = null, string? options = null)
     {
         if (string.IsNullOrEmpty(protocol))
         {
@@ -66,7 +65,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
             password = null;
         }
 
-        location = string.IsNullOrEmpty(location) ? null : location.Replace('\\', '/');
+        location = string.IsNullOrEmpty(location) ? null : location!.Replace('\\', '/');
         Protocol = protocol;
         Server = server;
         Port = port;
@@ -128,8 +127,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
     /// <param name="defaultPath">The path.</param>
     /// <param name="defaultOptions">The options.</param>
     /// <returns>Returns a new ConnectionString instance.</returns>
-    public static ConnectionString Parse(string connectionString, string defaultProtocol, string defaultUserName, string defaultPassword,
-        string defaultServer, ushort? defaultPort, string defaultPath, string defaultOptions)
+    public static ConnectionString Parse(string connectionString, string? defaultProtocol, string? defaultUserName, string? defaultPassword, string? defaultServer, ushort? defaultPort, string? defaultPath, string? defaultOptions)
     {
         if (connectionString == null)
         {
@@ -253,7 +251,7 @@ public struct ConnectionString : IEquatable<ConnectionString>
     /// <summary>Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/> .</summary>
     /// <param name="obj">The connection string.</param>
     /// <returns>True if the connection strings are equal.</returns>
-    public override bool Equals(object obj) => obj is ConnectionString conStr && Equals(conStr);
+    public override bool Equals(object? obj) => obj is ConnectionString conStr && Equals(conStr);
 
     /// <summary>Compares the ConnectionString to another <see cref="ConnectionString"/> or (connection) <see cref="string"/>.</summary>
     /// <param name="other">The object to compare with.</param>

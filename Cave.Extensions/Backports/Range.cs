@@ -30,7 +30,7 @@ public readonly struct Range : IEquatable<Range>
 
     #region Public Methods
 
-    public override bool Equals(object obj) => obj is Range range && Equals(range);
+    public override bool Equals(object? obj) => obj is Range range && Equals(range);
 
     public bool Equals(Range other) => other.Start.Equals(Start) && other.End.Equals(End);
 
