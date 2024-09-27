@@ -11,6 +11,7 @@ namespace Cave.Collections.Generic;
 [DebuggerDisplay("Count={" + nameof(Count) + "}")]
 [SuppressMessage("Design", "CA1000")]
 public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
+    where T : notnull
 {
     #region Private Fields
 
@@ -36,11 +37,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     #region Public Constructors
 
     /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}"/> class.</summary>
-    public IndexedSet()
-    {
-        items = [];
-        lookup = [];
-    }
+    public IndexedSet() : this(256) { }
 
     /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}"/> class.</summary>
     public IndexedSet(int capacity)
@@ -113,12 +110,12 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static IndexedSet<T> BitwiseAnd(IndexedSet<T> set1, IndexedSet<T> set2)
     {
-        if (set1 == null)
+        if (set1 is null)
         {
             throw new ArgumentNullException(nameof(set1));
         }
 
-        if (set2 == null)
+        if (set2 is null)
         {
             throw new ArgumentNullException(nameof(set2));
         }
@@ -146,12 +143,12 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static IndexedSet<T> BitwiseOr(IndexedSet<T> set1, IndexedSet<T> set2)
     {
-        if (set1 == null)
+        if (set1 is null)
         {
             throw new ArgumentNullException(nameof(set1));
         }
 
-        if (set2 == null)
+        if (set2 is null)
         {
             throw new ArgumentNullException(nameof(set2));
         }
@@ -212,12 +209,12 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static IndexedSet<T> Subtract(IndexedSet<T> set1, IndexedSet<T> set2)
     {
-        if (set1 == null)
+        if (set1 is null)
         {
             throw new ArgumentNullException(nameof(set1));
         }
 
-        if (set2 == null)
+        if (set2 is null)
         {
             throw new ArgumentNullException(nameof(set2));
         }
@@ -240,12 +237,12 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static IndexedSet<T> Xor(IndexedSet<T> set1, IndexedSet<T> set2)
     {
-        if (set1 == null)
+        if (set1 is null)
         {
             throw new ArgumentNullException(nameof(set1));
         }
 
-        if (set2 == null)
+        if (set2 is null)
         {
             throw new ArgumentNullException(nameof(set2));
         }
@@ -348,12 +345,12 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <summary>Checks another Set{T} instance for equality.</summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(IndexedSet<T> other) => (other != null) && (other.Count == Count) && ContainsRange(other);
+    public bool Equals(IndexedSet<T>? other) => (other is not null) && (other.Count == Count) && ContainsRange(other);
 
     /// <summary>Checks another Set{T} instance for equality.</summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object obj) => obj is IndexedSet<T> other && Equals(other);
+    public override bool Equals(object? obj) => obj is IndexedSet<T> other && Equals(other);
 
     /// <summary>Builds a new <see cref="Set{T}"/> containing only items found exclusivly in one of both specified sets.</summary>
     /// <param name="items">Provides the other <see cref="Set{T}"/> used.</param>
