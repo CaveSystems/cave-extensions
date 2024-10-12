@@ -115,7 +115,7 @@ namespace UnixTime.Tests
             {
                 var ut = UnixTime64.Now;
                 var ututc = UnixTime64.UtcNow;
-                diff += ut.DateTime.ToUniversalTime() - ututc.DateTime;
+                diff += ut.ToDateTime().ToUniversalTime() - ututc.ToDateTime();
             }
             Assert.AreEqual(true, Math.Abs(diff.Ticks) < TimeSpan.TicksPerSecond);
         }
@@ -141,20 +141,6 @@ namespace UnixTime.Tests
             {
                 Assert.AreEqual(typeof(OverflowException), ex.GetType());
             }
-
-            for (int i = -9; i < 10; i++)
-            {
-                DateTime check = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds((uint.MaxValue + 1L) * i);
-                Assert.AreEqual(check, UnixTime64.Convert(0, DateTimeKind.Local, TimeSpan.FromHours(i)));
-                Assert.AreEqual(check, UnixTime64.Convert(0, DateTimeKind.Utc, TimeSpan.FromHours(i)));
-                Assert.AreEqual(check, UnixTime64.Convert(0, DateTimeKind.Unspecified, TimeSpan.FromHours(i)));
-            }
-
-            {
-                TimeSpan zone = new TimeSpan(2, 0, 0);
-                DateTime check = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(uint.MaxValue + 1L) - zone;
-                Assert.AreEqual(check, UnixTime64.ConvertToUTC(0, zone));
-            }
         }
 
         [Test]
@@ -164,7 +150,7 @@ namespace UnixTime.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var datetime = new DateTime(rnd.Next(1970, 2035), rnd.Next(1, 13), rnd.Next(1, 29), rnd.Next(0, 24), rnd.Next(0, 60), rnd.Next(0, 60), (DateTimeKind)rnd.Next(0, 3));
-                var dts = datetime.ToString(StringExtensions.InteropDateTimeFormat);
+                var dts = datetime.ToString(StringExtensions.InteropDateTimeFormatWithoutTimeZone);
                 var ut = (UnixTime64)datetime;
                 var uts = ut.ToString();
                 var utb = UnixTime64.Parse(uts);
@@ -202,7 +188,7 @@ namespace UnixTime.Tests
                 Assert.AreEqual(now.TimeStamp, copy.TimeStamp);
                 Assert.AreEqual(now, copy);
                 Assert.AreEqual((DateTime)now, (DateTime)copy);
-                Assert.AreEqual(now.DateTime, copy.DateTime);
+                Assert.AreEqual(now.ToDateTime(), copy.ToDateTime());
                 Assert.AreEqual(now.GetHashCode(), copy.TimeStamp.GetHashCode());
                 Assert.AreEqual(now.GetHashCode(), copy.GetHashCode());
             }

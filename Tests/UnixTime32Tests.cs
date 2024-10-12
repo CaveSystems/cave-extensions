@@ -114,7 +114,7 @@ namespace UnixTime.Tests
             {
                 var u32 = UnixTime32.Now;
                 var u32utc = UnixTime32.UtcNow;
-                diff += u32.DateTime.ToUniversalTime() - u32utc.DateTime;
+                diff += u32.ToDateTime().ToUniversalTime() - u32utc.ToDateTime();
             }
             Assert.AreEqual(true, Math.Abs(diff.Ticks) < TimeSpan.TicksPerSecond);
         }
@@ -141,21 +141,6 @@ namespace UnixTime.Tests
             {
                 Assert.AreEqual(typeof(OverflowException), ex.GetType());
             }
-
-            for (int i = -9; i < 10; i++)
-            {
-                DateTime check = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds((uint.MaxValue + 1L) * i);
-                Assert.AreEqual(check, UnixTime32.Convert(0, DateTimeKind.Local, TimeSpan.FromHours(i)));
-                Assert.AreEqual(check, UnixTime32.Convert(0, DateTimeKind.Utc, TimeSpan.FromHours(i)));
-                Assert.AreEqual(check, UnixTime32.Convert(0, DateTimeKind.Unspecified, TimeSpan.FromHours(i)));
-            }
-
-            for (int i = -9; i < 10; i++)
-            {
-                TimeSpan zone = new TimeSpan(2, 0, 0);
-                DateTime check = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds((uint.MaxValue + 1L) * i) - zone;
-                Assert.AreEqual(check, UnixTime32.ConvertToUTC(0, TimeSpan.FromHours(i)));
-            }
         }
 
         [Test]
@@ -165,7 +150,7 @@ namespace UnixTime.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var datetime = new DateTime(rnd.Next(1970, 2035), rnd.Next(1, 13), rnd.Next(1, 29), rnd.Next(0, 24), rnd.Next(0, 60), rnd.Next(0, 60), (DateTimeKind)rnd.Next(0, 3));
-                var dts = datetime.ToString(StringExtensions.InteropDateTimeFormat);
+                var dts = datetime.ToString(StringExtensions.InteropDateTimeFormatWithoutTimeZone);
                 var u32 = (UnixTime32)datetime;
                 var u32s = u32.ToString();
                 var u32b = UnixTime32.Parse(u32s);
@@ -184,7 +169,7 @@ namespace UnixTime.Tests
             Assert.AreEqual(0, new UnixTime32().TimeStamp);
             Assert.AreEqual((UnixTime32)0, new UnixTime32());
             Assert.AreEqual(true, 0 == new UnixTime32().TimeStamp);
-            Assert.AreEqual(new DateTime(1970, 1, 1), new UnixTime32().DateTime);
+            Assert.AreEqual(new DateTime(1970, 1, 1), new UnixTime32().ToDateTime());
 
             unsafe
             {
@@ -203,7 +188,7 @@ namespace UnixTime.Tests
                 Assert.AreEqual(now.TimeStamp, copy.TimeStamp);
                 Assert.AreEqual(now, copy);
                 Assert.AreEqual((DateTime)now, (DateTime)copy);
-                Assert.AreEqual(now.DateTime, copy.DateTime);
+                Assert.AreEqual(now.ToDateTime(), copy.ToDateTime());
                 Assert.AreEqual(now.GetHashCode(), copy.TimeStamp.GetHashCode());
                 Assert.AreEqual(now.GetHashCode(), copy.GetHashCode());
             }

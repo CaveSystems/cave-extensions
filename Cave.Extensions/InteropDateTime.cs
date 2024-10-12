@@ -85,7 +85,7 @@ public readonly struct InteropDateTime : IComparable, IComparable<InteropDateTim
     /// <summary>Performs an implicit conversion from <see cref="UnixTime64"/> to <see cref="InteropDateTime"/>.</summary>
     /// <param name="unixDateTime">The date time.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator InteropDateTime(UnixTime64 unixDateTime) => new(unixDateTime.DateTime);
+    public static implicit operator InteropDateTime(UnixTime64 unixDateTime) => new(unixDateTime.ToDateTime());
 
     /// <summary>Subtracts a <see cref="TimeSpan"/> from the <see cref="InteropDateTime"/>.</summary>
     /// <param name="value1">The first value.</param>
