@@ -4,12 +4,16 @@ using System.Runtime.InteropServices;
 
 namespace Cave;
 
-
-
 /// <summary>unix time stamp in seconds since epoch</summary>
 [StructLayout(LayoutKind.Sequential, Size = 8)]
 public readonly struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime64>, IFormattable, IConvertible
 {
+    /// <summary>Gets the current date time.</summary>
+    public static UnixTime64 Now => DateTime.Now;
+
+    /// <summary>Gets the current date time.</summary>
+    public static UnixTime64 UtcNow => DateTime.UtcNow;
+
     /// <summary>Implements the operator ==.</summary>
     /// <param name="value1">The value1.</param>
     /// <param name="value2">The value2.</param>
@@ -89,40 +93,30 @@ public readonly struct UnixTime64 : IEquatable<UnixTime64>, IComparable<UnixTime
     /// <summary>Converts the specified date time.</summary>
     /// <param name="dateTime">The date time.</param>
     /// <returns></returns>
-    public static long Convert(DateTime dateTime)
-    {
-        if (dateTime.Ticks == 0)
-        {
-            return 0;
-        }
-        return (dateTime.Ticks - new DateTime(1970, 1, 1).Ticks) / TimeSpan.TicksPerSecond;
-    }
+    public static long Convert(DateTime dateTime) =>
+        (dateTime.Ticks - new DateTime(1970, 1, 1).Ticks) / TimeSpan.TicksPerSecond;
 
     /// <summary>Converts the specified unix time stamp.</summary>
     /// <param name="timeStamp">The unix time stamp.</param>
     /// <param name="resultKind">Kind of the result.</param>
     /// <returns></returns>
-    public static DateTime Convert(long timeStamp, DateTimeKind resultKind)
-    {
-        if (timeStamp == 0)
-        {
-            return new(0, resultKind);
-        }
-        return new DateTime(1970, 1, 1, 0, 0, 0, resultKind) + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
-    }
+    public static DateTime Convert(long timeStamp, DateTimeKind resultKind) =>
+        new DateTime(1970, 1, 1, 0, 0, 0, resultKind) + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
+
+    /// <summary>Converts the specified unix time stamp.</summary>
+    /// <param name="timeStamp">The unix time stamp.</param>
+    /// <param name="resultKind">Kind of the result.</param>
+    /// <param name="timeZone">The time zone.</param>
+    /// <returns></returns>
+    public static DateTime Convert(long timeStamp, DateTimeKind resultKind, TimeSpan timeZone) =>
+        new DateTime(1970, 1, 1, 0, 0, 0, resultKind) + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp) - timeZone;
 
     /// <summary>Converts the specified unix time stamp.</summary>
     /// <param name="timeStamp">The unix time stamp.</param>
     /// <param name="timeZone">The time zone.</param>
     /// <returns></returns>
-    public static DateTime ConvertToUTC(long timeStamp, TimeSpan timeZone)
-    {
-        if (timeStamp == 0)
-        {
-            return new(0, DateTimeKind.Unspecified);
-        }
-        return (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) - timeZone) + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
-    }
+    public static DateTime ConvertToUTC(long timeStamp, TimeSpan timeZone) =>
+        new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) - timeZone + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
 
     /// <summary>Performs an implicit conversion from <see cref="UnixTime64"/> to <see cref="DateTime"/>.</summary>
     /// <param name="t">The unix time stamp.</param>

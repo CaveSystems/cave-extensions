@@ -10,7 +10,7 @@ public static class DateTimeParser
 {
     #region Private Fields
 
-    static readonly string timeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+    static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
 
     static DateTime? defaultDateTime;
 
@@ -244,7 +244,7 @@ public static class DateTimeParser
         offset = TimeSpan.Zero;
         var pattern = @"(?<hour>\d{1,2})\s*:\s*(?<minute>\d{2})\s*(?::(?<second>\d{1,2}){0,1}\s*(?:\.(?<microsecond>\d{1,7})){0,1}){0,1}\s*" +
             @"(?:(?<OffsetSign>[\+\-])(?<OffsetHour>\d{2}):{0,1}(?<OffsetMinute>\d{2}){0,1}){0,1}\s*" +
-            @"(?<ampm>(?i:pm|am)){0,1}\s*" + timeZoneRegEx + @"(?=$|[^\d\w])";
+            @"(?<ampm>(?i:pm|am)){0,1}\s*" + TimeZoneRegEx + @"(?=$|[^\d\w])";
         var match = Regex.Match(text, pattern, RegexOptions.Compiled);
         if (!match.Success)
         {
@@ -327,7 +327,7 @@ public static class DateTimeParser
     public static SubStringResult ParseTimeZone(string text, out TimeZoneData? timeZoneData)
     {
         var match = Regex.Match(text,
-            @"(?=^|\s*)" + timeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
+            @"(?=^|\s*)" + TimeZoneRegEx + @"(?:\s*(?'OffsetSign'[\+\-]))(?:\s*(?'Offset'\d{4})|\s*(?'OffsetHour'\d{1,2})(?:\:(?'OffsetMinute'\d{0,2})|))",
             RegexOptions.Compiled);
         var offset = TimeSpan.Zero;
         timeZoneData = null;

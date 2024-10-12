@@ -73,14 +73,7 @@ public static class ArrayExtension
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     [MethodImpl((MethodImplOptions)256)]
-    public static T[] Empty<T>() =>
-#if NET2_0_OR_GREATER || NET46_OR_GREATER || NET5_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NETSTANDARD1_3_OR_GREATER
-        Array.Empty<T>();
-
-#else
-        new T[0];
-
-#endif
+    public static T[] Empty<T>() => [];
 
     /// <summary>Retrieves a number of elements from the array as new array instance.</summary>
     /// <typeparam name="T">Item type.</typeparam>
@@ -90,7 +83,7 @@ public static class ArrayExtension
     /// <returns>Returns a new array instance.</returns>
     public static T[] GetRange<T>(this T[] data, int index, int count)
     {
-        if (count == 0) return Empty<T>();
+        if (count == 0) return [];
         if (count < 0)
         {
             if (index == 0) return data;
