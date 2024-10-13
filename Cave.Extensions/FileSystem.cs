@@ -834,10 +834,7 @@ public static class FileSystem
     /// <returns>Returns a list of path parts.</returns>
     public static IList<string> SplitPath(string fullPath)
     {
-        if (fullPath == null)
-        {
-            return ArrayExtension.Empty<string>();
-        }
+        if (fullPath == null) { return []; }
 
         var parts = fullPath.SplitKeepSeparators('\\', '/');
         string? root = null;
