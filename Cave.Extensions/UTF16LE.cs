@@ -7,6 +7,8 @@ namespace Cave;
 /// <summary>Provides a string encoded on the heap using utf16.</summary>
 public sealed class UTF16LE : Unicode
 {
+    static UTF16LE Parse(string text) => ConvertFromString(text);
+
     #region Public Constructors
 
     /// <summary>Creates a new empty instance of the <see cref="UTF8"/> class.</summary>

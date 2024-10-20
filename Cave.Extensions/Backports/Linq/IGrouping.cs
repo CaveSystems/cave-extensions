@@ -5,17 +5,16 @@
 
 using System.Collections.Generic;
 
-namespace System.Linq
+namespace System.Linq;
+
+public interface IGrouping<TKey, TElement> : IEnumerable<TElement>
+
 {
-    public interface IGrouping<TKey, TElement> : IEnumerable<TElement>
+    #region Properties
 
-    {
-        #region Properties
+    TKey Key { get; }
 
-        TKey Key { get; }
-
-        #endregion Properties
-    }
+    #endregion Properties
 }
 
 #endif

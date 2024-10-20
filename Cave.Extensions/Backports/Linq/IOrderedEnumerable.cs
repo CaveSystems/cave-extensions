@@ -5,16 +5,15 @@
 
 using System.Collections.Generic;
 
-namespace System.Linq
+namespace System.Linq;
+
+public interface IOrderedEnumerable<TElement> : IEnumerable<TElement>
 {
-    public interface IOrderedEnumerable<TElement> : IEnumerable<TElement>
-    {
-        #region Members
+    #region Members
 
-        IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending);
+    IOrderedEnumerable<TElement> CreateOrderedEnumerable<TKey>(Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending);
 
-        #endregion Members
-    }
+    #endregion Members
 }
 
 #endif
