@@ -65,6 +65,22 @@ public static partial class StringExtensions
 
     /// <summary>Returns the string after the specified pattern.</summary>
     /// <param name="value">The string value.</param>
+    /// <param name="characters">The characters to search for.</param>
+    /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string AfterFirst(this string? value, char[] characters)
+    {
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.IndexOfAny(characters);
+            if (i >= 0) result = value[(i + 1)..];
+        }
+        return result;
+    }
+
+    /// <summary>Returns the string after the specified pattern.</summary>
+    /// <param name="value">The string value.</param>
     /// <param name="pattern">The character to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -102,6 +118,22 @@ public static partial class StringExtensions
 
     /// <summary>Returns the string after the specified pattern.</summary>
     /// <param name="value">The string value.</param>
+    /// <param name="characters">The pattern to search for.</param>
+    /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string AfterLast(this string? value, char[] characters)
+    {
+        var result = string.Empty;
+        if (value is not null)
+        {
+            var i = value.LastIndexOfAny(characters);
+            if (i >= 0) result = value[(i + 1)..];
+        }
+        return result;
+    }
+
+    /// <summary>Returns the string after the specified pattern.</summary>
+    /// <param name="value">The string value.</param>
     /// <param name="pattern">The pattern to search for.</param>
     /// <returns>Returns the part of the string after the pattern or an empty string if the pattern cannot be found.</returns>
     [MethodImpl((MethodImplOptions)256)]
@@ -123,7 +155,7 @@ public static partial class StringExtensions
 
     /// <summary>Returns the string before the specified pattern.</summary>
     /// <param name="value">The string value.</param>
-    /// <param name="character">The pattern to search for.</param>
+    /// <param name="character">The character to search for.</param>
     /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string BeforeFirst(this string? value, char character)
@@ -136,6 +168,26 @@ public static partial class StringExtensions
         else
         {
             var i = value.IndexOf(character);
+            result = (i >= 0) ? value[..i] : value;
+        }
+        return result;
+    }
+
+    /// <summary>Returns the string before the specified pattern.</summary>
+    /// <param name="value">The string value.</param>
+    /// <param name="characters">The characters to search for.</param>
+    /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string BeforeFirst(this string? value, char[] characters)
+    {
+        string result;
+        if (value is null)
+        {
+            result = string.Empty;
+        }
+        else
+        {
+            var i = value.IndexOfAny(characters);
             result = (i >= 0) ? value[..i] : value;
         }
         return result;
@@ -176,6 +228,26 @@ public static partial class StringExtensions
         else
         {
             var i = value.LastIndexOf(character);
+            result = (i >= 0) ? value[..i] : value;
+        }
+        return result;
+    }
+
+    /// <summary>Returns the string before the specified pattern.</summary>
+    /// <param name="value">The string value.</param>
+    /// <param name="characters">The characters to search for.</param>
+    /// <returns>Returns the part of the string before the pattern or the whole string it the pattern is not present.</returns>
+    [MethodImpl((MethodImplOptions)256)]
+    public static string BeforeLast(this string value, char[] characters)
+    {
+        string result;
+        if (value is null)
+        {
+            result = string.Empty;
+        }
+        else
+        {
+            var i = value.LastIndexOfAny(characters);
             result = (i >= 0) ? value[..i] : value;
         }
         return result;

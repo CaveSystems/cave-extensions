@@ -5,171 +5,170 @@
 
 using System.Collections.Generic;
 
-namespace System.Threading.Tasks
+namespace System.Threading.Tasks;
+
+public static class Parallel
 {
-    public static class Parallel
+    sealed class Runner<T> : IDisposable
     {
-        sealed class Runner<T> : IDisposable
+        readonly AutoResetEvent completed = new(false);
+
+        readonly List<Exception> exceptions = new();
+        int currentTasks;
+
+        public ParallelLoopState LoopState { get; } = new();
+
+        public Action<T> Action { get; set; }
+
+        public int ConcurrentTasks { get; set; } = -1;
+
+        public void Dispose() => (completed as IDisposable)?.Dispose();
+
+        public void Wait()
         {
-            readonly AutoResetEvent completed = new(false);
-
-            readonly List<Exception> exceptions = new();
-            int currentTasks;
-
-            public ParallelLoopState LoopState { get; } = new();
-
-            public Action<T> Action { get; set; }
-
-            public int ConcurrentTasks { get; set; } = -1;
-
-            public void Dispose() => (completed as IDisposable)?.Dispose();
-
-            public void Wait()
+            while (currentTasks > 0)
             {
-                while (currentTasks > 0)
+                completed.WaitOne();
+            }
+        }
+
+        internal void Start(T item)
+        {
+            Interlocked.Increment(ref currentTasks);
+            while (ConcurrentTasks > 0 && currentTasks >= ConcurrentTasks)
+            {
+                if (LoopState.StopByAnySource)
                 {
-                    completed.WaitOne();
+                    return;
                 }
+                completed.WaitOne(1);
             }
 
-            internal void Start(T item)
+            if (exceptions.Count > 0)
             {
-                Interlocked.Increment(ref currentTasks);
-                while (ConcurrentTasks > 0 && currentTasks >= ConcurrentTasks)
-                {
-                    if (LoopState.StopByAnySource)
-                    {
-                        return;
-                    }
-                    completed.WaitOne(1);
-                }
-
-                if (exceptions.Count > 0)
-                {
-                    throw new AggregateException(exceptions.ToArray());
-                }
+                throw new AggregateException(exceptions.ToArray());
+            }
 #if NETSTANDARD10
-                Task.Factory.StartNew(Run, item, TaskCreationOptions.None);
+            Task.Factory.StartNew(Run, item, TaskCreationOptions.None);
 #else
-                ThreadPool.QueueUserWorkItem(Run, item);
+            ThreadPool.QueueUserWorkItem(Run, item);
 #endif
-            }
-
-            void Run(object item)
-            {
-                try
-                {
-                    Action((T)item);
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                    LoopState.SetException();
-                    throw;
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref currentTasks);
-                    completed.Set();
-                }
-            }
         }
 
-        public static void For(int fromInclusive, int toExclusive, Action<int> action)
+        void Run(object item)
         {
-            using var instance = new Runner<int>();
-            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
-            for (var i = fromInclusive; i < toExclusive; i++)
+            try
             {
-                instance.Start(i);
-                if (instance.LoopState.StopByAnySource)
-                {
-                    return;
-                }
+                Action((T)item);
             }
-            instance.Wait();
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+                LoopState.SetException();
+                throw;
+            }
+            finally
+            {
+                Interlocked.Decrement(ref currentTasks);
+                completed.Set();
+            }
         }
+    }
 
-        public static void For(int fromInclusive, int toExclusive, Action<int, ParallelLoopState> action)
+    public static void For(int fromInclusive, int toExclusive, Action<int> action)
+    {
+        using var instance = new Runner<int>();
+        instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+        for (var i = fromInclusive; i < toExclusive; i++)
         {
-            if (action == null)
+            instance.Start(i);
+            if (instance.LoopState.StopByAnySource)
             {
-                throw new ArgumentNullException(nameof(action));
+                return;
             }
-            using var instance = new Runner<int>();
-            instance.Action = item => action(item, instance.LoopState);
-            for (var i = fromInclusive; i < toExclusive; i++)
-            {
-                instance.Start(i);
-                if (instance.LoopState.StopByAnySource)
-                {
-                    return;
-                }
-            }
-            instance.Wait();
         }
+        instance.Wait();
+    }
 
-        public static void ForEach<T>(int concurrentTasks, IEnumerable<T> items, Action<T> action)
+    public static void For(int fromInclusive, int toExclusive, Action<int, ParallelLoopState> action)
+    {
+        if (action == null)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            using var instance = new Runner<T>();
-            instance.ConcurrentTasks = concurrentTasks;
-            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
-            foreach (var item in items)
-            {
-                instance.Start(item);
-                if (instance.LoopState.StopByAnySource)
-                {
-                    return;
-                }
-            }
-            instance.Wait();
+            throw new ArgumentNullException(nameof(action));
         }
+        using var instance = new Runner<int>();
+        instance.Action = item => action(item, instance.LoopState);
+        for (var i = fromInclusive; i < toExclusive; i++)
+        {
+            instance.Start(i);
+            if (instance.LoopState.StopByAnySource)
+            {
+                return;
+            }
+        }
+        instance.Wait();
+    }
 
-        public static void ForEach<T>(IEnumerable<T> items, Action<T> action)
+    public static void ForEach<T>(int concurrentTasks, IEnumerable<T> items, Action<T> action)
+    {
+        if (items == null)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            using var instance = new Runner<T>();
-            instance.Action = action ?? throw new ArgumentNullException(nameof(action));
-            foreach (var item in items)
-            {
-                instance.Start(item);
-                if (instance.LoopState.StopByAnySource)
-                {
-                    return;
-                }
-            }
-            instance.Wait();
+            throw new ArgumentNullException(nameof(items));
         }
+        using var instance = new Runner<T>();
+        instance.ConcurrentTasks = concurrentTasks;
+        instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+        foreach (var item in items)
+        {
+            instance.Start(item);
+            if (instance.LoopState.StopByAnySource)
+            {
+                return;
+            }
+        }
+        instance.Wait();
+    }
 
-        public static void ForEach<TSource>(IEnumerable<TSource> items, Action<TSource, ParallelLoopState> action)
+    public static void ForEach<T>(IEnumerable<T> items, Action<T> action)
+    {
+        if (items == null)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-            using var instance = new Runner<TSource>();
-            instance.Action = item => action(item, instance.LoopState);
-            foreach (var item in items)
-            {
-                instance.Start(item);
-                if (instance.LoopState.StopByAnySource)
-                {
-                    return;
-                }
-            }
-            instance.Wait();
+            throw new ArgumentNullException(nameof(items));
         }
+        using var instance = new Runner<T>();
+        instance.Action = action ?? throw new ArgumentNullException(nameof(action));
+        foreach (var item in items)
+        {
+            instance.Start(item);
+            if (instance.LoopState.StopByAnySource)
+            {
+                return;
+            }
+        }
+        instance.Wait();
+    }
+
+    public static void ForEach<TSource>(IEnumerable<TSource> items, Action<TSource, ParallelLoopState> action)
+    {
+        if (items == null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+        if (action == null)
+        {
+            throw new ArgumentNullException(nameof(action));
+        }
+        using var instance = new Runner<TSource>();
+        instance.Action = item => action(item, instance.LoopState);
+        foreach (var item in items)
+        {
+            instance.Start(item);
+            if (instance.LoopState.StopByAnySource)
+            {
+                return;
+            }
+        }
+        instance.Wait();
     }
 }
 

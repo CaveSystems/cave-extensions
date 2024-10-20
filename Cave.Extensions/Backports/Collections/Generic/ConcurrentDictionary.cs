@@ -63,7 +63,7 @@ public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 
     public void Add(KeyValuePair<TKey, TValue> item) => Locked(() => dictionary.Add(item));
 
-    public void Clear() => Locked(() => dictionary.Clear());
+    public void Clear() => Locked(dictionary.Clear);
 
     public bool Contains(KeyValuePair<TKey, TValue> item) => LockedGet(() => dictionary.Contains(item));
 

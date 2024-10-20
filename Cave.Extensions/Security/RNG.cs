@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Cave.Security;
 
@@ -114,6 +115,97 @@ public static class RNG
 
     /// <summary>Gets a cryptographically strong random value within full valid range of the target value.</summary>
     public static byte UInt8 => GetBytes(1)[0];
+
+    /// <summary>Gets a random 7 bit us ascii string in range 1..127</summary>
+    /// <param name="length">Length of the string</param>
+    /// <returns>Returns a new string</returns>
+    public static string GetAscii(int length)
+    {
+        var block = GetBytes(length);
+        var result = new char[length];
+        for (var i = 0; i < length; i++)
+        {
+            var value = block[i] % 128;
+            while (value == 0) value = UInt8 % 128;
+            result[i] = (char)value;
+        }
+        return new(result);
+    }
+
+    /// <summary>Gets a random string using the specified characters</summary>
+    /// <param name="length">Length of the string</param>
+    /// <param name="validChars">Characters to use</param>
+    /// <returns>Returns a new string</returns>
+    public static string GetString(int length, string validChars)
+    {
+        var block = GetBytes(length);
+        var result = new char[length];
+        for (var i = 0; i < length; i++)
+        {
+            result[i] = validChars[block[i] % validChars.Length];
+        }
+        return new(result);
+    }
+
+    /// <summary>Gets a random unicode string</summary>
+    /// <param name="length">Length of the string</param>
+    /// <returns>Returns a new string</returns>
+    public static string GetUnicode(int length)
+    {
+        var sb = new StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            for (; ; )
+            {
+                var codepoint = (int)(UInt32 % 0x110000);
+                if (codepoint >= 0xD800 && codepoint <= 0xDFFF) continue;
+                try
+                {
+                    sb.Append(char.ConvertFromUtf32(codepoint));
+                    break;
+                }
+                catch { /* depending on framework version there are bugs in the unicode converter, ignore them */ }
+            }
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>Gets a random value</summary>
+    public static bool Bool => (UInt8 & 1) == 0;
+
+    static ulong MaxTicks { get; } = (ulong)(DateTime.MaxValue - DateTime.MinValue).Ticks;
+
+    /// <summary>Returns the range in ticks for new random timespans (+/- ~5000 years)</summary>
+    public const long TimeSpanDefaultTickRange = TimeSpan.TicksPerDay * (long)(365.25 * 5000);
+
+    /// <summary>Gets a random timespan within the given range.</summary>
+    /// <param name="ticksMin">Minimum ticks</param>
+    /// <param name="ticksMax">Maximum ticks</param>
+    /// <param name="tickStep">Step in ticks</param>
+    /// <returns>Returns a new timespan value</returns>
+    /// <exception cref="Exception"></exception>
+    public static TimeSpan GetTimeSpan(long ticksMin, long ticksMax, long tickStep)
+    {
+        for (var i = 0; ; i++)
+        {
+            var value = unchecked(ticksMin + (UInt32 * tickStep));
+            value -= value % tickStep;
+            if (value > ticksMin && value < ticksMax) return new TimeSpan(value);
+            if (i > 100) throw new Exception("Could not find a valid result!");
+        }
+    }
+
+    /// <summary>Gets a random timespan within <see cref="TimeSpan.MinValue"/> and <see cref="TimeSpan.MaxValue"/>.</summary>
+    public static TimeSpan TimeSpanAny => new TimeSpan(Int64);
+
+    /// <summary>Gets a random timespan within +/- <see cref="TimeSpanDefaultTickRange"/> with an accuracy of one millisecond.</summary>
+    public static TimeSpan TimeSpanMilliSeconds => GetTimeSpan(-TimeSpanDefaultTickRange, +TimeSpanDefaultTickRange, TimeSpan.TicksPerMillisecond);
+
+    /// <summary>Gets a random timespan within +/- <see cref="TimeSpanDefaultTickRange"/> with an accuracy of one second.</summary>
+    public static TimeSpan TimeSpanSeconds => GetTimeSpan(-TimeSpanDefaultTickRange, +TimeSpanDefaultTickRange, TimeSpan.TicksPerSecond);
+
+    /// <summary>Gets a random datetime within <see cref="DateTime.MinValue"/> and <see cref="DateTime.MaxValue"/>.</summary>
+    public static DateTime DateTime => new DateTime((long)(UInt64 % MaxTicks));
 
     /// <summary>Creates a random password using ascii printable characters.</summary>
     /// <param name="count">Length of the desired password.</param>

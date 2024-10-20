@@ -5,23 +5,22 @@
 
 using System.Collections.Generic;
 
-namespace System.Linq
+namespace System.Linq;
+
+public interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
 {
-    public interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
-    {
-        #region Properties
+    #region Properties
 
-        int Count { get; }
-        IEnumerable<TElement> this[TKey key] { get; }
+    int Count { get; }
+    IEnumerable<TElement> this[TKey key] { get; }
 
-        #endregion Properties
+    #endregion Properties
 
-        #region Members
+    #region Members
 
-        bool Contains(TKey key);
+    bool Contains(TKey key);
 
-        #endregion Members
-    }
+    #endregion Members
 }
 
 #endif

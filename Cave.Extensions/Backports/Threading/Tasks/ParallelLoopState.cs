@@ -5,33 +5,32 @@
 
 using System.Diagnostics;
 
-namespace System.Threading.Tasks
+namespace System.Threading.Tasks;
+
+[DebuggerDisplay("ShouldExitCurrentIteration = {ShouldExitCurrentIteration}")]
+public class ParallelLoopState
 {
-    [DebuggerDisplay("ShouldExitCurrentIteration = {ShouldExitCurrentIteration}")]
-    public class ParallelLoopState
-    {
-        #region Properties
+    #region Properties
 
-        public bool IsExceptional { get; private set; }
+    public bool IsExceptional { get; private set; }
 
-        public bool IsStopped { get; private set; }
+    public bool IsStopped { get; private set; }
 
-        public bool ShouldExitCurrentIteration { get; private set; }
+    public bool ShouldExitCurrentIteration { get; private set; }
 
-        internal bool StopByAnySource => IsExceptional || IsStopped || ShouldExitCurrentIteration;
+    internal bool StopByAnySource => IsExceptional || IsStopped || ShouldExitCurrentIteration;
 
-        #endregion Properties
+    #endregion Properties
 
-        #region Members
+    #region Members
 
-        public void Break() => ShouldExitCurrentIteration = true;
+    public void Break() => ShouldExitCurrentIteration = true;
 
-        public void Stop() => IsStopped = true;
+    public void Stop() => IsStopped = true;
 
-        internal void SetException() => IsExceptional = true;
+    internal void SetException() => IsExceptional = true;
 
-        #endregion Members
-    }
+    #endregion Members
 }
 
 #endif

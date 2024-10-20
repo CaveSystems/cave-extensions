@@ -7,6 +7,8 @@ namespace Cave;
 /// <summary>Provides a string encoded on the heap using utf32.</summary>
 public sealed class UTF32LE : Unicode
 {
+    static UTF32LE Parse(string text) => ConvertFromString(text);
+
     #region Public Constructors
 
     /// <summary>Creates a new empty instance of the <see cref="UTF32LE"/> class.</summary>
