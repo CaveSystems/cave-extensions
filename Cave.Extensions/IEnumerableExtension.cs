@@ -13,6 +13,19 @@ public static class IEnumerableExtension
 {
     #region Static
 
+    /// <summary>Returns the single item present or throws an <see cref="InvalidOperationException"/> with the specified <paramref name="errorMessage"/>.</summary>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="enumerable">Enumeration</param>
+    /// <param name="errorMessage">Error message</param>
+    /// <returns>Returns the single item present</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static T SingleOrError<T>(this IEnumerable<T> enumerable, string errorMessage)
+    {
+        var result = enumerable.ToList();
+        if (result.Count == 1) return result[0];
+        throw new InvalidOperationException(errorMessage);
+    }
+
     /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
