@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Cave;
 
@@ -836,6 +839,67 @@ public static partial class StringExtensions
         return result.ToString();
     }
 
+    /// <summary>Builds a <see cref="Regex"/> for string pattern comparison (similar to sql like).</summary>
+    /// <remarks>
+    /// <list type="bullet">
+    /// <item>The percent sign % represents zero, one, or multiple characters</item>
+    /// <item>The underscore sign _ represents one, single character</item>
+    /// </list>
+    /// </remarks>
+    /// <param name="pattern">Pattern to look for.</param>
+    /// <param name="option">Options for the regex instance. E.g: <see cref="RegexOptions.IgnoreCase"/></param>
+    /// <returns>Returns a new <see cref="Regex"/> instance.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static Regex GetLikeExpression(this string pattern, RegexOptions option = RegexOptions.None)
+    {
+        if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+
+        var lastWasWildcard = false;
+        var sb = new StringBuilder();
+        sb.Append('^');
+        foreach (var c in pattern)
+        {
+            switch (c)
+            {
+                case '%':
+                    if (lastWasWildcard)
+                    {
+                        continue;
+                    }
+
+                    lastWasWildcard = true;
+                    sb.Append(".*");
+                    continue;
+                case '_':
+                    sb.Append('.');
+                    continue;
+                case ' ':
+                case '\\':
+                case '*':
+                case '+':
+                case '?':
+                case '|':
+                case '{':
+                case '[':
+                case '(':
+                case ')':
+                case '^':
+                case '$':
+                case '.':
+                case '#':
+                    sb.Append('\\');
+                    break;
+            }
+
+            sb.Append(c);
+            lastWasWildcard = false;
+        }
+
+        sb.Append('$');
+        var s = sb.ToString();
+        return new Regex(s, option);
+    }
+
     /// <summary>Gets a part of a string.</summary>
     /// <param name="data">Data to parse.</param>
     /// <param name="start">Start index to begin parsing (use -1 to use index of StartMark).</param>
@@ -1219,6 +1283,26 @@ public static partial class StringExtensions
     /// <returns>Returns a new string.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string JoinNewLine(this IEnumerable array) => Join(array, "\r\n", null);
+
+    /// <summary>Does a pattern match on the specified <paramref name="input"/>.</summary>
+    /// <remarks>
+    /// <list type="bullet">
+    /// <item>The percent sign % represents zero, one, or multiple characters</item>
+    /// <item>The underscore sign _ represents one, single character</item>
+    /// </list>
+    /// If you need many comparisons or scan a list of strings use <see cref="GetLikeExpression(string, RegexOptions)"/> and the <see
+    /// cref="Regex.IsMatch(string)"/> functions since building the <see cref="Regex"/> instance takes most of the time on a single comparison.
+    /// </remarks>
+    /// <param name="input">The input string to test for a match.</param>
+    /// <param name="pattern">Pattern to look for.</param>
+    /// <returns></returns>
+    public static bool Like(this string? input, string? pattern)
+    {
+        if (input is null) return pattern is null;
+        if (pattern is null) return false;
+        var regex = pattern.GetLikeExpression(RegexOptions.IgnoreCase);
+        return regex.IsMatch(input);
+    }
 
     /// <summary>Parses a binary size string created by <see cref="FormatSize(double, IFormatProvider)"/> or <see cref="FormatBinarySize(double, IFormatProvider)"/>.</summary>
     /// <param name="value">The value string.</param>
