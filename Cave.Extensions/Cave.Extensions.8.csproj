@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+
+		<Version>9.99-future</Version>
+		<AssemblyName>Cave.Extensions</AssemblyName>
 		
 		<!--project-->
 		<RootNamespace>Cave</RootNamespace>
@@ -19,5 +22,5 @@
 		<DelaySign>false</DelaySign>
 		<RollForward>LatestMinor</RollForward>
 	</PropertyGroup>
-
+	
 </Project>
