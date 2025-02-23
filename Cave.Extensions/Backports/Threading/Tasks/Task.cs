@@ -186,11 +186,13 @@ public class Task : IDisposable
 
     #region Properties
 
-    public bool IsFaulted => Exception != null;
+    public bool IsFaulted => Status == TaskStatus.Faulted;
 
     public Exception Exception { get; private set; }
 
-    public bool IsCompleted { get; private set; }
+    public bool IsCompleted => Status >= TaskStatus.RanToCompletion;
+
+    public TaskStatus Status { get; private set; }
 
     #endregion Properties
 
@@ -237,11 +239,12 @@ public class Task : IDisposable
 
     void Worker(object nothing = null)
     {
-        void Exit()
+        Status = TaskStatus.WaitingForActivation;
+        void Exit(TaskStatus status)
         {
             lock (this)
             {
-                IsCompleted = true;
+                Status = status;
                 completedEvent.Set();
             }
         }
@@ -255,6 +258,7 @@ public class Task : IDisposable
                 {
                     IsBackground = true
                 };
+                Status = TaskStatus.WaitingToRun;
                 thread.Start(null);
                 return;
             }
@@ -262,21 +266,20 @@ public class Task : IDisposable
         catch (Exception ex)
         {
             Exception = new AggregateException(ex);
-            Exit();
+            Exit(TaskStatus.Faulted);
             return;
         }
 
         try
         {
+            Status = TaskStatus.Running;
             OnRunAction();
+            Exit(TaskStatus.RanToCompletion);
         }
         catch (Exception ex)
         {
             Exception = new AggregateException(ex);
-        }
-        finally
-        {
-            Exit();
+            Exit(TaskStatus.Faulted);
         }
     }
 
