@@ -74,7 +74,7 @@ public class TaskList
     {
         lock (this)
         {
-            return [.. tasks.Where(task => task.IsFaulted).Select(task => task.Exception)];
+            return [.. tasks.Where(task => task.IsFaulted).Select(task => task.Exception!)];
         }
     }
 
