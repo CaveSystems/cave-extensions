@@ -33,11 +33,29 @@ public class Base64Tests
     }
 
     [Test]
-    public void Base64TestValues()
+    public void Base64TestValuesDefault()
     {
         var encoded = Base64.Default.Encode(1000);
         Assert.AreEqual("6AM=", encoded);
         var decoded = Base64.Default.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
+    }
+
+    [Test]
+    public void Base64TestValuesNoPadding()
+    {
+        var encoded = Base64.NoPadding.Encode(1000);
+        Assert.AreEqual("6AM", encoded);
+        var decoded = Base64.NoPadding.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
+    }
+
+    [Test]
+    public void Base64TestValuesUrlChars()
+    {
+        var encoded = Base64.UrlChars.Encode(1000);
+        Assert.AreEqual("6AM=", encoded);
+        var decoded = Base64.UrlChars.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
     }
 

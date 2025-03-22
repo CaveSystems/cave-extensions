@@ -41,6 +41,9 @@ public abstract class BaseX : IBaseX
     /// <inheritdoc/>
     public char? Padding { get; }
 
+    /// <inheritdoc/>
+    public bool ObeyCasing => CharacterDictionary.ObeyCasing;
+
     #endregion Public Properties
 
     #region Public Methods
@@ -62,6 +65,17 @@ public abstract class BaseX : IBaseX
     }
 
 #endif
+
+    /// <inheritdoc/>
+    public bool CanDecode(byte[] baseXdata)
+    {
+        for (var i = 0; i < baseXdata.Length; i++)
+        {
+            var c = (char)baseXdata[i];
+            if (!CharacterDictionary.HasValue(c)) return false;
+        }
+        return true;
+    }
 
     /// <inheritdoc/>
     public virtual long DecodeValue(byte[] baseXdata)

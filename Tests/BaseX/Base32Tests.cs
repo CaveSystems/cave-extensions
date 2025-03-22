@@ -30,12 +30,45 @@ public class Base32Tests
     }
 
     [Test]
-    public void Base32TestValues()
+    public void Base32TestValuesDefault()
+    {
+        var encoded = Base32.NoPadding.Encode(1000);
+        Assert.AreEqual("5abq", encoded);
+        var decoded = Base32.NoPadding.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
+        var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());
+        Assert.AreEqual(1000, decoded2);
+    }
+
+    [Test]
+    public void Base32TestValuesNoPadding()
+    {
+        var encoded = Base32.NoPadding.Encode(1000);
+        Assert.AreEqual("5abq", encoded);
+        var decoded = Base32.NoPadding.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
+        var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());
+        Assert.AreEqual(1000, decoded2);
+    }
+
+    [Test]
+    public void Base32TestValuesOTP()
     {
         var encoded = Base32.OTP.Encode(1000);
         Assert.AreEqual("5abq", encoded);
         var decoded = Base32.OTP.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
+    }
+
+    [Test]
+    public void Base32TestValuesSafe()
+    {
+        var encoded = Base32.Safe.Encode(1000);
+        Assert.AreEqual("5abq", encoded);
+        var decoded = Base32.Safe.DecodeInt32(encoded);
+        Assert.AreEqual(1000, decoded);
+        var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());
+        Assert.AreEqual(1000, decoded2);
     }
 
     [Test]

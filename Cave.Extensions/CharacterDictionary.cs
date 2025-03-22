@@ -77,6 +77,10 @@ public sealed class CharacterDictionary
     /// <returns>Returns the character for the value.</returns>
     public char GetCharacter(int value) => charset[value];
 
+    /// <summary>Gets a copy of all valid characters.</summary>
+    /// <returns>Returns a new array of char</returns>
+    public char[] GetValidChars() => (char[])charset.Clone();
+
     /// <summary>Gets the value for the specified character.</summary>
     /// <param name="character">The <see cref="char"/> to look up.</param>
     /// <returns>Returns the value (index) for the char.</returns>
@@ -95,13 +99,27 @@ public sealed class CharacterDictionary
         return result;
     }
 
+    /// <summary>Checks whether an encoded character has a value.</summary>
+    /// <param name="character">Character to check</param>
+    /// <returns>Returns true is the character is valie, false otherwise</returns>
+    public bool HasValue(char character)
+    {
+        if (character < 0 || character > 128) return false;
+        var result = values[character];
+        if (result > 128 && !ObeyCasing)
+        {
+            result = char.IsUpper(character) ? values[char.ToLowerInvariant(character)] : values[char.ToUpperInvariant(character)];
+        }
+        return (result <= 128);
+    }
+
     /// <summary>Tries to get the value for the given character. If no values is available defaultValue will be returned.</summary>
     /// <param name="character">The character.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns></returns>
     public int TryGetValue(char character, int defaultValue)
     {
-        if ((character > 128) || (character >= values.Length))
+        if (character >= values.Length)
         {
             return defaultValue;
         }

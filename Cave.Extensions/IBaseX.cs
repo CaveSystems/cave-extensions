@@ -14,9 +14,17 @@ public interface IBaseX
     /// <summary>Gets the used padding after each BaseX encoded string. Use null to disable padding.</summary>
     char? Padding { get; }
 
+    /// <summary>Gets a value indicating whether the character case has to be obeyed.</summary>
+    bool ObeyCasing { get; }
+
     #endregion Public Properties
 
     #region Public Methods
+
+    /// <summary>Checks whether the specified data can be decoded or not.</summary>
+    /// <param name="baseXdata">BaseX data array</param>
+    /// <returns>Returns true if no invalid characters are found</returns>
+    bool CanDecode(byte[] baseXdata);
 
     /// <summary>Decodes the specified BaseX data.</summary>
     /// <param name="baseXdata">BaseX data array</param>

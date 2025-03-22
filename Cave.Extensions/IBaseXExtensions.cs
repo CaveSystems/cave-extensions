@@ -7,6 +7,12 @@ public static class IBaseXExtensions
 {
     #region Public Methods
 
+    /// <summary>Checks whether the specified data can be decoded or not.</summary>
+    /// <param name="baseX">Instance to use</param>
+    /// <param name="baseXstring">BaseX data</param>
+    /// <returns>Returns true if no invalid characters are found</returns>
+    public static bool CanDecode(this IBaseX baseX, string baseXstring) => ASCII.IsClean(baseXstring) && baseX.CanDecode(ASCII.GetBytes(baseXstring));
+
     /// <summary>Decodes the specified BaseX string.</summary>
     /// <param name="baseX">Instance to use</param>
     /// <param name="baseXstring">BaseX string value</param>

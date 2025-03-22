@@ -38,10 +38,10 @@ public class Base32 : BaseWithFixedBits
 
     #region Public Properties
 
-    /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding.</summary>
+    /// <summary>Gets the default (uppercase) charset for base32 en-/decoding with padding. This allows invalid casing.</summary>
     public static Base32 Default => new(new(CharactersDefault, false), '=');
 
-    /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding.</summary>
+    /// <summary>Gets the default (uppercase) charset for Base32 en-/decoding without padding. This allows invalid casing.</summary>
     public static Base32 NoPadding => new(new(CharactersDefault, false), null);
 
     /// <summary>Gets the otp charset for Base32 en-/decoding (no padding).</summary>
