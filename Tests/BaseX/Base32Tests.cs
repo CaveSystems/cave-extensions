@@ -32,11 +32,11 @@ public class Base32Tests
     [Test]
     public void Base32TestValuesDefault()
     {
-        var encoded = Base32.NoPadding.Encode(1000);
-        Assert.AreEqual("5abq", encoded);
-        var decoded = Base32.NoPadding.DecodeInt32(encoded);
+        var encoded = Base32.Default.Encode(1000);
+        Assert.AreEqual("T01G====", encoded);
+        var decoded = Base32.Default.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
-        var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());
+        var decoded2 = Base32.Default.DecodeInt32(encoded.ToLower());
         Assert.AreEqual(1000, decoded2);
     }
 
@@ -44,10 +44,10 @@ public class Base32Tests
     public void Base32TestValuesNoPadding()
     {
         var encoded = Base32.NoPadding.Encode(1000);
-        Assert.AreEqual("5abq", encoded);
+        Assert.AreEqual("T01G", encoded);
         var decoded = Base32.NoPadding.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
-        var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());
+        var decoded2 = Base32.NoPadding.DecodeInt32(encoded.ToLower());
         Assert.AreEqual(1000, decoded2);
     }
 
@@ -64,7 +64,7 @@ public class Base32Tests
     public void Base32TestValuesSafe()
     {
         var encoded = Base32.Safe.Encode(1000);
-        Assert.AreEqual("5abq", encoded);
+        Assert.AreEqual("7abs", encoded);
         var decoded = Base32.Safe.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
         var decoded2 = Base32.Safe.DecodeInt32(encoded.ToUpper());

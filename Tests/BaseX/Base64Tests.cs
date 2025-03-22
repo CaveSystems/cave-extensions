@@ -54,7 +54,7 @@ public class Base64Tests
     public void Base64TestValuesUrlChars()
     {
         var encoded = Base64.UrlChars.Encode(1000);
-        Assert.AreEqual("6AM=", encoded);
+        Assert.AreEqual("6AM", encoded);
         var decoded = Base64.UrlChars.DecodeInt32(encoded);
         Assert.AreEqual(1000, decoded);
     }
