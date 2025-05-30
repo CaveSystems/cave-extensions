@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_2.0-3.5", "Tests\net_2.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_4.x", "Tests\net_4.x.csproj", "{D0AED5EE-675A-47BD-9CA3-CC1E989CEC04}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_5+", "Tests\net_5+.csproj", "{C9630467-5644-459F-A572-F637A172BA9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net_latest", "Tests\net_latest.csproj", "{C9630467-5644-459F-A572-F637A172BA9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
