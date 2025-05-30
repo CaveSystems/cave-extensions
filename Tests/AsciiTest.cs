@@ -13,6 +13,28 @@ public class AsciiTest
     #region Public Methods
 
     [Test]
+    public void TestAsciiZeroTerminated()
+    {
+        var result = ASCII.GetBytes(ASCII.Strings.Printable, true);
+        Assert.That(result, Is.EquivalentTo(ASCII.Bytes.Printable.ToArray().Concat((byte)0)));
+    }
+
+    [Test]
+    public void TestAscii()
+    {
+        var result = ASCII.GetBytes(ASCII.Strings.Printable);
+        Assert.That(result, Is.EquivalentTo(ASCII.Bytes.Printable.ToArray()));
+    }
+
+    [Test]
+    public void TestAsciiClean()
+    {
+        var testString = ASCII.Strings.Printable.Box('"');
+        var result = ASCII.Clean($"ÄÖÜ{testString}\0").Trim();
+        Assert.That(result, Is.EquivalentTo(testString));
+    }
+
+    [Test]
     public void TestAnsi()
     {
         Assert.Throws(typeof(InvalidDataException), () => ASCII.GetBytes("AOUÄÖÜ"));

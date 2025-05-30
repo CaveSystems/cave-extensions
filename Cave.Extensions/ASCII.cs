@@ -681,12 +681,11 @@ public static class ASCII
 
         unchecked
         {
-            if (count < 0)
-            {
-                count = termination ? text.Length + 1 : text.Length;
-            }
+            if (count < 0) { count = text.Length; }
+            var size = count;
+            if (termination) size += 1;
 
-            var result = new byte[count];
+            var result = new byte[size];
             var c = 0;
             for (var i = start; c < count; i++, c++)
             {
@@ -704,6 +703,7 @@ public static class ASCII
                 result[c] = (byte)value;
             }
 
+            //arrays are always initialized with zero, no need to set termination byte
             return result;
         }
     }
