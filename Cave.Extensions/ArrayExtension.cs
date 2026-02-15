@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -317,6 +318,18 @@ public static class ArrayExtension
             Buffer.BlockCopy(data, offs, result, i + replacersLength, data.Length - offs);
         }
         return result;
+    }
+
+    /// <summary>Returns a reverse iterator for the specified source.</summary>
+    /// <typeparam name="TSource">Source type</typeparam>
+    /// <param name="source">Source array</param>
+    /// <returns>Returns a reverse iteration</returns>
+    public static IEnumerable<TSource> Reverse<TSource>(this TSource[] source)
+    {
+        for (var i = source.Length - 1; i >= 0; i--)
+        {
+            yield return source[i];
+        }
     }
 
     /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
