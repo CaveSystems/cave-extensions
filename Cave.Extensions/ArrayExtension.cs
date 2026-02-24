@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -329,34 +328,6 @@ public static class ArrayExtension
         for (var i = source.Length - 1; i >= 0; i--)
         {
             yield return source[i];
-        }
-    }
-
-    /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
-    /// <typeparam name="T">Item type.</typeparam>
-    /// <param name="items">The items to shuffle.</param>
-    /// <param name="seed">The seed.</param>
-    /// <returns>List of shuffled items.</returns>
-    public static List<T> Shuffle<T>(this IEnumerable<T> items, int seed = 0)
-    {
-        unchecked
-        {
-            if (seed == 0)
-            {
-                seed = (int)DateTime.UtcNow.Ticks;
-            }
-
-            var result = items.ToList();
-            var count = result.Count;
-            for (var i = 0; i < count; i++)
-            {
-                var n = Math.Abs((i ^ seed).GetHashCode()) % count;
-                var swap = result[n];
-                result[n] = result[i];
-                result[i] = swap;
-            }
-
-            return result;
         }
     }
 

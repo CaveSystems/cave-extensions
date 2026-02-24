@@ -13,19 +13,6 @@ public static class IEnumerableExtension
 {
     #region Static
 
-    /// <summary>Returns the single item present or throws an <see cref="InvalidOperationException"/> with the specified <paramref name="errorMessage"/>.</summary>
-    /// <typeparam name="T">Item type</typeparam>
-    /// <param name="enumerable">Enumeration</param>
-    /// <param name="errorMessage">Error message</param>
-    /// <returns>Returns the single item present</returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static T SingleOrError<T>(this IEnumerable<T> enumerable, string errorMessage)
-    {
-        var result = enumerable.ToList();
-        if (result.Count == 1) return result[0];
-        throw new InvalidOperationException(errorMessage);
-    }
-
     /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="enumerable">The items to iterate</param>
@@ -761,5 +748,113 @@ public static class IEnumerableExtension
         }
     }
 
+    /// <summary>Shuffles items with the specified seed. The same seed will always result in the same order.</summary>
+    /// <typeparam name="T">Item type.</typeparam>
+    /// <param name="items">The items to shuffle.</param>
+    /// <param name="seed">The seed.</param>
+    /// <returns>List of shuffled items.</returns>
+    public static IList<T> Shuffle<T>(this IEnumerable<T> items, int seed = 0)
+    {
+        unchecked
+        {
+            var result = items.ToList();
+            var count = result.Count;
+            var random = new Random(seed == 0 ? (int)DateTime.UtcNow.Ticks : seed);
+            for (var i = result.Count - 1; i > 0; i--)
+            {
+                var n = random.Next(i + 1);
+                var swap = result[n];
+                result[n] = result[i];
+                result[i] = swap;
+            }
+            return result;
+        }
+    }
+
+    /// <summary>Returns the single item present or throws an <see cref="InvalidOperationException"/> with the specified <paramref name="errorMessage"/>.</summary>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="enumerable">Enumeration</param>
+    /// <param name="errorMessage">Error message</param>
+    /// <returns>Returns the single item present</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static T SingleOrError<T>(this IEnumerable<T> enumerable, string errorMessage)
+    {
+        var result = enumerable.ToList();
+        if (result.Count == 1) return result[0];
+        throw new InvalidOperationException(errorMessage);
+    }
+
+    /// <summary>
+    /// Returns the first element for each group defined by the given key selector.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the elements.</typeparam>
+    /// <typeparam name="TKey">The type of the grouping key.</typeparam>
+    /// <param name="enumerable">The source sequence.</param>
+    /// <param name="predicate">A function that extracts the grouping key from each element.</param>
+    /// <returns>
+    /// A sequence containing the first element of each group, in the order of appearance.
+    /// </returns>
+    public static IEnumerable<TValue> TakeFirst<TValue, TKey>(this IEnumerable<TValue> enumerable, Func<TValue, TKey> predicate)
+    {
+        var seen = new HashSet<TKey>();
+        foreach (var item in enumerable)
+        {
+            var key = predicate(item);
+
+            if (seen.Add(key))
+                yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Returns the last element for each group defined by the given key selector.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the elements.</typeparam>
+    /// <typeparam name="TKey">The type of the grouping key.</typeparam>
+    /// <param name="enumerable">The source sequence.</param>
+    /// <param name="predicate">A function that extracts the grouping key from each element.</param>
+    /// <returns>
+    /// A sequence containing the last element of each group.
+    /// </returns>
+    public static IEnumerable<TValue> TakeLast<TValue, TKey>(this IEnumerable<TValue> enumerable, Func<TValue, TKey> predicate)
+        where TKey : IEquatable<TKey>
+    {
+        var dict = new Dictionary<TKey, TValue>();
+        foreach (var item in enumerable)
+        {
+            var key = predicate(item);
+            dict[key] = item; // last wins
+        }
+
+        foreach (var item in dict.Values)
+            yield return item;
+    }
+
+    /// <summary>
+    /// Returns one random element for each group defined by the given key selector.
+    /// Groups are created using IEnumerable.ToLookup{TSource, TKey}.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the elements.</typeparam>
+    /// <typeparam name="TKey">The type of the grouping key.</typeparam>
+    /// <param name="enumerable">The source sequence.</param>
+    /// <param name="predicate">A function that extracts the grouping key from each element.</param>
+    /// <param name="seed">
+    /// Optional random seed. If zero, a non‑deterministic seed is used.
+    /// </param>
+    /// <returns>
+    /// A sequence containing one randomly selected element per group.
+    /// </returns>
+    public static IEnumerable<TValue> TakeOne<TValue, TKey>(this IEnumerable<TValue> enumerable, Func<TValue, TKey> predicate, int seed = 0)
+        where TKey : IEquatable<TKey>
+    {
+        var random = seed == 0 ? new Random() : new Random(seed);
+        var lookup = enumerable.ToLookup(predicate);
+        foreach (var group in lookup)
+        {
+            var list = group.ToList();
+            var index = random.Next(list.Count);
+            yield return list[index];
+        }
+    }
     #endregion Static
 }
