@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace Test;
 
+[TestFixture]
 public class UTFxxTests
 {
     #region Private Methods

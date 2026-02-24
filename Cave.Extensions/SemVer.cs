@@ -11,15 +11,7 @@ namespace Cave;
 /// <seealso cref="IComparable{SemanticVersion}"/>
 public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
 {
-    #region Private Fields
-
-    static readonly Comparer<int> Comparer = Comparer<int>.Default;
-
-    static readonly StringComparer MetaComparer = StringComparer.Ordinal;
-
-    #endregion Private Fields
-
-    #region Public Fields
+    #region Fields
 
     /// <summary>Gets the valid chars for the meta (pre-release and build) part.</summary>
     public const string ValidCharsMeta = ValidCharsMetaParts + "+";
@@ -27,7 +19,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <summary>Gets the valid chars for meta parts</summary>
     public const string ValidCharsMetaParts = ASCII.Strings.Digits + ASCII.Strings.Letters + "-.";
 
-    #endregion Public Fields
+    #endregion Fields
 
     #region Public Constructors
 
@@ -58,52 +50,6 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     }
 
     #endregion Public Constructors
-
-    #region Public Properties
-
-    /// <summary>Gets the build version string.</summary>
-    public string? Build { get; }
-
-    /// <summary>Gets the core version. <![CDATA[<version core> ::= <major> "." <minor> "." <patch>]]></summary>
-    public Version Core => Patch < 0 ? new(Major, Minor) : new Version(Major, Minor, Patch);
-
-    /// <summary>Gets a value indicating whether the meta data contains only valid chars or not.</summary>
-    public bool IsMetaValid =>
-        (Meta is null || ((Meta.Count(c => c == '+') <= 1) && !Meta.HasInvalidChars(ValidCharsMeta)))
-     && PreRelease?.StartsWith('-') is not true
-     && Build?.StartsWith('+') is not true;
-
-    /// <summary>Gets the major version number.</summary>
-    public int Major { get; }
-
-    /// <summary>Gets the meta data.</summary>
-    public string? Meta
-    {
-        get
-        {
-            var s1 = string.IsNullOrEmpty(PreRelease) ? null : $"-{PreRelease}";
-            var s2 = string.IsNullOrEmpty(Build) ? null : $"+{Build}";
-            if ((s1 == null) && (s2 == null))
-            {
-                return null;
-            }
-            return $"{s1}{s2}";
-        }
-    }
-
-    /// <summary>Gets the minor version number.</summary>
-    public int Minor { get; }
-
-    /// <summary>Gets the patch version number (this may be -1 if there is no patch version number set).</summary>
-    public int Patch { get; }
-
-    /// <summary>Gets the pre release version string.</summary>
-    public string? PreRelease { get; }
-
-    /// <summary>Returns the version without the <see cref="Build"/> part.</summary>
-    public SemVer WithoutBuild => new(Major, Minor, Patch, PreRelease);
-
-    #endregion Public Properties
 
     #region Public Methods
 
@@ -303,7 +249,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
             return -1;
         }
 
-        var result = Comparer.Compare(Major, other.Major);
+        var result = ValueComparer.Compare(Major, other.Major);
         if (result != 0)
         {
             return result;
@@ -311,7 +257,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
 
         var minor = Minor < 0 ? 0 : Minor;
         var otherMinor = other.Minor < 0 ? 0 : other.Minor;
-        result = Comparer.Compare(minor, otherMinor);
+        result = ValueComparer.Compare(minor, otherMinor);
         if (result != 0)
         {
             return result;
@@ -319,7 +265,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
 
         var patch = Patch < 0 ? 0 : Patch;
         var otherPatch = other.Patch < 0 ? 0 : other.Patch;
-        result = Comparer.Compare(patch, otherPatch);
+        result = ValueComparer.Compare(patch, otherPatch);
         if (result != 0)
         {
             return result;
@@ -369,4 +315,59 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     }
 
     #endregion Public Methods
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the comparer for the meta data (pre-release and build) part. This is a simple ordinal comparer, because the meta data is only used to
+    /// determine precedence if the core version is equal and in this case the meta data is compared as strings.
+    /// </summary>
+    public static StringComparer MetaComparer { get; set; } = StringComparer.Ordinal;
+
+    /// <summary>Provides a default comparer for integer values.</summary>
+    public static Comparer<int> ValueComparer { get; set; } = Comparer<int>.Default;
+
+    /// <summary>Gets the build version string.</summary>
+    public string? Build { get; }
+
+    /// <summary>Gets the core version. <![CDATA[<version core> ::= <major> "." <minor> "." <patch>]]></summary>
+    public Version Core => Patch < 0 ? new(Major, Minor) : new Version(Major, Minor, Patch);
+
+    /// <summary>Gets a value indicating whether the meta data contains only valid chars or not.</summary>
+    public bool IsMetaValid =>
+        (Meta is null || ((Meta.Count(c => c == '+') <= 1) && !Meta.HasInvalidChars(ValidCharsMeta)))
+     && PreRelease?.StartsWith('-') is not true
+     && Build?.StartsWith('+') is not true;
+
+    /// <summary>Gets the major version number.</summary>
+    public int Major { get; }
+
+    /// <summary>Gets the meta data.</summary>
+    public string? Meta
+    {
+        get
+        {
+            var s1 = string.IsNullOrEmpty(PreRelease) ? null : $"-{PreRelease}";
+            var s2 = string.IsNullOrEmpty(Build) ? null : $"+{Build}";
+            if ((s1 == null) && (s2 == null))
+            {
+                return null;
+            }
+            return $"{s1}{s2}";
+        }
+    }
+
+    /// <summary>Gets the minor version number.</summary>
+    public int Minor { get; }
+
+    /// <summary>Gets the patch version number (this may be -1 if there is no patch version number set).</summary>
+    public int Patch { get; }
+
+    /// <summary>Gets the pre release version string.</summary>
+    public string? PreRelease { get; }
+
+    /// <summary>Returns the version without the <see cref="Build"/> part.</summary>
+    public SemVer WithoutBuild => new(Major, Minor, Patch, PreRelease);
+
+    #endregion Properties
 }

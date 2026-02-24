@@ -15,7 +15,7 @@ public static class Platform
 {
     #region Private Fields
 
-    static readonly Dictionary<string, object> CachedValues = new();
+    static readonly Dictionary<string, object> cachedValues = new();
 
     #endregion Private Fields
 
@@ -23,10 +23,10 @@ public static class Platform
 
     static T GetCached<T>(string name, Func<T> getter)
     {
-        if (!CachedValues.TryGetValue(name, out var value))
+        if (!cachedValues.TryGetValue(name, out var value))
         {
             var result = getter.Invoke() ?? throw new InvalidOperationException($"Getter {getter} returned null value!");
-            CachedValues[name] = result;
+            cachedValues[name] = result;
             return result;
         }
 

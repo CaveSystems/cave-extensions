@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 
@@ -12,7 +11,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
 {
     #region Private Fields
 
-    static readonly uint[] Bzip2Table = CRC32.BZIP2.Table;
+    static readonly uint[] bzip2Table = CRC32.BZIP2.Table;
     uint currentCRC = Initializer;
 
     #endregion Private Fields
@@ -23,7 +22,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     void HashCore(uint @byte)
     {
         var i = ((currentCRC >> 24) ^ @byte) & 0xFF;
-        currentCRC = (currentCRC << 8) ^ Bzip2Table[i];
+        currentCRC = (currentCRC << 8) ^ bzip2Table[i];
     }
 
     #endregion Private Methods
@@ -51,7 +50,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     #region Public Properties
 
     /// <summary>Gets the lookup table.</summary>
-    public static uint[] Table => (uint[])Bzip2Table.Clone();
+    public static uint[] Table => (uint[])bzip2Table.Clone();
 
     /// <summary>The name of the hash.</summary>
     public string Name => "CRC-32/BZIP2";

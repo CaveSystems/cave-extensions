@@ -8,13 +8,11 @@ namespace Cave;
 /// <summary>Gets a parser for DateTime strings.</summary>
 public static class DateTimeParser
 {
-    #region Private Fields
-
-    static readonly string TimeZoneRegEx = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+    #region Fields
 
     static DateTime? defaultDateTime;
 
-    #endregion Private Fields
+    #endregion Fields
 
     #region Private Methods
 
@@ -70,17 +68,6 @@ public static class DateTimeParser
     }
 
     #endregion Private Methods
-
-    #region Public Properties
-
-    /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
-    public static DateTime Default
-    {
-        get => defaultDateTime ?? DateTime.UtcNow.Date;
-        set => defaultDateTime = value;
-    }
-
-    #endregion Public Properties
 
     #region Public Methods
 
@@ -382,4 +369,22 @@ public static class DateTimeParser
     }
 
     #endregion Public Methods
+
+    #region Properties
+
+    /// <summary>Gets or sets the default date used when parsing incomplete datetimes.</summary>
+    public static DateTime Default
+    {
+        get => defaultDateTime ?? DateTime.UtcNow.Date;
+        set => defaultDateTime = value;
+    }
+
+    /// <summary>
+    /// Regular expression fragment that matches an optional textual time zone name. Combines known timezone names from `TimeZones.GetNames()` into a
+    /// non-capturing optional group and stores it as a regex fragment named 'TimeZone'. Example result: <c>"(?:\s*(?'TimeZone'UTC|GMT|PST|...))?"</c> Use this
+    /// fragment together with other regex patterns to detect timezone tokens inside date/time strings.
+    /// </summary>
+    public static string TimeZoneRegEx { get; } = @"(?:\s*(?'TimeZone'" + string.Join("|", TimeZones.GetNames()) + "))?";
+
+    #endregion Properties
 }

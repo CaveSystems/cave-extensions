@@ -61,14 +61,14 @@ public static class MonotonicTime
         public static State Init()
         {
             var now = GetSystemUtcDateTime();
-            var ticks = (long)(Stopwatch.GetTimestamp() * StampToTicks);
+            var ticks = (long)(Stopwatch.GetTimestamp() * stampToTicks);
             return new State(ticks, now.Ticks, now.Ticks - ticks);
         }
 
         [MethodImpl((MethodImplOptions)256)]
         public State UpdateStartTime(long start)
         {
-            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * StampToTicks));
+            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
             var clock = Math.Max(Clock, start + timer);
             var newState = new State(timer, clock, start);
             if (timer < newState.Timer || clock < newState.Clock) throw new Exception();
@@ -78,7 +78,7 @@ public static class MonotonicTime
         [MethodImpl((MethodImplOptions)256)]
         public State UpdateTimeStamp()
         {
-            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * StampToTicks));
+            var timer = Math.Max(Timer, (long)(Stopwatch.GetTimestamp() * stampToTicks));
             var clock = Math.Max(Clock, Start + timer);
             var newState = new State(timer, clock, Start);
             if (timer < newState.Timer || clock < newState.Clock) throw new InvalidDataException("Systemclock is moving backwards in time!");
@@ -92,9 +92,9 @@ public static class MonotonicTime
 
     #region Private Fields
 
-    static readonly TimeSpan Offset;
-    static readonly double StampToTicks;
-    static readonly object SyncRoot = new();
+    static readonly TimeSpan offset;
+    static readonly double stampToTicks;
+    static readonly object syncRoot = new();
 
     static volatile State state;
 
@@ -106,7 +106,7 @@ public static class MonotonicTime
     static State GetMonotonicState()
     {
         //one writer only
-        if (Monitor.TryEnter(SyncRoot))
+        if (Monitor.TryEnter(syncRoot))
         {
             try
             {
@@ -115,7 +115,7 @@ public static class MonotonicTime
             }
             finally
             {
-                Monitor.Exit(SyncRoot);
+                Monitor.Exit(syncRoot);
             }
         }
         return state;
@@ -191,9 +191,9 @@ public static class MonotonicTime
     static MonotonicTime()
     {
         IsHighResolution = Stopwatch.IsHighResolution;
-        StampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
+        stampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
         state = State.Init();
-        Offset = state.ClockTime.ToLocalTime() - state.ClockTime;
+        offset = state.ClockTime.ToLocalTime() - state.ClockTime;
     }
 
     #endregion Public Constructors
@@ -210,7 +210,7 @@ public static class MonotonicTime
     public static DateTime Now
     {
         [MethodImpl((MethodImplOptions)256)]
-        get => new(GetMonotonicState().Clock + Offset.Ticks, DateTimeKind.Local);
+        get => new(GetMonotonicState().Clock + offset.Ticks, DateTimeKind.Local);
     }
 
     /// <summary>Gets the monotonic time systems start time.</summary>
@@ -248,7 +248,7 @@ public static class MonotonicTime
             result = GetDrift((int)Math.Pow(10, round));
             Debug.WriteLine($"Calibrating... current drift {result.Average.FormatTime()}, round {round}.");
 
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 state = state.UpdateStartTime(state.Start + result.Average.Ticks);
             }
@@ -300,7 +300,7 @@ public static class MonotonicTime
     public static Drift Resync()
     {
         Drift result = default;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             state = State.Init();
             result = GetDrift(10);
