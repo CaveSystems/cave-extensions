@@ -15,7 +15,7 @@ pool:
 
 variables:
   fixedBuildVersion: '4.0'
-  solution: '**/*.sln'
+  solution: '**/*.slnx'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   system.debug: true
