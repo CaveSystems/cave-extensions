@@ -1,6 +1,9 @@
-﻿namespace Cave;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Cave;
 
 /// <summary>si unit fractions.</summary>
+[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter")]
 public enum SiFraction
 {
     /// <summary>Milli</summary>

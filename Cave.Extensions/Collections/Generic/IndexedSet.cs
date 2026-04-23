@@ -10,7 +10,7 @@ namespace Cave.Collections.Generic;
 /// <typeparam name="T">Value type for the set.</typeparam>
 [DebuggerDisplay("Count={" + nameof(Count) + "}")]
 [SuppressMessage("Design", "CA1000")]
-public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
+public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>, ICloneable
     where T : notnull
 {
     #region Private Fields
@@ -40,6 +40,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     public IndexedSet() : this(256) { }
 
     /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}"/> class.</summary>
+    /// <param name="capacity">The initial capacity of the set.</param>
     public IndexedSet(int capacity)
     {
         items = new(capacity);
@@ -47,11 +48,13 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     }
 
     /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}"/> class.</summary>
+    /// <param name="item">The item to add to the set.</param>
     public IndexedSet(T item)
         : this(256) =>
         Add(item);
 
     /// <summary>Initializes a new instance of the <see cref="IndexedSet{T}"/> class.</summary>
+    /// <param name="items">The items to add to the set.</param>
     public IndexedSet(IEnumerable<T> items)
         : this() =>
         AddRange(items);
@@ -75,7 +78,6 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
 
     /// <summary>Gets or sets the element at the specified index.</summary>
     /// <param name="index">The zero-based index of the element to get or set.</param>
-    /// <returns></returns>
     public T this[int index]
     {
         get => items[index];
@@ -314,13 +316,18 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
         items.Clear();
     }
 
-    /// <summary>Creates a copy of this set.</summary>
+    /// <inheritdoc/>
     public object Clone() => new IndexedSet<T>(items);
 
-    /// <summary>Checks whether a specified object is part of the set.</summary>
+    /// <inheritdoc/>
     public bool Contains(T item) => lookup.ContainsKey(item);
 
-    /// <summary>Checks whether all specified objects are part of the set.</summary>
+    /// <summary>
+    /// Determines whether the current collection contains all elements in the specified collection.
+    /// </summary>
+    /// <param name="collection">The collection of elements to locate in the current collection. Cannot be null.</param>
+    /// <returns>true if all elements in the specified collection are found in the current collection; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if collection is null.</exception>
     public bool ContainsRange(ICollection<T> collection)
     {
         if (collection == null)
@@ -343,13 +350,13 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     public void CopyTo(T[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
     /// <summary>Checks another Set{T} instance for equality.</summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    /// <param name="other">The other set to compare with.</param>
+    /// <returns>True if the sets are equal; otherwise, false.</returns>
     public bool Equals(IndexedSet<T>? other) => (other is not null) && (other.Count == Count) && ContainsRange(other);
 
     /// <summary>Checks another Set{T} instance for equality.</summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>True if the sets are equal; otherwise, false.</returns>
     public override bool Equals(object? obj) => obj is IndexedSet<T> other && Equals(other);
 
     /// <summary>Builds a new <see cref="Set{T}"/> containing only items found exclusivly in one of both specified sets.</summary>
@@ -358,6 +365,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     public IndexedSet<T> ExclusiveOr(IndexedSet<T> items) => Xor(this, items);
 
     /// <summary>Gets an <see cref="IEnumerator"/> for this set.</summary>
+    /// <returns>Returns an <see cref="IEnumerator"/> for this set.</returns>
     public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
     /// <inheritdoc/>
@@ -416,8 +424,9 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public IndexedSet<T> Intersect(IndexedSet<T> items) => BitwiseAnd(this, items);
 
-    /// <summary>Removes an object from the set.</summary>
-    /// <param name="item">The object to be removed.</param>
+    /// <summary>Removes an item from the set. The item has to be present!</summary>
+    /// <param name="item">The item to be removed.</param>
+    /// <returns>true if the item was successfully removed; otherwise, false.</returns>
     public bool Remove(T item)
     {
         RemoveAt(lookup[item]);
@@ -455,6 +464,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     }
 
     /// <summary>Removes objects from the set.</summary>
+    /// <param name="collection">The objects to be removed.</param>
     public void RemoveRange(ICollection<T> collection)
     {
         if (collection == null)
@@ -474,7 +484,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     public IndexedSet<T> Subtract(IndexedSet<T> items) => Subtract(this, items);
 
     /// <summary>Gets an array of all elements present.</summary>
-    /// <returns></returns>
+    /// <returns>An array containing all elements in the set.</returns>
     public T[] ToArray() => items.ToArray();
 
     /// <summary>Builds the union of the specified and this <see cref="Set{T}"/> and returns a new set with the result.</summary>
@@ -488,7 +498,7 @@ public sealed class IndexedSet<T> : IList<T>, IEquatable<IndexedSet<T>>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static IndexedSet<T> operator |(IndexedSet<T> set1, IndexedSet<T> set2) => BitwiseOr(set1, set2);
 
-    /// <summary>Gets an <see cref="IEnumerator"/> for this set.</summary>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
     #endregion Public Methods

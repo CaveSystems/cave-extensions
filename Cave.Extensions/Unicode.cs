@@ -1,44 +1,69 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Cave.Collections;
-
-
 
 #pragma warning disable CA1710
 
 namespace Cave;
 
 /// <summary>Provides unicode base implementations</summary>
-public abstract class Unicode : IUnicode
+public abstract class Unicode : IUnicode, IEnumerable<char>
 {
-    /// <summary>Implements the operator !=.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(Unicode s1, Unicode s2) => s2 is null ? s1 is not null : !s1.Equals(s2);
+    /// <summary>
+    /// Determines whether two Unicode instances are not equal.
+    /// </summary>
+    /// <param name="left">The first Unicode instance to compare.</param>
+    /// <param name="right">The second Unicode instance to compare.</param>
+    /// <returns>true if the instances are not equal; otherwise, false.</returns>
+    public static bool operator !=(Unicode left, Unicode right) => right is null ? left is not null : !left.Equals(right);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Determines whether one Unicode instance is less than another.
+    /// </summary>
+    /// <remarks>Null values are considered less than non-null values.</remarks>
+    /// <param name="left">The first Unicode instance to compare.</param>
+    /// <param name="right">The second Unicode instance to compare.</param>
+    /// <returns>true if left is less than right; otherwise, false.</returns>
     public static bool operator <(Unicode left, Unicode right) => left is null ? right is not null : left.CompareTo(right) < 0;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Determines whether one Unicode instance is less than or equal to another.
+    /// </summary>
+    /// <param name="left">The first Unicode instance to compare.</param>
+    /// <param name="right">The second Unicode instance to compare.</param>
+    /// <returns>true if left is less than or equal to right; otherwise, false.</returns>
     public static bool operator <=(Unicode left, Unicode right) => left is null || (left.CompareTo(right) <= 0);
 
-    /// <summary>Implements the operator ==.</summary>
-    /// <param name="s1">The s1.</param>
-    /// <param name="s2">The s2.</param>
-    /// <returns>The result of the operator.</returns>
+    /// <summary>
+    /// Determines whether two Unicode instances are equal.
+    /// </summary>
+    /// <remarks>Equality is determined by the Equals method. Both operands can be null.</remarks>
+    /// <param name="s1">The first Unicode instance to compare.</param>
+    /// <param name="s2">The second Unicode instance to compare.</param>
+    /// <returns>true if the specified Unicode instances are equal; otherwise, false.</returns>
     public static bool operator ==(Unicode s1, Unicode s2) => s1 is null ? s2 is null : s1.Equals(s2);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Determines whether one Unicode instance is greater than another.
+    /// </summary>
+    /// <param name="left">The first Unicode instance to compare.</param>
+    /// <param name="right">The second Unicode instance to compare.</param>
+    /// <returns>true if left is greater than right; otherwise, false.</returns>
     public static bool operator >(Unicode left, Unicode right) => left is not null && (left.CompareTo(right) > 0);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Determines whether one Unicode instance is greater than or equal to another.
+    /// </summary>
+    /// <param name="left">The first Unicode instance to compare.</param>
+    /// <param name="right">The second Unicode instance to compare.</param>
+    /// <returns>true if left is greater than or equal to right; otherwise, false.</returns>
     public static bool operator >=(Unicode left, Unicode right) => left is null ? right is null : left.CompareTo(right) >= 0;
 
-    /// <summary>Creates a new empty instance.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Unicode"/> class.</summary>
     public Unicode() => Data = [];
 
-    /// <summary>Creates a new instance</summary>
+    /// <summary>Initializes a new instance of the <see cref="Unicode"/> class.</summary>
     /// <param name="data">Content</param>
     public Unicode(byte[] data) => Data = data;
 
@@ -108,4 +133,7 @@ public abstract class Unicode : IUnicode
 
     /// <inheritdoc/>
     public IUnicode Concat(string other) => Concat(FromString(other));
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

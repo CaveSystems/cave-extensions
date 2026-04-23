@@ -24,7 +24,7 @@ public class BaseDynamic : BaseX
 
     #region Public Constructors
 
-    /// <summary>Creates a new instance of the <see cref="BaseX"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="BaseDynamic"/> class.</summary>
     /// <param name="characters">Character set</param>
     /// <param name="obeyCasing">Obey case during decoding</param>
     /// <param name="padding">Padding character to use</param>

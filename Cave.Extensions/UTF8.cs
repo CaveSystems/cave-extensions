@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace Cave;
@@ -12,11 +10,11 @@ public sealed class UTF8 : Unicode
 {
     #region Public Constructors
 
-    /// <summary>Creates a new empty instance of the <see cref="UTF8"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF8"/> class.</summary>
     public UTF8() : base() { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF8"/> class.</summary>
-    /// <param name="data">Content</param>
+    /// <summary>Initializes a new instance of the <see cref="UTF8"/> class with the specified data.</summary>
+    /// <param name="data">The content data.</param>
     public UTF8(byte[] data) : base(data) { }
 
     #endregion Public Constructors
@@ -114,7 +112,7 @@ public sealed class UTF8 : Unicode
     /// <summary>Converts from string to a new <see cref="UTF8"/> instance.</summary>
     /// <param name="text">String to convert.</param>
     /// <returns>Returns a new <see cref="UTF8"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown if the text is null.</exception>
     public static UTF8 ConvertFromString(string text)
     {
         if (text is null)

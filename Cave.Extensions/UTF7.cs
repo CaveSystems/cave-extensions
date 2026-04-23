@@ -1,5 +1,3 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +12,15 @@ public sealed class UTF7 : Unicode
 
     #region Public Constructors
 
-    /// <summary>Creates a new empty instance of the <see cref="UTF7"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF7"/> class.</summary>
     public UTF7() : base() { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF7"/> class.</summary>
-    /// <param name="data">Content</param>
+    /// <summary>Initializes a new instance of the <see cref="UTF7"/> class with the specified data.</summary>
+    /// <param name="data">The content data.</param>
     public UTF7(byte[] data) : base(data) { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF7"/> class.</summary>
-    /// <param name="text">Content</param>
+    /// <summary>Initializes a new instance of the <see cref="UTF7"/> class with the specified text.</summary>
+    /// <param name="text">The content text.</param>
     public UTF7(string text) : base(Encode(text)) { }
 
     #endregion Public Constructors
@@ -85,6 +83,8 @@ public sealed class UTF7 : Unicode
     #region Public Methods
 
     /// <summary>Provides extended UTF-7 decoding (rfc 3501)</summary>
+    /// <param name="data">Encoded byte array</param>
+    /// <returns>Decoded string</returns>
     public static string Decode(byte[] data)
     {
         if (data == null)
@@ -135,6 +135,8 @@ public sealed class UTF7 : Unicode
     }
 
     /// <summary>Provides extended UTF-7 decoding (rfc 3501)</summary>
+    /// <param name="code">Encoded byte array</param>
+    /// <returns>Decoded string</returns>
     public static string DecodeChunk(byte[] code)
     {
         var data = Base64.NoPadding.Decode(code);
@@ -143,11 +145,13 @@ public sealed class UTF7 : Unicode
 
     /// <summary>Provides extended UTF-7 encoding (rfc 2152)</summary>
     /// <param name="text">Text to be encoded</param>
+    /// <returns>Encoded byte array</returns>
     public static byte[] Encode(string text) => Encode(text, false);
 
     /// <summary>Provides extended UTF-7 encoding (rfc 2152)</summary>
     /// <param name="text">Text to be encoded</param>
     /// <param name="encodeOptionalCharacters">Obey (rfc 3501) restrictions on utf-7 text used at mail headers</param>
+    /// <returns>Encoded byte array</returns>
     public static byte[] Encode(string text, bool encodeOptionalCharacters)
     {
         if (text == null)
@@ -206,6 +210,8 @@ public sealed class UTF7 : Unicode
     }
 
     /// <summary>Provides extended UTF-7 encoding (rfc 3501)</summary>
+    /// <param name="text">Text to be encoded</param>
+    /// <returns>Encoded ascii string</returns>
     public static string EncodeChunk(string text)
     {
         var data = ((UTF16BE)text).Data;

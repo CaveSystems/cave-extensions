@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 namespace Cave;
 
@@ -11,11 +9,11 @@ public sealed class UTF16BE : Unicode
 
     #region Public Constructors
 
-    /// <summary>Creates a new empty instance of the <see cref="UTF16BE"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF16BE"/> class.</summary>
     public UTF16BE() : base() { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF16BE"/> class.</summary>
-    /// <param name="data">Content</param>
+    /// <summary>Initializes a new instance of the <see cref="UTF16BE"/> class with the specified data.</summary>
+    /// <param name="data">The content data.</param>
     public UTF16BE(byte[] data) : base(data) { }
 
     #endregion Public Constructors
@@ -68,7 +66,7 @@ public sealed class UTF16BE : Unicode
     /// <summary>Converts from string to a new <see cref="UTF16BE"/> instance.</summary>
     /// <param name="text">String to convert.</param>
     /// <returns>Returns a new <see cref="UTF16BE"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown if the text is null.</exception>
     public static UTF16BE ConvertFromString(string text)
     {
         var chars = text.ToCharArray();

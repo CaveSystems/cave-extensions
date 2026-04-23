@@ -79,6 +79,7 @@ public class DictionaryWithExpiration<TKey, TValue> : IDictionary<TKey, TValue>
             Expire();
             return items[key];
         }
+
         set
         {
             items[key] = value;

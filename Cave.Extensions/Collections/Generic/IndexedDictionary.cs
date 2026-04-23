@@ -8,8 +8,8 @@ using System.Diagnostics;
 namespace Cave.Collections.Generic;
 
 /// <summary>Gets an indexed dictionary (a TKey, TValue dictionary supporting access to the KeyValuePair items by index).</summary>
-/// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+/// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
 [DebuggerDisplay("Count={Count}")]
 public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     where TKey : notnull
@@ -96,8 +96,8 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     #region Public Indexers
 
     /// <summary>Gets/sets the value at the specified key.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <param name="key">The key of the element to get or set.</param>
+    /// <returns>The value associated with the specified key.</returns>
     public TValue this[TKey key]
     {
         get => dictionary[key];
@@ -118,12 +118,12 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     #region Public Methods
 
     /// <summary>Adds the specified key and value to the dictionary.</summary>
-    /// <param name="item"></param>
+    /// <param name="item">The key-value pair to add to the dictionary.</param>
     public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
 
     /// <summary>Adds the specified key and value to the dictionary.</summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
+    /// <param name="key">The key of the element to add.</param>
+    /// <param name="value">The value of the element to add.</param>
     public void Add(TKey key, TValue value)
     {
         dictionary.Add(key, value);
@@ -138,18 +138,18 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     }
 
     /// <summary>Determines whether the dictionary contains a specific key value combination.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The key-value pair to locate in the dictionary.</param>
+    /// <returns>Returns true if the dictionary contains the specified key-value pair; otherwise, false.</returns>
     public bool Contains(KeyValuePair<TKey, TValue> item) => dictionary.ContainsKey(item.Key) && Equals(item.Value, dictionary[item.Key]);
 
     /// <summary>Determines whether the <see cref="Dictionary{TKey, TValue}"/> contains the specified key.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <param name="key">The key to locate in the dictionary.</param>
+    /// <returns>Returns true if the dictionary contains the specified key; otherwise, false.</returns>
     public bool ContainsKey(TKey key) => dictionary.ContainsKey(key);
 
     /// <summary>Copies the elements of the dictionary (unsorted) to an array, starting at the specified array index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
+    /// <param name="array">The one-dimensional array that is the destination of the elements copied from the dictionary.</param>
+    /// <param name="arrayIndex">The zero-based index in the array at which copying begins.</param>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
         if (array == null)
@@ -165,18 +165,18 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     }
 
     /// <summary>Returns an enumerator that iterates through the dictionary.</summary>
-    /// <returns></returns>
+    /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => dictionary.GetEnumerator();
 
     /// <summary>Gets the key at the specified index.</summary>
-    /// <param name="index">index to read.</param>
-    /// <returns>returns the key.</returns>
+    /// <param name="index">The index of the element to get.</param>
+    /// <returns>The key at the specified index.</returns>
     public TKey GetKeyAt(int index) => keys[index];
 
     /// <summary>Gets the key and value at the specified index.</summary>
-    /// <param name="index">index to read.</param>
-    /// <param name="key">the key.</param>
-    /// <param name="value">the value.</param>
+    /// <param name="index">The index of the element to get.</param>
+    /// <param name="key">When this method returns, contains the key at the specified index.</param>
+    /// <param name="value">When this method returns, contains the value at the specified index.</param>
     public void GetKeyValueAt(int index, out TKey key, out TValue value)
     {
         key = keys[index];
@@ -184,38 +184,38 @@ public class IndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     }
 
     /// <summary>Gets the value at the specified index.</summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
+    /// <param name="index">The index of the element to get.</param>
+    /// <returns>The value at the specified index.</returns>
     public TValue GetValueAt(int index) => dictionary[keys[index]];
 
-    /// <summary>Returns the zero-based index of the first occurrence of the specified value.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <summary>Returns the zero-based index of the first occurrence of the specified key.</summary>
+    /// <param name="key">The key to locate in the dictionary.</param>
+    /// <returns>The zero-based index of the first occurrence of the specified key, or -1 if the key is not found.</returns>
     public int IndexOf(TKey key) => keys.IndexOf(key);
 
     /// <summary>Removes the value with the specified key from the dictionary.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The key-value pair to remove.</param>
+    /// <returns>Returns true if the key-value pair was removed; otherwise, false.</returns>
     public bool Remove(KeyValuePair<TKey, TValue> item) => dictionary.Remove(item.Key) && keys.Remove(item.Key);
 
     /// <summary>Removes the value with the specified key.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <param name="key">The key of the element to remove.</param>
+    /// <returns>Returns true if the element was removed; otherwise, false.</returns>
     public bool Remove(TKey key) => dictionary.Remove(key) && keys.Remove(key);
 
     /// <summary>Sets the value at the specified index.</summary>
-    /// <param name="index"></param>
-    /// <param name="value"></param>
+    /// <param name="index">The index of the element to set.</param>
+    /// <param name="value">The value to set at the specified index.</param>
     public void SetValueAt(int index, TValue value) => dictionary[keys[index]] = value;
 
     /// <summary>Gets the value associated with the specified key.</summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="key">The key of the element to get.</param>
+    /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter.</param>
+    /// <returns>Returns true if the key was found and the value could be returned.</returns>
     public bool TryGetValue(TKey key, out TValue value) => dictionary.TryGetValue(key, out value);
 
     /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
+    /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
     #endregion Public Methods

@@ -1,6 +1,9 @@
-﻿namespace Cave;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Cave;
 
 /// <summary>Gets the international system of units default units.</summary>
+[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter")]
 public enum SiUnit
 {
     /// <summary>kilo</summary>

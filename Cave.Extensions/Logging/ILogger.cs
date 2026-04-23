@@ -17,19 +17,19 @@ namespace Cave.Logging;
 public interface ILogger
 {
     /// <summary>
-    /// The logical name of the sender (typically the type or component name)
+    /// Gets or sets the logical name of the sender (typically the type or component name)
     /// that will be associated with emitted log entries.
     /// </summary>
     string SenderName { get; set; }
 
     /// <summary>
-    /// Optional additional source or context identifier (for example an
+    /// Gets or sets the optional additional source or context identifier (for example an
     /// assembly or module name).
     /// </summary>
     string? SenderSource { get; set; }
 
     /// <summary>
-    /// Optional concrete .NET <see cref="Type"/> of the sender. Can be used
+    /// Gets or sets the optional concrete .NET <see cref="Type"/> of the sender. Can be used
     /// for more precise identification or reflection-based processing.
     /// </summary>
     Type? SenderType { get; set; }

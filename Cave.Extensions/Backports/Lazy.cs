@@ -1,9 +1,8 @@
-﻿#pragma warning disable IDE0060
-#pragma warning disable IDE0130
-#pragma warning disable CS1591
+﻿#if NET20 || NET35
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 #nullable disable
-
-#if NET20 || NET35
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;

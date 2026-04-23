@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 namespace Cave;
 
 /// <summary>Provides a managed implementation of the Cyclic Redundancy Checksum with 64 bits.</summary>
-public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
+public class CRC64 : CaveHashAlgorithm, IChecksum<ulong>, IHashingFunction, ICloneable
 {
     #region Private Fields
 
@@ -214,7 +214,7 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     /// <summary>Gets the name of the hash.</summary>
     public string Name { get; }
 
-    /// <summary>Gets the lookup table.</summary>
+    /// <summary>Gets or sets the lookup table.</summary>
     /// <value>The table.</value>
     public ulong[] Table { get; set; }
 
@@ -251,12 +251,6 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
     /// <returns>Ein neues Objekt, das eine Kopie dieser Instanz darstellt.</returns>
     public object Clone() => new CRC64(this);
 
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
-
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void Feed(int hash)
@@ -284,12 +278,6 @@ public class CRC64 : HashAlgorithm, IChecksum<ulong>, IHashingFunction
             HashCore(data[i]);
         }
     }
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
 
     /// <summary>directly hashes one byte.</summary>
     /// <param name="b">The byte.</param>

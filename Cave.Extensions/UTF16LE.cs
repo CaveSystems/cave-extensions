@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 namespace Cave;
 
@@ -11,10 +9,10 @@ public sealed class UTF16LE : Unicode
 
     #region Public Constructors
 
-    /// <summary>Creates a new empty instance of the <see cref="UTF8"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF16LE"/> class.</summary>
     public UTF16LE() : base() { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF8"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF16LE"/> class with the specified data.</summary>
     /// <param name="data">Content</param>
     public UTF16LE(byte[] data) : base(data) { }
 
@@ -68,7 +66,7 @@ public sealed class UTF16LE : Unicode
     /// <summary>Converts from string to a new <see cref="UTF16LE"/> instance.</summary>
     /// <param name="text">String to convert.</param>
     /// <returns>Returns a new <see cref="UTF16LE"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown when the text is null.</exception>
     public static UTF16LE ConvertFromString(string text)
     {
         if (text is null)

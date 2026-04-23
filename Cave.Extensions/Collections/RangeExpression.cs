@@ -10,8 +10,8 @@ namespace Cave.Collections;
 
 /// <summary>Gets a simple integer range.</summary>
 /// <remarks>Creates a new full range with the specified minimum and maximum.</remarks>
-/// <param name="min"></param>
-/// <param name="max"></param>
+/// <param name="min">The minimum value of the range.</param>
+/// <param name="max">The maximum value of the range.</param>
 public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IEnumerable<int>, IEnumerable
 {
     #region Private Classes
@@ -253,9 +253,9 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     public static bool operator !=(RangeExpression range1, RangeExpression range2) => range1 is null ? range2 is not null : range2 is null || (range1.AllValuesString != range2.AllValuesString);
 
     /// <summary>Adds two <see cref="RangeExpression"/> s.</summary>
-    /// <param name="range1"></param>
-    /// <param name="range2"></param>
-    /// <returns></returns>
+    /// <param name="range1">The first range expression.</param>
+    /// <param name="range2">The second range expression.</param>
+    /// <returns>Returns a new <see cref="RangeExpression"/> that represents the union of the two range expressions.</returns>
     public static RangeExpression operator +(RangeExpression range1, RangeExpression range2)
     {
         if (range1 is null)
@@ -294,7 +294,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     /// <param name="text">A <see cref="RangeExpression"/> string.</param>
     /// <param name="min">Minimum value of the <see cref="RangeExpression"/>.</param>
     /// <param name="max">Maximum value of the <see cref="RangeExpression"/>.</param>
-    /// <returns></returns>
+    /// <returns>Returns a new instance.</returns>
     public static RangeExpression Parse(string text, int min, int max)
     {
         var result = new RangeExpression(min, max);
@@ -303,7 +303,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Adds a value to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="value"></param>
+    /// <param name="value">The value to add.</param>
     public void Add(int value)
     {
         if (allValues)
@@ -319,7 +319,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Adds a <see cref="Counter"/> to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="counter"></param>
+    /// <param name="counter">The counter to add.</param>
     public void Add(Counter counter)
     {
         if (allValues)
@@ -344,7 +344,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Adds a <see cref="RangeExpression"/> to this <see cref="RangeExpression"/>.</summary>
-    /// <param name="range"></param>
+    /// <param name="range">The range expression to add.</param>
     public void Add(RangeExpression range)
     {
         if (range is null)
@@ -370,8 +370,8 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Checks whether a specified value is part of the <see cref="RangeExpression"/> or not.</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="value">The value to check.</param>
+    /// <returns>Returns true if the value is part of the range expression; otherwise, false.</returns>
     public bool Contains(int value)
     {
         if (allValues)
@@ -396,8 +396,8 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Checks whether a specified <see cref="Counter"/> is part of the <see cref="RangeExpression"/> or not.</summary>
-    /// <param name="counter"></param>
-    /// <returns></returns>
+    /// <param name="counter">The counter to check.</param>
+    /// <returns>Returns true if the counter is part of the range expression; otherwise, false.</returns>
     public bool Contains(Counter counter)
     {
         if (counter is null)
@@ -439,7 +439,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     public override int GetHashCode() => ToString().GetHashCode();
 
     /// <summary>Parses a string and sets all properties of the <see cref="RangeExpression"/> to the parsed values.</summary>
-    /// <param name="text"></param>
+    /// <param name="text">The string representation of the range expression.</param>
     public void Parse(string text)
     {
         if (text == null)
@@ -453,7 +453,7 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
     }
 
     /// <summary>Gets the counter properties as string.</summary>
-    /// <returns></returns>
+    /// <returns>The string representation of the counter properties.</returns>
     public override string ToString()
     {
         if (currentString != null)
@@ -515,12 +515,10 @@ public class RangeExpression(int min, int max) : IEquatable<RangeExpression>, IE
         return currentString;
     }
 
-    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public IEnumerator<int> GetEnumerator() => new RangeEnumerator(this);
 
-    /// <summary>Gets an <see cref="IEnumerator"/>.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => new RangeEnumerator(this);
 
     #endregion Public Methods

@@ -7,8 +7,8 @@ namespace Cave.Collections.Generic;
 /// Gets an interface for 2D set implementations (Each set A and B may only contain each value once. If typeof(A) == typeof(B) a value may be present once at
 /// each set. Each value in set a is linked to a value in set b via its index).
 /// </summary>
-/// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TKey">The type of the keys in the set.</typeparam>
+/// <typeparam name="TValue">The type of the values in the set.</typeparam>
 public interface IItemSet<TKey, TValue> : IList<ItemPair<TKey, TValue>>
 {
     #region Public Properties

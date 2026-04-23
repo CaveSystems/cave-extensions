@@ -36,13 +36,13 @@ public sealed class Option : IEquatable<Option>
         Separator = "=";
     }
 
-    /// <summary>Creates a new <see cref="Option"/> with the specified name and value string.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Option"/> class with the specified name and value string.</summary>
     /// <param name="prefix">The identifier of the <see cref="Option"/>.</param>
     /// <param name="name">The name of the <see cref="Option"/>.</param>
     /// <param name="separator">The separator.</param>
     /// <param name="value">The value of the <see cref="Option"/>.</param>
-    /// <exception cref="ArgumentNullException">Name.</exception>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown when the name or separator is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when the option name contains invalid characters or prefixes.</exception>
     public Option(string? prefix, string name, string separator, string? value)
     {
         if (name == null)
@@ -81,13 +81,13 @@ public sealed class Option : IEquatable<Option>
     #region Public Methods
 
     /// <summary>Gets an <see cref="Option"/> from a <see cref="DictionaryEntry"/>.</summary>
-    /// <param name="dictionaryEntry"></param>
-    /// <returns></returns>
+    /// <param name="dictionaryEntry">The dictionary entry from which to create the option.</param>
+    /// <returns>Returns a new <see cref="Option"/> instance.</returns>
     public static Option FromDictionaryEntry(DictionaryEntry dictionaryEntry) => new(null, $"{dictionaryEntry.Key}", "=", $"{dictionaryEntry.Value}");
 
     /// <summary>Gets only the option prefix at the beginning null, "-", "--".</summary>
-    /// <param name="option"></param>
-    /// <returns></returns>
+    /// <param name="option">The option string from which to get the prefix.</param>
+    /// <returns>Returns the option prefix if present; otherwise, null.</returns>
     public static string? GetPrefix(string option)
     {
         if (string.IsNullOrEmpty(option))
@@ -113,26 +113,26 @@ public sealed class Option : IEquatable<Option>
     /// Checks whether a string is an option string or not.
     /// <para>The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].</para>
     /// </summary>
-    /// <param name="option"></param>
-    /// <returns></returns>
-    public static bool IsOption(string option) => IsOption(option, true);
+    /// <param name="name">Option name to check</param>
+    /// <returns>Returns true if the string is an option; otherwise, false.</returns>
+    public static bool IsOption(string name) => IsOption(name, true);
 
     /// <summary>
     /// Checks whether a string is an option string or not.
     /// <para>The following option types are detected: -name[=value] --name[=value] [...]name=[value] [...]name=["value"] [...]name=['value'].</para>
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="allowMissingPrefix"></param>
-    /// <returns></returns>
-    public static bool IsOption(string option, bool allowMissingPrefix)
+    /// <param name="name">Option name to check</param>
+    /// <param name="allowMissingPrefix">Indicates whether options without a prefix are allowed.</param>
+    /// <returns>Returns true if the string is an option; otherwise, false.</returns>
+    public static bool IsOption(string name, bool allowMissingPrefix)
     {
-        if (string.IsNullOrEmpty(option))
+        if (string.IsNullOrEmpty(name))
         {
             return false;
         }
 
         // default option
-        if (option[0] == '-')
+        if (name[0] == '-')
         {
             return true;
         }
@@ -140,7 +140,7 @@ public sealed class Option : IEquatable<Option>
         if (allowMissingPrefix)
         {
             // no, option without marker ? (identified by not beeing boxed and containing an equal sign)
-            if ((option.IndexOf('=') > -1) && (option[0] != '"') && (option[0] != '\''))
+            if ((name.IndexOf('=') > -1) && (name[0] != '"') && (name[0] != '\''))
             {
                 return true;
             }
@@ -151,13 +151,13 @@ public sealed class Option : IEquatable<Option>
 
     /// <summary>Gets an <see cref="Option"/> from a specified string.</summary>
     /// <param name="option">The whole option string of the form "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;".</param>
-    /// <returns></returns>
+    /// <returns> Returns a new <see cref="Option"/> instance.</returns>
     public static Option Parse(string option) => Parse(option, "=");
 
     /// <summary>Obtains an <see cref="Option"/> from a specified string.</summary>
     /// <param name="option">The whole option string of the form "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;".</param>
     /// <param name="separator">The name value separator.</param>
-    /// <returns></returns>
+    /// <returns> Returns a new <see cref="Option"/> instance.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="option"/> is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="option"/> contains invalid characters.</exception>
     public static Option Parse(string option, string separator)
@@ -193,8 +193,8 @@ public sealed class Option : IEquatable<Option>
     }
 
     /// <summary>Removes the option prefix at the beginning (-, -- and /).</summary>
-    /// <param name="option"></param>
-    /// <returns></returns>
+    /// <param name="option">The option string from which to remove the prefix.</param>
+    /// <returns>Returns the option string without the prefix.</returns>
     public static string RemovePrefix(string option)
     {
         option = option.UnboxText(false);
@@ -203,26 +203,26 @@ public sealed class Option : IEquatable<Option>
     }
 
     /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    /// <param name="other">The option to compare with the current option.</param>
+    /// <returns>Returns true if the options are equal; otherwise, false.</returns>
     public bool Equals(Option? other) => other is not null && (other.Name == Name) && (other.Value == Value) && (other.Separator == Separator);
 
     /// <summary>Checks another option for equality (the option prefix will be ignored).</summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <param name="obj">The object to compare with the current option.</param>
+    /// <returns>Returns true if the options are equal; otherwise, false.</returns>
     public override bool Equals(object? obj) => Equals(obj as Option);
 
     /// <summary>Gets a hash code based on the result of <see cref="ToString()"/>.</summary>
-    /// <returns></returns>
+    /// <returns>Returns the hash code for the current option.</returns>
     public override int GetHashCode() => ToString().GetHashCode();
 
     /// <summary>Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string for the option or "&lt;Name&gt;" if value is null or empty.</summary>
-    /// <returns></returns>
+    /// <returns>Returns a the option as string.</returns>
     public override string ToString() => ToString(false);
 
     /// <summary>Gets a "&lt;Name&gt;&lt;Separator&gt;&lt;Value&gt;" string.</summary>
     /// <param name="alwaysShowSeaparator">Always add separator even if value is null.</param>
-    /// <returns></returns>
+    /// <returns>Returns a the option as string.</returns>
     public string ToString(bool alwaysShowSeaparator)
     {
         var result = new StringBuilder();

@@ -67,6 +67,7 @@ public interface IItemSet<T> : ICollection<T>, ICollection, IEquatable<IItemSet<
     new void Remove(T item);
 
     /// <summary>Removes items from the set.</summary>
+    /// <param name="items">The items to be removed.</param>
     /// <exception cref="ReadOnlyException">Set is readonly.</exception>
     void RemoveRange(IEnumerable<T> items);
 

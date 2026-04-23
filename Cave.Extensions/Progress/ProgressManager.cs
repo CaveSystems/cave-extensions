@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Cave.Progress;
@@ -72,7 +70,7 @@ public static class ProgressManager
 
     #region Public Properties
 
-    /// <summary>Gets the global static used instance.</summary>
+    /// <summary>Gets or sets the global static used instance.</summary>
     public static IProgressManager Instance { get => instance; set => SetGlobalInstance(value); }
 
     /// <summary>Gets the current progress items.</summary>

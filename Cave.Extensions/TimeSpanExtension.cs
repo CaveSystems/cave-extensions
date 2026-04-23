@@ -9,8 +9,8 @@ public static class TimeSpanExtension
     #region Public Methods
 
     /// <summary>Gets the absolute (&gt;= 0) time.</summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
+    /// <param name="time">The time span.</param>
+    /// <returns>The absolute value of the time span.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static TimeSpan Absolute(this TimeSpan time) => time.Ticks < 0 ? new TimeSpan(-time.Ticks) : time;
 

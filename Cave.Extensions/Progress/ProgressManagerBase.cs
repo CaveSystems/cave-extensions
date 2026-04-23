@@ -63,6 +63,7 @@ public abstract class ProgressManagerBase : IProgressManager
     /// This function does not call the <see cref="Updated"/> event for the newly created <see cref="IProgress"/> instance. The <see cref="Updated"/> event will
     /// be fired upon the first <see cref="IProgress.Update(float, string)"/> call.
     /// </remarks>
+    /// <param name="source">The object that is associated with this progress item. Can be used to track the origin of the progress event.</param>
     /// <returns>Retruns a new instance implementing the <see cref="IProgress"/> interface.</returns>
     public IProgress CreateProgress(object source)
     {

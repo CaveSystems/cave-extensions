@@ -1,71 +1,79 @@
 <Project>
-    <PropertyGroup>
-        <Authors>Andreas Rohleder</Authors>
-        <Company>CaveSystems GmbH, Andreas Rohleder</Company>
-        <Copyright>(c) 2003-$([System.DateTime]::UtcNow.Year) Andreas Rohleder</Copyright>
-        <NeutralLanguage />
+	<PropertyGroup>
+		<Authors>Andreas Rohleder</Authors>
+		<Company>CaveSystems GmbH, Andreas Rohleder</Company>
+		<Copyright>(c) 2003-$([System.DateTime]::UtcNow.Year) Andreas Rohleder</Copyright>
+		<NeutralLanguage />
 
-        <!-- Settings -->
-        <FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
-        <LangVersion>latest</LangVersion>
-        <DelaySign>false</DelaySign>
-        <SignAssembly>true</SignAssembly>
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<!-- Settings -->
+		<FileVersion>$([System.DateTime]::UtcNow.Year).$([System.DateTime]::UtcNow.ToString("MMdd")).$([System.DateTime]::UtcNow.ToString("HHmm")).$([System.DateTime]::UtcNow.ToString("ssfff"))</FileVersion>
+		<LangVersion>latest</LangVersion>
+		<DelaySign>false</DelaySign>
+		<SignAssembly>true</SignAssembly>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 
-        <!-- Nullable -->
-        <nullable>enable</nullable>
+		<!-- Nullable -->
+		<nullable>enable</nullable>
 
-        <!-- Analyzer -->
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <AnalysisLevel>latest</AnalysisLevel>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <WarningsAsErrors>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8620;CS8621;CS8622;CS8625;CS8764;CS8765;CS8766;CS8767</WarningsAsErrors>
-        <NoWarn>IDE0047;IDE0079;CA1822;CS1685;</NoWarn>
+		<!-- Analyzer -->
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<WarningsAsErrors>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8620;CS8621;CS8622;CS8625;CS8764;CS8765;CS8766;CS8767</WarningsAsErrors>
+		<NoWarn>IDE0047;IDE0079;CA1822;CS1685;</NoWarn>
 
-        <!-- Compiler -->
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <Deterministic>true</Deterministic>
-        <DeterministicSourcePaths>false</DeterministicSourcePaths>
+		<!-- Compiler -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<Deterministic>true</Deterministic>
+		<DeterministicSourcePaths>false</DeterministicSourcePaths>
 
-        <!-- Package -->
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <PackageIcon>cavesystems.png</PackageIcon>
-        <PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <IncludeSymbols>true</IncludeSymbols>
-        <IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <Deterministic>true</Deterministic>
-        <DeterministicSourcePaths>false</DeterministicSourcePaths>
+		<!-- Package -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageIcon>cavesystems.png</PackageIcon>
+		<PackageIconUrl>https://www.cavesystems.de/favicon.ico</PackageIconUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSymbolsInPackage>true</IncludeSymbolsInPackage>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<Deterministic>true</Deterministic>
+		<DeterministicSourcePaths>false</DeterministicSourcePaths>
 
-        <!-- Debug -->
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <IncludeSymbols>true</IncludeSymbols>
+		<!-- Debug -->
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<IncludeSymbols>true</IncludeSymbols>
 
-        <!-- Settings -->
-        <CheckEolTargetFramework>false</CheckEolTargetFramework>
-        <TargetLatestRuntimePatch>false</TargetLatestRuntimePatch>
-    </PropertyGroup>
+		<!-- Settings -->
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<TargetLatestRuntimePatch>false</TargetLatestRuntimePatch>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <MSBuildProjectExtensionsPath>$(MSBuildProjectDirectory)/obj/$(MSBuildProjectName)</MSBuildProjectExtensionsPath>
-    </PropertyGroup>
+	<PropertyGroup>
+		<MSBuildProjectExtensionsPath>$(MSBuildProjectDirectory)/obj/$(MSBuildProjectName)</MSBuildProjectExtensionsPath>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Cave.CleanCodeAnalyzer" Version="1.0.1" >
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 </Project>

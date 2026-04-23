@@ -1,8 +1,8 @@
-﻿#pragma warning disable CS1591 // No comments for backports
+﻿#if NET20
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 #nullable disable
-
-#if NET20
 
 using System.Collections;
 using System.Collections.Generic;
@@ -243,11 +243,10 @@ public static class BackportedExtensions
         {
             throw new ArgumentNullException(nameof(source));
         }
-        foreach (var _ in source)
+        foreach (var item in source)
         {
             return true;
         }
-
         return false;
     }
 
@@ -378,7 +377,7 @@ public static class BackportedExtensions
         => CalcAverageWithSelector<TSource, long, int, double>(source, (total, value) => checked(total + value), (total, count) => total / count, selector);
 
     public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
-        => CalcAverageWithSelector<TSource, long, int?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+        => CalcAverageWithSelector<TSource, long, int?, double?>(source, (total, value) => checked((total + value) ?? 0), (total, count) => total / count,
             selector);
 
     public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
@@ -386,7 +385,7 @@ public static class BackportedExtensions
             selector);
 
     public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
-        => CalcAverageWithSelector<TSource, long, long?, double?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+        => CalcAverageWithSelector<TSource, long, long?, double?>(source, (total, value) => checked((total + value) ?? 0), (total, count) => total / count,
             selector);
 
     public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
@@ -394,7 +393,7 @@ public static class BackportedExtensions
             selector);
 
     public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
-        => CalcAverageWithSelector<TSource, double, double?, double?>(source, (total, value) => checked(total + value ?? 0),
+        => CalcAverageWithSelector<TSource, double, double?, double?>(source, (total, value) => checked((total + value) ?? 0),
             (total, count) => total / count, selector);
 
     public static float Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
@@ -402,7 +401,7 @@ public static class BackportedExtensions
             selector);
 
     public static float? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
-        => CalcAverageWithSelector<TSource, float, float?, float?>(source, (total, value) => checked(total + value ?? 0), (total, count) => total / count,
+        => CalcAverageWithSelector<TSource, float, float?, float?>(source, (total, value) => checked((total + value) ?? 0), (total, count) => total / count,
             selector);
 
     public static decimal Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
@@ -410,7 +409,7 @@ public static class BackportedExtensions
             selector);
 
     public static decimal? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
-        => CalcAverageWithSelector<TSource, decimal, decimal?, decimal?>(source, (total, value) => checked(total + value ?? 0),
+        => CalcAverageWithSelector<TSource, decimal, decimal?, decimal?>(source, (total, value) => checked((total + value) ?? 0),
             (total, count) => total / count, selector);
 
     public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value) => source is ICollection<TSource> collection ? collection.Contains(value) : Contains(source, value, null);
@@ -1410,61 +1409,61 @@ public static class BackportedExtensions
         => CalcSum(source, (result, element) => result + element);
 
     public static int? Sum(this IEnumerable<int?> source)
-        => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static int Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
         => CalcSum(source, selector, (result, element) => result + element);
 
     public static int? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
-        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static long Sum(this IEnumerable<long> source)
         => CalcSum(source, (result, element) => result + element);
 
     public static long? Sum(this IEnumerable<long?> source)
-        => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static long Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
         => CalcSum(source, selector, (result, element) => result + element);
 
     public static long? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
-        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static double Sum(this IEnumerable<double> source)
         => CalcSum(source, (result, element) => result + element);
 
     public static double? Sum(this IEnumerable<double?> source)
-        => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static double Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
         => CalcSum(source, selector, (result, element) => result + element);
 
     public static double? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
-        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static float Sum(this IEnumerable<float> source)
         => CalcSum(source, (result, element) => result + element);
 
     public static float? Sum(this IEnumerable<float?> source)
-        => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static float Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
         => CalcSum(source, selector, (result, element) => result + element);
 
     public static float? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
-        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static decimal Sum(this IEnumerable<decimal> source)
         => CalcSum(source, (result, element) => result + element);
 
     public static decimal? Sum(this IEnumerable<decimal?> source)
-        => CalcSum(source, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static decimal Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
         => CalcSum(source, selector, (result, element) => result + element);
 
     public static decimal? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
-        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? 0 + element : result);
+        => CalcSum(source, selector, (result, element) => element.HasValue ? result ?? (0 + element) : result);
 
     public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
     {

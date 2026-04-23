@@ -7,8 +7,6 @@ namespace Cave;
 /// <remarks>Initializes a new instance of the <see cref="Base64"/> class.</remarks>
 /// <param name="dict">The dictionary containing 64 ascii characters used for encoding.</param>
 /// <param name="padding">The padding (use null to skip padding).</param>
-/// <exception cref="ArgumentOutOfRangeException"></exception>
-/// <exception cref="ArgumentException">Invalid padding character.</exception>
 public class Base64(CharacterDictionary dict, char? padding) : BaseWithFixedBits(dict, BitCount, padding)
 {
     #region Private Fields
@@ -44,6 +42,7 @@ public class Base64(CharacterDictionary dict, char? padding) : BaseWithFixedBits
 
     /// <summary>Decodes a base64 data array.</summary>
     /// <param name="baseXdata">The base64 data to decode.</param>
+    /// <returns>Returns the decoded data.</returns>
     public override byte[] Decode(byte[] baseXdata)
     {
         if (baseXdata == null)
@@ -87,6 +86,7 @@ public class Base64(CharacterDictionary dict, char? padding) : BaseWithFixedBits
 
     /// <summary>Encodes the specified data.</summary>
     /// <param name="data">The data to encode.</param>
+    /// <returns>Returns the encoded data.</returns>
     public override string Encode(byte[] data)
     {
         if (data == null)

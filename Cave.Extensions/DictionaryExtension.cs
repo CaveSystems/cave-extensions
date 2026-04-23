@@ -138,7 +138,7 @@ public static class DictionaryExtension
     /// <param name="dictionary">Dictionary instance to add key value pair to.</param>
     /// <param name="key">The key to get.</param>
     /// <param name="value">Returns the value found or default(value).</param>
-    /// <returns>Returns the value found or default(value).</returns>
+    /// <returns>Returns true if the key was found; otherwise, false.</returns>
     [SuppressMessage("Performance", "CA1854", Justification = "Backport")]
     public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, [MaybeNullWhen(false)] out TValue value)
     {

@@ -74,14 +74,14 @@ public readonly struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime
     public static TimeSpan operator -(UnixTime32 value1, UnixTime32 value2) => new((value1.TimeStamp - value2.TimeStamp) * TimeSpan.TicksPerSecond);
 
     /// <summary>Parses a UnixTime32 previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="value">The string representation of the UnixTime32.</param>
+    /// <returns>The parsed UnixTime32.</returns>
     public static UnixTime32 Parse(string value) => Parse(value, null);
 
     /// <summary>Parses a UnixTime32 previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <param name="provider"></param>
-    /// <returns></returns>
+    /// <param name="value">The string representation of the UnixTime32.</param>
+    /// <param name="provider">The format provider to use.</param>
+    /// <returns>The parsed UnixTime32.</returns>
     public static UnixTime32 Parse(string value, IFormatProvider? provider)
         => value is null ? throw new ArgumentNullException(nameof(value))
         : DateTime.TryParseExact(value, StringExtensions.InteropDateTimeFormat, provider ?? CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dateTime)
@@ -92,21 +92,21 @@ public readonly struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime
 
     /// <summary>Converts the specified date time.</summary>
     /// <param name="dateTime">The date time.</param>
-    /// <returns></returns>
+    /// <returns>The corresponding Unix time stamp.</returns>
     public static uint Convert(DateTime dateTime) =>
         (uint)((dateTime.Ticks - new DateTime(1970, 1, 1).Ticks) / TimeSpan.TicksPerSecond);
 
     /// <summary>Converts the specified unix time stamp.</summary>
     /// <param name="timeStamp">The unix time stamp.</param>
     /// <param name="resultKind">Kind of the result.</param>
-    /// <returns></returns>
+    /// <returns>The corresponding <see cref="DateTime"/>.</returns>
     public static DateTime Convert(uint timeStamp, DateTimeKind resultKind) =>
         new DateTime(1970, 1, 1, 0, 0, 0, resultKind) + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
 
     /// <summary>Converts the specified unix time stamp.</summary>
     /// <param name="timeStamp">The unix time stamp.</param>
     /// <param name="timeZone">The time zone.</param>
-    /// <returns></returns>
+    /// <returns>The corresponding <see cref="DateTime"/> in UTC.</returns>
     public static DateTime ConvertToUTC(uint timeStamp, TimeSpan timeZone) =>
         new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) - timeZone + TimeSpan.FromTicks(TimeSpan.TicksPerSecond * timeStamp);
 
@@ -120,15 +120,16 @@ public readonly struct UnixTime32 : IEquatable<UnixTime32>, IComparable<UnixTime
     /// <returns>The result of the conversion.</returns>
     public static implicit operator UnixTime32(DateTime dateTime) => new(Convert(dateTime));
 
-    /// <summary>Creates a new instance of the <see cref="UnixTime32"/> structure.</summary>
-    /// <param name="timestamp"></param>
+    /// <summary>Initializes a new instance of the <see cref="UnixTime32"/> structure.</summary>
+    /// <param name="timestamp">The unix time stamp in seconds since 1.1.1970.</param>
     public UnixTime32(uint timestamp) => TimeStamp = timestamp;
 
     /// <summary>The time stamp in seconds since 1.1.1970, this will overflow in 2038</summary>
     public readonly uint TimeStamp;
 
-    /// <summary>Gets or sets the date time.</summary>
-    /// <value>The date time.</value>
+    /// <summary>Converts this unix time stamp to a <see cref="DateTime"/>.</summary>
+    /// <param name="kind">The kind of the date time.</param>
+    /// <returns>The corresponding <see cref="DateTime"/>.</returns>
     public DateTime ToDateTime(DateTimeKind kind = 0) => Convert(TimeStamp, kind);
 
     /// <inheritdoc/>

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 namespace Cave;
 
@@ -11,10 +9,10 @@ public sealed class UTF32LE : Unicode
 
     #region Public Constructors
 
-    /// <summary>Creates a new empty instance of the <see cref="UTF32LE"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF32LE"/> class.</summary>
     public UTF32LE() : base() { }
 
-    /// <summary>Creates a new instance of the <see cref="UTF32LE"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UTF32LE"/> class with the specified data.</summary>
     /// <param name="data">Content</param>
     public UTF32LE(byte[] data) : base(data) { }
 
@@ -52,7 +50,7 @@ public sealed class UTF32LE : Unicode
     /// <summary>Converts from string to a new <see cref="UTF32LE"/> instance.</summary>
     /// <param name="text">String to convert.</param>
     /// <returns>Returns a new <see cref="UTF32LE"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown if the text is null.</exception>
     public static unsafe UTF32LE ConvertFromString(string text)
     {
         if (text is null)

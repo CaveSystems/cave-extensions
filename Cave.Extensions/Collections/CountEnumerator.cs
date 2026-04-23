@@ -52,18 +52,17 @@ public class CountEnumerator : IEnumerator<int>, IEnumerator
 
     #region Public Methods
 
-    /// <summary>Frees all used resources.</summary>
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>Moves to the next value.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public bool MoveNext() => counter.MoveNext();
 
-    /// <summary>Resets the <see cref="CountEnumerator"/>.</summary>
+    /// <inheritdoc/>
     public void Reset() => counter.Reset();
 
     #endregion Public Methods

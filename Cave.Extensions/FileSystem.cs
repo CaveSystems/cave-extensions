@@ -349,7 +349,7 @@ public static class FileSystem
                 dropCount = 3;
             }
 
-            result = result.Remove(0, dropCount);
+            result = result[dropCount..];
         }
 
         return result;

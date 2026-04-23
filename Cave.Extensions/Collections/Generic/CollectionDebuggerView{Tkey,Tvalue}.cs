@@ -17,7 +17,7 @@ public sealed class CollectionDebuggerView<TKey, TValue>
     #region Public Constructors
 
     /// <summary>Initializes a new instance of the <see cref="CollectionDebuggerView{TKey, TValue}"/> class.</summary>
-    /// <param name="collection"></param>
+    /// <param name="collection">The collection to be viewed in the debugger.</param>
     public CollectionDebuggerView(ICollection<KeyValuePair<TKey, TValue>> collection) => this.collection = collection;
 
     #endregion Public Constructors

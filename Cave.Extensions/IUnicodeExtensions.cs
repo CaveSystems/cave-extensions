@@ -1,6 +1,4 @@
-﻿
-
-#pragma warning disable CA1710
+﻿#pragma warning disable CA1710
 
 namespace Cave;
 

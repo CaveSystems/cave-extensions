@@ -6,6 +6,7 @@ namespace Cave.Collections;
 
 /// <summary>Gets a synchronization wrapper for <see cref="IAverage{T}"/> implementations.</summary>
 /// <seealso cref="IAverage{T}"/>
+/// <typeparam name="T">The type of the elements in the average calculation.</typeparam>
 public class SynchronizedAverage<T> : IAverage<T>
 {
     #region Public Constructors
@@ -60,6 +61,7 @@ public class SynchronizedAverage<T> : IAverage<T>
                 return Base.MaximumCount;
             }
         }
+
         set
         {
             lock (Base)

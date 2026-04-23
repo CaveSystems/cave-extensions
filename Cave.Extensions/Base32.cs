@@ -17,8 +17,6 @@ public class Base32 : BaseWithFixedBits
     /// <summary>Initializes a new instance of the <see cref="Base32"/> class.</summary>
     /// <param name="dictionary">The dictionary containing 64 ascii characters used for encoding.</param>
     /// <param name="padding">The padding (use null to skip padding).</param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    /// <exception cref="ArgumentException"></exception>
     protected Base32(CharacterDictionary dictionary, char? padding) : base(dictionary, BitCount, padding) { }
 
     #endregion Protected Constructors
@@ -56,6 +54,7 @@ public class Base32 : BaseWithFixedBits
 
     /// <summary>Decodes a Base32 data array.</summary>
     /// <param name="baseXdata">The Base32 data to decode.</param>
+    /// <returns>Returns the decoded data.</returns>
     public override byte[] Decode(byte[] baseXdata)
     {
         if (CharacterDictionary == null)
@@ -104,6 +103,7 @@ public class Base32 : BaseWithFixedBits
 
     /// <summary>Encodes the specified data.</summary>
     /// <param name="data">The data to encode.</param>
+    /// <returns>Returns the encoded (ascii) string.</returns>
     public override string Encode(byte[] data)
     {
         if (data == null)

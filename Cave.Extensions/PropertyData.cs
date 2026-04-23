@@ -32,7 +32,7 @@ public class PropertyData
 
     #region Public Constructors
 
-    /// <summary>Creates a new instance of the <see cref="PropertyData"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="PropertyData"/> class.</summary>
     /// <param name="parent">Parent property data. This may be set to null for the root item.</param>
     /// <param name="propertyInfo">The property info. This may not be null.</param>
     /// <param name="source">The source object of the property.</param>
@@ -121,6 +121,7 @@ public class PropertyData
     }
 
     /// <summary>Gets the current value of the property. This will result in exceptions if <see cref="CanGetValue"/> == false.</summary>
+    /// <returns>Returns the current value of the property.</returns>
     public object? GetValue() => PropertyInfo.GetValue(Source, null);
 
     /// <summary>Gets the current property value of the specified object. The object has to match the PropertyInfo.DeclaringType.</summary>
@@ -142,6 +143,7 @@ public class PropertyData
     }
 
     /// <summary>Sets the current value of the property. This will result in exceptions if <see cref="CanSetValue"/> == false.</summary>
+    /// <param name="value">The value to set for the property.</param>
     public void SetValue(object value) => PropertyInfo.SetValue(Source, value, null);
 
     /// <summary>Tries to get the value and catches all exceptions the properties getter throws.</summary>

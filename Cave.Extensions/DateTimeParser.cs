@@ -380,7 +380,7 @@ public static class DateTimeParser
     }
 
     /// <summary>
-    /// Regular expression fragment that matches an optional textual time zone name. Combines known timezone names from `TimeZones.GetNames()` into a
+    /// Gets the regular expression fragment that matches an optional textual time zone name. Combines known timezone names from `TimeZones.GetNames()` into a
     /// non-capturing optional group and stores it as a regex fragment named 'TimeZone'. Example result: <c>"(?:\s*(?'TimeZone'UTC|GMT|PST|...))?"</c> Use this
     /// fragment together with other regex patterns to detect timezone tokens inside date/time strings.
     /// </summary>

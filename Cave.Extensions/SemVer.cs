@@ -324,7 +324,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// </summary>
     public static StringComparer MetaComparer { get; set; } = StringComparer.Ordinal;
 
-    /// <summary>Provides a default comparer for integer values.</summary>
+    /// <summary>Gets or sets a default comparer for integer values.</summary>
     public static Comparer<int> ValueComparer { get; set; } = Comparer<int>.Default;
 
     /// <summary>Gets the build version string.</summary>
@@ -366,7 +366,7 @@ public class SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     /// <summary>Gets the pre release version string.</summary>
     public string? PreRelease { get; }
 
-    /// <summary>Returns the version without the <see cref="Build"/> part.</summary>
+    /// <summary>Gets the version without the <see cref="Build"/> part.</summary>
     public SemVer WithoutBuild => new(Major, Minor, Patch, PreRelease);
 
     #endregion Properties

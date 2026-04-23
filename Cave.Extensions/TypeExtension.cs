@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-
-
 namespace Cave;
 
 /// <summary>Gets extensions for the <see cref="Type"/> class.</summary>
@@ -224,7 +222,6 @@ public static class TypeExtension
         }
 
         // parse from string
-
         {
             // try to find public static Parse(string, IFormatProvider) method in class
             var errors = new List<Exception>();
@@ -233,11 +230,7 @@ public static class TypeExtension
             {
                 try
                 {
-                    return method.Invoke(null, new object[]
-                    {
-                        str,
-                        formatProvider
-                    });
+                    return method.Invoke(null, [str, formatProvider]);
                 }
                 catch (TargetInvocationException ex)
                 {

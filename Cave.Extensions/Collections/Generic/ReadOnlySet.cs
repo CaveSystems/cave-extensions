@@ -18,12 +18,16 @@ public sealed class ReadOnlySet<T> : IItemSet<T>
 
     #region Public Constructors
 
-    /// <summary>Initializes an empty instance.</summary>
+    /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class.</summary>
     public ReadOnlySet() => set = new Set<T>();
 
-    /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class.</summary>
-    /// <param name="set">The Set.</param>
+    /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class with the specified set.</summary>
+    /// <param name="set">The set to wrap as read-only.</param>
     public ReadOnlySet(IItemSet<T> set) => this.set = set;
+
+    /// <summary>Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class with the specified set.</summary>
+    /// <param name="set">The set to wrap as read-only.</param>
+    public ReadOnlySet(IEnumerable<T> set) : this(new Set<T>(set)) { }
 
     #endregion Public Constructors
 

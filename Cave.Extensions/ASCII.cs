@@ -723,7 +723,7 @@ public static class ASCII
     /// <returns>The char array.</returns>
     /// <exception cref="ArgumentNullException">bytes.</exception>
     /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
-    public static char[] GetChars(byte[] bytes, int start, int count, bool termination = false)
+    public static char[] GetChars(byte[] bytes, int start, int count = -1, bool termination = false)
     {
         if (bytes == null)
         {
@@ -732,6 +732,7 @@ public static class ASCII
 
         unchecked
         {
+            if (count < 0) count = bytes.Length - start;
             var c = 0;
             var result = new char[count];
             for (var i = start; c < count; i++, c++)
@@ -835,7 +836,7 @@ public static class ASCII
     /// <returns>The string.</returns>
     /// <exception cref="ArgumentNullException">bytes.</exception>
     /// <exception cref="InvalidDataException">Byte '{0}' at index '{1}' is not a valid ASCII character!.</exception>
-    public static string GetString(byte[] bytes, int start, int count, bool termination = false) => new(GetChars(bytes, start, count, termination));
+    public static string GetString(byte[] bytes, int start, int count = -1, bool termination = false) => new(GetChars(bytes, start, count, termination));
 
     /// <summary>Gets a part of a string.</summary>
     /// <param name="data">Data to parse.</param>

@@ -1,8 +1,8 @@
-#pragma warning disable CS1591
-#pragma warning disable IDE0130
-#nullable disable
-
 #if NET20 || NET35
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
+#pragma warning disable IDE0130 // Namespace does not match folder structure
+#nullable disable
 
 using System.ComponentModel;
 
@@ -10,15 +10,31 @@ namespace System.Threading.Tasks;
 
 public class Task<TResult> : Task
 {
+    #region Fields
+
     readonly Func<TResult> func;
 
-    public TResult Result { get; private set; }
+    #endregion Fields
+
+    #region Internal Methods
 
     internal override void OnRunAction() => Result = func();
+
+    #endregion Internal Methods
+
+    #region Public Constructors
 
     public Task(Func<TResult> func) : base(0, null, null) => this.func = func;
 
     public Task(Func<TResult> func, TaskCreationOptions options) : base(options, null, null) => this.func = func;
+
+    #endregion Public Constructors
+
+    #region Properties
+
+    public TResult Result { get; private set; }
+
+    #endregion Properties
 }
 
 public class Task : IDisposable
@@ -29,11 +45,15 @@ public class Task : IDisposable
 
     public static class Factory
     {
+        #region Public Constructors
+
         static Factory()
         {
             ThreadPool.SetMaxThreads(1000, 1000);
             ThreadPool.SetMinThreads(100, 100);
         }
+
+        #endregion Public Constructors
 
         #region Static
 
@@ -166,10 +186,10 @@ public class Task : IDisposable
 
     #region Fields
 
-    readonly object state;
     readonly object action;
-    readonly TaskCreationOptions creationOptions;
     readonly ManualResetEvent completedEvent = new(false);
+    readonly TaskCreationOptions creationOptions;
+    readonly object state;
 
     #endregion Fields
 
@@ -186,17 +206,33 @@ public class Task : IDisposable
 
     #region Properties
 
-    public bool IsFaulted => Status == TaskStatus.Faulted;
-
     public Exception Exception { get; private set; }
 
     public bool IsCompleted => Status >= TaskStatus.RanToCompletion;
+
+    public bool IsFaulted => Status == TaskStatus.Faulted;
 
     public TaskStatus Status { get; private set; }
 
     #endregion Properties
 
     #region Members
+
+    internal virtual void OnRunAction()
+    {
+        if (action is Action actionTyp1)
+        {
+            actionTyp1();
+        }
+        else if (action is Action<object> actionTyp2)
+        {
+            actionTyp2(state);
+        }
+        else
+        {
+            throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {action}!");
+        }
+    }
 
     public void Wait()
     {
@@ -219,22 +255,6 @@ public class Task : IDisposable
 
         var result = completedEvent.WaitOne(mssTimeout);
         return !IsFaulted ? result : throw Exception;
-    }
-
-    internal virtual void OnRunAction()
-    {
-        if (action is Action actionTyp1)
-        {
-            actionTyp1();
-        }
-        else if (action is Action<object> actionTyp2)
-        {
-            actionTyp2(state);
-        }
-        else
-        {
-            throw new ExecutionEngineException($"Fatal exception in Task.Worker. Invalid action type {action}!");
-        }
     }
 
     void Worker(object nothing = null)

@@ -55,11 +55,11 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// <summary>Gets a read only indexed list for the B elements of the Set. This method is an O(1) operation;.</summary>
     public IList<TKey2> ItemsB => new ReadOnlyListB<TKey1, TKey2>(this);
 
-    /// <summary>Obtains a enumeration of the A elements of the Set.</summary>
+    /// <summary>Gets a enumeration of the A elements of the Set.</summary>
     /// <value>The keys a.</value>
     public IEnumerable<TKey1> KeysA => lookupA.Keys;
 
-    /// <summary>Obtains a enumeration of the B elements of the Set.</summary>
+    /// <summary>Gets a enumeration of the B elements of the Set.</summary>
     /// <value>The keys b.</value>
     public IEnumerable<TKey2> KeysB => lookupB.Keys;
 
@@ -71,7 +71,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// Accesses the ItemPair at the specified index. The getter is a O(1) operation. The setter needs a full index rebuild and is an O(n) operation, where n is Count.
     /// </summary>
     /// <param name="index">The index of the ItemPair to be accessed.</param>
-    /// <returns></returns>
+    /// <returns>Returns the ItemPair at the specified index.</returns>
     public ItemPair<TKey1, TKey2> this[int index]
     {
         get => list[index];
@@ -113,7 +113,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     #region Public Methods
 
     /// <summary>Adds an itempair to the set.</summary>
-    /// <param name="item"></param>
+    /// <param name="item">The itempair to add.</param>
     public void Add(ItemPair<TKey1, TKey2> item)
     {
         if (item == null)
@@ -153,8 +153,8 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     }
 
     /// <summary>Checks whether the list contains an itempair or not.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The ItemPair to check for.</param>
+    /// <returns><c>true</c> if the item pair is present; otherwise, <c>false</c>.</returns>
     public bool Contains(ItemPair<TKey1, TKey2> item)
     {
         if (item == null)
@@ -166,9 +166,9 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     }
 
     /// <summary>Checks whether the list contains an itempair or not.</summary>
-    /// <param name="key1"></param>
-    /// <param name="key2"></param>
-    /// <returns></returns>
+    /// <param name="key1">The A value to check for.</param>
+    /// <param name="key2">The B value to check for.</param>
+    /// <returns><c>true</c> if the item pair is present; otherwise, <c>false</c>.</returns>
     public bool Contains(TKey1 key1, TKey2 key2) => lookupA.ContainsKey(key1) && Equals(lookupA[key1].B, key2);
 
     /// <summary>Determines whether the specified A is part of the set.</summary>
@@ -182,18 +182,18 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     public bool ContainsB(TKey2 value) => lookupB.ContainsKey(value);
 
     /// <summary>Copies the elements of the set to an Array, starting at a particular Array index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
+    /// <param name="array">The destination array.</param>
+    /// <param name="arrayIndex">The zero-based index in the array at which copying begins.</param>
     public void CopyTo(ItemPair<TKey1, TKey2>[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
 
     /// <summary>Gets the A element that is assigned to the specified B element. This method is an O(1) operation;.</summary>
     /// <param name="key">The A index.</param>
-    /// <returns></returns>
+    /// <returns>Returns the found ItemPair.</returns>
     public ItemPair<TKey1, TKey2> GetA(TKey1 key) => lookupA[key];
 
     /// <summary>Gets the A element that is assigned to the specified B element. This method is an O(1) operation;.</summary>
     /// <param name="value">The B index.</param>
-    /// <returns></returns>
+    /// <returns>Returns the found ItemPair.</returns>
     public ItemPair<TKey1, TKey2> GetB(TKey2 value) => lookupB[value];
 
     /// <summary>Returns an enumerator that iterates through the set.</summary>
@@ -252,14 +252,14 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     public void Insert(int index, TKey1 key1, TKey2 key2) => Insert(index, new(key1, key2));
 
     /// <summary>Removes an itempair from the set.</summary>
-    /// <param name="key1"></param>
-    /// <param name="key2"></param>
-    /// <returns></returns>
+    /// <param name="key1">The A value of the ItemPair to remove.</param>
+    /// <param name="key2">The B value of the ItemPair to remove.</param>
+    /// <returns>Returns true if the item was successfully removed; otherwise, false.</returns>
     public bool Remove(TKey1 key1, TKey2 key2) => Remove(new(key1, key2));
 
     /// <summary>Removes an itempair from the set.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The ItemPair to remove.</param>
+    /// <returns>Returns true if the item was successfully removed; otherwise, false.</returns>
     public bool Remove(ItemPair<TKey1, TKey2> item)
     {
         if (item == null)
@@ -328,7 +328,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// <summary>Tries to the get the a key.</summary>
     /// <param name="key1">The a key.</param>
     /// <param name="key2">The b key.</param>
-    /// <returns></returns>
+    /// <returns>True if the key was found; otherwise, false.</returns>
     public bool TryGetA(TKey1 key1, out TKey2? key2)
     {
         if (lookupA.TryGetValue(key1, out var item))
@@ -344,7 +344,7 @@ public sealed class UniqueSet<TKey1, TKey2> : IItemSet<TKey1, TKey2>
     /// <summary>Tries to the get the key b.</summary>
     /// <param name="key2">The b key.</param>
     /// <param name="key1">The a key.</param>
-    /// <returns></returns>
+    /// <returns>True if the key was found; otherwise, false.</returns>
     public bool TryGetB(TKey2 key2, out TKey1? key1)
     {
         if (lookupB.TryGetValue(key2, out var item))

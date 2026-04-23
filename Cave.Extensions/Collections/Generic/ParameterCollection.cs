@@ -20,14 +20,14 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
     #region Public Constructors
 
     /// <summary>Initializes a new instance of the <see cref="ParameterCollection"/> class.</summary>
-    /// <param name="items"></param>
+    /// <param name="items">The items to add.</param>
     public ParameterCollection(params string[] items) => this.items = items;
 
     #endregion Public Constructors
 
     #region Public Properties
 
-    /// <summary>Provides an empty parameter collection</summary>
+    /// <summary>Gets an empty parameter collection</summary>
     public static ParameterCollection Empty { get; } = new();
 
     /// <inheritdoc/>
@@ -43,7 +43,7 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
     /// <summary>Gets or sets the <see cref="string"/> at the specified index.</summary>
     /// <value>The <see cref="string"/>.</value>
     /// <param name="index">The index.</param>
-    /// <returns></returns>
+    /// <returns>Returns the <see cref="string"/> at the specified index.</returns>
     public string this[int index] => items[index];
 
     #endregion Public Indexers
@@ -57,8 +57,8 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
     public void CopyTo(string[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
     /// <summary>Determines whether the specified object is equal to the current object.</summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>
     public bool Equals(ParameterCollection? other)
     {
         if (other is null)
@@ -91,11 +91,15 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
     /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns the zero-based index of the first occurrence of the specified string in the collection.
+    /// </summary>
+    /// <param name="item">The string to locate in the collection. Can be null.</param>
+    /// <returns>The zero-based index of the first occurrence of the specified string, or -1 if the string is not found.</returns>
     public int IndexOf(string item) => Array.IndexOf(items, item);
 
     /// <summary>Gets a string containing all parameters.</summary>
-    /// <returns></returns>
+    /// <returns>A string containing all parameters, with each parameter separated by a space and enclosed in quotes if it contains spaces.</returns>
     public override string ToString()
     {
         var result = new StringBuilder();
@@ -122,13 +126,16 @@ public class ParameterCollection : IEnumerable<string>, IEquatable<ParameterColl
         return result.ToString();
     }
 
+    /// <inheritdoc/>
     void ICollection<string>.Add(string item) => throw new ReadOnlyException();
 
+    /// <inheritdoc/>
     void ICollection<string>.Clear() => throw new ReadOnlyException();
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
+    /// <inheritdoc/>
     bool ICollection<string>.Remove(string item) => throw new ReadOnlyException();
 
     #endregion Public Methods

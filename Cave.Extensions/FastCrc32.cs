@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Cave;
 
@@ -42,7 +42,8 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
 
     #region Public Constructors
 
-    /// <summary>Creates a new instance of the <see cref="FastCrc32"/> structure. This produces a checksum equivalent to <see cref="CRC32.BZIP2"/>.</summary>
+    /// <summary>Initializes a new instance of the <see cref="FastCrc32"/> struct.</summary>
+    /// <remarks>This produces a checksum equivalent to <see cref="CRC32.BZIP2"/>.</remarks>
     public FastCrc32() { }
 
     #endregion Public Constructors
@@ -52,7 +53,7 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     /// <summary>Gets the lookup table.</summary>
     public static uint[] Table => (uint[])bzip2Table.Clone();
 
-    /// <summary>The name of the hash.</summary>
+    /// <summary>Gets the name of the hash.</summary>
     public string Name => "CRC-32/BZIP2";
 
     /// <inheritdoc/>
@@ -65,12 +66,6 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     #endregion Public Properties
 
     #region Public Methods
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
 
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
@@ -100,13 +95,16 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
         HashCore(val & 0xFF);
     }
 
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
+    /// <summary>Returns the same value <see cref="ToHashCode"/> returns.</summary>
+    /// <returns>The computed hash code.</returns>
+    public override int GetHashCode() => ToHashCode();
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Processes a specified region of the input byte array and updates the hash state with the provided data segment.
+    /// </summary>
+    /// <param name="data">The input byte array containing the data to be hashed.</param>
+    /// <param name="offset">The zero-based index in the array at which to begin reading data.</param>
+    /// <param name="length">The number of bytes to process from the input array, starting at the specified offset.</param>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void HashCore(byte[] data, int offset, int length)
     {

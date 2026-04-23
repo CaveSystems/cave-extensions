@@ -207,6 +207,7 @@ public static class AppDom
 
     /// <summary>Searches all loaded types assignable to the specified one and containing a default constructor.</summary>
     /// <typeparam name="T">Type or interface all types need to be assignable to.</typeparam>
+    /// <param name="ignoreExceptions">Indicates whether to ignore exceptions during instance creation.</param>
     /// <returns>Returns a list of new instances.</returns>
     public static List<T> GetInstances<T>(bool ignoreExceptions)
     {

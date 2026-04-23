@@ -1,6 +1,7 @@
 ﻿#if NET20
-#pragma warning disable CS1591
-#pragma warning disable IDE0130
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 #nullable disable
 
 using System.Collections;

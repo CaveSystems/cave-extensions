@@ -14,7 +14,7 @@ public static class DictionaryExtensions
     /// <param name="dictionary">The dictionary.</param>
     /// <param name="key">The key.</param>
     /// <param name="defaultValue">The default value.</param>
-    /// <returns></returns>
+    /// <returns>Returns the value associated with the specified key, or the default value if the key is not found.</returns>
     public static TValue? TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue? defaultValue = default)
     {
         if (dictionary == null)

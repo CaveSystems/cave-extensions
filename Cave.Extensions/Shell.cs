@@ -12,50 +12,66 @@ namespace Cave;
 public static class Shell
 {
     /// <summary>Provides a runner for shell commands.</summary>
-    public class ConsoleRunner
+    public record ConsoleRunner : BaseRecord
     {
         /// <summary>
-        /// Throw exceptions if process cannot be created, times out or has any other problem. (Will not throw if execution succeeds with any <see cref="ShellResult.ExitCode"/>.
+        /// Gets a value indicating whether to throw exceptions if process cannot be created, times out or has any other problem. (Will not throw if execution
+        /// succeeds with any <see cref="ShellResult.ExitCode"/>.
         /// </summary>
         public bool ThrowException { get; init; } = true;
 
-        /// <summary>Collect output and error strings and put them to <see cref="ShellResult.StdErr"/> and <see cref="ShellResult.StdOut"/>.</summary>
+        /// <summary>Gets a value indicating whether to collect output and error strings and put them to <see cref="ShellResult.StdErr"/> and <see cref="ShellResult.StdOut"/>.</summary>
         public bool CollectStrings { get; init; } = true;
 
-        /// <summary>Filename to start process with.</summary>
+        /// <summary>Gets the filename to start the process with.</summary>
         public string? FileName { get; init; }
 
-        /// <summary>Arguments to use.</summary>
+        /// <summary>Gets the arguments to use.</summary>
         public string? Arguments { get; init; }
 
-        /// <summary>Action to be run on each output line.</summary>
+        /// <summary>Gets the action to be run on each output line.</summary>
         public Action<string>? StdOut { get; init; }
 
-        /// <summary>Action to be run on each error line.</summary>
+        /// <summary>Gets the action to be run on each error line.</summary>
         public Action<string>? StdErr { get; init; }
 
-        /// <summary>Action to be run if the process completes with an exit code.</summary>
+        /// <summary>Gets the action to be run if the process completes with an exit code.</summary>
         public Action<int>? Completed { get; init; }
 
-        /// <summary>Timeout for the process.</summary>
+        /// <summary>Gets the timeout for the process.</summary>
         public int TimeoutMilliseconds { get; init; }
 
-        /// <summary>Environment variables to be used.</summary>
+        /// <summary>Gets the environment variables to be used.</summary>
         public Dictionary<string, string> Environment { get; } = new();
 
+        /// <summary>Runs the callback function for handling.</summary>
+        /// <param name="line">Result line.</param>
         internal void OnStdOut(string line) => StdOut?.Invoke(line);
 
+        /// <summary>Runs the callback function for handling.</summary>
+        /// <param name="line">Result line.</param>
         internal void OnStdErr(string line) => StdErr?.Invoke(line);
 
+        /// <summary>Runs the callback function for handling process completion.</summary>
+        /// <param name="code">Exit code of the process.</param>
         internal void OnCompleted(int code) => Completed?.Invoke(code);
 
         /// <summary>Runs a process with redirected output and error stream.</summary>
-        public ShellResult RunRedirected(bool collectOutput) => Shell.RunRedirected(this);
+        /// <returns>Returns the result of the shell execution.</returns>
+        public ShellResult RunRedirected() => Shell.RunRedirected(this);
+
+        /// <summary>Runs a process with redirected output and error stream.</summary>
+        /// <param name="collectOutput">Indicates whether to collect output and error strings.</param>
+        /// <returns>Returns the result of the shell execution.</returns>
+        [Obsolete("Use RunRedirected() without parameters and set CollectStrings property instead.")]
+        public ShellResult RunRedirected(bool collectOutput) => Shell.RunRedirected(this with { CollectStrings = true });
     }
 
     #region Static
 
     /// <summary>Runs a process with redirected output and error newline encoded text streams. Do not use this for binary input, output and error streams!</summary>
+    /// <param name="runner">The console runner configuration.</param>
+    /// <returns>Returns the result of the shell execution.</returns>
     public static ShellResult RunRedirected(ConsoleRunner runner)
     {
         var stdoutLines = new LinkedList<string>();

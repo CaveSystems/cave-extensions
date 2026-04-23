@@ -6,7 +6,7 @@ public interface IExpiring
     #region Public Methods
 
     /// <summary>Gets a value indicating whether this instance is expired.</summary>
-    /// <value><c>true</c> if this instance is expired; otherwise, <c>false</c>.</value>
+    /// <returns>Returns true if this instance is expired; otherwise, false.</returns>
     bool IsExpired();
 
     #endregion Public Methods

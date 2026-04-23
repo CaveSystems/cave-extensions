@@ -10,9 +10,9 @@ partial class StringExtensions
     #region Public Methods
 
     /// <summary><see cref="char.ToLower(char, CultureInfo)"/></summary>
-    /// <param name="c">Character</param>
-    /// <param name="culture">Culture to use</param>
-    /// <returns>Returns the lowercase character</returns>
+    /// <param name="c">Character to be converted.</param>
+    /// <param name="culture">Culture to use.</param>
+    /// <returns>Returns the lowercase character.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static char ToLower(this char c, CultureInfo culture) => char.ToLower(c, culture);
 

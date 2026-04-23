@@ -3,6 +3,7 @@
 namespace Cave.Collections;
 
 /// <summary>Interface for average calculations.</summary>
+/// <typeparam name="T">The type of the items to calculate the average for.</typeparam>
 public interface IAverage<T> : IEnumerable<T>
 {
     #region Public Properties

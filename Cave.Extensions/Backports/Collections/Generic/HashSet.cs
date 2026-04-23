@@ -1,7 +1,8 @@
+#if NET20
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable SA1611 // No comments for backports
 #pragma warning disable CS1591 // No comments for backports
 #pragma warning disable IDE0130 // Namespace does not match folder structure
-
-#if NET20
 
 using System.Diagnostics;
 using System.Linq;
@@ -11,8 +12,9 @@ using Cave;
 namespace System.Collections.Generic;
 
 /// <summary>Gets a generic typed set of objects.</summary>
+/// <typeparam name="T">The type of the items in the set.</typeparam>
 [DebuggerDisplay("Count={Count}")]
-public sealed class HashSet<T> : ISet<T>
+public sealed class HashSet<T> : ISet<T>, ICloneable
 {
     Dictionary<T, byte> dict = new();
 
@@ -21,17 +23,17 @@ public sealed class HashSet<T> : ISet<T>
     /// <summary>Gets a value indicating whether the set is readonly or not.</summary>
     public bool IsReadOnly => false;
 
-    /// <summary>Gets an <see cref="IEnumerator"/> for this set.</summary>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => dict.Keys.GetEnumerator();
 
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => dict.Keys.GetEnumerator();
 
-    /// <summary>Creates a copy of this set.</summary>
+    /// <inheritdoc/>
     public object Clone() => new HashSet<T>(dict.Keys);
 
     /// <summary>Gets an array of all elements present.</summary>
-    /// <returns></returns>
+    /// <returns>An array containing all elements in the set.</returns>
     public T[] ToArray()
     {
         var result = new T[Count];
@@ -58,9 +60,11 @@ public sealed class HashSet<T> : ISet<T>
     public HashSet(params T[] items) : this() => IncludeRange(items);
 
     /// <summary>Initializes a new instance of the <see cref="HashSet{T}"/> class.</summary>
+    /// <param name="items">The items to add.</param>
     public HashSet(IEnumerable<T> items) : this() => IncludeRange(items);
 
     /// <summary>Initializes a new instance of the <see cref="HashSet{T}"/> class.</summary>
+    /// <param name="blocks">The blocks of items to add.</param>
     public HashSet(params IEnumerable<T>[] blocks)
         : this()
     {

@@ -20,17 +20,17 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 
     /// <summary>Allows direct access to the first <see cref="Option"/> with the specified name.</summary>
     /// <param name="optionIndex">Index of the option.</param>
-    /// <returns></returns>
+    /// <returns>Returns the <see cref="Option"/> at the specified index.</returns>
     Option this[int optionIndex] => items.GetB(optionIndex);
 
     #endregion Private Indexers
 
     #region Public Constructors
 
-    /// <summary>Initializes a new empty instance of the <see cref="OptionCollection"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="OptionCollection"/> class.</summary>
     public OptionCollection() { }
 
-    /// <summary>Creates a new <see cref="OptionCollection"/>.</summary>
+    /// <summary>Initializes a new instance of the <see cref="OptionCollection"/> class with the specified enumeration of options.</summary>
     /// <param name="enumeration">The <see cref="IEnumerable"/> list of <see cref="Option"/> s.</param>
     public OptionCollection(IEnumerable<Option> enumeration)
     {
@@ -49,17 +49,17 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 
     #region Public Properties
 
-    /// <summary>Provides an empty option collection.</summary>
+    /// <summary>Gets an empty option collection.</summary>
     public static OptionCollection Empty { get; } = new();
 
     /// <summary>Gets a value indicating whether the list is readonly or not.</summary>
     public static bool IsReadOnly => true;
 
-    /// <summary>Gets the number of items present.</summary>
-    public int Count => items.Count;
-
     /// <summary>Gets all option names.</summary>
     public IList<string> Names => items.ItemsA;
+
+    /// <summary>Gets the number of items present.</summary>
+    public int Count => items.Count;
 
     #endregion Public Properties
 
@@ -67,8 +67,8 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 
     /// <summary>Allows direct access to the first <see cref="Option"/> with the specified name.</summary>
     /// <param name="optionName">Name of the option.</param>
-    /// <returns></returns>
-    /// <exception cref="KeyNotFoundException"></exception>
+    /// <returns>Returns the <see cref="Option"/> with the specified name.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the option cannot be found!</exception>
     public Option this[string optionName]
     {
         get
@@ -88,8 +88,8 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     #region Public Methods
 
     /// <summary>Gets an Array of <see cref="Option"/> s from a <see cref="IDictionary"/>.</summary>
-    /// <param name="dictionary"></param>
-    /// <returns></returns>
+    /// <param name="dictionary">The dictionary to convert.</param>
+    /// <returns>Returns a new <see cref="OptionCollection"/> containing the result.</returns>
     public static OptionCollection FromDictionary(IDictionary dictionary)
     {
         if (dictionary == null)
@@ -110,7 +110,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     /// <summary>Obtains an Array of <see cref="Option"/> s from a specified string Array.</summary>
     /// <param name="lines">The strings to obtain Options from.</param>
     /// <param name="ignoreInvalid">if set to <c>true</c> [ignore invalid options].</param>
-    /// <returns></returns>
+    /// <returns>Returns a new <see cref="OptionCollection"/> containing the result.</returns>
     /// <exception cref="ArgumentNullException">texts.</exception>
     public static OptionCollection FromStrings(string[]? lines, bool ignoreInvalid = false)
     {
@@ -136,12 +136,12 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
 
     /// <summary>Parses the specified string.</summary>
     /// <param name="text">The string to parse.</param>
-    /// <returns></returns>
+    /// <returns>Returns a new <see cref="OptionCollection"/> containing the parsed options.</returns>
     public static OptionCollection Parse(string text) => FromStrings(text.SplitNewLine());
 
     /// <summary>Checks whether a specified option name is part of the collection.</summary>
     /// <param name="optionName">Name of the option.</param>
-    /// <returns></returns>
+    /// <returns>Returns true if the collection contains the specified option name; otherwise, false.</returns>
     public bool Contains(string optionName)
     {
         if (optionName == null)
@@ -153,18 +153,18 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     }
 
     /// <summary>Determines whether the collection contains a specified element by using the default equality comparer.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The object to locate in the collection.</param>
+    /// <returns>Returns true if the collection contains the specified element; otherwise, false.</returns>
     public bool Contains(Option item) => items.ContainsB(item);
 
     /// <summary>Copies all elements of the collection to an Array, starting at a particular Array index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
+    /// <param name="array">The destination array.</param>
+    /// <param name="arrayIndex">The zero-based index in the array at which copying begins.</param>
     public void CopyTo(Option[] array, int arrayIndex) => items.CopyTo(array, arrayIndex);
 
     /// <summary>Determines whether the specified object is equal to the current object.</summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>Returns true if the specified object is equal to the current object; otherwise, false.</returns>
     public bool Equals(OptionCollection? other)
     {
         if (other is null)
@@ -188,17 +188,13 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
         return true;
     }
 
-    /// <summary>Determines whether the specified object is equal to the current object. (Inherited from Object.)</summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => Equals(obj as OptionCollection);
 
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public IEnumerator<Option> GetEnumerator() => items.ItemsB.GetEnumerator();
 
-    /// <summary>Serves as a hash function for a particular type.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public override int GetHashCode() => items.GetHashCode();
 
     /// <summary>Gets the index of the first option with the specified name.</summary>
@@ -239,7 +235,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     }
 
     /// <summary>Gets all options of the collection as one dimensional array.</summary>
-    /// <returns></returns>
+    /// <returns>An array containing all options in the collection.</returns>
     public Option[] ToArray()
     {
         var result = new Option[Count];
@@ -248,7 +244,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
     }
 
     /// <summary>Gets a string containing all options.</summary>
-    /// <returns></returns>
+    /// <returns>A string containing all options in the collection.</returns>
     public override string ToString()
     {
         var result = new StringBuilder();
@@ -276,8 +272,7 @@ public class OptionCollection : IEnumerable<Option>, IEquatable<OptionCollection
         return result.ToString();
     }
 
-    /// <summary>Returns an enumerator that iterates through all items.</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => items.ItemsB.GetEnumerator();
 
     #endregion Public Methods

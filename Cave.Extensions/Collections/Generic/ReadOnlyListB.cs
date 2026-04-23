@@ -6,9 +6,9 @@ using System.Diagnostics;
 
 namespace Cave.Collections.Generic;
 
-/// <summary>Gets a readonly collection implementation for A items of <see cref="Set{A, B}"/>.</summary>
-/// <typeparam name="TValue1"></typeparam>
-/// <typeparam name="TValue2"></typeparam>
+/// <summary>Gets a readonly collection implementation for B items of <see cref="Set{A, B}"/>.</summary>
+/// <typeparam name="TValue1">The type of the A items in the set.</typeparam>
+/// <typeparam name="TValue2">The type of the B items in the set.</typeparam>
 [DebuggerDisplay("Count={Count}")]
 public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
 {
@@ -59,7 +59,7 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     #region Public Constructors
 
     /// <summary>Initializes a new instance of the <see cref="ReadOnlyListB{TValue1, TValue2}"/> class.</summary>
-    /// <param name="items"></param>
+    /// <param name="items">The set of items to wrap in a read-only list.</param>
     public ReadOnlyListB(IItemSet<TValue1, TValue2> items) => set = items;
 
     #endregion Public Constructors
@@ -77,8 +77,8 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     #region Public Indexers
 
     /// <summary>Gets the item at the specified index. Setter throws a ReadOnlyException.</summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
+    /// <param name="index">The index of the item to get.</param>
+    /// <returns>Returns the item at the specified index.</returns>
     public TValue2 this[int index] { get => set[index].B; set => throw new ReadOnlyException(); }
 
     #endregion Public Indexers
@@ -86,15 +86,15 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     #region Public Methods
 
     /// <summary>Throws a ReadOnlyException.</summary>
-    /// <param name="item"></param>
+    /// <param name="item">The item to add.</param>
     public void Add(TValue2 item) => throw new ReadOnlyException();
 
     /// <summary>Throws a ReadOnlyException.</summary>
     public void Clear() => throw new ReadOnlyException();
 
     /// <summary>Determines whether an element is part of the collection.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The item to locate in the collection.</param>
+    /// <returns>Returns true if the item is found in the collection; otherwise, false.</returns>
     public bool Contains(TValue2 item) => set.IndexOfB(item) > -1;
 
     /// <summary>Copies the entire collection to a compatible one-dimensional array, starting at the beginning of the target array.</summary>
@@ -114,30 +114,30 @@ public sealed class ReadOnlyListB<TValue1, TValue2> : IList<TValue2>
     }
 
     /// <summary>Returns an enumerator that iterates through the collection.</summary>
-    /// <returns></returns>
+    /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     public IEnumerator<TValue2> GetEnumerator() => new EnumeratorB(set);
 
     /// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire collection.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The object to locate in the collection.</param>
+    /// <returns>Returns the zero-based index of the first occurrence of the specified object within the entire collection; otherwise, -1.</returns>
     public int IndexOf(TValue2 item) => set.IndexOfB(item);
 
     /// <summary>Throws a ReadOnlyException.</summary>
-    /// <param name="index"></param>
-    /// <param name="item"></param>
+    /// <param name="index">The index at which to insert the item.</param>
+    /// <param name="item">The item to insert.</param>
     public void Insert(int index, TValue2 item) => throw new ReadOnlyException();
 
     /// <summary>Throws a ReadOnlyException.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The item to remove.</param>
+    /// <returns>Always throws a ReadOnlyException.</returns>
     public bool Remove(TValue2 item) => throw new ReadOnlyException();
 
     /// <summary>Throws a ReadOnlyException.</summary>
-    /// <param name="index"></param>
+    /// <param name="index">The index of the item to remove.</param>
     public void RemoveAt(int index) => throw new ReadOnlyException();
 
     /// <summary>Returns an enumerator that iterates through the collection.</summary>
-    /// <returns></returns>
+    /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => new EnumeratorB(set);
 
     #endregion Public Methods

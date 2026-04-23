@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 namespace Cave;
 
 /// <summary>Provides a managed implementation of the Cyclic Redundancy Checksum with 32 bits.</summary>
-public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
+public class CRC32 : CaveHashAlgorithm, IChecksum<uint>, IHashingFunction, ICloneable
 {
     #region Private Fields
 
@@ -266,12 +266,6 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
     /// <inheritdoc/>
     public object Clone() => new CRC32(this);
 
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
-
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void Feed(int hash)
@@ -312,12 +306,6 @@ public class CRC32 : HashAlgorithm, IChecksum<uint>, IHashingFunction
             HashCore(data[i]);
         }
     }
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
 
     /// <summary>directly hashes one byte.</summary>
     /// <param name="b">The byte.</param>

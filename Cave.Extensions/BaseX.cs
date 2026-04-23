@@ -8,13 +8,13 @@ public abstract class BaseX : IBaseX
 {
     #region Public Constructors
 
-    /// <summary>Creates a new instance of the <see cref="BaseX"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="BaseX"/> class.</summary>
     /// <param name="characters">Character set</param>
     /// <param name="obeyCasing">Obey case during decoding</param>
     /// <param name="padding">Padding character to use</param>
     public BaseX(string characters, bool obeyCasing, char? padding) : this(new CharacterDictionary(characters, obeyCasing), padding) { }
 
-    /// <summary>Creates a new instance of the <see cref="BaseX"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="BaseX"/> class.</summary>
     /// <param name="characterDictionary">Character set</param>
     /// <param name="padding">Padding character to use</param>
     public BaseX(CharacterDictionary characterDictionary, char? padding)

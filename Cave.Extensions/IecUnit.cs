@@ -1,6 +1,9 @@
-﻿namespace Cave;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Cave;
 
 /// <summary>Gets common IEC units for binary values (byte).</summary>
+[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter")]
 public enum IecUnit
 {
     /// <summary>Byte</summary>

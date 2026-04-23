@@ -97,11 +97,11 @@ public class FileLocation : IEquatable<FileLocation>
     /// <summary>Gets or sets the valid characters used at auto generated file locations (from assemblies product and company name).</summary>
     public static string ValidChars { get; set; } = ASCII.Strings.Letters + ASCII.Strings.Digits;
 
-    /// <summary>Gets or sets the extension.</summary>
+    /// <summary>Gets the extension.</summary>
     /// <value>The extension.</value>
     public string? Extension { get; init; }
 
-    /// <summary>Gets or sets the name of the file.</summary>
+    /// <summary>Gets the name of the file.</summary>
     /// <value>The name of the file.</value>
     public string? FileName { get; init; }
 
@@ -109,11 +109,11 @@ public class FileLocation : IEquatable<FileLocation>
     /// <value>The folder.</value>
     public string Folder => FileSystem.Combine(GetRoot(), SubFolders);
 
-    /// <summary>Gets or sets the root.</summary>
-    /// <value>The root.</value>
+    /// <summary>Gets the root location.</summary>
+    /// <value>The root location.</value>
     public RootLocation Root { get; init; }
 
-    /// <summary>Gets or sets the sub folders to use.</summary>
+    /// <summary>Gets the sub folders to use.</summary>
     /// <value>The sub folders.</value>
     public string? SubFolders { get; init; }
 

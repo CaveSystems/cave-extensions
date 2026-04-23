@@ -116,7 +116,7 @@ public sealed class CharacterDictionary
     /// <summary>Tries to get the value for the given character. If no values is available defaultValue will be returned.</summary>
     /// <param name="character">The character.</param>
     /// <param name="defaultValue">The default value.</param>
-    /// <returns></returns>
+    /// <returns>Returns the value for the character if available, otherwise returns the default value.</returns>
     public int TryGetValue(char character, int defaultValue)
     {
         if (character >= values.Length)

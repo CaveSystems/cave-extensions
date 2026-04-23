@@ -10,21 +10,23 @@ public static class IEnumerableExtension
     #region Public Methods
 
     /// <summary>Converts to a list.</summary>
+    /// <typeparam name="T">The type of the elements of the enumeration.</typeparam>
     /// <param name="items">The items.</param>
-    /// <returns></returns>
+    /// <returns>A list containing the elements of the enumeration.</returns>
     public static List<T> AsList<T>(this IEnumerable<T> items)
     {
         if (items is not List<T> result)
         {
-            result = items.ToList();
+            result = [.. items];
         }
 
         return result;
     }
 
     /// <summary>Converts to a set.</summary>
+    /// <typeparam name="T">The type of the elements of the enumeration.</typeparam>
     /// <param name="items">The items.</param>
-    /// <returns></returns>
+    /// <returns>A set containing the elements of the enumeration.</returns>
     public static IItemSet<T> AsSet<T>(this IEnumerable<T> items)
     {
         if (items is not IItemSet<T> result)
@@ -36,8 +38,9 @@ public static class IEnumerableExtension
     }
 
     /// <summary>Converts to a set.</summary>
+    /// <typeparam name="T">The type of the elements of the enumeration.</typeparam>
     /// <param name="items">The items.</param>
-    /// <returns></returns>
+    /// <returns>A set containing the elements of the enumeration.</returns>
     public static IItemSet<T> ToSet<T>(this IEnumerable<T> items) => new Set<T>(items);
 
     #endregion Public Methods

@@ -60,7 +60,7 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
 
     /// <summary>Gets/sets the ItemPair at the specified index.</summary>
     /// <param name="index">The index.</param>
-    /// <returns></returns>
+    /// <returns>Returns the <see cref="ItemPair{TValue1, TValue2}"/> at the specified index.</returns>
     public ItemPair<TValue1, TValue2> this[int index]
     {
         get => new(listA[index], listB[index]);
@@ -112,7 +112,7 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     }
 
     /// <summary>Adds a range of items to the list.</summary>
-    /// <param name="items"></param>
+    /// <param name="items">The items to add.</param>
     public void AddRange(IEnumerable<ItemPair<TValue1, TValue2>> items)
     {
         if (items == null)
@@ -346,7 +346,7 @@ public class List<TValue1, TValue2> : IList<ItemPair<TValue1, TValue2>>
     }
 
     /// <summary>Removes the ItemPair at the specified index.</summary>
-    /// <param name="index"></param>
+    /// <param name="index">The index of the ItemPair to remove.</param>
     public void RemoveAt(int index)
     {
         if (IsReadOnly)

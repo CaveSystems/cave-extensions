@@ -36,8 +36,6 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-
-
 namespace Cave;
 
 #pragma warning disable CS0809, CA2231
@@ -122,9 +120,9 @@ public struct XxHash32 : IHashingFunction
         {
             var previousLength = len++;
             var position = previousLength % 4;
-            if (position == 0) q1 = value;
-            else if (position == 1) q2 = value;
-            else if (position == 2) q3 = value;
+            if (position == 0) { q1 = value; }
+            else if (position == 1) { q2 = value; }
+            else if (position == 2) { q3 = value; }
             else // position == 3
             {
                 if (previousLength == 3) Initialize(out v1, out v2, out v3, out v4);
@@ -143,12 +141,6 @@ public struct XxHash32 : IHashingFunction
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void Feed(int hash) => Hash((uint)hash);
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
 
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
@@ -189,14 +181,8 @@ public struct XxHash32 : IHashingFunction
         }
     }
 
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
-
     /// <summary>Returns the resulting hashcode.</summary>
-    /// <returns></returns>
+    /// <returns>The computed hash code.</returns>
     public int ToHashCode()
     {
         unchecked
@@ -209,11 +195,9 @@ public struct XxHash32 : IHashingFunction
             var position = length % 4;
 
             // If the length is less than 4, _v1 to _v4 don't contain anything yet. xxHash32 treats this differently.
-
             var hash = length < 4 ? MixEmptyState() : MixState(v1, v2, v3, v4);
 
             // _length is incremented once per Add(Int32) and is therefore 4 times too small (xxHash length is in bytes, not ints).
-
             hash += length * 4;
 
             // Mix what remains in the queue

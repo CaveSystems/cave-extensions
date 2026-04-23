@@ -14,7 +14,7 @@ public static class IEnumerableExtension
     #region Static
 
     /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
     /// <returns>A new sequence of items.</returns>
@@ -36,7 +36,7 @@ public static class IEnumerableExtension
     }
 
     /// <summary>Returns all items after the specified <paramref name="item"/> including the first matching item.</summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
     /// <returns>A new sequence of items.</returns>
@@ -50,14 +50,14 @@ public static class IEnumerableExtension
     public static IList<T> AsReadOnly<T>(this IEnumerable<T> items) => items is IList<T> list ? list.AsReadOnly() : items.AsList().AsReadOnly();
 
     /// <summary>Returns all items after the specified <paramref name="item"/>. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
     /// <returns>A new sequence of items.</returns>
     public static IEnumerable<T> Before<T>(this IEnumerable<T> enumerable, T item) => enumerable.TakeWhile(i => !Equals(i, item));
 
     /// <summary>Returns all items after the specified <paramref name="item"/> including item. Items are checked using <see cref="object.Equals(object, object)"/>.</summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
     /// <param name="enumerable">The items to iterate</param>
     /// <param name="item">Item to find</param>
     /// <returns>A new sequence of items.</returns>
@@ -726,7 +726,7 @@ public static class IEnumerableExtension
     }
 
     /// <summary>Iterates the enumeration to get the count of items.</summary>
-    /// <param name="enumerable"></param>
+    /// <param name="enumerable">Items to enumerate</param>
     /// <returns>Returns the number of items.</returns>
     public static int Count(this IEnumerable enumerable)
     {
@@ -737,7 +737,7 @@ public static class IEnumerableExtension
     }
 
     /// <summary>Runs an action for each item within the specified <paramref name="enumerable"/>.</summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Element type</typeparam>
     /// <param name="enumerable">Items to enumerate</param>
     /// <param name="action">Action to run.</param>
     public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
@@ -776,7 +776,7 @@ public static class IEnumerableExtension
     /// <param name="enumerable">Enumeration</param>
     /// <param name="errorMessage">Error message</param>
     /// <returns>Returns the single item present</returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="InvalidOperationException">Thrown if the sequence does not contain exactly one element.</exception>
     public static T SingleOrError<T>(this IEnumerable<T> enumerable, string errorMessage)
     {
         var result = enumerable.ToList();

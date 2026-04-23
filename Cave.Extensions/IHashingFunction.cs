@@ -15,11 +15,11 @@ public interface IHashingFunction
 
     /// <summary>Feeds specified binary data to the hashing function.</summary>
     /// <param name="data">Data to add</param>
-    /// <param name="length"></param>
+    /// <param name="length">Length of the data in bytes</param>
     unsafe void Feed(byte* data, int length);
 
     /// <summary>Gets the combined hashcode.</summary>
-    /// <returns></returns>
+    /// <returns>Returns the computed hashcode.</returns>
     int ToHashCode();
 
     #endregion Public Methods

@@ -209,6 +209,7 @@ public abstract class Estimation : IEstimation
     public void Update(float offset, float currentValue, float maximum) => Update(offset + (currentValue / maximum));
 
     /// <summary>Updates the <see cref="EstimatedCompletionTime"/> by setting the progress.</summary>
+    /// <param name="progress">The progress in range [0.0 .. 1.0].</param>
     public void Update(IProgress progress)
     {
         var percent = progress.Value;

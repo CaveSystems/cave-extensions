@@ -134,8 +134,8 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     #region IComparable Members
 
     /// <summary>Compares the start of two <see cref="Counter"/> s.</summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns>Returns a value indicating the relative order of the objects being compared.</returns>
     public int CompareTo(object? obj) => obj is not Counter other ? -1 : Start.CompareTo(other.Start);
 
     #endregion IComparable Members
@@ -167,7 +167,7 @@ public class Counter : IEnumerable<int>, IComparable, IEquatable<Counter>
     public override bool Equals(object? obj) => obj is Counter other && Equals(other);
 
     /// <summary>Gets a hash code for this instance.</summary>
-    /// <returns></returns>
+    /// <returns>Returns a hash code for this instance.</returns>
     public override int GetHashCode() => ToString().GetHashCode();
 
     /// <summary>Gets the counter properties as string.</summary>

@@ -46,7 +46,9 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets a value indicating whether the collection contains no elements.
+    /// </summary>
     public bool IsEmpty => dict.Count == 0;
 
     /// <inheritdoc/>
@@ -73,7 +75,11 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets an object that can be used to synchronize access to the collection.
+    /// </summary>
+    /// <remarks>Use this object to lock the collection during multithreaded operations to ensure thread
+    /// safety.</remarks>
     public object SyncRoot { get; } = new();
 
     /// <inheritdoc/>
@@ -95,7 +101,6 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <summary>Gets or sets the value with the specified key.</summary>
     /// <value>The value.</value>
     /// <param name="key">The key.</param>
-    /// <returns></returns>
     public TValue this[TKey key]
     {
         get
@@ -105,6 +110,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
                 return dict[key];
             }
         }
+
         set
         {
             lock (SyncRoot)
@@ -204,7 +210,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <summary>Adds a key/value pair to the Dictionary by using the specified function, if the key does not already exist.</summary>
     /// <param name="key">The key.</param>
     /// <param name="constructor">The constructor.</param>
-    /// <returns></returns>
+    /// <returns>Returns the value associated with the specified key.</returns>
     public TValue GetOrAdd(TKey key, Func<TValue> constructor)
     {
         if (constructor == null)
@@ -228,7 +234,7 @@ public class SynchronizedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <remarks>If the constructor for the item returns null, the item is not added.</remarks>
     /// <param name="key">The key.</param>
     /// <param name="constructor">The constructor.</param>
-    /// <returns></returns>
+    /// <returns>Returns the value associated with the specified key, or null if the constructor returns null.</returns>
     public TValue GetOrAddIgnoreNull(TKey key, Func<TValue> constructor)
     {
         if (constructor == null)

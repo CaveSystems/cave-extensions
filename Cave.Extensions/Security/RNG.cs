@@ -169,7 +169,7 @@ public static class RNG
         return sb.ToString();
     }
 
-    /// <summary>Gets a random value</summary>
+    /// <summary>Gets a value indicating whether the current random value is true or false.</summary>
     public static bool Bool => (UInt8 & 1) == 0;
 
     static ulong MaxTicks { get; } = (ulong)(DateTime.MaxValue - DateTime.MinValue).Ticks;
@@ -182,7 +182,7 @@ public static class RNG
     /// <param name="ticksMax">Maximum ticks</param>
     /// <param name="tickStep">Step in ticks</param>
     /// <returns>Returns a new timespan value</returns>
-    /// <exception cref="Exception"></exception>
+    /// <exception cref="InvalidOperationException">Thrown when a valid timespan could not be found within 100 iterations.</exception>
     public static TimeSpan GetTimeSpan(long ticksMin, long ticksMax, long tickStep)
     {
         for (var i = 0; ; i++)
@@ -190,7 +190,7 @@ public static class RNG
             var value = unchecked(ticksMin + (UInt32 * tickStep));
             value -= value % tickStep;
             if (value > ticksMin && value < ticksMax) return new TimeSpan(value);
-            if (i > 100) throw new Exception("Could not find a valid result!");
+            if (i > 100) throw new InvalidOperationException("Could not find a valid result!");
         }
     }
 

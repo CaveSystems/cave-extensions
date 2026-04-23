@@ -1,37 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>
-            net20;net35;
-            net40;
-            net45;net46;net47;net48;
-            netstandard2.0;netstandard2.1;
-            net8.0;
-        </TargetFrameworks>
+	<PropertyGroup>
+		<TargetFrameworks>
+			net20;net35;
+			net40;
+			net45;net46;net47;net48;
+			netstandard2.0;netstandard2.1;
+			net8.0;
+		</TargetFrameworks>
 
-        <!--project-->
-        <RootNamespace>Cave</RootNamespace>
-        <AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
-        <Product>CaveSystems Extensions Library</Product>
-        <PackageTags>CaveSystems Extensions</PackageTags>
-        <Description>CaveSystems Extensions Library. This packages contains extensions methods for various .net classes, fast crc32, crc64, base32, base64 implementations and backports for older frameworks.</Description>
-        <PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/CaveSystems/cave-extensions</RepositoryUrl>
-        <!--settings-->
-        <PackageReleaseNotes />
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <SignAssembly>true</SignAssembly>
-        <NeutralLanguage />
-        <DelaySign>false</DelaySign>
-        <RollForward>LatestMinor</RollForward>
-    </PropertyGroup>
+		<!--project-->
+		<RootNamespace>Cave</RootNamespace>
+		<AssemblyOriginatorKeyFile>cave-extensions.snk</AssemblyOriginatorKeyFile>
+		<Product>CaveSystems Extensions Library</Product>
+		<PackageTags>CaveSystems Extensions</PackageTags>
+		<Description>
+			CaveSystems Extensions Library.
+			Provides reusable extension methods for various .NET classes.
+			Includes fast implementations for CRC32 and CRC64.
+			Offers Base32 and Base64 encoding utilities.
+			Contains helpers and backports for older framework versions.
+			Supports classic .NET Framework, .NET Standard, and modern .NET.
+			Utility package for cross-target application development.
+		</Description>
+		<PackageProjectUrl>https://github.com/CaveSystems/cave-extensions</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/CaveSystems/cave-extensions</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <ItemGroup>
-        <PackageReference Include="Cave.CleanCodeAnalyzer" Version="1.0.1" />
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+		<!--settings-->
+		<PackageReleaseNotes />
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<SignAssembly>true</SignAssembly>
+		<NeutralLanguage />
+		<DelaySign>false</DelaySign>
+		<RollForward>LatestMinor</RollForward>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(SolutionDir)\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>

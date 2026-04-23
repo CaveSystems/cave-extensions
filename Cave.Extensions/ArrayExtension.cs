@@ -70,8 +70,8 @@ public static class ArrayExtension
     }
 
     /// <summary>Provides an alternative (backport) to Array.Empty&lt;T&gt;()</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <typeparam name="T">The type of the elements of the array.</typeparam>
+    /// <returns>An empty array of the specified type.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static T[] Empty<T>() => [];
 

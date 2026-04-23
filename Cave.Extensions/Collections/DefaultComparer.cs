@@ -17,7 +17,7 @@ public struct DefaultComparer
 
     #region Public Constructors
 
-    /// <summary>Creates a new instance of the <see cref="DefaultComparer"/> structure.</summary>
+    /// <summary>Initializes a new instance of the <see cref="DefaultComparer"/> structure.</summary>
     public DefaultComparer() => value = 0;
 
     #endregion Public Constructors
@@ -28,10 +28,10 @@ public struct DefaultComparer
     /// This function compares each item in the first array to the item at the same index at the second array. The types of all items need to match and the
     /// first comparison not matching returns the result.
     /// </summary>
+    /// <typeparam name="T">The type of the elements in the arrays.</typeparam>
     /// <param name="first">First array</param>
     /// <param name="second">Second array</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>Returns a value indicating the relative order of the arrays.</returns>
     public static int Compare<T>(T[] first, T[] second) where T : struct
     {
         if (ReferenceEquals(first, second)) return 0;
@@ -254,15 +254,15 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3)
     {
@@ -272,18 +272,18 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4)
     {
@@ -293,21 +293,21 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5)
     {
@@ -317,24 +317,24 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
-    /// <param name="o1">other.field^1 to compare</param>
+    /// <param name="o1">other.field1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6)
     {
@@ -344,27 +344,27 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
     /// <param name="i1">this.field1 to compare</param>
-    /// <param name="o1">other.field^1 to compare</param>
+    /// <param name="o1">other.field1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7)
     {
@@ -374,30 +374,29 @@ public struct DefaultComparer
 
     /// <summary>Gets the comparison between values. Uses <see cref="Get{T1}"/> on each pair and returns on the first difference.</summary>
     /// <typeparam name="T1">First type to compare</typeparam>
-    /// <param name="i1">this.field1 to compare</param>
-    /// <param name="o1">other.field^1 to compare</param>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
+    /// <typeparam name="T8">Eighth type to compare</typeparam>/// <param name="i1">this.field1 to compare</param>
+    /// <param name="o1">other.field1 to compare</param>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
+    /// <param name="i8">this field8 value</param>
+    /// <param name="o8">other field8 value</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <typeparam name="T8">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
-    /// <param name="i8">this field value</param>
-    /// <param name="o8">other field value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7, T8>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7, T8 i8, T8 o8)
     {
@@ -410,30 +409,30 @@ public struct DefaultComparer
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <typeparam name="T8">Type to compare</typeparam>
-    /// <typeparam name="T9">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
-    /// <param name="i8">this field value</param>
-    /// <param name="o8">other field value</param>
-    /// <param name="i9">this field value</param>
-    /// <param name="o9">other field value</param>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
+    /// <typeparam name="T8">Eighth type to compare</typeparam>
+    /// <typeparam name="T9">Ninth type to compare</typeparam>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
+    /// <param name="i8">this field8 value</param>
+    /// <param name="o8">other field8 value</param>
+    /// <param name="i9">this field9 value</param>
+    /// <param name="o9">other field9 value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7, T8, T9>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7, T8 i8, T8 o8,
         T9 i9, T9 o9)
@@ -447,33 +446,33 @@ public struct DefaultComparer
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <typeparam name="T8">Type to compare</typeparam>
-    /// <typeparam name="T9">Type to compare</typeparam>
-    /// <typeparam name="T10">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
-    /// <param name="i8">this field value</param>
-    /// <param name="o8">other field value</param>
-    /// <param name="i9">this field value</param>
-    /// <param name="o9">other field value</param>
-    /// <param name="i10">this field value</param>
-    /// <param name="o10">other field value</param>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
+    /// <typeparam name="T8">Eighth type to compare</typeparam>
+    /// <typeparam name="T9">Ninth type to compare</typeparam>
+    /// <typeparam name="T10">Tenth type to compare</typeparam>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
+    /// <param name="i8">this field8 value</param>
+    /// <param name="o8">other field8 value</param>
+    /// <param name="i9">this field9 value</param>
+    /// <param name="o9">other field9 value</param>
+    /// <param name="i10">this field10 value</param>
+    /// <param name="o10">other field10 value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7, T8 i8, T8 o8,
         T9 i9, T9 o9, T10 i10, T10 o10)
@@ -487,36 +486,36 @@ public struct DefaultComparer
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <typeparam name="T8">Type to compare</typeparam>
-    /// <typeparam name="T9">Type to compare</typeparam>
-    /// <typeparam name="T10">Type to compare</typeparam>
-    /// <typeparam name="T11">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
-    /// <param name="i8">this field value</param>
-    /// <param name="o8">other field value</param>
-    /// <param name="i9">this field value</param>
-    /// <param name="o9">other field value</param>
-    /// <param name="i10">this field value</param>
-    /// <param name="o10">other field value</param>
-    /// <param name="i11">this field value</param>
-    /// <param name="o11">other field value</param>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
+    /// <typeparam name="T8">Eighth type to compare</typeparam>
+    /// <typeparam name="T9">Ninth type to compare</typeparam>
+    /// <typeparam name="T10">Tenth type to compare</typeparam>
+    /// <typeparam name="T11">Eleventh type to compare</typeparam>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
+    /// <param name="i8">this field8 value</param>
+    /// <param name="o8">other field8 value</param>
+    /// <param name="i9">this field9 value</param>
+    /// <param name="o9">other field9 value</param>
+    /// <param name="i10">this field10 value</param>
+    /// <param name="o10">other field10 value</param>
+    /// <param name="i11">this field11 value</param>
+    /// <param name="o11">other field11 value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7, T8 i8, T8 o8,
         T9 i9, T9 o9, T10 i10, T10 o10, T11 i11, T11 o11)
@@ -530,39 +529,39 @@ public struct DefaultComparer
     /// <param name="i1">this.field1 to compare</param>
     /// <param name="o1">other.field^1 to compare</param>
     /// <returns>Returns -1, 0 or 1</returns>
-    /// <typeparam name="T2">Type to compare</typeparam>
-    /// <typeparam name="T3">Type to compare</typeparam>
-    /// <typeparam name="T4">Type to compare</typeparam>
-    /// <typeparam name="T5">Type to compare</typeparam>
-    /// <typeparam name="T6">Type to compare</typeparam>
-    /// <typeparam name="T7">Type to compare</typeparam>
-    /// <typeparam name="T8">Type to compare</typeparam>
-    /// <typeparam name="T9">Type to compare</typeparam>
-    /// <typeparam name="T10">Type to compare</typeparam>
-    /// <typeparam name="T11">Type to compare</typeparam>
-    /// <typeparam name="T12">Type to compare</typeparam>
-    /// <param name="i2">this field value</param>
-    /// <param name="o2">other field value</param>
-    /// <param name="i3">this field value</param>
-    /// <param name="o3">other field value</param>
-    /// <param name="i4">this field value</param>
-    /// <param name="o4">other field value</param>
-    /// <param name="i5">this field value</param>
-    /// <param name="o5">other field value</param>
-    /// <param name="i6">this field value</param>
-    /// <param name="o6">other field value</param>
-    /// <param name="i7">this field value</param>
-    /// <param name="o7">other field value</param>
-    /// <param name="i8">this field value</param>
-    /// <param name="o8">other field value</param>
-    /// <param name="i9">this field value</param>
-    /// <param name="o9">other field value</param>
-    /// <param name="i10">this field value</param>
-    /// <param name="o10">other field value</param>
-    /// <param name="i11">this field value</param>
-    /// <param name="o11">other field value</param>
-    /// <param name="i12">this field value</param>
-    /// <param name="o12">other field value</param>
+    /// <typeparam name="T2">Second type to compare</typeparam>
+    /// <typeparam name="T3">Third type to compare</typeparam>
+    /// <typeparam name="T4">Fourth type to compare</typeparam>
+    /// <typeparam name="T5">Fifth type to compare</typeparam>
+    /// <typeparam name="T6">Sixth type to compare</typeparam>
+    /// <typeparam name="T7">Seventh type to compare</typeparam>
+    /// <typeparam name="T8">Eighth type to compare</typeparam>
+    /// <typeparam name="T9">Ninth type to compare</typeparam>
+    /// <typeparam name="T10">Tenth type to compare</typeparam>
+    /// <typeparam name="T11">Eleventh type to compare</typeparam>
+    /// <typeparam name="T12">Twelfth type to compare</typeparam>
+    /// <param name="i2">this field2 value</param>
+    /// <param name="o2">other field2 value</param>
+    /// <param name="i3">this field3 value</param>
+    /// <param name="o3">other field3 value</param>
+    /// <param name="i4">this field4 value</param>
+    /// <param name="o4">other field4 value</param>
+    /// <param name="i5">this field5 value</param>
+    /// <param name="o5">other field5 value</param>
+    /// <param name="i6">this field6 value</param>
+    /// <param name="o6">other field6 value</param>
+    /// <param name="i7">this field7 value</param>
+    /// <param name="o7">other field7 value</param>
+    /// <param name="i8">this field8 value</param>
+    /// <param name="o8">other field8 value</param>
+    /// <param name="i9">this field9 value</param>
+    /// <param name="o9">other field9 value</param>
+    /// <param name="i10">this field10 value</param>
+    /// <param name="o10">other field10 value</param>
+    /// <param name="i11">this field11 value</param>
+    /// <param name="o11">other field11 value</param>
+    /// <param name="i12">this field12 value</param>
+    /// <param name="o12">other field12 value</param>
     [MethodImpl((MethodImplOptions)256)]
     public static int Get<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(T1 i1, T1 o1, T2 i2, T2 o2, T3 i3, T3 o3, T4 i4, T4 o4, T5 i5, T5 o5, T6 i6, T6 o6, T7 i7, T7 o7, T8 i8, T8 o8,
         T9 i9, T9 o9, T10 i10, T10 o10, T11 i11, T11 o11, T12 i12, T12 o12)
@@ -572,7 +571,7 @@ public struct DefaultComparer
     }
 
     /// <summary>Gets the current comparer value.</summary>
-    /// <param name="comparer"></param>
+    /// <param name="comparer">The comparer instance.</param>
     [MethodImpl((MethodImplOptions)256)]
     public static implicit operator int(DefaultComparer comparer) => comparer.value;
 

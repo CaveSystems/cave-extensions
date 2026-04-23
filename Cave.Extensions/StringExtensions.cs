@@ -17,7 +17,7 @@ public static partial class StringExtensions
 {
     #region Private Enums
 
-    enum Case { Default = 0, Upper, Digit };
+    enum Case { Default = 0, Upper, Digit }
 
     #endregion Private Enums
 
@@ -685,9 +685,16 @@ public static partial class StringExtensions
     public static string FormatSize(this double size, IFormatProvider? formatProvider = null) => FormatSize((float)size, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    /// <param name="ticks">The number of ticks.</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     public static string FormatTicks(this long ticks, IFormatProvider? formatProvider = null) => FormatTime(new TimeSpan(ticks), null, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
+    /// <param name="ticks">The number of ticks.</param>
+    /// <param name="format">Numberformat</param>
+    /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+    /// <returns>Returns a string like: 10.23µs, 1.345ms, 102.3s, 10.2h, ...</returns>
     public static string FormatTicks(this long ticks, string format, IFormatProvider? formatProvider = null) => FormatTime(new TimeSpan(ticks), format, formatProvider);
 
     /// <summary>Formats a time span to a short one unit value (1.20h, 15.3ms, ...)</summary>
@@ -847,7 +854,7 @@ public static partial class StringExtensions
     /// <param name="pattern">Pattern to look for.</param>
     /// <param name="option">Options for the regex instance. E.g: <see cref="RegexOptions.IgnoreCase"/></param>
     /// <returns>Returns a new <see cref="Regex"/> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">Thrown when the pattern is null.</exception>
     public static Regex GetLikeExpression(this string pattern, RegexOptions option = RegexOptions.None)
     {
         if (pattern is null) throw new ArgumentNullException(nameof(pattern));
@@ -1293,7 +1300,7 @@ public static partial class StringExtensions
     /// </remarks>
     /// <param name="input">The input string to test for a match.</param>
     /// <param name="pattern">Pattern to look for.</param>
-    /// <returns></returns>
+    /// <returns>Returns <c>true</c> if the input matches the pattern; otherwise, <c>false</c>.</returns>
     public static bool Like(this string? input, string? pattern)
     {
         if (input is null) return pattern is null;
@@ -2426,7 +2433,6 @@ public static partial class StringExtensions
                 {
                     return dt.ToString(culture.DateTimeFormat.FullDateTimePattern, culture);
                 }
-                ;
             }
             return dt.ToString(InteropDateTimeFormat, formatProvider);
         }

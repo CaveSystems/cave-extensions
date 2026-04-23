@@ -20,9 +20,9 @@ public static partial class StringExtensions
     #region Public Methods
 
     /// <summary>Builds a camel case name split at invalid characters and upper case letters. Example: thisIsACamelCaseName</summary>
+    /// <param name="text">The text to use.</param>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetCamelCaseName(this string text, string validChars, char splitter)
@@ -39,9 +39,9 @@ public static partial class StringExtensions
     public static string GetCamelCaseName(this string text) => GetCamelCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Builds a kebab case name split at invalid characters and upper case letters. Example: this-is-a-kebab-case-name</summary>
+    /// <param name="text">The text to use.</param>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
     /// <returns>A kebab case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetKebabCaseName(this string text, string validChars, char splitter)
@@ -58,9 +58,9 @@ public static partial class StringExtensions
     public static string GetKebabCaseName(this string text) => GetKebabCaseName(text, ValidCharsCasing, '-');
 
     /// <summary>Builds a pascal case name split at invalid characters and upper case letters. Example: ThisIsAPascalCaseName</summary>
+    /// <param name="text">The text to use.</param>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
     /// <returns>A pascal case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetPascalCaseName(this string text, string validChars, char splitter)
@@ -77,9 +77,9 @@ public static partial class StringExtensions
     public static string GetPascalCaseName(this string text) => GetPascalCaseName(text, ValidCharsCasing, '_');
 
     /// <summary>Builds a snake case name split at invalid characters and upper case letters. Example: this_is_a_snake_case_name</summary>
+    /// <param name="text">The text to use.</param>
     /// <param name="validChars">Valid characters.</param>
     /// <param name="splitter">Character used to split parts.</param>
-    /// <param name="text">The text to use.</param>
     /// <returns>A camel case version of text.</returns>
     [MethodImpl((MethodImplOptions)256)]
     public static string GetSnakeCaseName(this string text, string validChars, char splitter)

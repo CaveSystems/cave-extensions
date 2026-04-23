@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="azure-pipelines.yml" />
+    <File Path="build.bat" />
+    <File Path="cavesystems.pdn" />
+    <File Path="cavesystems.png" />
+    <File Path="CodeMaid.config" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Implemented CRC algorithms.htm" />
+    <File Path="LICENSE" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="Tests/net_2.0-3.5.csproj" />
+    <Project Path="Tests/net_4.x.csproj" />
+    <Project Path="Tests/net_latest.csproj" />
+  </Folder>
+  <Project Path="Cave.Extensions/Cave.Extensions.csproj" />
+</Solution>

@@ -132,7 +132,7 @@ public class ConcurrentSet<T> : IItemSet<T> where T : notnull
     /// <summary>Checks two sets for inequality.</summary>
     /// <param name="set1">The first set used to calculate the result.</param>
     /// <param name="set2">The second set used to calculate the result.</param>
-    /// <returns></returns>
+    /// <returns>Returns a new <see cref="ConcurrentSet{T}"/> containing the result.</returns>
     public static bool operator !=(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => !(set1 == set2);
 
     /// <summary>Gets a <see cref="ConcurrentSet{T}"/> containing only objects part of both of the specified sets.</summary>
@@ -150,7 +150,7 @@ public class ConcurrentSet<T> : IItemSet<T> where T : notnull
     /// <summary>Checks two sets for equality.</summary>
     /// <param name="set1">The first set used to calculate the result.</param>
     /// <param name="set2">The second set used to calculate the result.</param>
-    /// <returns></returns>
+    /// <returns>Returns a value indicating whether the two sets are equal.</returns>
     public static bool operator ==(ConcurrentSet<T> set1, ConcurrentSet<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
     /// <summary>Subtracts the specified <see cref="ConcurrentSet{T}"/> from this one and returns a new <see cref="ConcurrentSet{T}"/> containing the result.</summary>

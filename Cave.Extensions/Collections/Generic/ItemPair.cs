@@ -7,7 +7,7 @@ public class ItemPair<T1, T2>
 {
     #region Public Constructors
 
-    /// <summary>Creates a new instance with the specified values.</summary>
+    /// <summary>Initializes a new instance of the <see cref="ItemPair{T1, T2}"/> class with the specified values.</summary>
     /// <param name="value1">First value.</param>
     /// <param name="value2">Second value.</param>
     public ItemPair(T1 value1, T2 value2)
@@ -45,11 +45,11 @@ public class ItemPair<T1, T2>
     }
 
     /// <summary>Gets the hash code for this instance.</summary>
-    /// <returns></returns>
+    /// <returns>Returns a hash code for this instance.</returns>
     public override int GetHashCode() => (A?.GetHashCode() ?? 0) ^ (B?.GetHashCode() ?? 0);
 
     /// <summary>Gets a string "A B".</summary>
-    /// <returns></returns>
+    /// <returns>Returns a string representation of this instance.</returns>
     public override string ToString() => $"{A} {B}";
 
     #endregion Public Methods

@@ -15,8 +15,8 @@ public readonly struct InteropDateTime : IComparable, IComparable<InteropDateTim
 
     #region Public Constructors
 
-    /// <summary>Initializes a new <see cref="InteropDateTime"/> instance.</summary>
-    /// <param name="dateTimeOffset"></param>
+    /// <summary>Initializes a new instance of the <see cref="InteropDateTime"/> struct.</summary>
+    /// <param name="dateTimeOffset">The date time offset.</param>
     public InteropDateTime(DateTimeOffset dateTimeOffset) => DateTimeOffset = dateTimeOffset;
 
     #endregion Public Constructors
@@ -142,14 +142,14 @@ public readonly struct InteropDateTime : IComparable, IComparable<InteropDateTim
     public static bool operator >=(InteropDateTime value1, InteropDateTime value2) => value1.DateTimeOffset >= value2.DateTimeOffset;
 
     /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="value">The string representation of the <see cref="InteropDateTime"/>.</param>
+    /// <returns>Returns a new <see cref="InteropDateTime"/> instance.</returns>
     public static InteropDateTime Parse(string value) => Parse(value, null);
 
     /// <summary>Parses a MonotonicDateTime previously converted to a string with ToString()</summary>
-    /// <param name="value"></param>
-    /// <param name="provider"></param>
-    /// <returns></returns>
+    /// <param name="value">The string representation of the <see cref="InteropDateTime"/>.</param>
+    /// <param name="provider">The format provider to use.</param>
+    /// <returns>Returns a new <see cref="InteropDateTime"/> instance.</returns>
     public static InteropDateTime Parse(string value, IFormatProvider? provider) =>
         DateTimeOffset.TryParseExact(value, StringExtensions.InteropDateTimeFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var result)
             ? result

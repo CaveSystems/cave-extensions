@@ -79,7 +79,7 @@ public class TaskList
     }
 
     /// <summary>Gets the first available result. This requires a successful call to <see cref="AnySucceeded"/> first!</summary>
-    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <returns>Returns the first available result.</returns>
     /// <exception cref="InvalidOperationException">No task completed! Test with <see cref="AnySucceeded"/> first!</exception>
     /// <exception cref="InvalidOperationException">Task {task} is not of type Task{TResult}!</exception>
@@ -103,8 +103,8 @@ public class TaskList
     public Task[] GetTasks() => GetTasks(null);
 
     /// <summary>Gets all tasks matching the specified filter</summary>
-    /// <param name="filter"></param>
-    /// <returns></returns>
+    /// <param name="filter">The filter to apply to the tasks.</param>
+    /// <returns>Returns an array of tasks that match the filter.</returns>
     public Task[] GetTasks(Func<Task, bool>? filter)
     {
         lock (this)
@@ -129,7 +129,7 @@ public class TaskList
     }
 
     /// <summary>Starts and adds a new task for the specified <paramref name="function"/>.</summary>
-    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TResult">The type of the result produced by the task.</typeparam>
     /// <param name="function">Function to call.</param>
     public void StartNew<TResult>(Func<TResult> function) => Add(Task.Factory.StartNew(function));
 

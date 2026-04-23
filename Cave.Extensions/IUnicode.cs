@@ -1,7 +1,5 @@
 ﻿using System;
 
-
-
 #pragma warning disable CA1710
 
 namespace Cave;
@@ -44,7 +42,7 @@ public interface IUnicode : IComparable, IComparable<IUnicode>, IEquatable<IUnic
     /// <summary>Retrieves a substring from this instance.</summary>
     /// <param name="start">Startposition at the <see cref="IUnicode.Codepoints"/>. (Optional, default: start at first codepoint)</param>
     /// <param name="length">Number of codepoints. (Optional, default: all until end of string)</param>
-    /// <returns></returns>
+    /// <returns>Returns a new Instance containing the substring.</returns>
     IUnicode Substring(int start = 0, int length = -1);
 
     /// <summary>Concatenates this instance with the specified instance.</summary>

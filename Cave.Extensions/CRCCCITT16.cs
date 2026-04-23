@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace Cave;
 
 /// <summary>Implements a fast implementation of the CRC-CCITT-16 algorithm for the polynomial 0x1021.</summary>
-public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
+public class CRCCCITT16 : CaveHashAlgorithm, IChecksum<ushort>
 {
     #region Private Fields
 
@@ -48,18 +48,6 @@ public class CRCCCITT16 : HashAlgorithm, IChecksum<ushort>
     #endregion Public Properties
 
     #region Public Methods
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
-
-    /// <summary>NotSupported</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
 
     /// <summary>Initializes an implementation of the HashAlgorithm class.</summary>
     public override void Initialize() => crc = ushort.MaxValue;

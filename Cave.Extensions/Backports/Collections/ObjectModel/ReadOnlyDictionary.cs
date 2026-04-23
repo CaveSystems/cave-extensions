@@ -1,11 +1,12 @@
-﻿#pragma warning disable CS1591 // No comments for backports
+﻿#if NET20 || NET35 || NET40
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
 #pragma warning disable IDE0130 // Namespace does not match folder structure
-
-#if NET20 || NET35
 
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using Cave;
 
 namespace System.Collections.ObjectModel;
 
@@ -29,9 +30,9 @@ public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDict
 
     public TValue this[TKey key] => Dictionary[key];
 
-    public ICollection<TKey> Keys => new ReadOnlyCollectionWrapper<TKey>(Dictionary.Keys);
+    public ICollection<TKey> Keys => Dictionary.Keys.AsReadOnly();
 
-    public ICollection<TValue> Values => new ReadOnlyCollectionWrapper<TValue>(Dictionary.Values);
+    public ICollection<TValue> Values => Dictionary.Values.AsReadOnly();
 
     protected IDictionary<TKey, TValue> Dictionary { get; }
 

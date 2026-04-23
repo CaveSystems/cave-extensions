@@ -63,6 +63,32 @@ public class AsciiTest
         Assert.AreEqual("bcdefgh\0ijk", ASCII.GetString(bytes, 1, bytes.Length - 1, false));
     }
 
+
+    [Test]
+    public void TestGetStringStart()
+    {
+        var bytes = ASCII.GetBytes("XYZabcdefgh\0ijk");
+        var str = ASCII.GetString(bytes, 3);
+        Assert.AreEqual("abcdefgh\0ijk", str);
+        Assert.AreEqual("abcdefgh", ASCII.GetString(bytes, 3, termination: true));
+        Assert.AreEqual("abcdefgh\0ijk", ASCII.GetString(bytes, 3, termination: false));
+        Assert.AreEqual("bcdefgh", ASCII.GetString(bytes, 4, termination: true));
+        Assert.AreEqual("bcdefgh\0ijk", ASCII.GetString(bytes, 4, termination: false));
+    }
+
+    [Test]
+    public void TestGetStringStartCount()
+    {
+        var bytes = ASCII.GetBytes("XYZabcdefgh\0ijk");
+        var str = ASCII.GetString(bytes, 3, 11);
+        Assert.AreEqual("abcdefgh\0ij", str);
+        Assert.AreEqual("abcdefgh", ASCII.GetString(bytes, 3, 11, true));
+        Assert.AreEqual("abcdefgh\0ij", ASCII.GetString(bytes, 3, 11, false));
+        Assert.AreEqual("bcdefgh", ASCII.GetString(bytes, 4, 10, termination: true));
+        Assert.AreEqual("bcdefgh\0ij", ASCII.GetString(bytes, 4, 10, termination: false));
+    }
+
+
     [Test]
     public void TestPrintable()
     {

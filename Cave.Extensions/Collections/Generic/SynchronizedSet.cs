@@ -131,7 +131,7 @@ public class SynchronizedSet<T> : IItemSet<T>
     /// <summary>Checks two sets for inequality.</summary>
     /// <param name="set1">The first set used to calculate the result.</param>
     /// <param name="set2">The second set used to calculate the result.</param>
-    /// <returns></returns>
+    /// <returns>Returns true if the sets are not equal; otherwise, false.</returns>
     public static bool operator !=(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => !(set1 == set2);
 
     /// <summary>Gets a <see cref="SynchronizedSet{T}"/> containing only objects part of both of the specified sets.</summary>
@@ -149,7 +149,7 @@ public class SynchronizedSet<T> : IItemSet<T>
     /// <summary>Checks two sets for equality.</summary>
     /// <param name="set1">The first set used to calculate the result.</param>
     /// <param name="set2">The second set used to calculate the result.</param>
-    /// <returns></returns>
+    /// <returns>Returns true if the sets are equal; otherwise, false.</returns>
     public static bool operator ==(SynchronizedSet<T> set1, SynchronizedSet<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
     /// <summary>

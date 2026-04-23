@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -11,6 +12,7 @@ public static class MonotonicTime
 {
     #region Private Classes
 
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private")]
     sealed class State
     {
         #region Private Constructors
@@ -130,6 +132,10 @@ public static class MonotonicTime
     {
         #region Internal Constructors
 
+        /// <summary>Initializes a new instance of the <see cref="Drift"/> structure using the specified values and count.</summary>
+        /// <param name="values">An array of double values representing time measurements to be analyzed.</param>
+        /// <param name="count">The number of elements in the values array to include in the calculation. Must be greater than 0.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if count is less than 1.</exception>
         internal Drift(double[] values, int count)
         {
             if (count < 1) throw new ArgumentOutOfRangeException(nameof(count));
@@ -178,7 +184,7 @@ public static class MonotonicTime
         #region Public Methods
 
         /// <summary>Converts the drift to a timespan.</summary>
-        /// <param name="drift"></param>
+        /// <param name="drift">The drift to convert.</param>
         public static implicit operator TimeSpan(Drift drift) => drift.Average;
 
         #endregion Public Methods
@@ -200,10 +206,10 @@ public static class MonotonicTime
 
     #region Public Properties
 
-    /// <summary>Function to be used when synchronizing and calibrating ( <see cref="Resync"/>, <see cref="Calibrate"/>).</summary>
+    /// <summary>Gets or sets the function to be used when synchronizing and calibrating ( <see cref="Resync"/>, <see cref="Calibrate"/>).</summary>
     public static Func<DateTime> GetSystemUtcDateTime { get; set; } = () => DateTime.UtcNow;
 
-    /// <summary>Indicates whether the timer is based on a high-resolution performance counter.</summary>
+    /// <summary>Gets a value indicating whether the timer is based on a high-resolution performance counter.</summary>
     public static bool IsHighResolution { get; }
 
     /// <summary>Gets the current monotonic advancing local time.</summary>
@@ -238,7 +244,7 @@ public static class MonotonicTime
     /// Calibrates the system start time and the current time. This is needed if the timer is used for a long time and the difference at <see cref="GetDrift"/>
     /// increases too much.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Returns the drift after calibration.</returns>
     public static Drift Calibrate()
     {
         Drift result = default;
@@ -269,6 +275,8 @@ public static class MonotonicTime
     /// Gets the drift between this instance and the system clock. This might increase over time (drift of performance counter / platform high performance
     /// timer) and jump on time synchronizations or user interaction with the system time and cannot be corrected.
     /// </summary>
+    /// <param name="samples">The number of samples to take when calculating the drift.</param>
+    /// <returns>Returns the drift between this instance and the system clock.</returns>
     public static Drift GetDrift(int samples = 0)
     {
         if (samples <= 1) samples = 1000;
@@ -296,7 +304,7 @@ public static class MonotonicTime
     }
 
     /// <summary>Restarts the monotonic time system resulting in a resync of the start time and the current time.</summary>
-    /// <returns></returns>
+    /// <returns>Returns the drift after resynchronization.</returns>
     public static Drift Resync()
     {
         Drift result = default;

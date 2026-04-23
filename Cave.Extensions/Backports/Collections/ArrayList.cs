@@ -1,8 +1,7 @@
-﻿#pragma warning disable CS1591 // No comments for backports
+﻿#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+#pragma warning disable SA1600 // No comments for backports
+#pragma warning disable CS1591 // No comments for backports
 #pragma warning disable IDE0130 // Namespace does not match folder structure
-#pragma warning disable CA1010
-
-#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
 
 using System.Collections.Generic;
 using System.Linq;

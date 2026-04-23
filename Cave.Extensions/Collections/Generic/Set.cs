@@ -7,9 +7,10 @@ using System.Diagnostics.CodeAnalysis;
 namespace Cave.Collections.Generic;
 
 /// <summary>Gets a generic typed set of objects.</summary>
+/// <typeparam name="T">The type of the elements in the set.</typeparam>
 [DebuggerDisplay("Count={Count}")]
 [SuppressMessage("Design", "CA1000")]
-public sealed class Set<T> : IItemSet<T>
+public sealed class Set<T> : IItemSet<T>, ICloneable
 {
     #region Private Fields
 
@@ -23,12 +24,15 @@ public sealed class Set<T> : IItemSet<T>
     public Set() { }
 
     /// <summary>Initializes a new instance of the <see cref="Set{T}"/> class.</summary>
+    /// <param name="items">The items to add to the set.</param>
     public Set(params T[] items) : this() => IncludeRange(items);
 
     /// <summary>Initializes a new instance of the <see cref="Set{T}"/> class.</summary>
+    /// <param name="items">The items to add to the set.</param>
     public Set(IEnumerable<T> items) : this() => IncludeRange(items);
 
     /// <summary>Initializes a new instance of the <see cref="Set{T}"/> class.</summary>
+    /// <param name="blocks">The blocks of items to add to the set.</param>
     public Set(params IEnumerable<T>[] blocks)
         : this()
     {
@@ -39,6 +43,8 @@ public sealed class Set<T> : IItemSet<T>
     }
 
     /// <summary>Initializes a new instance of the <see cref="Set{T}"/> class.</summary>
+    /// <param name="item">The item to add to the set.</param>
+    /// <param name="blocks">The blocks of items to add to the set.</param>
     public Set(T item, params IEnumerable<T>[] blocks)
         : this()
     {
@@ -122,9 +128,9 @@ public sealed class Set<T> : IItemSet<T>
     public static Set<T> operator -(Set<T> set1, Set<T> set2) => Subtract(set1, set2);
 
     /// <summary>Checks two sets for inequality.</summary>
-    /// <param name="set1"></param>
-    /// <param name="set2"></param>
-    /// <returns></returns>
+    /// <param name="set1">The first set used to calculate the result.</param>
+    /// <param name="set2">The second set used to calculate the result.</param>
+    /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static bool operator !=(Set<T> set1, Set<T> set2) => !(set1 == set2);
 
     /// <summary>Gets a <see cref="Set{T}"/> containing only objects part of both of the specified sets.</summary>
@@ -140,9 +146,9 @@ public sealed class Set<T> : IItemSet<T>
     public static Set<T> operator ^(Set<T> set1, Set<T> set2) => Xor(set1, set2);
 
     /// <summary>Checks two sets for equality.</summary>
-    /// <param name="set1"></param>
-    /// <param name="set2"></param>
-    /// <returns></returns>
+    /// <param name="set1">The first set used to calculate the result.</param>
+    /// <param name="set2">The second set used to calculate the result.</param>
+    /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static bool operator ==(Set<T> set1, Set<T> set2) => set1 is null ? set2 is null : set2 is not null && set1.Equals(set2);
 
     /// <summary>Subtracts the specified <see cref="Set{T}"/> from this one and returns a new <see cref="Set{T}"/> containing the result.</summary>
@@ -223,7 +229,7 @@ public sealed class Set<T> : IItemSet<T>
         list.TrimExcess();
     }
 
-    /// <summary>Creates a copy of this set.</summary>
+    /// <inheritdoc/>
     public object Clone() => new Set<T>(list);
 
     /// <inheritdoc/>
@@ -260,8 +266,8 @@ public sealed class Set<T> : IItemSet<T>
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => list.GetEnumerator();
 
-    /// <summary>Gets the hash code of the base List.</summary>
-    /// <returns></returns>
+    /// <summary>Gets the hash code of the List.</summary>
+    /// <returns>The hash code of the List.</returns>
     public override int GetHashCode() => list.GetHashCode();
 
     /// <inheritdoc/>
@@ -311,7 +317,7 @@ public sealed class Set<T> : IItemSet<T>
     }
 
     /// <summary>Gets an array of all elements present.</summary>
-    /// <returns></returns>
+    /// <returns>Returns an array containing all elements present in the set.</returns>
     public T[] ToArray()
     {
         var result = new T[Count];
@@ -348,7 +354,7 @@ public sealed class Set<T> : IItemSet<T>
     /// <returns>Returns a new <see cref="Set{T}"/> containing the result.</returns>
     public static Set<T> operator |(Set<T> set1, Set<T> set2) => BitwiseOr(set1, set2);
 
-    /// <summary>Gets an <see cref="IEnumerator"/> for this set.</summary>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => list.GetEnumerator();
 
     /// <inheritdoc cref="ICollection{T}"/>
@@ -366,6 +372,8 @@ public sealed class Set<T> : IItemSet<T>
 /// once at set A and multiple times at set B. Each value in set a is linked to a value in List b via its
 /// index) This class is very similar to Dictionary{A, B}, in fact it uses one. Additionally to the fast Name to value lookup it provides indexing like a List.
 /// </summary>
+/// <typeparam name="TKey">The type of the keys in the set.</typeparam>
+/// <typeparam name="TValue">The type of the values in the set.</typeparam>
 [DebuggerDisplay("Count={Count}")]
 public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     where TKey : notnull
@@ -399,7 +407,7 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     /// Accesses the ItemPair at the specified index. The getter is a O(1) operation. The setter needs a full index rebuild and is an O(n) operation, where n is Count.
     /// </summary>
     /// <param name="index">The index of the ItemPair to be accessed.</param>
-    /// <returns></returns>
+    /// <returns>Returns the ItemPair at the specified index.</returns>
     public ItemPair<TKey, TValue> this[int index]
     {
         get => list[index];
@@ -435,7 +443,7 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     #region Public Methods
 
     /// <summary>Adds an itempair to the set.</summary>
-    /// <param name="item"></param>
+    /// <param name="item">The itempair to add.</param>
     public void Add(ItemPair<TKey, TValue> item)
     {
         if (item == null)
@@ -464,8 +472,8 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     }
 
     /// <summary>Checks whether an itempair is part of the set or not.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The itempair to check for.</param>
+    /// <returns>True if the itempair is present; otherwise, false.</returns>
     public bool Contains(ItemPair<TKey, TValue> item)
     {
         if (item == null)
@@ -477,35 +485,35 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     }
 
     /// <summary>Checks whether an itempair is part of the set or not.</summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="key">The A key of the itempair to check for.</param>
+    /// <param name="value">The B value of the itempair to check for.</param>
+    /// <returns>True if the itempair is present; otherwise, false.</returns>
     public bool Contains(TKey key, TValue value) => Contains(new(key, value));
 
     /// <summary>Checks whether a specified A key is present.</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <param name="key">The A key to check for.</param>
+    /// <returns>True if the key is present; otherwise, false.</returns>
     public bool ContainsA(TKey key) => lookupA.ContainsKey(key);
 
     /// <summary>Not supported. Use UniqueSet.</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    /// <exception cref="NotSupportedException"></exception>
+    /// <param name="value">The B value to check for.</param>
+    /// <returns>Always throws a NotSupportedException.</returns>
+    /// <exception cref="NotSupportedException">Always thrown.</exception>
     public bool ContainsB(TValue value) => throw new NotSupportedException($"Not Supported. Use UniqueSet<TKey, TValue>)!");
 
     /// <summary>Copies all item of the set to the specified array starting at the specified index.</summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
+    /// <param name="array">The array to copy to.</param>
+    /// <param name="arrayIndex">The index to start writing items at.</param>
     public void CopyTo(ItemPair<TKey, TValue>[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
 
     /// <summary>Gets the A element that is assigned to the specified B element. This method is an O(1) operation;.</summary>
     /// <param name="key">The A index.</param>
-    /// <returns></returns>
+    /// <returns>Returns the ItemPair using the specified key.</returns>
     public ItemPair<TKey, TValue> GetA(TKey key) => lookupA[key];
 
     /// <summary>Not Supported.</summary>
     /// <param name="value">The B index.</param>
-    /// <returns></returns>
+    /// <returns>Always throws a NotSupportedException.</returns>
     public ItemPair<TKey, TValue> GetB(TValue value) => throw new NotSupportedException($"Not Supported. Use UniqueSet<TKey, TValue>)!");
 
     /// <summary>Returns an enumerator that iterates through the set.</summary>
@@ -529,9 +537,9 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     public int IndexOfA(TKey key) => !lookupA.TryGetValue(key, out var value) ? -1 : list.IndexOf(value);
 
     /// <summary>Not supported. Use UniqueSet instead.</summary>
-    /// <param name="value"></param>
+    /// <param name="value">The B value to check for.</param>
     /// <exception cref="NotSupportedException">Thrown if the set does not support indexing.</exception>
-    /// <returns></returns>
+    /// <returns>Always throws a NotSupportedException.</returns>
     public int IndexOfB(TValue value) => throw new NotSupportedException($"Not Supported. Use nameof(UniqueSet<TKey, TValue>)!");
 
     /// <summary>Inserts a new ItemPair at the specified index. This method needs a full index rebuild and is an O(n) operation, where n is Count.</summary>
@@ -563,14 +571,14 @@ public sealed class Set<TKey, TValue> : IItemSet<TKey, TValue>
     public void Insert(int index, TKey key, TValue value) => Insert(index, new(key, value));
 
     /// <summary>Removes an itempair from the set.</summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="key">The A value of the ItemPair to remove.</param>
+    /// <param name="value">The B value of the ItemPair to remove.</param>
+    /// <returns>True if the itempair was removed; otherwise, false.</returns>
     public bool Remove(TKey key, TValue value) => Remove(new(key, value));
 
     /// <summary>Removes an itempair from the set.</summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">The ItemPair to remove.</param>
+    /// <returns>True if the itempair was removed; otherwise, false.</returns>
     public bool Remove(ItemPair<TKey, TValue> item)
     {
         if (item == null)

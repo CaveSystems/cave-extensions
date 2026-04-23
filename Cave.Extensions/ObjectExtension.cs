@@ -289,6 +289,7 @@ public static class ObjectExtension
         => TryGetPropertyValue(instance, fullPath, out result, bindingFlags, false);
 
     /// <summary>Gets the specified property value.</summary>
+    /// <typeparam name="TValue">The type of the property value.</typeparam>
     /// <remarks>See available full path items using <see cref="PropertyEnumerator"/> and <see cref="PropertyValueEnumerator"/>.</remarks>
     /// <param name="instance">Instance to read from.</param>
     /// <param name="fullPath">Full property path.</param>

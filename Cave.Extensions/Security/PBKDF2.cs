@@ -5,8 +5,6 @@ using System.Text;
 
 namespace Cave.Security;
 
-
-
 /// <summary>Implements password-based key derivation functionality, PBKDF2, by using a pseudo-random number generator based on any HMAC algorithm.</summary>
 public class PBKDF2 : DeriveBytes
 #if NET20 || NET35 || NETCOREAPP1_0 || NETCOREAPP1_1
@@ -176,8 +174,8 @@ public class PBKDF2 : DeriveBytes
 
     /// <summary>Gets or sets the iteration count.</summary>
     /// <value>The iteration count.</value>
-    /// <exception cref="Exception"></exception>
-    /// <exception cref="ArgumentOutOfRangeException">IterationCount &lt; 1</exception>
+    /// <exception cref="InvalidOperationException">Thrown when attempting to change the iteration count after calling GetBytes() the first time.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if IterationCount &lt; 1</exception>
     public int IterationCount
     {
         get => iterations;
@@ -202,17 +200,20 @@ public class PBKDF2 : DeriveBytes
     #region Public Methods
 
     /// <summary>Creates a new instance using the specified HMAC algorithm.</summary>
-    public static PBKDF2 Create(HMAC algorithm) => new(algorithm);
+    /// <param name="algorithm">The HMAC algorithm to use. Defaults to <see cref="HMACSHA512"/>.</param>
+    /// <returns>Returns a new instance of the <see cref="PBKDF2"/> class.</returns>
+    public static PBKDF2 Create(HMAC? algorithm = null) => new(algorithm);
 
     /// <summary>Creates a new salt with 32x8 = 256 bits.</summary>
     public void CreateSalt() => CreateSalt(32);
 
     /// <summary>Creates a new salt.</summary>
+    /// <param name="length">Length of the salt in bytes.</param>
     public void CreateSalt(int length = 32) => SetSalt(RNG.GetBytes(length));
 
     /// <summary>Returns the next pseudo-random one time pad with the specified number of bytes.</summary>
     /// <param name="cb">Length of the byte buffer to retrieve.</param>
-    /// <returns></returns>
+    /// <returns>Returns a byte array containing the pseudo-random one time pad.</returns>
     /// <exception cref="ArgumentNullException">Algorithm</exception>
     /// <exception cref="ArgumentException">Iterations &lt; 1 or Salt &lt; 1 byte or Password &lt; 1 bytes</exception>
     /// <exception cref="ArgumentOutOfRangeException">Length</exception>
@@ -265,9 +266,9 @@ public class PBKDF2 : DeriveBytes
 
     /// <summary>Sets the password.</summary>
     /// <param name="password">The password.</param>
-    /// <exception cref="System.InvalidOperationException"></exception>
-    /// <exception cref="System.ArgumentNullException">value</exception>
-    /// <exception cref="System.ArgumentException">Password &lt; 8 bytes;value</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown if the password is changed after calling GetBytes() the first time.</exception>
+    /// <exception cref="System.ArgumentNullException">Thrown if the password is null.</exception>
+    /// <exception cref="System.ArgumentException">Thrown if the password is less than 1 byte.</exception>
     public void SetPassword(byte[] password)
     {
         if (buffer != null)
@@ -296,9 +297,9 @@ public class PBKDF2 : DeriveBytes
 
     /// <summary>Sets the salt.</summary>
     /// <param name="salt">The salt.</param>
-    /// <exception cref="System.InvalidOperationException"></exception>
-    /// <exception cref="System.ArgumentNullException">value</exception>
-    /// <exception cref="System.ArgumentException">Salt &lt; 8 bytes;value</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown if the salt is changed after calling GetBytes() the first time.</exception>
+    /// <exception cref="System.ArgumentNullException">Thrown if the salt is null.</exception>
+    /// <exception cref="System.ArgumentException">Thrown if the salt is less than 1 byte.</exception>
     public void SetSalt(byte[] salt)
     {
         if (buffer != null)
