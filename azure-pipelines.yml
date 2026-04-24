@@ -94,13 +94,6 @@ steps:
     version: 8.x
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: UseDotNet@2
-  displayName: 'Install .NET sdk 10'
-  inputs:
-    packageType: sdk
-    version: 10.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
-
 - task: NuGetCommand@2
   displayName: Restore nuget packages
   inputs:
