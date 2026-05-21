@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Cave;
@@ -15,17 +13,6 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     uint currentCRC = Initializer;
 
     #endregion Private Fields
-
-    #region Private Methods
-
-    [MethodImpl((MethodImplOptions)0x0100)]
-    void HashCore(uint @byte)
-    {
-        var i = ((currentCRC >> 24) ^ @byte) & 0xFF;
-        currentCRC = (currentCRC << 8) ^ bzip2Table[i];
-    }
-
-    #endregion Private Methods
 
     #region Public Fields
 
@@ -75,24 +62,37 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     [MethodImpl((MethodImplOptions)0x0100)]
     public unsafe void Feed(byte* data, int length)
     {
-        for (var i = 0; i < length; i++)
+        var end = data + length;
+        while (data + 4 <= end)
         {
-            HashCore(data[i]);
+            var c = currentCRC;
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[0]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[1]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[2]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[3]) & 0xFF];
+            currentCRC = c;
+            data += 4;
+        }
+
+        while (data < end)
+        {
+            var c = currentCRC;
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ *data) & 0xFF];
+            currentCRC = c;
+            data++;
         }
     }
 
     /// <inheritdoc/>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public void Feed(int hash)
+    public void Feed(int value)
     {
-        var val = (uint)hash;
-        HashCore(val & 0xFF);
-        val >>= 8;
-        HashCore(val & 0xFF);
-        val >>= 8;
-        HashCore(val & 0xFF);
-        val >>= 8;
-        HashCore(val & 0xFF);
+        var c = currentCRC;
+        c = (c << 8) ^ bzip2Table[((c >> 24) ^ (value & 0xFF)) & 0xFF];
+        c = (c << 8) ^ bzip2Table[((c >> 24) ^ ((value >> 8) & 0xFF)) & 0xFF];
+        c = (c << 8) ^ bzip2Table[((c >> 24) ^ ((value >> 16) & 0xFF)) & 0xFF];
+        c = (c << 8) ^ bzip2Table[((c >> 24) ^ ((value >> 24) & 0xFF)) & 0xFF];
+        currentCRC = c;
     }
 
     /// <summary>Returns the same value <see cref="ToHashCode"/> returns.</summary>
@@ -108,13 +108,27 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     [MethodImpl((MethodImplOptions)0x0100)]
     public void HashCore(byte[] data, int offset, int length)
     {
-        for (var i = 0; i < length; i++)
+        var end = offset + length;
+        while (offset + 4 <= end)
         {
-            HashCore(data[offset++]);
+            var c = currentCRC;
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[offset]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[offset + 1]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[offset + 2]) & 0xFF];
+            c = (c << 8) ^ bzip2Table[((c >> 24) ^ data[offset + 3]) & 0xFF];
+            currentCRC = c;
+            offset += 4;
+        }
+        while (offset < end)
+        {
+            var i = ((currentCRC >> 24) ^ data[offset]) & 0xFF;
+            currentCRC = (currentCRC << 8) ^ bzip2Table[i];
+            offset++;
         }
     }
 
     /// <inheritdoc/>
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void Reset() => currentCRC = Initializer;
 
     /// <inheritdoc/>
@@ -122,12 +136,19 @@ public struct FastCrc32 : IHashingFunction, IChecksum<uint>
     public int ToHashCode() => (int)~currentCRC;
 
     /// <inheritdoc/>
-    public void Update(int value) => HashCore((uint)value);
+    [MethodImpl((MethodImplOptions)0x0100)]
+    public void Update(int value)
+    {
+        var i = ((currentCRC >> 24) ^ value) & 0xFF;
+        currentCRC = (currentCRC << 8) ^ bzip2Table[i];
+    }
 
     /// <inheritdoc/>
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void Update(byte[] buffer) => HashCore(buffer, 0, buffer.Length);
 
     /// <inheritdoc/>
+    [MethodImpl((MethodImplOptions)0x0100)]
     public void Update(byte[] buffer, int offset, int count) => HashCore(buffer, offset, count);
 
     #endregion Public Methods

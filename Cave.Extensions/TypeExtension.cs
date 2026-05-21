@@ -315,15 +315,6 @@ public static class TypeExtension
         where T : Attribute =>
         (T)GetAttribute(type, typeof(T), inherit);
 
-#if NETCOREAPP1_0 || NETCOREAPP1_1
-    /// <summary>Backport for netstandard 1 and netcore 1: TODO obey inherit!</summary>
-    /// <param name="type"></param>
-    /// <param name="inherit"></param>
-    /// <returns></returns>
-    public static object[] GetCustomAttributes(this Type type, bool inherit)
-        => type.GetTypeInfo().CustomAttributes.Select(c => c.Constructor.Invoke(c.ConstructorArguments.Select(a => a.Value).ToArray())).ToArray();
-#endif
-
     /// <summary>Gets a specific <see cref="Attribute"/> present at the type. If the attribute type cannot be found null is returned.</summary>
     /// <param name="type">The type to check.</param>
     /// <param name="attributeType">The attribute type to check for.</param>
@@ -359,46 +350,52 @@ public static class TypeExtension
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The company name.</returns>
     public static string? GetCompanyName(this Type type)
+    {
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-        => type?.GetTypeInfo().Assembly.GetCompanyName();
+        return type?.GetTypeInfo().Assembly.GetCompanyName();
 #else
-        => type?.Assembly.GetCompanyName();
-
+        return type?.Assembly.GetCompanyName();
 #endif
+    }
 
-#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_5_OR_GREATER)
-    /// <summary>Backport</summary>
-    public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
-        //todo obey parametermodifiers
-        => type.GetTypeInfo().DeclaredMethods.SingleOrDefault(m => m.Name == name && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(types));
-#elif NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-    /// <summary>Backport</summary>
-    public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
-        => type.GetTypeInfo().GetMethod(name, types, modifiers);
-#endif
+    /// <summary>Gets a portable declaring name for the type, e.g. System.Collections.Generic.List`1.</summary>
+    /// <param name="type">The type to get the portable declaring name for.</param>
+    /// <returns>The portable declaring name of the type.</returns>
+    public static string GetPortableDeclaringName(this Type type)
+    {
+        if (type.DeclaringType != null) return $"{GetPortableDeclaringName(type.DeclaringType)}+{type.Name}";
+        return $"{type.Namespace}.{type.Name}";
+    }
+
+    /// <summary>Gets a portable type name for the type, e.g. System.Collections.Generic.List`1[System.String].</summary>
+    /// <remarks>This can be used to get a type name that is consistent across different target frameworks.</remarks>
+    /// <param name="type">The type to get the portable name for.</param>
+    /// <returns>The portable name of the type.</returns>
+    public static string GetPortableTypeName(this Type type)
+    {
+        if (type.IsArray) return $"{GetPortableTypeName(type.GetElementType()!)}[]";
+        if (type.IsGenericParameter) return type.Name;
+        if (type.IsGenericType)
+        {
+            var def = type.GetGenericTypeDefinition();
+            var baseName = GetPortableDeclaringName(def);
+            var args = type.GetGenericArguments().Select(GetPortableTypeName).Join(',');
+            return $"{baseName}[{args}]";
+        }
+        return GetPortableDeclaringName(type);
+    }
 
     /// <summary>Get the assembly product name using the <see cref="AssemblyProductAttribute"/>.</summary>
     /// <param name="type">Type to search for the product attribute.</param>
     /// <returns>The product name.</returns>
     public static string? GetProductName(this Type type)
+    {
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-        => type?.GetTypeInfo().Assembly.GetProductName();
+        return type?.GetTypeInfo().Assembly.GetProductName();
 #else
-        => type?.Assembly.GetProductName();
-
+        return type?.Assembly.GetProductName();
 #endif
-
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-    /// <summary>Backport</summary>
-    public static PropertyInfo[] GetProperties(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
-        => type.GetTypeInfo().GetProperties(bindingFlags);
-#endif
-
-#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
-    /// <summary>Backport</summary>
-    //TODO obey binding flags
-    public static PropertyInfo[] GetProperties(this TypeInfo typeInfo, BindingFlags bindingFlags) => typeInfo.DeclaredProperties.ToArray();
-#endif
+    }
 
     /// <summary>Checks a type for presence of a specific <see cref="Attribute"/> instance.</summary>
     /// <typeparam name="T">The attribute type to check for.</typeparam>
@@ -418,6 +415,79 @@ public static class TypeExtension
         type?.GetCustomAttributes(inherit).Select(t => t.GetType()).Any(attributeType.IsAssignableFrom)
      ?? throw new ArgumentNullException(nameof(type));
 
+    /// <summary>Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp; !type.IsEnum.</summary>
+    /// <param name="type">The type to check.</param>
+    /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
+    public static bool IsStruct(this Type type)
+    {
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+        return (type?.GetTypeInfo().IsValueType == true) && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
+#else
+        return (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
+#endif
+    }
+
+    /// <summary>
+    /// Gets a short name for the type, e.g. List&lt;string&gt; instead of System.Collections.Generic.List`1[System.String]. Nullable types are marked with a
+    /// trailing question mark, e.g. int? instead of System.Nullable`1[System.Int32].
+    /// </summary>
+    /// <remarks>
+    /// This is not a full type name, but a simplified version for readability. See <see cref="GetPortableTypeName(Type)"/> for a tfm portable type name.
+    /// </remarks>
+    /// <param name="type">The type to get the short name for.</param>
+    /// <returns>The short name of the type.</returns>
+    public static string ToShortName(this Type type)
+    {
+        var nullableMark = string.Empty;
+        if (Nullable.GetUnderlyingType(type) is Type underlying)
+        {
+            type = underlying;
+            nullableMark = "?";
+        }
+        var genericArgs = type.GetGenericArguments();
+        if (genericArgs.Length == 0)
+        {
+            return type.Name + nullableMark;
+        }
+        var genericArgIds = new List<string>(genericArgs.Length);
+        foreach (var arg in genericArgs)
+        {
+            genericArgIds.Add(arg.ToShortName());
+        }
+        return $"{type.Name.BeforeFirst('`')}{nullableMark}<{genericArgIds.Join(",")}>";
+    }
+
+#if NETCOREAPP1_0 || NETCOREAPP1_1
+    /// <summary>Backport for netstandard 1 and netcore 1: TODO obey inherit!</summary>
+    /// <param name="type"></param>
+    /// <param name="inherit"></param>
+    /// <returns></returns>
+    public static object[] GetCustomAttributes(this Type type, bool inherit)
+        => type.GetTypeInfo().CustomAttributes.Select(c => c.Constructor.Invoke(c.ConstructorArguments.Select(a => a.Value).ToArray())).ToArray();
+#endif
+
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_5_OR_GREATER)
+    /// <summary>Backport</summary>
+    public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
+        //todo obey parametermodifiers
+        => type.GetTypeInfo().DeclaredMethods.SingleOrDefault(m => m.Name == name && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(types));
+#elif NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+    /// <summary>Backport</summary>
+    public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
+        => type.GetTypeInfo().GetMethod(name, types, modifiers);
+#endif
+
+#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
+    /// <summary>Backport</summary>
+    public static PropertyInfo[] GetProperties(this Type type, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+        => type.GetTypeInfo().GetProperties(bindingFlags);
+#endif
+
+#if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD1_6_OR_GREATER)
+    /// <summary>Backport</summary>
+    //TODO obey binding flags
+    public static PropertyInfo[] GetProperties(this TypeInfo typeInfo, BindingFlags bindingFlags) => typeInfo.DeclaredProperties.ToArray();
+#endif
 #if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
 #if !NETSTANDARD1_6_OR_GREATER
     /// <summary>Backport</summary>
@@ -479,17 +549,6 @@ public static class TypeExtension
 #else
         => type.GetTypeInfo().DeclaredConstructors.SingleOrDefault(c => c.GetParameters().Select(p => p.ParameterType).SequenceEqual(types));
 #endif
-#endif
-
-    /// <summary>Determines whether a type is a user defined structure. This is true for: type.IsValueType &amp;&amp; !type.IsPrimitive &amp;&amp; !type.IsEnum.</summary>
-    /// <param name="type">The type to check.</param>
-    /// <returns>Returns true if the type is a user defined structure, false otherwise.</returns>
-    public static bool IsStruct(this Type type)
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-        => (type?.GetTypeInfo().IsValueType == true) && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
-#else
-        => (type?.IsValueType == true) && !type.IsPrimitive && !type.IsEnum;
-
 #endif
 
     #endregion Static

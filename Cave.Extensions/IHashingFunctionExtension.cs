@@ -14,7 +14,7 @@ public static class IHashingFunctionExtension
     /// <param name="hashingFunction">Hashing function to use.</param>
     /// <param name="item">Item to add</param>
     [MethodImpl((MethodImplOptions)0x0100)]
-    public static unsafe void Add<T>(this IHashingFunction hashingFunction, T item)
+    public static void Add<T>(this IHashingFunction hashingFunction, T item)
     {
         switch (item)
         {

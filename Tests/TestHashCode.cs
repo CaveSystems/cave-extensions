@@ -27,7 +27,7 @@ public class TestHashCode
         Check(crc32, Encoding.ASCII.GetBytes("Check123!"), 0x292C603E);
     }
 
-    const int hashCount = 12345678;
+    const int hashCount = 123456789;
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
     [Test]
@@ -51,7 +51,7 @@ public class TestHashCode
         var watch = Stopwatch.StartNew();
         for (var i = 0; i < hashCount; i++)
         {
-            hash.Add(i);
+            hash.Feed(i);
         }
         watch.Stop();
         Console.WriteLine($"XxHash32: {hashCount} checksums: {(hashCount * 1000.0) / watch.ElapsedMilliseconds:N3} /s");
@@ -64,7 +64,7 @@ public class TestHashCode
         var watch = Stopwatch.StartNew();
         for (var i = 0; i < hashCount; i++)
         {
-            crc.Add(i);
+            crc.Feed(i);
         }
         watch.Stop();
         Console.WriteLine($"FastCrc32: {hashCount} checksums: {(hashCount * 1000.0) / watch.ElapsedMilliseconds:N3} /s");

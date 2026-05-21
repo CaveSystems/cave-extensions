@@ -71,34 +71,13 @@ public struct XxHash32 : IHashingFunction
         }
     }
 
-    [MethodImpl((MethodImplOptions)256)]
-    static uint MixEmptyState() => Seed + Prime5;
-
-    [MethodImpl((MethodImplOptions)256)]
-    static uint MixFinal(uint hash)
+    [MethodImpl((MethodImplOptions)0x0100)]
+    static uint Round(uint hash, uint input)
     {
-        unchecked
-        {
-            hash ^= hash >> 15;
-            hash *= Prime2;
-            hash ^= hash >> 13;
-            hash *= Prime3;
-            hash ^= hash >> 16;
-            return hash;
-        }
+        var x = hash + (input * Prime2);
+        x = (x << 13) | (x >> 19);
+        return x * Prime1;
     }
-
-    [MethodImpl((MethodImplOptions)256)]
-    static uint MixState(uint v1, uint v2, uint v3, uint v4) => RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
-
-    [MethodImpl((MethodImplOptions)256)]
-    static uint QueueRound(uint hash, uint queuedValue) => RotateLeft(hash + (queuedValue * Prime3), 17) * Prime4;
-
-    [MethodImpl((MethodImplOptions)256)]
-    static uint RotateLeft(uint value, int bits) => (value << bits) | (value >> (32 - bits));
-
-    [MethodImpl((MethodImplOptions)256)]
-    static uint Round(uint hash, uint input) => RotateLeft(hash + (input * Prime2), 13) * Prime1;
 
     [MethodImpl((MethodImplOptions)0x0100)]
     void Hash(uint value)
@@ -195,7 +174,22 @@ public struct XxHash32 : IHashingFunction
             var position = length % 4;
 
             // If the length is less than 4, _v1 to _v4 don't contain anything yet. xxHash32 treats this differently.
-            var hash = length < 4 ? MixEmptyState() : MixState(v1, v2, v3, v4);
+            // var hash = length < 4 ? MixEmptyState() : MixState(v1, v2, v3, v4);
+            uint hash;
+            if (length < 4)
+            {
+                // MixEmptyState()
+                hash = Seed + Prime5;
+            }
+            else
+            {
+                // MixState(v1, v2, v3, v4)
+                hash =
+                    ((v1 << 1) | (v1 >> 31)) +
+                    ((v2 << 7) | (v2 >> 25)) +
+                    ((v3 << 12) | (v3 >> 20)) +
+                    ((v4 << 18) | (v4 >> 14));
+            }
 
             // _length is incremented once per Add(Int32) and is therefore 4 times too small (xxHash length is in bytes, not ints).
             hash += length * 4;
@@ -206,18 +200,23 @@ public struct XxHash32 : IHashingFunction
             // position is not > 0).
             if (position > 0)
             {
-                hash = QueueRound(hash, q1);
+                hash = ((hash + (q1 * Prime3)) << 17 | (hash + (q1 * Prime3)) >> 15) * Prime4;
                 if (position > 1)
                 {
-                    hash = QueueRound(hash, q2);
+                    hash = ((hash + (q2 * Prime3)) << 17 | (hash + (q2 * Prime3)) >> 15) * Prime4;
                     if (position > 2)
                     {
-                        hash = QueueRound(hash, q3);
+                        hash = ((hash + (q3 * Prime3)) << 17 | (hash + (q3 * Prime3)) >> 15) * Prime4;
                     }
                 }
             }
 
-            hash = MixFinal(hash);
+            hash ^= hash >> 15;
+            hash *= Prime2;
+            hash ^= hash >> 13;
+            hash *= Prime3;
+            hash ^= hash >> 16;
+
             return (int)hash;
         }
     }
