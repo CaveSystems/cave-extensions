@@ -62,7 +62,7 @@ public class TaskList
 
     /// <summary>Checks all tasks whether any is still running and returns true if a matching one is found.</summary>
     /// <returns>Returns true if at least one task is still running, false otherwise.</returns>
-    public bool AnyIsRunning() => Any(task => !task.IsCompleted);
+    public bool AnyIsRunning() => Any(task => !task.IsCompleted && !task.IsFaulted);
 
     /// <summary>Checks all tasks whether any is successfully completed and returns true if a matching one is found.</summary>
     /// <returns>Returns true if at least one task is successfully completed, false otherwise.</returns>
@@ -121,7 +121,7 @@ public class TaskList
     {
         lock (tasks)
         {
-            Task[] completed = [.. tasks.Where(task => task.IsCompleted)];
+            Task[] completed = [.. tasks.Where(task => task.IsCompleted | task.IsFaulted)];
             tasks.RemoveRange(completed);
             waitAny = 0;
             return completed;
@@ -190,20 +190,36 @@ public class TaskList
     /// <summary>Waits for any task to complete.</summary>
     /// <param name="action">The action to call while waiting.</param>
     /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
-    public void WaitAny(Action? action, int sleepTime)
+    public void WaitAny(Action? action, int sleepTime) => WaitAny(action, sleepTime, 0);
+
+    /// <summary>Waits for any task to complete.</summary>
+    /// <param name="action">The action to call while waiting.</param>
+    /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
+    /// <param name="timeout">The maximum time in milliseconds to wait.</param>
+    /// <returns>Returns true if a task completed, false if the timeout was reached.</returns>
+    public bool WaitAny(Action? action, int sleepTime, int timeout)
     {
         lock (this)
         {
             while (true)
             {
-                Task[] running = [.. tasks.Where(t => !t.IsCompleted)];
+                Task[] running = [.. tasks.Where(t => !t.IsCompleted && !t.IsFaulted)];
                 if (waitAny != running.Length || Task.WaitAny(running, sleepTime) > -1)
                 {
-                    break;
+                    waitAny = tasks.Count(t => !t.IsCompleted);
+                    return true;
                 }
+                if (timeout > 0)
+                {
+                    timeout -= sleepTime;
+                    if (timeout <= 0)
+                    {
+                        return false;
+                    }
+                }
+                timeout -= sleepTime;
                 action?.Invoke();
             }
-            waitAny = tasks.Count(t => !t.IsCompleted);
         }
     }
 
@@ -217,19 +233,35 @@ public class TaskList
     /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
     /// <param name="action">The action to run while waiting.</param>
     /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
-    public void WaitFreeThreads(Action? action, int sleepTime)
+    public void WaitFreeThreads(Action? action, int sleepTime) => WaitFreeThreads(action, sleepTime, 0);
+
+    /// <summary>Waits until the number of tasks falls below Environment.ProcessorCount.</summary>
+    /// <param name="action">The action to run while waiting.</param>
+    /// <param name="sleepTime">The time in milliseconds to sleep while waiting.</param>
+    /// <param name="timeout">The maximum time in milliseconds to wait.</param>
+    /// <returns>Returns true if a task completed, false if the timeout was reached.</returns>
+    public bool WaitFreeThreads(Action? action, int sleepTime, int timeout)
     {
         while (true)
         {
             var tasks = GetRunningTasks();
             if (tasks.Length < MaximumConcurrentThreads)
             {
-                return;
+                return true;
             }
 
             if (Task.WaitAny(tasks, sleepTime) == -1)
             {
                 action?.Invoke();
+            }
+
+            if (timeout > 0)
+            {
+                timeout -= sleepTime;
+                if (timeout <= 0)
+                {
+                    return false;
+                }
             }
         }
     }
