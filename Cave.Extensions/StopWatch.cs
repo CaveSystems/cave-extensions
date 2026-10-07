@@ -9,7 +9,9 @@ public static class StopWatch
 
     /// <summary>Gets the type of the selected stop watch.</summary>
     /// <value>The type of the selected.</value>
-    public static Type SelectedType { get; private set; } = typeof(DateTimeStopWatch);
+    public static Type SelectedType => selectedWatch.GetType();
+
+    static IStopWatch selectedWatch = new DateTimeStopWatch();
 
     #endregion Public Properties
 
@@ -56,15 +58,22 @@ public static class StopWatch
     /// <param name="type">The type.</param>
     public static void SetType(Type type)
     {
-        if (Activator.CreateInstance(type) is not IStopWatch watch) throw new InvalidCastException($"Could not create {nameof(IStopWatch)} with {SelectedType}!");
-        SelectedType = type;
+        if (Activator.CreateInstance(type) is not IStopWatch watch) throw new InvalidCastException($"Could not create {nameof(IStopWatch)} with {type}!");
+        selectedWatch = watch;
+    }
+
+    /// <summary>Sets the type.</summary>
+    /// <typeparam name="T">The type.</typeparam>
+    public static void SetType<T>() where T : IStopWatch, new()
+    {
+        selectedWatch = new T();
     }
 
     /// <summary>Gets a new started IStopWatch object.</summary>
     /// <returns>The started stopwatch.</returns>
     public static IStopWatch StartNew()
     {
-        if (Activator.CreateInstance(SelectedType) is not IStopWatch watch) throw new InvalidCastException($"Could not create {nameof(IStopWatch)} with {SelectedType}!");
+        var watch = selectedWatch.CreateNew();
         watch.Start();
         return watch;
     }

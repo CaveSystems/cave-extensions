@@ -38,7 +38,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cave;
 
-#pragma warning disable CS0809, CA2231
+#pragma warning disable CS0809, CA2231, IDE0048
 
 /// <summary>Provides a fast hash algorithm without random seed (the .net hashcode class does not calculate deterministic hashes).</summary>
 public struct XxHash32 : IHashingFunction

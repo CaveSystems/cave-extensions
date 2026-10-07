@@ -2,7 +2,7 @@ using System;
 
 namespace Cave;
 
-/// <summary>Gets an interface for simple time measurement.</summary>
+/// <summary>Gets an interface for thread independent simple time measurement.</summary>
 public interface IStopWatch
 {
     #region Public Properties
@@ -31,6 +31,10 @@ public interface IStopWatch
     #endregion Public Properties
 
     #region Public Methods
+
+    /// <summary>Creates a new instance of the <see cref="IStopWatch"/> implementation.</summary>
+    /// <returns>A new instance of the <see cref="IStopWatch"/> implementation.</returns>
+    IStopWatch CreateNew();
 
     /// <summary>Resets the StopWatch (can be used even if the StopWatch is running).</summary>
     void Reset();

@@ -105,14 +105,14 @@ public sealed class DateTimeStopWatch : IStopWatch
         {
             if (!IsRunning)
             {
-                throw new("StopWatch is not running!");
+                throw new InvalidOperationException("StopWatch is not running!");
             }
 
             var waitTime = elapsed - Elapsed;
             if (waitTime > TimeSpan.Zero)
             {
 #if (NETSTANDARD1_0_OR_GREATER && !NETSTANDARD2_0_OR_GREATER)
-                Task.Delay(waitTime);
+                Task.Delay(waitTime).Wait();
 #else
                 Thread.Sleep(waitTime);
 #endif
@@ -123,6 +123,9 @@ public sealed class DateTimeStopWatch : IStopWatch
             }
         }
     }
+
+    /// <inheritdoc/>
+    public IStopWatch CreateNew() => new DateTimeStopWatch();
 
     #endregion IStopWatch Members
 }

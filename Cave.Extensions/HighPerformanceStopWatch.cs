@@ -122,6 +122,9 @@ public sealed class HighPerformanceStopWatch : IStopWatch
         }
     }
 
+    /// <inheritdoc/>
+    public IStopWatch CreateNew() => new HighPerformanceStopWatch();
+
     #endregion IStopWatch Members
 }
 
